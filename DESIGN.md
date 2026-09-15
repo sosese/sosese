@@ -301,7 +301,13 @@ Lighthouse 12 mobile (4G simulée) et axe-core 4.13, sur l'image servie par `ser
 | `/mentions-legales` | 100 | 100 | 100 | 100 | 1,7 s | 0 | 73 ko |
 
 axe : **0 violation** sur les 6 pages dans les deux thèmes (FAQ ouverte) et sur le menu mobile ouvert. Aucune requête
-tierce. À refaire en production (§10 Lot 5) : TTFB et TLS réels, Traefik en frontal.
+tierce.
+
+**En production** (v0.2, 2026-09-15, https://sosese.tech) : Lighthouse mobile 100 / 100 / 100 / 100 sur `/`,
+`/contact`, `/a-propos` ; LCP 1,2–1,4 s ; CLS 0 ; TTFB 20–30 ms. axe : 0 violation (6 pages × 2 thèmes + menu mobile).
+Certificat Let's Encrypt couvrant `sosese.tech` et `www.sosese.tech` ; `www` et HTTP redirigent en 301 ; HSTS,
+CSP, cache et compression brotli conformes. Build local du tag identique à la production (hors `uid` des îlots).
+Procédures de publication, déploiement et vérification : **`RUNBOOK.md`**.
 
 ### Contenus éditables (Content Collections)
 Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
