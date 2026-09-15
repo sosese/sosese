@@ -332,7 +332,7 @@ suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si
   clavier ni au tactile), hors viewport (`IntersectionObserver`). Sous mouvement réduit : pas de boucle, pas de bouton.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
-### Cas client (L'Atelier des Sols)
+### Cas client (L'Atelier des Sols & Fils)
 - Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5, voir
   « Contenus éditables ») : section dédiée (`CasClient.astro`, `#cas-client`), distincte de la collection
   `exemples`, réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le
@@ -343,7 +343,7 @@ suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si
   réel. Le mockup interactif (`DicteeChiffrageDemo`) illustre le *mécanisme* avec un scénario type et une
   légende explicite (« pas un devis réel ») : les lignes et montants du tableau de chiffrage sont inventés,
   jamais issus d'une pièce commerciale réelle.
-- **Aucune donnée de tiers** (client final de L'Atelier des Sols, montant d'un devis réel, numéro de pièce) :
+- **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce) :
   seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
 - Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
   labels en français neutre (« Aperçu du principe », « Dicté sur le chantier », « Chiffré sur le catalogue »).
@@ -431,7 +431,7 @@ Tolérées, à ne pas étendre sans raison :
     au démarrage à partir des `index.html` de `dist/` : un nouveau build impose un redémarrage du serveur.
 17. **Cas client construit à partir d'un outil connecté (CRM Extrabat)** : ne jamais interroger de vraies pièces
     commerciales (devis, montants, coordonnées d'un client final) pour alimenter une page publique, même en
-    lecture seule — un client final de L'Atelier des Sols n'a donné aucun accord pour apparaître sur sosese.tech.
+    lecture seule — un client final de L'Atelier des Sols & Fils n'a donné aucun accord pour apparaître sur sosese.tech.
     Seuls le nom de l'entreprise cliente (accord explicite) et des chiffres d'impact déjà validés avec elle
     peuvent être utilisés ; toute démonstration visuelle reste un scénario inventé, explicitement légendé comme tel.
 
