@@ -161,7 +161,7 @@
     animation-delay: var(--flow-delay, 0ms);
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1280px) {
     .flow-pulse {
       animation-name: flow-x;
     }

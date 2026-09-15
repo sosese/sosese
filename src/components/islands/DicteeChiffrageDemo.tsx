@@ -29,12 +29,16 @@ export default function DicteeChiffrageDemo() {
     if (reducedMotion || played) return;
     const node = rootRef.current;
     if (!node) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setPlayed(true);
-        setPhase(0);
-      }
-    });
+    // Seuil à 40 % : déclenchée au premier pixel visible, l'animation (2,2 s) était finie avant d'être vue.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPlayed(true);
+          setPhase(0);
+        }
+      },
+      { threshold: 0.4 },
+    );
     observer.observe(node);
     return () => observer.disconnect();
   }, [reducedMotion, played]);
@@ -67,7 +71,7 @@ export default function DicteeChiffrageDemo() {
         <p className="eyebrow">Dicté sur le chantier</p>
         <blockquote className="rounded-md border border-border bg-bg-subtle px-4 py-3 text-16 text-ink">
           « 25 m² de parquet massif chêne collé, 12 mètres de plinthes et un ponçage-vitrification. Cale la prise de
-          cotes jeudi 8h. »
+          cotes jeudi 8 h. »
         </blockquote>
       </div>
 
@@ -76,13 +80,14 @@ export default function DicteeChiffrageDemo() {
       >
         <p className="eyebrow">Chiffré sur le catalogue</p>
         <div className="overflow-x-auto rounded-md border border-border">
-          <table className="w-full min-w-[480px] text-left text-14">
+          {/* min-w-120 = 480px : en dessous, le tableau défile dans son cadre plutôt que d'écraser les colonnes. */}
+          <table className="w-full min-w-120 text-left text-14">
             <thead className="border-b border-border bg-bg-subtle text-ink-muted">
               <tr>
                 <th scope="col" className="px-3 py-2 font-medium">Désignation</th>
-                <th scope="col" className="px-3 py-2 font-medium">Qté</th>
-                <th scope="col" className="px-3 py-2 font-medium">PU HT</th>
-                <th scope="col" className="px-3 py-2 font-medium">TVA</th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">Qté</th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">PU HT</th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">TVA</th>
                 <th scope="col" className="px-3 py-2 text-right font-medium">Total HT</th>
               </tr>
             </thead>
@@ -90,10 +95,10 @@ export default function DicteeChiffrageDemo() {
               {LIGNES.map((ligne) => (
                 <tr key={ligne.designation}>
                   <td className="px-3 py-2 text-ink">{ligne.designation}</td>
-                  <td className="px-3 py-2 text-ink-muted">{ligne.qte}</td>
-                  <td className="px-3 py-2 text-ink-muted">{ligne.puht}</td>
-                  <td className="px-3 py-2 text-ink-muted">{ligne.tva}</td>
-                  <td className="px-3 py-2 text-right font-mono text-ink">{ligne.totalHt}</td>
+                  <td className="px-3 py-2 text-right font-mono whitespace-nowrap text-ink-muted">{ligne.qte}</td>
+                  <td className="px-3 py-2 text-right font-mono whitespace-nowrap text-ink-muted">{ligne.puht}</td>
+                  <td className="px-3 py-2 text-right font-mono whitespace-nowrap text-ink-muted">{ligne.tva}</td>
+                  <td className="px-3 py-2 text-right font-mono whitespace-nowrap text-ink">{ligne.totalHt}</td>
                 </tr>
               ))}
             </tbody>

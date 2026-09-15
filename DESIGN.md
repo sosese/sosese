@@ -184,7 +184,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
 | Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `w-fit` (ne s'étire pas dans un flex en colonne) |
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
-| FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
+| FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
@@ -354,15 +354,20 @@ suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si
   chaque zone reste dans le DOM en continu (`opacity`, jamais retiré) : rien n'est réservé aux lecteurs
   d'écran via `aria-hidden`/`sr-only`, contrairement au terminal (ici pas de frappe caractère par caractère).
 
-Prévus aux lots suivants : BorderBeam, DotPattern, Tabs, Accordion.
+Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
+
+### Bandeau d'engagements
+- Rangée fluide (`flex-wrap`, libellés en `whitespace-nowrap` à partir de `sm`), pas de grille à colonnes fixes :
+  les libellés mono de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
+- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 35 caractères.
 
 ## Décisions et écarts par rapport au cahier des charges
 - **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`
   (absents du §3.3, fuite du thème clair sinon).
 - **Badge accent en `text-ink`** au lieu de `text-accent` (contraste, voir tableau).
 - **CTA mobile** : bouton flottant toujours visible (demande explicite), et non « après le premier scroll » (§4).
-- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, ContactForm), au lieu du
+- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, DicteeChiffrageDemo, ContactForm), au lieu du
   `client:visible` du §6.1. Mesuré au Lot 5 : tout îlot chargé avant l'affichage du titre (`client:load`, ou
   `client:visible` au-dessus de la ligne de flottaison) fait partir le runtime React (63 ko) tôt et porte le LCP
   mobile simulé à 2,0–2,1 s ; en `client:idle`, 1,5–1,7 s. Le HTML serveur de chaque îlot est déjà utilisable
@@ -372,6 +377,7 @@ Toujours réutiliser avant de créer.
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
 - **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).
   Il reste ~30 ko pour tous les autres îlots de l'accueil (terminal, Motion…) : à surveiller à chaque ajout.
+  Mesuré le 2026-09-15 avec le cas client : ~74 ko gzip de JS sur l'accueil (runtime 67 ko + îlots ~7 ko).
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
@@ -380,11 +386,13 @@ Tolérées, à ne pas étendre sans raison :
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
-- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1024px` pour FlowDiagram, aligné sur `lg:`).
+- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1280px` pour FlowDiagram, aligné sur `xl:`).
 - Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
 - Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero), `lg:grid-cols-[1fr_2fr]` (FAQ), `lg:grid-cols-[1fr_auto_1fr_auto_1fr]` (schéma d'intégration).
 - Formulaire : champ piège positionné hors écran (`-left-[9999px]`), largeur de colonne des `dl` de `prose-site` (60 × `--space-unit`).
 - DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
+- Formulaire : `mt-0.5` sur la case de consentement (alignement optique sur la première ligne de texte).
+- DicteeChiffrageDemo : seuil `IntersectionObserver` à 0,4 et `min-w-120` (480px) du tableau de chiffrage.
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 
@@ -421,7 +429,10 @@ Tolérées, à ne pas étendre sans raison :
     îlots disparaissent en dev alors que le build est sain. → Arrêter le serveur et relancer `npm run dev -- --force`.
     Toujours vérifier la console avant de chercher un bug dans le composant.
 12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
-    en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ lg).
+    en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ xl).
+    Revers : un libellé `whitespace-nowrap` plus long que sa colonne déborde **sans rien signaler** et fait défiler
+    toute la page horizontalement (cas du bandeau d'engagements). Après tout ajout ou allongement de libellé, vérifier
+    `document.documentElement.scrollWidth` à 360, 640, 1024 et 1280 px.
 13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
     page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
     est en `flex-1` et le footer est poussé en bas de la fenêtre.
