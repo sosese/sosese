@@ -450,6 +450,13 @@ Tolérées, à ne pas étendre sans raison :
     grand écran : il occupe la moitié droite du hero, le pointeur passe dessus dès qu'on le regarde. Sur tactile, pas
     de survol, donc l'animation tourne. Les captures headless ne le montrent pas (aucune souris). → Pause uniquement
     via un bouton explicite ; pour vérifier une animation, simuler un `mouseMoved` sur l'élément.
+19. **Montée de version majeure glissée dans un commit de version.** `chore: version 0.3.0` montait aussi
+    `@fastify/static` 8 → 10, `nodemailer` 7 → 10 et `astro` 5 → 7. `@fastify/static` 10 ne passe plus d'objet
+    doté de `res.setHeader` à `setHeaders` : crash à la première page servie, `/api/health` restant pourtant OK.
+    Le test de démarrage de la CI a bloqué la publication (tag `v0.3` jamais publié, correctif en `v0.4`).
+    → Un commit de version ne touche que `version` (`git diff` de `package.json` : une ligne). Les montées de
+    dépendances se font dans leur propre branche `chore/`, avec `npm ci && npm run build && npm start` et un
+    parcours des pages avant la PR.
 
 ## Anti-patterns
 - Dégradés multicolores
