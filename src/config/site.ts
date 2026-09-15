@@ -26,7 +26,7 @@ export const legal = {
     telephone: null as Texte,
   },
   prestataireEmail: {
-    nom: null as Texte,
+    nom: "Hostinger" as Texte,
     localisation: null as Texte,
   },
   // À VALIDER : durée recommandée par la CNIL pour des prospects (3 ans après le dernier contact).
