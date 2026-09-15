@@ -254,6 +254,20 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   l'interpole et l'envoi devient réel.
 - `.dockerignore` exclut `.env*` (sauf l'exemple), `.git`, `.claude`, `node_modules`, `dist`.
 
+### Chaîne de livraison (`.github/workflows/deploy.yml`)
+- Déclenchée **uniquement par un tag `v*`** poussé sur GitHub. Aucun secret de déploiement, aucun accès au VPS.
+- Étapes : build `linux/amd64` → **test de démarrage** du conteneur (`read_only`, `tmpfs`, 256 Mo, sans SMTP :
+  `/api/health`, `/`, `/contact` en 200, 404, utilisateur `node`, healthcheck `healthy`) → publication seulement si
+  le test passe.
+- Image : `ghcr.io/sosese/sosese:<tag>` et `:latest`, avec labels OCI (source, révision, version).
+- Écarts assumés avec le §7.3 : ajout de `docker/setup-buildx-action` (sans lui, le cache `type=gha` échoue) et du
+  test de démarrage ; `<user>` remplacé par `github.repository`.
+- Le paquet GHCR est **privé** à sa création : `docker login ghcr.io` (jeton GitHub avec `read:packages`) est
+  nécessaire pour tirer l'image, en local comme sur le VPS.
+- VPS en ARM (`uname -m` = `aarch64`) : ajouter `linux/arm64` à `platforms`.
+- Versions : le tag `vX.Y` correspond à `version` dans `package.json` (`X.Y.0`). Un tag = une mise en production =
+  l'unité de rollback (§7.2).
+
 ### Contenus éditables (Content Collections)
 Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
 | Collection | Dossier | Frontmatter | Corps |
