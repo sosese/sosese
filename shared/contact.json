@@ -1,0 +1,33 @@
+{
+  "endpoint": "/api/contact",
+  "secteurs": [
+    "Industrie",
+    "BTP",
+    "Commerce et distribution",
+    "Services aux entreprises",
+    "Santé et médico-social",
+    "Transport et logistique",
+    "Autre"
+  ],
+  "irritants": [
+    "Devis et commandes",
+    "Facturation et relances",
+    "SAV et support client",
+    "Saisie en double",
+    "Emails et documents",
+    "Reporting",
+    "Recrutement et RH",
+    "Autre"
+  ],
+  "limites": {
+    "nom": 100,
+    "societe": 120,
+    "email": 200,
+    "telephone": 30,
+    "message": 2000
+  },
+  "champPiege": "site_web",
+  "dureeMinimaleMs": 3000,
+  "emailRegex": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$",
+  "telephoneRegex": "^[0-9+().\\s-]{6,}$"
+}

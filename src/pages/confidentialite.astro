@@ -1,0 +1,92 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import ACompleter from "../components/ui/ACompleter.astro";
+import { legal, site } from "../config/site";
+---
+
+<Base
+  title="Politique de confidentialité | sosese"
+  description="Quelles données sosese collecte via le formulaire de contact, pourquoi, combien de temps, et comment exercer vos droits."
+>
+  <PageHeader eyebrow="Informations légales" title="Politique de confidentialité">
+    Ce que devient ce que vous nous écrivez, en clair.
+  </PageHeader>
+
+  <div class="container-site py-(--section-y)">
+    <div class="prose-site">
+      <h2>En résumé</h2>
+      <ul>
+        <li>Les seules données collectées sont celles que vous saisissez dans le formulaire de contact.</li>
+        <li>Elles servent uniquement à vous répondre.</li>
+        <li>Elles ne sont ni vendues, ni cédées, ni utilisées pour entraîner des modèles.</li>
+        <li>Aucun cookie, aucun script tiers, aucune mesure d'audience.</li>
+      </ul>
+
+      <h2>Responsable du traitement</h2>
+      <p>
+        {legal.raisonSociale ?? <ACompleter label="raison sociale" />},
+        {" "}{legal.adresse ?? <ACompleter label="adresse" />}.
+        Contact : <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+
+      <h2>Données collectées</h2>
+      <p>Via le formulaire de contact uniquement :</p>
+      <ul>
+        <li>nom, société, adresse email ;</li>
+        <li>téléphone, si vous choisissez de l'indiquer ;</li>
+        <li>secteur d'activité, sujets sélectionnés et message libre.</li>
+      </ul>
+      <p>
+        Pour limiter les envois abusifs, l'adresse IP à l'origine de la demande est utilisée temporairement, en mémoire
+        du serveur, pour compter les envois. Elle n'est pas enregistrée.
+      </p>
+
+      <h2>Finalité et base légale</h2>
+      <p>
+        Les données servent exclusivement à répondre à votre demande et, le cas échéant, à échanger sur un projet. Le
+        traitement repose sur votre <strong>consentement</strong>, recueilli par la case à cocher du formulaire
+        (article 6.1.a du RGPD). Vous pouvez le retirer à tout moment.
+      </p>
+
+      <h2>Destinataires</h2>
+      <p>
+        Les demandes ne sont pas stockées sur le serveur du site : elles sont transmises par email et conservées dans la
+        messagerie de {site.name}, seul destinataire.
+      </p>
+      <p>
+        L'envoi de ces emails passe par un prestataire technique (sous-traitant) :
+        {" "}{legal.prestataireEmail.nom ?? <ACompleter label="nom du prestataire email" />},
+        {" "}{legal.prestataireEmail.localisation ?? <ACompleter label="pays d'hébergement" />}.
+      </p>
+
+      <h2>Durée de conservation</h2>
+      <ul>
+        <li>Échanges liés à une demande de contact : {legal.dureeConservation}.</li>
+        <li>
+          Journaux techniques du serveur :
+          {" "}{legal.dureeJournauxTechniques ?? <ACompleter label="durée de conservation des journaux" />}.
+        </li>
+      </ul>
+
+      <h2>Vos droits</h2>
+      <p>
+        Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité
+        de vos données, ainsi que du droit de retirer votre consentement. Pour les exercer, écrivez à
+        {" "}<a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+      <p>
+        Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL
+        (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).
+      </p>
+
+      <h2>Cookies et stockage local</h2>
+      <p>
+        Ce site ne dépose aucun cookie. Seul votre choix de thème clair ou sombre est mémorisé dans votre navigateur
+        (stockage local) : il n'est jamais transmis au serveur.
+      </p>
+
+      <p><em>Dernière mise à jour : {legal.miseAJour}.</em></p>
+    </div>
+  </div>
+</Base>

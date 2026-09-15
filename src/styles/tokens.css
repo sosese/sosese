@@ -51,6 +51,7 @@
   --gutter: 20px;
   --container: 72rem;
   --header-h: 64px;
+  --dot-gap: 24px;
   --fab-offset: 16px;
   --fab-clearance: 88px; /* hauteur du bouton flottant mobile + marges */
 
@@ -58,6 +59,8 @@
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-slow: 300ms;
+  --duration-blink: 1100ms;  /* boucles décoratives : jamais ramenées à 0, coupées via media query */
+  --duration-loop: 2400ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 

@@ -1,0 +1,44 @@
+---
+import Card from "../ui/Card.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+const problemes = [
+  {
+    titre: "La même saisie, trois fois",
+    texte:
+      "Une commande tapée dans le devis, puis dans la facture, puis dans le tableau de suivi. Trois fois le temps, trois occasions de se tromper.",
+  },
+  {
+    titre: "Des informations éparpillées",
+    texte:
+      "Un même client dans la boîte mail, un tableur, le logiciel de gestion et la messagerie. Retrouver le dernier échange prend plus de temps que d'y répondre.",
+  },
+  {
+    titre: "Des process qui tiennent à une personne",
+    texte:
+      "Quand la personne qui sait est absente, le dossier attend. Le savoir-faire n'est écrit nulle part et repart avec elle.",
+  },
+];
+---
+
+<section aria-labelledby="probleme-titre" class="py-(--section-y)">
+  <div class="container-site flex flex-col gap-12">
+    <SectionHeading id="probleme-titre" eyebrow="Le constat" title="Ce qui ralentit vos équipes, sans que personne l'ait choisi">
+      Ces tâches ne figurent dans aucune fiche de poste, mais elles remplissent les journées.
+    </SectionHeading>
+
+    <ul class="grid gap-4 md:grid-cols-3">
+      {
+        problemes.map((p, i) => (
+          <li class="flex">
+            <Card interactive class="flex w-full flex-col gap-4">
+              <span class="font-mono text-12 text-accent">0{i + 1}</span>
+              <h3 class="text-21 font-semibold">{p.titre}</h3>
+              <p class="text-16 text-ink-muted">{p.texte}</p>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

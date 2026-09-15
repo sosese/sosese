@@ -1,0 +1,62 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Card from "../components/ui/Card.astro";
+import ACompleter from "../components/ui/ACompleter.astro";
+import ContactForm from "../components/islands/ContactForm";
+import { site, zoneIntervention } from "../config/site";
+
+const etapes = [
+  "On lit votre message et on revient vers vous par email.",
+  "Un premier échange pour comprendre vos processus et vos contraintes.",
+  "Si une automatisation a du sens, on vous propose un atelier. Sinon, on vous le dit.",
+];
+---
+
+<Base
+  title="Parlons de vos tâches répétitives | sosese"
+  description="Décrivez où votre équipe perd du temps : on vous dit franchement ce qui vaut la peine d'être automatisé."
+>
+  <PageHeader eyebrow="Contact" title="Parlons de ce qui vous fait perdre du temps">
+    Quelques informations suffisent. On vous répond franchement, y compris si l'automatisation n'est pas la bonne réponse.
+  </PageHeader>
+
+  <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
+    <Card padding="lg">
+      <ContactForm client:load fallbackEmail={site.email} />
+    </Card>
+
+    <aside class="flex flex-col gap-8" aria-label="Coordonnées et suite de la démarche">
+      <div class="flex flex-col gap-2">
+        <p class="eyebrow">Écrire directement</p>
+        <a href={`mailto:${site.email}`} class="text-18 font-medium text-ink underline decoration-border-strong underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-accent hover:decoration-accent">
+          {site.email}
+        </a>
+        {site.linkedin && <a href={site.linkedin} rel="me" class="text-16 text-ink-muted hover:text-ink">LinkedIn</a>}
+      </div>
+
+      {
+        (zoneIntervention || import.meta.env.DEV) && (
+          <div class="flex flex-col gap-2">
+            <p class="eyebrow">Zone d'intervention</p>
+            <p class="text-16 text-ink">{zoneIntervention ?? <ACompleter label="zone d'intervention" />}</p>
+          </div>
+        )
+      }
+
+      <div class="flex flex-col gap-4">
+        <p class="eyebrow">Ce qui se passe ensuite</p>
+        <ol class="flex flex-col gap-4">
+          {
+            etapes.map((etape, i) => (
+              <li class="flex gap-3 text-16 text-ink-muted">
+                <span class="font-mono text-14 text-accent">0{i + 1}</span>
+                <span>{etape}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </aside>
+  </div>
+</Base>

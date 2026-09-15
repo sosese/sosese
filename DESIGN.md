@@ -79,8 +79,9 @@ Tokens complémentaires dans `tokens.css` :
 | Groupe | Tokens |
 |---|---|
 | Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
-| Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance` |
+| Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
+| Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
 ### Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1)
 | Couple | Clair | Sombre / invert |
@@ -172,7 +173,15 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 |---|---|---|
 | Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">` |
 | Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
-| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`) |
+| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `w-fit` (ne s'étire pas dans un flex en colonne) |
+| SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
+| FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
+| TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:visible` — voir « Terminal » |
+| PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
+| ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
+| ContactForm | `islands/ContactForm.tsx` | îlot React, `client:load` — voir « Formulaire de contact » |
+| Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
+| DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
@@ -180,10 +189,108 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
-`src/pages/index.astro` est une **page d'aperçu temporaire** (`noindex`) des tokens et primitives, à remplacer
-par l'accueil au Lot 1.
+Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
+BentoOffre (`#offre`), Exemples (`#exemples`), SousLeCapot (invert), Confiance (`#confiance`), Faq (`#faq`),
+CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
+un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
+- **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
+  fond de page en thème sombre et le rythme vertical disparaît.
 
-Prévus aux lots suivants : BentoGrid, BentoCard, Terminal, BorderBeam, DotPattern, Tabs, Accordion.
+### Pages internes
+`/a-propos`, `/contact`, `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
+fallback Fastify du §6.4). Structure : `PageHeader` puis contenu dans `container-site` + `py-(--section-y)`.
+Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HTML simple dedans (`h2`, `h3`, `p`,
+`ul`, `dl`, `a`, `strong`) — pas de classes sur chaque balise.
+
+### Contenus non fournis (§9)
+- Valeurs bloquantes centralisées dans `src/config/site.ts` (`legal`, `personne`, `zoneIntervention`) ; `null` = non fourni.
+- **Jamais de valeur inventée.** Pages légales : `<ACompleter>` rendu dans tous les environnements, et le build
+  liste les champs manquants des mentions légales (`console.warn`). Pages vitrines (`personne`, zone
+  d'intervention) : bloc affiché avec marqueur en dev, **masqué en production** tant que la valeur est `null`.
+
+### Formulaire de contact
+- Règles partagées client / serveur dans **`shared/contact.json`** (secteurs, puces, limites, champ piège, durée
+  minimale, regex email et téléphone). `src/lib/contact.ts` les expose au front ; `server/index.mjs` construit son
+  schéma zod à partir du même fichier. Modifier une règle = modifier ce JSON, jamais l'un des deux côtés seul.
+- Charge utile JSON : `nom`, `societe`, `email`, `telephone`, `secteur`, `irritants` (puces concaténées par « , »),
+  `message`, `consentement: true`, `site_web` (piège, vide), `dureeRemplissage` (ms, le serveur refuse < 3 s).
+- Obligatoires : nom, société, email, secteur, consentement. Facultatifs, et libellés « (facultatif) » : téléphone,
+  puces, message.
+- `noValidate` + validation React : `aria-invalid`, message relié par `aria-describedby`, focus sur le premier
+  champ en erreur, erreur effacée à la modification du champ.
+- États : `idle` / `sending` (bouton désactivé, `role="status"`) / `success` (panneau qui reçoit le focus) /
+  `error` (`role="alert"` toujours présent dans le DOM, champs conservés, **email de repli affiché**).
+- Puces : cases à cocher `sr-only` dans des `<label>` stylés par `has-checked:` et `has-focus-visible:` — zéro état React.
+- **Erreurs en `--accent`** (bordure et texte) : pas de rouge, une seule couleur d'accent. Texte d'erreur : `text-accent`
+  sur `surface` = 5.02:1 en clair. Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
+- `action="/api/contact" method="post"` sur le `<form>` : sans JS, les données partent dans le corps (jamais dans
+  l'URL) et le serveur répond 415 — le serveur n'accepte que du JSON, choix assumé en V1.
+- En dev, Vite relaie `/api` vers `http://127.0.0.1:3000` : lancer `npm run build && npm start` à côté de
+  `npm run dev` pour tester l'envoi. Sans serveur, l'état `error` est le comportement attendu.
+
+### Serveur (`server/index.mjs`)
+| Route / comportement | Détail |
+|---|---|
+| Fichiers statiques | `dist/` ; `/contact` servi sans redirection (réécriture vers `/contact/`) ; 404 → `404.html` avec statut 404 ; `/api/*` inconnu → JSON 404 |
+| Cache (§7.8) | `/_astro/*` : `immutable, max-age=31536000` · HTML : `no-cache` · polices et autres : `max-age=604800` |
+| Compression | Brotli / gzip **dans Fastify** → **ne pas l'activer dans Traefik** (Lot 5) |
+| `GET /api/health` | `{ ok: true }` |
+| `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
+| Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
+| Sécurité | helmet ; CSP `script-src 'self'` + empreintes sha256 des scripts inline, calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
+| Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |
+| Proxy | `trustProxy: 1` : l'IP du rate limit est celle vue par Traefik |
+
+- La CSP dépend du HTML construit : **tout script inline ajouté au site est pris en compte au redémarrage**, sans
+  configuration. Un script externe (autre domaine) serait bloqué — c'est voulu (§11, aucune requête tierce).
+- Email : texte brut, `Reply-To` = le demandeur, sujet « Demande de contact — {société} ».
+- SMTP : port 465 → TLS implicite ; 587 → STARTTLS obligatoire ; autre port (ex. Mailpit 1025) → sans TLS.
+
+### Docker
+- `Dockerfile` multi-stage (§7.3) : Astro, React et Tailwind sont en `devDependencies`, l'image finale n'installe
+  que Fastify, nodemailer et zod. Copie de `dist/`, `server/`, `shared/`. `USER node`, healthcheck sans curl.
+- `compose.dev.yml` (projet `sosese-dev`, ports liés à `127.0.0.1`) : service `web` + **Mailpit** (SMTP de test,
+  interface sur http://localhost:8025). Sans `.env`, les emails vont dans Mailpit ; avec un `.env` local, Compose
+  l'interpole et l'envoi devient réel.
+- `.dockerignore` exclut `.env*` (sauf l'exemple), `.git`, `.claude`, `node_modules`, `dist`.
+
+### Chaîne de livraison (`.github/workflows/deploy.yml`)
+- Déclenchée **uniquement par un tag `v*`** poussé sur GitHub. Aucun secret de déploiement, aucun accès au VPS.
+- Étapes : build `linux/amd64` → **test de démarrage** du conteneur (`read_only`, `tmpfs`, 256 Mo, sans SMTP :
+  `/api/health`, `/`, `/contact` en 200, 404, utilisateur `node`, healthcheck `healthy`) → publication seulement si
+  le test passe.
+- Image : `ghcr.io/sosese/sosese:<tag>` et `:latest`, avec labels OCI (source, révision, version).
+- Écarts assumés avec le §7.3 : ajout de `docker/setup-buildx-action` (sans lui, le cache `type=gha` échoue) et du
+  test de démarrage ; `<user>` remplacé par `github.repository`.
+- Le paquet GHCR est **privé** à sa création : `docker login ghcr.io` (jeton GitHub avec `read:packages`) est
+  nécessaire pour tirer l'image, en local comme sur le VPS.
+- VPS en ARM (`uname -m` = `aarch64`) : ajouter `linux/arm64` à `platforms`.
+- Versions : le tag `vX.Y` correspond à `version` dans `package.json` (`X.Y.0`). Un tag = une mise en production =
+  l'unité de rollback (§7.2).
+
+### Contenus éditables (Content Collections)
+Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
+| Collection | Dossier | Frontmatter | Corps |
+|---|---|---|---|
+| `faq` | `src/content/faq/*.md` | `question`, `ordre` | réponse en Markdown (paragraphes) ; aussi injectée en texte brut dans le JSON-LD `FAQPage` |
+| `exemples` | `src/content/exemples/*.md` | `titre`, `avant`, `apres`, `gain`, `ordre` | vide |
+
+Les exemples sont **illustratifs** et présentés comme tels dans la section (§5 ligne 6) ; `gain` est un ordre
+de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, en kebab-case sans accent.
+
+**Bento** : pas de composant BentoGrid / BentoCard. Une grille `md:grid-cols-3 md:grid-rows-2` et des `Card`
+suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
+
+### Terminal
+- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation,
+  la boucle démarre par la tenue de l'état final (4 s), puis efface et retape (~12 s au total).
+- Toutes les lignes sont toujours dans le DOM ; les parties non tapées sont en `invisible` : hauteur fixe, zéro CLS.
+- Bloc animé en `aria-hidden`, transcription complète en `sr-only`.
+- Pause : survol, bouton pause/lecture dans la barre de titre (WCAG 2.2.2, le survol seul ne suffit pas au
+  clavier ni au tactile), hors viewport (`IntersectionObserver`). Sous mouvement réduit : pas de boucle, pas de bouton.
+- Le terminal porte `.section-invert` : sombre dans les deux thèmes.
+
+Prévus aux lots suivants : BorderBeam, DotPattern, Tabs, Accordion.
 Toujours réutiliser avant de créer.
 
 ## Décisions et écarts par rapport au cahier des charges
@@ -205,7 +312,13 @@ Tolérées, à ne pas étendre sans raison :
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
-- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`).
+- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1024px` pour FlowDiagram, aligné sur `lg:`).
+- Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
+- Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero), `lg:grid-cols-[1fr_2fr]` (FAQ), `lg:grid-cols-[1fr_auto_1fr_auto_1fr]` (schéma d'intégration).
+- Formulaire : champ piège positionné hors écran (`-left-[9999px]`), largeur de colonne des `dl` de `prose-site` (60 × `--space-unit`).
+- DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
+- Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
+- Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 
 ## Pièges rencontrés
 1. **Auto-référence des variables Tailwind.** Les tokens `--radius-*`, `--shadow-*`, `--font-*`, `--text-*` portent
@@ -219,6 +332,9 @@ Tolérées, à ne pas étendre sans raison :
 3. **`hidden md:inline-flex` sur un composant qui fixe déjà son `display`.** Button porte `inline-flex` ;
    `hidden` passé en `class` perd, car Tailwind émet `.inline-flex` après `.hidden`.
    → Masquer ou afficher via un conteneur : `<div class="hidden md:block"><Button …/></div>`.
+   Même règle pour **toute surcharge d'une propriété déjà posée par un composant** (fond, bordure, padding de `Card`,
+   variante de `Button`) : l'ordre des classes dans `class` ne compte pas, seul l'ordre du CSS généré compte.
+   → Ajouter une prop au composant ou écrire l'élément à la main (cas de la carte « Un processus qui vous coûte du temps ? »).
 4. **Hydratation d'un bouton dépendant du thème.** Le serveur ne connaît pas le thème. Rendre les deux
    icônes et laisser `dark:hidden` / `dark:block` choisir, sinon flash ou incohérence d'hydratation. Le libellé
    accessible reste générique (« Changer de thème ») jusqu'à l'hydratation.
@@ -232,6 +348,20 @@ Tolérées, à ne pas étendre sans raison :
    (`.py-\(--section-y\)`, `.hover\:bg-accent-hover:hover`).
 10. **`npm create astro` refuse un dossier non vide** : le projet a été initialisé à la main (package.json +
     `astro.config.mjs`), à la racine du dépôt.
+11. **Îlots vides en dev, `jsxDEV is not a function` dans la console.** Après l'ajout d'un nouvel îlot (ou un
+    `npm run build`) pendant que `npm run dev` tourne, le cache de dépendances de Vite peut être périmé : tous les
+    îlots disparaissent en dev alors que le build est sain. → Arrêter le serveur et relancer `npm run dev -- --force`.
+    Toujours vérifier la console avant de chercher un bug dans le composant.
+12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
+    en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ lg).
+13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
+    page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
+    est en `flex-1` et le footer est poussé en bas de la fenêtre.
+14. **`rm -rf` est interdit** par `.claude/settings.json`, y compris dans le scratchpad : une commande qui en contient
+    un est refusée en entier. Utiliser de nouveaux noms de dossiers plutôt que de nettoyer.
+15. **Fastify 5.12 : `disableRequestLogging` est déprécié** → `logController: new LogController({ disableRequestLogging: true })`.
+16. **Réécriture d'URL et racine** : ne jamais réécrire `/` (→ `//`). Les routes « sans slash » sont inventoriées
+    au démarrage à partir des `index.html` de `dist/` : un nouveau build impose un redémarrage du serveur.
 
 ## Anti-patterns
 - Dégradés multicolores

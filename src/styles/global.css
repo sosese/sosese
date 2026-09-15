@@ -124,6 +124,115 @@
   padding-inline: var(--gutter);
 }
 
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes flow-x {
+  0% { left: 0; opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+@keyframes flow-y {
+  0% { top: 0; opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .terminal-cursor {
+    animation: blink var(--duration-blink) steps(1) infinite;
+  }
+
+  .flow-pulse {
+    animation: flow-y var(--duration-loop) var(--ease-out) infinite;
+    animation-delay: var(--flow-delay, 0ms);
+  }
+
+  @media (min-width: 1024px) {
+    .flow-pulse {
+      animation-name: flow-x;
+    }
+  }
+}
+
+@utility dot-pattern {
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: var(--dot-gap) var(--dot-gap);
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
+/* Texte long (pages légales) : titres, paragraphes, listes et liens rédigés en HTML simple. */
+@utility prose-site {
+  max-width: var(--measure);
+  font-size: var(--text-16);
+  color: var(--ink-muted);
+
+  & h2 {
+    margin-top: calc(var(--space-unit) * 12);
+    margin-bottom: calc(var(--space-unit) * 4);
+    font-size: var(--text-21);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  & h2:first-child {
+    margin-top: 0;
+  }
+
+  & h3 {
+    margin-top: calc(var(--space-unit) * 8);
+    margin-bottom: calc(var(--space-unit) * 2);
+    font-size: var(--text-18);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  & :is(p, ul, dl) + :is(p, ul, dl) {
+    margin-top: calc(var(--space-unit) * 4);
+  }
+
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-unit) * 2);
+    padding-left: calc(var(--space-unit) * 5);
+    list-style: disc;
+  }
+
+  & dl {
+    display: grid;
+    gap: calc(var(--space-unit) * 2) calc(var(--space-unit) * 6);
+  }
+
+  & dt {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  @media (min-width: 768px) {
+    & dl {
+      grid-template-columns: calc(var(--space-unit) * 60) 1fr;
+    }
+  }
+
+  & strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  & a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  & a:hover {
+    color: var(--accent-hover);
+  }
+}
+
 @utility fab-position {
   right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
   bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
