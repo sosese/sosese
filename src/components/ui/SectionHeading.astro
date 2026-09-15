@@ -1,0 +1,22 @@
+---
+type Props = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  class?: string;
+};
+
+const { id, eyebrow, title, class: className } = Astro.props;
+---
+
+<div class:list={["flex max-w-(--measure) flex-col gap-4", className]}>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2 id={id} class="text-28 font-semibold tracking-tight md:text-36">{title}</h2>
+  {
+    Astro.slots.has("default") && (
+      <div class="text-18 text-ink-muted">
+        <slot />
+      </div>
+    )
+  }
+</div>

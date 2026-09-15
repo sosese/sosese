@@ -1,0 +1,71 @@
+---
+import Badge from "../ui/Badge.astro";
+import Card from "../ui/Card.astro";
+import FlowDiagram from "../ui/FlowDiagram.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+---
+
+<section id="offre" aria-labelledby="offre-titre" class="py-(--section-y)">
+  <div class="container-site flex flex-col gap-12">
+    <SectionHeading id="offre-titre" eyebrow="L'offre" title="Du diagnostic à la solution en service">
+      Trois façons de travailler ensemble, à prendre séparément ou dans l'ordre.
+    </SectionHeading>
+
+    <ul class="grid gap-4 md:grid-cols-3 md:grid-rows-2">
+      <li class="flex">
+        <Card interactive class="flex w-full flex-col gap-4">
+          <Badge>diagnostic</Badge>
+          <h3 class="text-21 font-semibold">Audit &amp; diagnostic</h3>
+          <p class="text-16 text-ink-muted">
+            On observe vos processus, on mesure votre maturité et on repère les tâches qui méritent d'être
+            automatisées. Vous repartez avec une feuille de route chiffrée.
+          </p>
+        </Card>
+      </li>
+
+      <li class="flex md:col-start-1 md:row-start-2">
+        <Card interactive class="flex w-full flex-col gap-4">
+          <Badge>équipes</Badge>
+          <h3 class="text-21 font-semibold">Ateliers &amp; acculturation</h3>
+          <p class="text-16 text-ink-muted">
+            Des sessions avec vos équipes pour comprendre ce que l'IA fait bien, ce qu'elle fait mal, et comment
+            s'en servir au quotidien sans exposer vos données.
+          </p>
+        </Card>
+      </li>
+
+      <li class="flex md:col-span-2 md:col-start-2 md:row-span-2 md:row-start-1">
+        <Card interactive padding="lg" class="flex w-full flex-col justify-between gap-8">
+          <div class="flex flex-col gap-4">
+            <Badge variant="accent" dot>sur-mesure</Badge>
+            <h3 class="text-28 font-semibold tracking-tight">Solutions sur-mesure</h3>
+            <p class="max-w-(--measure) text-16 text-ink-muted">
+              Des automatisations branchées sur les logiciels que vous utilisez déjà. Pas de nouvel outil à
+              apprendre, et le code comme les accès vous appartiennent.
+            </p>
+            <ul class="flex flex-col gap-2 pt-2 text-16 text-ink">
+              {
+                ["Branché sur vos logiciels actuels", "Mis en service avec vos équipes", "Code, accès et documentation remis"].map(
+                  (item) => (
+                    <li class="flex items-center gap-3">
+                      <span aria-hidden="true" class="font-mono text-accent">✓</span>
+                      {item}
+                    </li>
+                  ),
+                )
+              }
+            </ul>
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <p class="eyebrow">Exemple : une demande de devis</p>
+            <FlowDiagram
+              label="Exemple de circuit automatisé pour une demande de devis"
+              steps={["Email reçu", "Demande lue", "Devis préparé", "Validé par vous"]}
+            />
+          </div>
+        </Card>
+      </li>
+    </ul>
+  </div>
+</section>

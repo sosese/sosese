@@ -81,6 +81,7 @@ Tokens complémentaires dans `tokens.css` :
 | Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
 | Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance` |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
+| Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
 ### Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1)
 | Couple | Clair | Sombre / invert |
@@ -172,7 +173,10 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 |---|---|---|
 | Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">` |
 | Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
-| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`) |
+| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `w-fit` (ne s'étire pas dans un flex en colonne) |
+| SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
+| FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
+| TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:visible` — voir « Terminal » |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
@@ -180,10 +184,23 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
-`src/pages/index.astro` est une **page d'aperçu temporaire** (`noindex`) des tokens et primitives, à remplacer
-par l'accueil au Lot 1.
+Sections de l'accueil (`src/components/sections/`) : Hero, Engagements, Probleme, Methode (`#methode`),
+BentoOffre (`#offre`). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
+un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 
-Prévus aux lots suivants : BentoGrid, BentoCard, Terminal, BorderBeam, DotPattern, Tabs, Accordion.
+**Bento** : pas de composant BentoGrid / BentoCard. Une grille `md:grid-cols-3 md:grid-rows-2` et des `Card`
+suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
+
+### Terminal
+- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation,
+  la boucle démarre par la tenue de l'état final (4 s), puis efface et retape (~12 s au total).
+- Toutes les lignes sont toujours dans le DOM ; les parties non tapées sont en `invisible` : hauteur fixe, zéro CLS.
+- Bloc animé en `aria-hidden`, transcription complète en `sr-only`.
+- Pause : survol, bouton pause/lecture dans la barre de titre (WCAG 2.2.2, le survol seul ne suffit pas au
+  clavier ni au tactile), hors viewport (`IntersectionObserver`). Sous mouvement réduit : pas de boucle, pas de bouton.
+- Le terminal porte `.section-invert` : sombre dans les deux thèmes.
+
+Prévus aux lots suivants : BorderBeam, DotPattern, Tabs, Accordion.
 Toujours réutiliser avant de créer.
 
 ## Décisions et écarts par rapport au cahier des charges
@@ -205,7 +222,10 @@ Tolérées, à ne pas étendre sans raison :
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
-- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`).
+- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1024px` pour FlowDiagram, aligné sur `lg:`).
+- Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
+- Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero).
+- Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 
 ## Pièges rencontrés
 1. **Auto-référence des variables Tailwind.** Les tokens `--radius-*`, `--shadow-*`, `--font-*`, `--text-*` portent
@@ -232,6 +252,12 @@ Tolérées, à ne pas étendre sans raison :
    (`.py-\(--section-y\)`, `.hover\:bg-accent-hover:hover`).
 10. **`npm create astro` refuse un dossier non vide** : le projet a été initialisé à la main (package.json +
     `astro.config.mjs`), à la racine du dépôt.
+11. **Îlots vides en dev, `jsxDEV is not a function` dans la console.** Après l'ajout d'un nouvel îlot (ou un
+    `npm run build`) pendant que `npm run dev` tourne, le cache de dépendances de Vite peut être périmé : tous les
+    îlots disparaissent en dev alors que le build est sain. → Arrêter le serveur et relancer `npm run dev -- --force`.
+    Toujours vérifier la console avant de chercher un bug dans le composant.
+12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
+    en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ lg).
 
 ## Anti-patterns
 - Dégradés multicolores
