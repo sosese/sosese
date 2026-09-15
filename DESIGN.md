@@ -209,8 +209,9 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   d'intervention) : bloc affiché avec marqueur en dev, **masqué en production** tant que la valeur est `null`.
 
 ### Formulaire de contact
-- Contrat partagé avec le serveur (Lot 3) dans `src/lib/contact.ts` : `CONTACT_ENDPOINT`, `SECTEURS`, `IRRITANTS`,
-  `LIMITES`, `HONEYPOT_FIELD`, type `ContactPayload`. Le schéma zod du serveur doit reprendre ces règles.
+- Règles partagées client / serveur dans **`shared/contact.json`** (secteurs, puces, limites, champ piège, durée
+  minimale, regex email et téléphone). `src/lib/contact.ts` les expose au front ; `server/index.mjs` construit son
+  schéma zod à partir du même fichier. Modifier une règle = modifier ce JSON, jamais l'un des deux côtés seul.
 - Charge utile JSON : `nom`, `societe`, `email`, `telephone`, `secteur`, `irritants` (puces concaténées par « , »),
   `message`, `consentement: true`, `site_web` (piège, vide), `dureeRemplissage` (ms, le serveur refuse < 3 s).
 - Obligatoires : nom, société, email, secteur, consentement. Facultatifs, et libellés « (facultatif) » : téléphone,
@@ -222,10 +223,36 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - Puces : cases à cocher `sr-only` dans des `<label>` stylés par `has-checked:` et `has-focus-visible:` — zéro état React.
 - **Erreurs en `--accent`** (bordure et texte) : pas de rouge, une seule couleur d'accent. Texte d'erreur : `text-accent`
   sur `surface` = 5.02:1 en clair. Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
-- `action="/api/contact" method="post"` sur le `<form>` : envoi natif possible sans JS, si le serveur accepte aussi
-  le format `application/x-www-form-urlencoded` (à trancher au Lot 3).
-- Test de bout en bout sans serveur : script CDP dans le scratchpad (envoi vide, échec réseau, succès simulé
-  en interceptant `fetch`). En dev, `/api/contact` n'existe pas : l'état `error` est le comportement attendu.
+- `action="/api/contact" method="post"` sur le `<form>` : sans JS, les données partent dans le corps (jamais dans
+  l'URL) et le serveur répond 415 — le serveur n'accepte que du JSON, choix assumé en V1.
+- En dev, Vite relaie `/api` vers `http://127.0.0.1:3000` : lancer `npm run build && npm start` à côté de
+  `npm run dev` pour tester l'envoi. Sans serveur, l'état `error` est le comportement attendu.
+
+### Serveur (`server/index.mjs`)
+| Route / comportement | Détail |
+|---|---|
+| Fichiers statiques | `dist/` ; `/contact` servi sans redirection (réécriture vers `/contact/`) ; 404 → `404.html` avec statut 404 ; `/api/*` inconnu → JSON 404 |
+| Cache (§7.8) | `/_astro/*` : `immutable, max-age=31536000` · HTML : `no-cache` · polices et autres : `max-age=604800` |
+| Compression | Brotli / gzip **dans Fastify** → **ne pas l'activer dans Traefik** (Lot 5) |
+| `GET /api/health` | `{ ok: true }` |
+| `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
+| Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
+| Sécurité | helmet ; CSP `script-src 'self'` + empreintes sha256 des scripts inline, calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
+| Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |
+| Proxy | `trustProxy: 1` : l'IP du rate limit est celle vue par Traefik |
+
+- La CSP dépend du HTML construit : **tout script inline ajouté au site est pris en compte au redémarrage**, sans
+  configuration. Un script externe (autre domaine) serait bloqué — c'est voulu (§11, aucune requête tierce).
+- Email : texte brut, `Reply-To` = le demandeur, sujet « Demande de contact — {société} ».
+- SMTP : port 465 → TLS implicite ; 587 → STARTTLS obligatoire ; autre port (ex. Mailpit 1025) → sans TLS.
+
+### Docker
+- `Dockerfile` multi-stage (§7.3) : Astro, React et Tailwind sont en `devDependencies`, l'image finale n'installe
+  que Fastify, nodemailer et zod. Copie de `dist/`, `server/`, `shared/`. `USER node`, healthcheck sans curl.
+- `compose.dev.yml` (projet `sosese-dev`, ports liés à `127.0.0.1`) : service `web` + **Mailpit** (SMTP de test,
+  interface sur http://localhost:8025). Sans `.env`, les emails vont dans Mailpit ; avec un `.env` local, Compose
+  l'interpole et l'envoi devient réel.
+- `.dockerignore` exclut `.env*` (sauf l'exemple), `.git`, `.claude`, `node_modules`, `dist`.
 
 ### Contenus éditables (Content Collections)
 Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
@@ -318,6 +345,9 @@ Tolérées, à ne pas étendre sans raison :
     est en `flex-1` et le footer est poussé en bas de la fenêtre.
 14. **`rm -rf` est interdit** par `.claude/settings.json`, y compris dans le scratchpad : une commande qui en contient
     un est refusée en entier. Utiliser de nouveaux noms de dossiers plutôt que de nettoyer.
+15. **Fastify 5.12 : `disableRequestLogging` est déprécié** → `logController: new LogController({ disableRequestLogging: true })`.
+16. **Réécriture d'URL et racine** : ne jamais réécrire `/` (→ `//`). Les routes « sans slash » sont inventoriées
+    au démarrage à partir des `index.html` de `dist/` : un nouveau build impose un redémarrage du serveur.
 
 ## Anti-patterns
 - Dégradés multicolores

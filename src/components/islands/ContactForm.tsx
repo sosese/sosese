@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   CONTACT_ENDPOINT,
+  EMAIL_RE,
   HONEYPOT_FIELD,
   IRRITANTS,
   LIMITES,
+  PHONE_RE,
   SECTEURS,
   type ContactPayload,
 } from "../../lib/contact";
@@ -13,8 +15,6 @@ type FieldName = "nom" | "societe" | "email" | "telephone" | "secteur" | "messag
 type Errors = Partial<Record<FieldName, string>>;
 
 const FIELD_ORDER: FieldName[] = ["nom", "societe", "email", "telephone", "secteur", "message", "consentement"];
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_RE = /^[0-9+().\s-]{6,}$/;
 
 function validate(data: FormData): Errors {
   const get = (key: string) => String(data.get(key) ?? "").trim();
@@ -33,7 +33,7 @@ function validate(data: FormData): Errors {
   if (get("telephone") && (!PHONE_RE.test(get("telephone")) || get("telephone").length > LIMITES.telephone))
     errors.telephone = "Ce numéro ne semble pas valide.";
 
-  if (!(SECTEURS as readonly string[]).includes(get("secteur"))) errors.secteur = "Choisissez votre secteur.";
+  if (!SECTEURS.includes(get("secteur"))) errors.secteur = "Choisissez votre secteur.";
 
   if (get("message").length > LIMITES.message) errors.message = `${LIMITES.message} caractères maximum.`;
 
@@ -88,11 +88,11 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
       societe: get("societe"),
       email: get("email"),
       telephone: get("telephone"),
-      secteur: get("secteur") as ContactPayload["secteur"],
+      secteur: get("secteur"),
       irritants: data.getAll("irritants").map(String).join(", "),
       message: get("message"),
       consentement: true,
-      [HONEYPOT_FIELD]: get(HONEYPOT_FIELD),
+      site_web: get(HONEYPOT_FIELD),
       dureeRemplissage: Date.now() - startedAt.current,
     };
 

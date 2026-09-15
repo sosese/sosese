@@ -1,0 +1,29 @@
+# Local uniquement. Ne jamais utiliser sur le VPS (voir compose.yml, Lot 5).
+#   docker compose -f compose.dev.yml up --build
+#   site : http://localhost:3000   ·   emails de test : http://localhost:8025
+#
+# Sans .env, les emails partent vers Mailpit (SMTP de test, rien ne sort de la machine).
+# Pour un envoi réel, créer un .env à la racine avec les clés de .env.example :
+# Compose le lit pour l'interpolation ci-dessous.
+name: sosese-dev
+
+services:
+  web:
+    build: .
+    ports: ["127.0.0.1:3000:3000"]
+    environment:
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_TO: ${MAIL_TO:-demandes@sosese.test}
+      MAIL_FROM: ${MAIL_FROM:-site@sosese.test}
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    depends_on: [mailpit]
+
+  mailpit:
+    image: axllent/mailpit:v1.31
+    ports: ["127.0.0.1:8025:8025"]

@@ -8,5 +8,7 @@ export default defineConfig({
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
+    // En dev, le formulaire parle au serveur local s'il tourne (npm start sur le port 3000).
+    server: { proxy: { "/api": "http://127.0.0.1:3000" } },
   },
 });
