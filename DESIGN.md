@@ -196,11 +196,12 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
+| DicteeChiffrageDemo | `islands/DicteeChiffrageDemo.tsx` | îlot React, `client:idle` — voir « Cas client » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
-BentoOffre (`#offre`), Exemples (`#exemples`), SousLeCapot (invert), Confiance (`#confiance`), Faq (`#faq`),
-CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
+BentoOffre (`#offre`), Exemples (`#exemples`), CasClient (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
+Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
@@ -331,6 +332,27 @@ suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si
   clavier ni au tactile), hors viewport (`IntersectionObserver`). Sous mouvement réduit : pas de boucle, pas de bouton.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
+### Cas client (L'Atelier des Sols)
+- Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5, voir
+  « Contenus éditables ») : section dédiée (`CasClient.astro`, `#cas-client`), distincte de la collection
+  `exemples`, réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le
+  même accord pour chaque nouveau cas ; par défaut, un nouveau cas client reste dans `exemples` (illustratif).
+- Placée après Exemples, avant SousLeCapot ; `border-t border-border bg-bg-subtle` (alternance de fond),
+  pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot (même schéma qu'Exemples → BentoOffre).
+- Les trois chiffres d'impact (2 min, 0 ressaisie, 100 % validation explicite) sont les résultats mesurés du cas
+  réel. Le mockup interactif (`DicteeChiffrageDemo`) illustre le *mécanisme* avec un scénario type et une
+  légende explicite (« pas un devis réel ») : les lignes et montants du tableau de chiffrage sont inventés,
+  jamais issus d'une pièce commerciale réelle.
+- **Aucune donnée de tiers** (client final de L'Atelier des Sols, montant d'un devis réel, numéro de pièce) :
+  seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
+- Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
+  labels en français neutre (« Aperçu du principe », « Dicté sur le chantier », « Chiffré sur le catalogue »).
+- `DicteeChiffrageDemo` reprend le schéma de `TerminalDemo` : état final tenu par défaut (SSR et
+  `prefers-reduced-motion`), animation déclenchée une fois par `IntersectionObserver`, bouton « Revoir »
+  affiché seulement hors mouvement réduit (même pattern que le bouton pause du terminal). Le contenu de
+  chaque zone reste dans le DOM en continu (`opacity`, jamais retiré) : rien n'est réservé aux lecteurs
+  d'écran via `aria-hidden`/`sr-only`, contrairement au terminal (ici pas de frappe caractère par caractère).
+
 Prévus aux lots suivants : BorderBeam, DotPattern, Tabs, Accordion.
 Toujours réutiliser avant de créer.
 
@@ -407,6 +429,11 @@ Tolérées, à ne pas étendre sans raison :
 15. **Fastify 5.12 : `disableRequestLogging` est déprécié** → `logController: new LogController({ disableRequestLogging: true })`.
 16. **Réécriture d'URL et racine** : ne jamais réécrire `/` (→ `//`). Les routes « sans slash » sont inventoriées
     au démarrage à partir des `index.html` de `dist/` : un nouveau build impose un redémarrage du serveur.
+17. **Cas client construit à partir d'un outil connecté (CRM Extrabat)** : ne jamais interroger de vraies pièces
+    commerciales (devis, montants, coordonnées d'un client final) pour alimenter une page publique, même en
+    lecture seule — un client final de L'Atelier des Sols n'a donné aucun accord pour apparaître sur sosese.tech.
+    Seuls le nom de l'entreprise cliente (accord explicite) et des chiffres d'impact déjà validés avec elle
+    peuvent être utilisés ; toute démonstration visuelle reste un scénario inventé, explicitement légendé comme tel.
 
 ## Anti-patterns
 - Dégradés multicolores
