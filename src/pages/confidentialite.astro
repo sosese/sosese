@@ -47,6 +47,11 @@ import { legal, site } from "../config/site";
         Comme pour tout site, le serveur frontal qui reçoit les connexions tient un journal technique : adresse IP, date
         et heure, page demandée et code de réponse. Ce journal ne contient aucune donnée saisie dans le formulaire.
       </p>
+      <p>
+        Ce journal est analysé automatiquement par un outil de détection d'intrusion, CrowdSec. Une adresse IP au
+        comportement manifestement malveillant (tentatives d'intrusion, analyses automatisées) peut être bloquée et
+        signalée au réseau collaboratif CrowdSec.
+      </p>
 
       <h2>Finalité et base légale</h2>
       <p>
@@ -63,6 +68,10 @@ import { legal, site } from "../config/site";
       <p>
         Les demandes ne sont pas stockées sur le serveur du site : elles sont transmises par email et conservées dans la
         messagerie de {site.name}, seul destinataire.
+      </p>
+      <p>
+        Les adresses IP signalées comme malveillantes par l'outil de détection d'intrusion sont partagées avec
+        CrowdSec SAS (France), éditeur de cet outil, pour protéger les autres membres de son réseau.
       </p>
       <p>
         L'envoi de ces emails passe par un prestataire technique (sous-traitant) :

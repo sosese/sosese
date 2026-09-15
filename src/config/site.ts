@@ -31,9 +31,9 @@ export const legal = {
   },
   // À VALIDER : durée recommandée par la CNIL pour des prospects (3 ans après le dernier contact).
   dureeConservation: "3 ans à compter du dernier échange",
-  // Journal d'accès Traefik (/var/log/traefik/access.log sur le VPS : IP, date, chemin, statut).
-  // Aucune rotation configurée dans Traefik : la durée réelle dépend de logrotate sur le VPS.
-  dureeJournauxTechniques: null as Texte,
+  // Journal d'accès Traefik (/var/log/traefik/access.log sur le VPS : IP, date, chemin, statut),
+  // lu par CrowdSec. Durée = rotation logrotate hebdomadaire × 26 sur le VPS : les deux doivent rester alignées.
+  dureeJournauxTechniques: "6 mois" as Texte,
   miseAJour: "15 septembre 2026",
 };
 

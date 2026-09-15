@@ -287,8 +287,9 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   `crowdsec`, `filebrowser` — aucun nom de projet, conteneur, routeur, middleware ou service `sosese`. VPS x86,
   92 Go libres, ~7 Go de RAM disponible, sans swap. DNS : `sosese.tech` → IP du VPS, `www` en CNAME.
 - Traefik écrit un **journal d'accès** (`/var/log/traefik/access.log`, IP et chemins) sans rotation : mentionné dans
-  la politique de confidentialité, durée de conservation à fixer (logrotate sur le VPS). CrowdSec tourne sur le
-  VPS : s'il lit ce journal et remonte des signaux à la console CrowdSec, c'est un destinataire à déclarer.
+  la politique de confidentialité avec une conservation de **6 mois** (logrotate hebdomadaire × 26 sur le VPS : si la
+  rotation change, changer `legal.dureeJournauxTechniques`). CrowdSec lit ce journal : déclaré comme outil
+  d'analyse et comme destinataire (CrowdSec SAS) des IP signalées.
 
 ### Audits locaux (Lot 5, avant mise en production)
 Lighthouse 12 mobile (4G simulée) et axe-core 4.13, sur l'image servie par `server/index.mjs` :
