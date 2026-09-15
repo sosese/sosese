@@ -45,7 +45,12 @@ import SectionHeading from "../ui/SectionHeading.astro";
             </p>
             <ul class="flex flex-col gap-2 pt-2 text-16 text-ink">
               {
-                ["Branché sur vos logiciels actuels", "Mis en service avec vos équipes", "Code, accès et documentation remis"].map(
+                [
+                  "Branché sur vos logiciels actuels",
+                  "Mis en service avec vos équipes",
+                  "Aucune écriture sans votre accord explicite",
+                  "Code, accès et documentation remis",
+                ].map(
                   (item) => (
                     <li class="flex items-center gap-3">
                       <span aria-hidden="true" class="font-mono text-accent">✓</span>

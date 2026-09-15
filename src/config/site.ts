@@ -49,6 +49,7 @@ export const zoneIntervention = null as Texte;
 export const mainNav = [
   { label: "Méthode", href: "/#methode" },
   { label: "Offre", href: "/#offre" },
+  { label: "Cas client", href: "/#cas-client" },
   { label: "À propos", href: "/a-propos" },
 ];
 

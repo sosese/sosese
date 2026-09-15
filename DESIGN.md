@@ -184,7 +184,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
 | Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `w-fit` (ne s'étire pas dans un flex en colonne) |
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
-| FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
+| FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
@@ -196,11 +196,12 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
+| DicteeChiffrageDemo | `islands/DicteeChiffrageDemo.tsx` | îlot React, `client:idle` — voir « Cas client » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
-BentoOffre (`#offre`), Exemples (`#exemples`), SousLeCapot (invert), Confiance (`#confiance`), Faq (`#faq`),
-CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
+BentoOffre (`#offre`), Exemples (`#exemples`), CasClient (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
+Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
@@ -323,23 +324,50 @@ de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, e
 suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
 
 ### Terminal
-- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation,
-  la boucle démarre par la tenue de l'état final (4 s), puis efface et retape (~12 s au total).
+- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation.
+  Premier passage : état final tenu 1,2 s seulement (`FIRST_HOLD`), puis efface et retape ; les passages suivants
+  tiennent l'état final 4 s (~12 s au total).
 - Toutes les lignes sont toujours dans le DOM ; les parties non tapées sont en `invisible` : hauteur fixe, zéro CLS.
 - Bloc animé en `aria-hidden`, transcription complète en `sr-only`.
-- Pause : survol, bouton pause/lecture dans la barre de titre (WCAG 2.2.2, le survol seul ne suffit pas au
-  clavier ni au tactile), hors viewport (`IntersectionObserver`). Sous mouvement réduit : pas de boucle, pas de bouton.
+- Pause : bouton pause/lecture dans la barre de titre (WCAG 2.2.2), hors viewport (`IntersectionObserver`).
+  Sous mouvement réduit : pas de boucle, pas de bouton. **Pas de pause au survol** : voir piège 18.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
-Prévus aux lots suivants : BorderBeam, DotPattern, Tabs, Accordion.
+### Cas client (L'Atelier des Sols & Fils)
+- Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5, voir
+  « Contenus éditables ») : section dédiée (`CasClient.astro`, `#cas-client`), distincte de la collection
+  `exemples`, réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le
+  même accord pour chaque nouveau cas ; par défaut, un nouveau cas client reste dans `exemples` (illustratif).
+- Placée après Exemples, avant SousLeCapot ; `border-t border-border bg-bg-subtle` (alternance de fond),
+  pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot (même schéma qu'Exemples → BentoOffre).
+- Les trois chiffres d'impact (2 min, 0 ressaisie, 100 % validation explicite) sont les résultats mesurés du cas
+  réel. Le mockup interactif (`DicteeChiffrageDemo`) illustre le *mécanisme* avec un scénario type et une
+  légende explicite (« pas un devis réel ») : les lignes et montants du tableau de chiffrage sont inventés,
+  jamais issus d'une pièce commerciale réelle.
+- **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce) :
+  seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
+- Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
+  labels en français neutre (« Aperçu du principe », « Dicté sur le chantier », « Chiffré sur le catalogue »).
+- `DicteeChiffrageDemo` reprend le schéma de `TerminalDemo` : état final tenu par défaut (SSR et
+  `prefers-reduced-motion`), animation déclenchée une fois par `IntersectionObserver`, bouton « Revoir »
+  affiché seulement hors mouvement réduit (même pattern que le bouton pause du terminal). Le contenu de
+  chaque zone reste dans le DOM en continu (`opacity`, jamais retiré) : rien n'est réservé aux lecteurs
+  d'écran via `aria-hidden`/`sr-only`, contrairement au terminal (ici pas de frappe caractère par caractère).
+
+Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
+
+### Bandeau d'engagements
+- Rangée fluide (`flex-wrap`, libellés en `whitespace-nowrap` à partir de `sm`), pas de grille à colonnes fixes :
+  les libellés mono de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
+- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 35 caractères.
 
 ## Décisions et écarts par rapport au cahier des charges
 - **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`
   (absents du §3.3, fuite du thème clair sinon).
 - **Badge accent en `text-ink`** au lieu de `text-accent` (contraste, voir tableau).
 - **CTA mobile** : bouton flottant toujours visible (demande explicite), et non « après le premier scroll » (§4).
-- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, ContactForm), au lieu du
+- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, DicteeChiffrageDemo, ContactForm), au lieu du
   `client:visible` du §6.1. Mesuré au Lot 5 : tout îlot chargé avant l'affichage du titre (`client:load`, ou
   `client:visible` au-dessus de la ligne de flottaison) fait partir le runtime React (63 ko) tôt et porte le LCP
   mobile simulé à 2,0–2,1 s ; en `client:idle`, 1,5–1,7 s. Le HTML serveur de chaque îlot est déjà utilisable
@@ -349,6 +377,7 @@ Toujours réutiliser avant de créer.
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
 - **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).
   Il reste ~30 ko pour tous les autres îlots de l'accueil (terminal, Motion…) : à surveiller à chaque ajout.
+  Mesuré le 2026-09-15 avec le cas client : ~74 ko gzip de JS sur l'accueil (runtime 67 ko + îlots ~7 ko).
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
@@ -357,11 +386,13 @@ Tolérées, à ne pas étendre sans raison :
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
-- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1024px` pour FlowDiagram, aligné sur `lg:`).
+- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1280px` pour FlowDiagram, aligné sur `xl:`).
 - Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
 - Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero), `lg:grid-cols-[1fr_2fr]` (FAQ), `lg:grid-cols-[1fr_auto_1fr_auto_1fr]` (schéma d'intégration).
 - Formulaire : champ piège positionné hors écran (`-left-[9999px]`), largeur de colonne des `dl` de `prose-site` (60 × `--space-unit`).
 - DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
+- Formulaire : `mt-0.5` sur la case de consentement (alignement optique sur la première ligne de texte).
+- DicteeChiffrageDemo : seuil `IntersectionObserver` à 0,4 et `min-w-120` (480px) du tableau de chiffrage.
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 
@@ -398,7 +429,10 @@ Tolérées, à ne pas étendre sans raison :
     îlots disparaissent en dev alors que le build est sain. → Arrêter le serveur et relancer `npm run dev -- --force`.
     Toujours vérifier la console avant de chercher un bug dans le composant.
 12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
-    en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ lg).
+    en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ xl).
+    Revers : un libellé `whitespace-nowrap` plus long que sa colonne déborde **sans rien signaler** et fait défiler
+    toute la page horizontalement (cas du bandeau d'engagements). Après tout ajout ou allongement de libellé, vérifier
+    `document.documentElement.scrollWidth` à 360, 640, 1024 et 1280 px.
 13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
     page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
     est en `flex-1` et le footer est poussé en bas de la fenêtre.
@@ -407,6 +441,15 @@ Tolérées, à ne pas étendre sans raison :
 15. **Fastify 5.12 : `disableRequestLogging` est déprécié** → `logController: new LogController({ disableRequestLogging: true })`.
 16. **Réécriture d'URL et racine** : ne jamais réécrire `/` (→ `//`). Les routes « sans slash » sont inventoriées
     au démarrage à partir des `index.html` de `dist/` : un nouveau build impose un redémarrage du serveur.
+17. **Cas client construit à partir d'un outil connecté (CRM Extrabat)** : ne jamais interroger de vraies pièces
+    commerciales (devis, montants, coordonnées d'un client final) pour alimenter une page publique, même en
+    lecture seule — un client final de L'Atelier des Sols & Fils n'a donné aucun accord pour apparaître sur sosese.tech.
+    Seuls le nom de l'entreprise cliente (accord explicite) et des chiffres d'impact déjà validés avec elle
+    peuvent être utilisés ; toute démonstration visuelle reste un scénario inventé, explicitement légendé comme tel.
+18. **Animation qui ne tourne « que sur mobile ».** Une pause au survol (`onMouseEnter`) fige le terminal sur
+    grand écran : il occupe la moitié droite du hero, le pointeur passe dessus dès qu'on le regarde. Sur tactile, pas
+    de survol, donc l'animation tourne. Les captures headless ne le montrent pas (aucune souris). → Pause uniquement
+    via un bouton explicite ; pour vérifier une animation, simuler un `mouseMoved` sur l'élément.
 
 ## Anti-patterns
 - Dégradés multicolores

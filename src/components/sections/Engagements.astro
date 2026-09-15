@@ -2,16 +2,20 @@
 const engagements = [
   "premier atelier sous 15 jours",
   "livrable en 4 semaines",
+  "aucune écriture sans votre accord",
+  "chiffré sur votre catalogue réel",
+  "aucun nouveau logiciel à apprendre",
   "votre code vous appartient",
   "données hébergées en UE",
 ];
 ---
 
+<!-- Rangée fluide et non grille : des libellés mono de longueurs inégales débordent d'une colonne fixe (piège 12). -->
 <section aria-label="Nos engagements" class="border-b border-border bg-bg-subtle">
-  <ul class="container-site grid grid-cols-1 gap-x-8 gap-y-3 py-8 sm:grid-cols-2 lg:flex lg:justify-between">
+  <ul class="container-site flex flex-col gap-x-8 gap-y-3 py-8 sm:flex-row sm:flex-wrap">
     {
       engagements.map((item) => (
-        <li class="flex items-center gap-3 whitespace-nowrap font-mono text-14 text-ink">
+        <li class="flex items-baseline gap-3 font-mono text-14 text-ink sm:whitespace-nowrap">
           <span aria-hidden="true" class="text-accent">✓</span>
           {item}
         </li>

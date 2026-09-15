@@ -33,13 +33,16 @@ const FRAMES: Frame[] = (() => {
 })();
 
 const FINAL = FRAMES.length - 1;
+// Premier passage : l'état final (rendu serveur) n'est tenu que brièvement, sinon le terminal paraît figé
+// quand il est visible dès le chargement (hero sur grand écran).
+const FIRST_HOLD = 1200;
 
 export default function TerminalDemo() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const firstRun = useRef(true);
   const [frame, setFrame] = useState(FINAL);
   const [reducedMotion, setReducedMotion] = useState(true);
   const [inView, setInView] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
@@ -63,21 +66,20 @@ export default function TerminalDemo() {
       setFrame(FINAL);
       return;
     }
-    if (paused || hovered || !inView) return;
-    const timer = window.setTimeout(() => setFrame((f) => (f + 1) % FRAMES.length), FRAMES[frame].delay);
+    if (paused || !inView) return;
+    const delay = frame === FINAL && firstRun.current ? FIRST_HOLD : FRAMES[frame].delay;
+    const timer = window.setTimeout(() => {
+      if (frame === FINAL) firstRun.current = false;
+      setFrame((f) => (f + 1) % FRAMES.length);
+    }, delay);
     return () => window.clearTimeout(timer);
-  }, [frame, reducedMotion, paused, hovered, inView]);
+  }, [frame, reducedMotion, paused, inView]);
 
   const current = FRAMES[frame];
   const promptReady = current.line >= LINES.length;
 
   return (
-    <div
-      ref={rootRef}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="section-invert overflow-hidden rounded-lg border border-border-strong"
-    >
+    <div ref={rootRef} className="section-invert overflow-hidden rounded-lg border border-border-strong">
       <div className="flex h-10 items-center justify-between border-b border-border px-4">
         <div className="flex items-center gap-2" aria-hidden="true">
           <span className="size-2 rounded-full bg-border-strong" />
