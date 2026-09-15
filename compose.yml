@@ -1,8 +1,8 @@
 # PRODUCTION — utilisé uniquement sur le VPS, dans /srv/sosese, par l'humain (§7.0, §7.6).
 #   cd /srv/sosese && docker compose pull && docker compose up -d
 #
-# ⚠ Les valeurs A_RENSEIGNER_* viennent du pré-vol §7.5. Ne pas lancer ce fichier tant qu'il en reste :
-#   grep -n A_RENSEIGNER compose.yml
+# Réseau, entrypoint et certresolver relevés dans la config Traefik du VPS (pré-vol §7.5, 2026-09-15).
+# ⚠ Avant le premier up : collisions de noms avec les autres projets vérifiées et DNS créé (§7.7).
 name: sosese          # isole le projet quel que soit le dossier d'exécution
 
 services:
@@ -25,10 +25,10 @@ services:
       options: { max-size: "10m", max-file: "3" }
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=A_RENSEIGNER_RESEAU_TRAEFIK"
+      - "traefik.docker.network=traefik-net"
       - "traefik.http.routers.sosese.rule=Host(`sosese.tech`) || Host(`www.sosese.tech`)"
-      - "traefik.http.routers.sosese.entrypoints=A_RENSEIGNER_ENTRYPOINT_HTTPS"
-      - "traefik.http.routers.sosese.tls.certresolver=A_RENSEIGNER_CERTRESOLVER"
+      - "traefik.http.routers.sosese.entrypoints=websecure"
+      - "traefik.http.routers.sosese.tls.certresolver=letsencrypt"
       - "traefik.http.routers.sosese.middlewares=sosese-www"
       - "traefik.http.services.sosese.loadbalancer.server.port=3000"
       - "traefik.http.middlewares.sosese-www.redirectregex.regex=^https://www\\.sosese\\.tech/(.*)"
@@ -39,4 +39,4 @@ services:
 networks:
   traefik:
     external: true
-    name: A_RENSEIGNER_RESEAU_TRAEFIK
+    name: traefik-net
