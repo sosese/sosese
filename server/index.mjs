@@ -112,7 +112,26 @@ const transport = smtpManquants.length
       requireTLS: smtpPort === 587,
       auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
     });
-if (!transport) app.log.warn(`SMTP non configuré (${smtpManquants.join(", ")}) : POST /api/contact répondra 503.`);
+if (!transport) {
+  app.log.warn(`SMTP non configuré (${smtpManquants.join(", ")}) : POST /api/contact répondra 503.`);
+} else {
+  // Diagnostic au démarrage, sans jamais journaliser le mot de passe.
+  const adresseSuspecte = (a) => !new RegExp(regles.emailRegex).test(a) || /\.$|\s/.test(a);
+  for (const cle of ["MAIL_TO", "MAIL_FROM"]) {
+    if (adresseSuspecte(env[cle])) app.log.warn(`${cle} ne ressemble pas à une adresse valide : "${env[cle]}"`);
+  }
+  if (env.SMTP_USER && env.MAIL_FROM !== env.SMTP_USER) {
+    app.log.warn("MAIL_FROM diffère de SMTP_USER : la plupart des hébergeurs refusent ou déclassent ces envois.");
+  }
+  app.log.info(
+    { hote: env.SMTP_HOST, port: smtpPort, tls: smtpPort === 465 ? "implicite" : smtpPort === 587 ? "STARTTLS" : "aucun", authentification: Boolean(env.SMTP_USER) },
+    "SMTP configuré",
+  );
+  transport.verify().then(
+    () => app.log.info("SMTP : connexion et authentification vérifiées"),
+    (err) => app.log.error({ code: err.code, reponse: err.responseCode, detail: err.response }, "SMTP : vérification échouée"),
+  );
+}
 
 app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minutes" } } }, async (req, reply) => {
   const parsed = contactSchema.safeParse(req.body);
@@ -124,13 +143,14 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
 
   // Robot probable : on répond comme un succès pour ne rien lui apprendre, sans envoyer.
   if (d[regles.champPiege] || d.dureeRemplissage < regles.dureeMinimaleMs) {
-    req.log.info("contact : demande ignorée (anti-spam)");
+    const motif = d[regles.champPiege] ? "champ piège rempli" : `formulaire rempli en ${d.dureeRemplissage} ms`;
+    req.log.warn({ motif }, "contact : demande ignorée (anti-spam), aucun email envoyé");
     return { ok: true };
   }
   if (!transport) return reply.code(503).send({ ok: false, erreur: "indisponible" });
 
   try {
-    await transport.sendMail({
+    const info = await transport.sendMail({
       from: env.MAIL_FROM,
       to: env.MAIL_TO,
       replyTo: { name: d.nom, address: d.email },
@@ -146,10 +166,14 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
         d.message || "(pas de message)",
       ].join("\n"),
     });
-    req.log.info("contact : email envoyé");
+    // « Accepté » = pris en charge par le serveur SMTP, pas encore distribué : un rejet ultérieur revient en bounce sur MAIL_FROM.
+    req.log.info(
+      { reponse: info.response, messageId: info.messageId, acceptes: info.accepted.length, refuses: info.rejected.length },
+      "contact : email accepté par le serveur SMTP",
+    );
     return { ok: true };
   } catch (err) {
-    req.log.error({ code: err.code, reponse: err.responseCode }, "contact : échec de l'envoi SMTP");
+    req.log.error({ code: err.code, reponse: err.responseCode, detail: err.response }, "contact : échec de l'envoi SMTP");
     return reply.code(502).send({ ok: false, erreur: "envoi" });
   }
 });
