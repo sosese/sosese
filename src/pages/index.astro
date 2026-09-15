@@ -1,0 +1,114 @@
+---
+// Aperçu temporaire du Lot 0 : primitives et tokens. Remplacé par l'accueil au Lot 1.
+import Base from "../layouts/Base.astro";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import Badge from "../components/ui/Badge.astro";
+
+const swatches = [
+  "bg", "bg-subtle", "surface", "ink", "ink-muted", "border", "border-strong",
+  "accent", "accent-hover", "accent-bright", "accent-soft", "on-accent",
+];
+---
+
+<Base title="sosese — Lot 0 : fondations" noindex>
+  <div class="container-site flex flex-col gap-16 py-(--section-y)">
+    <header class="flex max-w-(--measure) flex-col gap-4">
+      <p class="eyebrow">Lot 0 · aperçu</p>
+      <h1 class="text-36 font-semibold md:text-48">Fondations du design system</h1>
+      <p class="text-ink-muted">
+        Page de vérification des tokens et des primitives, à contrôler dans les deux thèmes avec le bouton du
+        header. Elle sera remplacée par l'accueil au Lot 1.
+      </p>
+    </header>
+
+    <section aria-labelledby="t-button" class="flex flex-col gap-6">
+      <h2 id="t-button" class="text-21 font-semibold">Button</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        <Button size="lg" href="#">Parlons-en <span aria-hidden="true" class="font-mono">→</span></Button>
+        <Button variant="secondary" size="lg" href="#">Voir la méthode</Button>
+        <Button>Primaire</Button>
+        <Button variant="secondary">Secondaire</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button size="sm">Petit</Button>
+        <Button disabled>Désactivé</Button>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-badge" class="flex flex-col gap-6">
+      <h2 id="t-badge" class="text-21 font-semibold">Badge</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <Badge>données hébergées en UE</Badge>
+        <Badge variant="accent">livrable en 4 semaines</Badge>
+        <Badge variant="accent" dot>disponible</Badge>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-card" class="flex flex-col gap-6">
+      <h2 id="t-card" class="text-21 font-semibold">Card</h2>
+      <div class="grid gap-4 md:grid-cols-3">
+        <Card>
+          <p class="eyebrow mb-3">Statique</p>
+          <p class="text-18 font-medium">Carte simple</p>
+          <p class="mt-2 text-14 text-ink-muted">Surface, bordure 1 px, rayon lg. Pas d'ombre.</p>
+        </Card>
+        <Card interactive>
+          <p class="eyebrow mb-3">Interactive</p>
+          <p class="text-18 font-medium">Survol</p>
+          <p class="mt-2 text-14 text-ink-muted">Bordure renforcée et léger décalage si le mouvement est autorisé.</p>
+        </Card>
+        <Card href="#">
+          <Badge variant="accent">lien</Badge>
+          <p class="mt-3 text-18 font-medium group-hover/card:text-accent">Carte cliquable</p>
+          <p class="mt-2 text-14 text-ink-muted">Rendue en &lt;a&gt; quand href est fourni.</p>
+        </Card>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-tokens" class="flex flex-col gap-6">
+      <h2 id="t-tokens" class="text-21 font-semibold">Tokens couleur</h2>
+      <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+        {
+          swatches.map((name) => (
+            <li class="flex flex-col gap-2">
+              <span class="h-12 rounded-md border border-border" style={`background: var(--${name})`} />
+              <code class="font-mono text-12 text-ink-muted">--{name}</code>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="t-type" class="flex flex-col gap-6">
+      <h2 id="t-type" class="text-21 font-semibold">Typographie</h2>
+      <div class="flex flex-col gap-2">
+        <p class="text-64 font-semibold tracking-tight">64 Inter</p>
+        <p class="text-48 font-semibold tracking-tight">48 Inter</p>
+        <p class="text-36 font-semibold">36 Inter</p>
+        <p class="text-28 font-semibold">28 Inter</p>
+        <p class="text-21 font-medium">21 Inter</p>
+        <p class="max-w-(--measure)">
+          Corps 17 px, interlignage 1.6. Vos devis rédigés en 2 minutes au lieu de 40 : l'œil doit pouvoir lire
+          sans effort une ligne de 65 à 75 caractères.
+        </p>
+        <p class="font-mono text-14 text-ink-muted">JetBrains Mono · 38 min économisées par devis</p>
+      </div>
+    </section>
+  </div>
+
+  <section aria-labelledby="t-invert" class="section-invert py-(--section-y)">
+    <div class="container-site flex flex-col gap-6">
+      <p class="eyebrow">section-invert</p>
+      <h2 id="t-invert" class="text-28 font-semibold">Sombre dans les deux thèmes</h2>
+      <div class="flex flex-wrap items-center gap-4">
+        <Button href="#">Parlons-en</Button>
+        <Button variant="secondary" href="#">Secondaire</Button>
+        <Badge variant="accent">accent</Badge>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <Card interactive><p class="text-ink-muted">Carte sur fond invert.</p></Card>
+        <Card interactive><p class="text-ink-muted">Carte sur fond invert.</p></Card>
+      </div>
+    </div>
+  </section>
+</Base>

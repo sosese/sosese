@@ -1,0 +1,32 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = {
+  href?: string;
+  interactive?: boolean;
+  padding?: "md" | "lg";
+  class?: string;
+} & Omit<HTMLAttributes<"div">, "class">;
+
+const { href, interactive = Boolean(href), padding = "md", class: className, ...rest } = Astro.props;
+
+const classes = [
+  "group/card block rounded-lg border border-border bg-surface",
+  padding === "lg" ? "p-8" : "p-6",
+  interactive &&
+    "transition-[border-color,transform] duration-(--duration-base) ease-out hover:border-border-strong motion-safe:hover:-translate-y-0.5",
+  className,
+];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <div class:list={classes} {...rest}>
+      <slot />
+    </div>
+  )
+}

@@ -1,0 +1,26 @@
+---
+type Props = {
+  variant?: "neutral" | "accent";
+  dot?: boolean;
+  class?: string;
+};
+
+const { variant = "neutral", dot = false, class: className } = Astro.props;
+
+const variants = {
+  neutral: "border-border bg-bg-subtle text-ink-muted",
+  // text-ink et non text-accent : --accent sur --accent-soft = 4,28:1 en thème clair (< AA).
+  accent: "border-transparent bg-accent-soft text-ink",
+};
+---
+
+<span
+  class:list={[
+    "inline-flex h-6 items-center gap-2 rounded-full border px-2 font-mono text-12 whitespace-nowrap",
+    variants[variant],
+    className,
+  ]}
+>
+  {dot && <span aria-hidden="true" class="size-1.5 rounded-full bg-accent-bright"></span>}
+  <slot />
+</span>

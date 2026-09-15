@@ -1,0 +1,110 @@
+/* Source unique des tokens — voir DESIGN.md. Couleurs, rayons et ombres : §3.3 du cahier des charges. */
+
+:root {
+  color-scheme: light;
+
+  /* Base — thème clair */
+  --bg:            #FCFBF9;
+  --bg-subtle:     #F5F2ED;
+  --surface:       #FFFFFF;
+  --ink:           #14110E;
+  --ink-muted:     #6B6259;
+  --border:        rgba(20,17,14,0.10);
+  --border-strong: rgba(20,17,14,0.18);
+
+  /* Accent ambre */
+  --accent:        #B45309; /* texte, bordures, fond de bouton (blanc dessus = 5:1) */
+  --accent-hover:  #92400E;
+  --accent-bright: #F59E0B; /* décoratif uniquement : traits, glows, icônes */
+  --accent-soft:   rgba(217,119,6,0.12);
+  --on-accent:     #FFFFFF;
+
+  /* Rayons */
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-full: 999px;
+
+  /* Ombres — usage rare, éléments flottants uniquement */
+  --shadow-sm: 0 1px 2px rgba(20,17,14,0.06);
+  --shadow-md: 0 8px 24px rgba(20,17,14,0.10);
+
+  /* Typographie */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --text-12: 0.75rem;
+  --text-14: 0.875rem;
+  --text-16: 1rem;
+  --text-body: 1.0625rem; /* 17px */
+  --text-18: 1.125rem;
+  --text-21: 1.3125rem;
+  --text-28: 1.75rem;
+  --text-36: 2.25rem;
+  --text-48: 3rem;
+  --text-64: 4rem;
+
+  --leading-body: 1.6;
+  --leading-tight: 1.15;
+  --measure: 70ch;
+
+  /* Espacement — multiples de 4 */
+  --space-unit: 0.25rem;
+  --section-y: 64px;
+  --gutter: 20px;
+  --container: 72rem;
+  --header-h: 64px;
+
+  /* Mouvement */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-y: 96px;
+    --gutter: 32px;
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg:            #0F0D0B;
+  --bg-subtle:     #17130F;
+  --surface:       #1C1713;
+  --ink:           #F5F1EC;
+  --ink-muted:     #A19788;
+  --border:        rgba(255,255,255,0.09);
+  --border-strong: rgba(255,255,255,0.16);
+
+  --accent:        #F59E0B;
+  --accent-hover:  #FBBF24;
+  --accent-bright: #FBBF24;
+  --accent-soft:   rgba(245,158,11,0.14);
+  --on-accent:     #14110E;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* Sections invert : sombres dans les deux thèmes.
+   Complété par rapport au §3.3 (border-strong, accent-hover/bright/soft) :
+   sans ça, en thème clair, les survols héritaient de #92400E sur fond sombre. */
+.section-invert {
+  color-scheme: dark;
+  --bg: #0F0D0B; --bg-subtle: #17130F; --surface: #1C1713;
+  --ink: #F5F1EC; --ink-muted: #A19788;
+  --border: rgba(255,255,255,0.09); --border-strong: rgba(255,255,255,0.16);
+  --accent: #F59E0B; --accent-hover: #FBBF24; --accent-bright: #FBBF24;
+  --accent-soft: rgba(245,158,11,0.14); --on-accent: #14110E;
+  background-color: var(--bg);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}
