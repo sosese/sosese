@@ -1,0 +1,51 @@
+---
+import Card from "../ui/Card.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+const engagements = [
+  {
+    titre: "Hébergement en UE",
+    texte: "Vos données sont traitées et stockées dans l'Union européenne, chez des hébergeurs identifiés.",
+    icone: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  },
+  {
+    titre: "Aucun entraînement sur vos données",
+    texte: "Vos documents servent à votre usage, et à rien d'autre. Ils ne sont jamais utilisés pour entraîner des modèles.",
+    icone: '<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>',
+  },
+  {
+    titre: "Le code et les accès vous appartiennent",
+    texte: "Code, comptes et accès sont à votre nom. Rien ne dépend d'un compte que vous ne contrôlez pas.",
+    icone: '<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2M16 7l2 2M14 9l2 2"/>',
+  },
+  {
+    titre: "Réversibilité",
+    texte: "Une documentation est remise à chaque livraison : votre équipe ou un autre prestataire peut reprendre la main.",
+    icone: '<path d="M4 9h13l-3-3M20 15H7l3 3"/>',
+  },
+];
+---
+
+<section id="confiance" aria-labelledby="confiance-titre" class="py-(--section-y)">
+  <div class="container-site flex flex-col gap-12">
+    <SectionHeading id="confiance-titre" eyebrow="Confiance & données" title="Vos données restent les vôtres">
+      Quatre engagements, écrits noir sur blanc dans chaque contrat.
+    </SectionHeading>
+
+    <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {
+        engagements.map((e) => (
+          <li class="flex">
+            <Card interactive class="flex w-full flex-col gap-4">
+              <span class="flex size-10 items-center justify-center rounded-md bg-accent-soft text-accent">
+                <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={e.icone} />
+              </span>
+              <h3 class="text-18 font-semibold">{e.titre}</h3>
+              <p class="text-14 text-ink-muted">{e.texte}</p>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

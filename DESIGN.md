@@ -79,7 +79,7 @@ Tokens complémentaires dans `tokens.css` :
 | Groupe | Tokens |
 |---|---|
 | Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
-| Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance` |
+| Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
 | Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
@@ -177,6 +177,8 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:visible` — voir « Terminal » |
+| Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
+| DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
@@ -184,9 +186,22 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
-Sections de l'accueil (`src/components/sections/`) : Hero, Engagements, Probleme, Methode (`#methode`),
-BentoOffre (`#offre`). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
+Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
+BentoOffre (`#offre`), Exemples (`#exemples`), SousLeCapot (invert), Confiance (`#confiance`), Faq (`#faq`),
+CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
+- **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
+  fond de page en thème sombre et le rythme vertical disparaît.
+
+### Contenus éditables (Content Collections)
+Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
+| Collection | Dossier | Frontmatter | Corps |
+|---|---|---|---|
+| `faq` | `src/content/faq/*.md` | `question`, `ordre` | réponse en Markdown (paragraphes) ; aussi injectée en texte brut dans le JSON-LD `FAQPage` |
+| `exemples` | `src/content/exemples/*.md` | `titre`, `avant`, `apres`, `gain`, `ordre` | vide |
+
+Les exemples sont **illustratifs** et présentés comme tels dans la section (§5 ligne 6) ; `gain` est un ordre
+de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, en kebab-case sans accent.
 
 **Bento** : pas de composant BentoGrid / BentoCard. Une grille `md:grid-cols-3 md:grid-rows-2` et des `Card`
 suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
@@ -224,7 +239,9 @@ Tolérées, à ne pas étendre sans raison :
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
 - Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1024px` pour FlowDiagram, aligné sur `lg:`).
 - Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
-- Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero).
+- Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero), `lg:grid-cols-[1fr_2fr]` (FAQ), `lg:grid-cols-[1fr_auto_1fr_auto_1fr]` (schéma d'intégration).
+- DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
+- Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 
 ## Pièges rencontrés
@@ -239,6 +256,9 @@ Tolérées, à ne pas étendre sans raison :
 3. **`hidden md:inline-flex` sur un composant qui fixe déjà son `display`.** Button porte `inline-flex` ;
    `hidden` passé en `class` perd, car Tailwind émet `.inline-flex` après `.hidden`.
    → Masquer ou afficher via un conteneur : `<div class="hidden md:block"><Button …/></div>`.
+   Même règle pour **toute surcharge d'une propriété déjà posée par un composant** (fond, bordure, padding de `Card`,
+   variante de `Button`) : l'ordre des classes dans `class` ne compte pas, seul l'ordre du CSS généré compte.
+   → Ajouter une prop au composant ou écrire l'élément à la main (cas de la carte « Un processus qui vous coûte du temps ? »).
 4. **Hydratation d'un bouton dépendant du thème.** Le serveur ne connaît pas le thème. Rendre les deux
    icônes et laisser `dark:hidden` / `dark:block` choisir, sinon flash ou incohérence d'hydratation. Le libellé
    accessible reste générique (« Changer de thème ») jusqu'à l'hydratation.
@@ -258,6 +278,9 @@ Tolérées, à ne pas étendre sans raison :
     Toujours vérifier la console avant de chercher un bug dans le composant.
 12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
     en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ lg).
+13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
+    page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
+    est en `flex-1` et le footer est poussé en bas de la fenêtre.
 
 ## Anti-patterns
 - Dégradés multicolores

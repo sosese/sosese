@@ -157,6 +157,12 @@
   }
 }
 
+@utility dot-pattern {
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: var(--dot-gap) var(--dot-gap);
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
 @utility fab-position {
   right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
   bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
