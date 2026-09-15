@@ -8,6 +8,42 @@ export const site = {
   linkedin: null as string | null,
 };
 
+// Contenus bloquants du §9 : null = non fourni. Rendu en marqueur « à compléter », jamais inventé.
+type Texte = string | null;
+
+export const legal = {
+  raisonSociale: null as Texte,
+  formeJuridique: null as Texte,
+  capital: null as Texte,
+  adresse: null as Texte,
+  siret: null as Texte,
+  rcs: null as Texte,
+  tvaIntracom: null as Texte,
+  directeurPublication: null as Texte,
+  hebergeur: {
+    nom: null as Texte,
+    adresse: null as Texte,
+    telephone: null as Texte,
+  },
+  prestataireEmail: {
+    nom: null as Texte,
+    localisation: null as Texte,
+  },
+  // À VALIDER : durée recommandée par la CNIL pour des prospects (3 ans après le dernier contact).
+  dureeConservation: "3 ans à compter du dernier échange",
+  dureeJournauxTechniques: null as Texte,
+  miseAJour: "15 septembre 2026",
+};
+
+export const personne = null as null | {
+  nom: string;
+  role: string;
+  bio: string[];
+  photo: string;
+};
+
+export const zoneIntervention = null as Texte;
+
 export const mainNav = [
   { label: "Méthode", href: "/#methode" },
   { label: "Offre", href: "/#offre" },

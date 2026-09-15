@@ -177,6 +177,9 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:visible` — voir « Terminal » |
+| PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
+| ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
+| ContactForm | `islands/ContactForm.tsx` | îlot React, `client:load` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
@@ -192,6 +195,37 @@ CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
+
+### Pages internes
+`/a-propos`, `/contact`, `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
+fallback Fastify du §6.4). Structure : `PageHeader` puis contenu dans `container-site` + `py-(--section-y)`.
+Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HTML simple dedans (`h2`, `h3`, `p`,
+`ul`, `dl`, `a`, `strong`) — pas de classes sur chaque balise.
+
+### Contenus non fournis (§9)
+- Valeurs bloquantes centralisées dans `src/config/site.ts` (`legal`, `personne`, `zoneIntervention`) ; `null` = non fourni.
+- **Jamais de valeur inventée.** Pages légales : `<ACompleter>` rendu dans tous les environnements, et le build
+  liste les champs manquants des mentions légales (`console.warn`). Pages vitrines (`personne`, zone
+  d'intervention) : bloc affiché avec marqueur en dev, **masqué en production** tant que la valeur est `null`.
+
+### Formulaire de contact
+- Contrat partagé avec le serveur (Lot 3) dans `src/lib/contact.ts` : `CONTACT_ENDPOINT`, `SECTEURS`, `IRRITANTS`,
+  `LIMITES`, `HONEYPOT_FIELD`, type `ContactPayload`. Le schéma zod du serveur doit reprendre ces règles.
+- Charge utile JSON : `nom`, `societe`, `email`, `telephone`, `secteur`, `irritants` (puces concaténées par « , »),
+  `message`, `consentement: true`, `site_web` (piège, vide), `dureeRemplissage` (ms, le serveur refuse < 3 s).
+- Obligatoires : nom, société, email, secteur, consentement. Facultatifs, et libellés « (facultatif) » : téléphone,
+  puces, message.
+- `noValidate` + validation React : `aria-invalid`, message relié par `aria-describedby`, focus sur le premier
+  champ en erreur, erreur effacée à la modification du champ.
+- États : `idle` / `sending` (bouton désactivé, `role="status"`) / `success` (panneau qui reçoit le focus) /
+  `error` (`role="alert"` toujours présent dans le DOM, champs conservés, **email de repli affiché**).
+- Puces : cases à cocher `sr-only` dans des `<label>` stylés par `has-checked:` et `has-focus-visible:` — zéro état React.
+- **Erreurs en `--accent`** (bordure et texte) : pas de rouge, une seule couleur d'accent. Texte d'erreur : `text-accent`
+  sur `surface` = 5.02:1 en clair. Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
+- `action="/api/contact" method="post"` sur le `<form>` : envoi natif possible sans JS, si le serveur accepte aussi
+  le format `application/x-www-form-urlencoded` (à trancher au Lot 3).
+- Test de bout en bout sans serveur : script CDP dans le scratchpad (envoi vide, échec réseau, succès simulé
+  en interceptant `fetch`). En dev, `/api/contact` n'existe pas : l'état `error` est le comportement attendu.
 
 ### Contenus éditables (Content Collections)
 Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
@@ -240,6 +274,7 @@ Tolérées, à ne pas étendre sans raison :
 - Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1024px` pour FlowDiagram, aligné sur `lg:`).
 - Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
 - Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero), `lg:grid-cols-[1fr_2fr]` (FAQ), `lg:grid-cols-[1fr_auto_1fr_auto_1fr]` (schéma d'intégration).
+- Formulaire : champ piège positionné hors écran (`-left-[9999px]`), largeur de colonne des `dl` de `prose-site` (60 × `--space-unit`).
 - DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
@@ -281,6 +316,8 @@ Tolérées, à ne pas étendre sans raison :
 13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
     page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
     est en `flex-1` et le footer est poussé en bas de la fenêtre.
+14. **`rm -rf` est interdit** par `.claude/settings.json`, y compris dans le scratchpad : une commande qui en contient
+    un est refusée en entier. Utiliser de nouveaux noms de dossiers plutôt que de nettoyer.
 
 ## Anti-patterns
 - Dégradés multicolores
