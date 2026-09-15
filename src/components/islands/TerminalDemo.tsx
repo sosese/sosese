@@ -37,21 +37,14 @@ const FINAL = FRAMES.length - 1;
 // quand il est visible dès le chargement (hero sur grand écran).
 const FIRST_HOLD = 1200;
 
+// Exception assumée (DESIGN.md, « Terminal ») : l'animation ignore prefers-reduced-motion et tourne pour tous.
+// Le bouton pause, toujours présent, reste le moyen de l'arrêter (WCAG 2.2.2).
 export default function TerminalDemo() {
   const rootRef = useRef<HTMLDivElement>(null);
   const firstRun = useRef(true);
   const [frame, setFrame] = useState(FINAL);
-  const [reducedMotion, setReducedMotion] = useState(true);
   const [inView, setInView] = useState(false);
   const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -62,10 +55,6 @@ export default function TerminalDemo() {
   }, []);
 
   useEffect(() => {
-    if (reducedMotion) {
-      setFrame(FINAL);
-      return;
-    }
     if (paused || !inView) return;
     const delay = frame === FINAL && firstRun.current ? FIRST_HOLD : FRAMES[frame].delay;
     const timer = window.setTimeout(() => {
@@ -73,7 +62,7 @@ export default function TerminalDemo() {
       setFrame((f) => (f + 1) % FRAMES.length);
     }, delay);
     return () => window.clearTimeout(timer);
-  }, [frame, reducedMotion, paused, inView]);
+  }, [frame, paused, inView]);
 
   const current = FRAMES[frame];
   const promptReady = current.line >= LINES.length;
@@ -87,22 +76,18 @@ export default function TerminalDemo() {
           <span className="size-2 rounded-full bg-border-strong" />
         </div>
         <p className="font-mono text-12 text-ink-muted">sosese — exemple de mission</p>
-        {reducedMotion ? (
-          <span className="size-6" aria-hidden="true" />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-pressed={paused}
-            aria-label={paused ? "Relancer l'animation" : "Mettre l'animation en pause"}
-            title={paused ? "Relancer l'animation" : "Mettre l'animation en pause"}
-            className="inline-flex size-6 items-center justify-center rounded-sm text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:text-ink"
-          >
-            <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3" fill="currentColor">
-              {paused ? <path d="M4 2.5v11l9-5.5-9-5.5Z" /> : <path d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />}
-            </svg>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setPaused((p) => !p)}
+          aria-pressed={paused}
+          aria-label={paused ? "Relancer l'animation" : "Mettre l'animation en pause"}
+          title={paused ? "Relancer l'animation" : "Mettre l'animation en pause"}
+          className="inline-flex size-6 items-center justify-center rounded-sm text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:text-ink"
+        >
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3" fill="currentColor">
+            {paused ? <path d="M4 2.5v11l9-5.5-9-5.5Z" /> : <path d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />}
+          </svg>
+        </button>
       </div>
 
       {/* Texte complet pour lecteurs d'écran et moteurs ; le bloc animé est masqué aux technologies d'assistance. */}

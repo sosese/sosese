@@ -6,7 +6,7 @@
 - --accent-bright n'est jamais une couleur de texte sur fond clair.
 - Bordures 1px sur --border. Ombres réservées aux éléments flottants.
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
-- Toute animation respecte prefers-reduced-motion.
+- Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal du hero** (voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
 - Les composants interactifs sont des îlots React. Tout le reste est statique.
 
@@ -324,13 +324,17 @@ de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, e
 suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
 
 ### Terminal
-- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation.
+- **Ignore `prefers-reduced-motion`** (décision du 2026-09-15, voir « Décisions ») : boucle, curseur clignotant et
+  bouton pause identiques pour tous les visiteurs.
+- L'état initial (SSR, sans JS) est l'**état final** complet : pas de flash à l'hydratation.
   Premier passage : état final tenu 1,2 s seulement (`FIRST_HOLD`), puis efface et retape ; les passages suivants
   tiennent l'état final 4 s (~12 s au total).
 - Toutes les lignes sont toujours dans le DOM ; les parties non tapées sont en `invisible` : hauteur fixe, zéro CLS.
 - Bloc animé en `aria-hidden`, transcription complète en `sr-only`.
-- Pause : bouton pause/lecture dans la barre de titre (WCAG 2.2.2), hors viewport (`IntersectionObserver`).
-  Sous mouvement réduit : pas de boucle, pas de bouton. **Pas de pause au survol** : voir piège 18.
+- Pause : bouton pause/lecture dans la barre de titre, **toujours rendu** (y compris en SSR), seul moyen d'arrêt
+  pour les visiteurs sensibles au mouvement (WCAG 2.2.2) ; aussi hors viewport (`IntersectionObserver`).
+  **Pas de pause au survol** : voir piège 18. Ne jamais retirer ce bouton.
+- Curseur : `.terminal-cursor` déclaré hors de toute media query dans `global.css`.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
 ### Cas client (L'Atelier des Sols & Fils)
@@ -373,6 +377,11 @@ Toujours réutiliser avant de créer.
   mobile simulé à 2,0–2,1 s ; en `client:idle`, 1,5–1,7 s. Le HTML serveur de chaque îlot est déjà utilisable
   (thème posé par le script inline, terminal dans son état final, formulaire rendu) : rien ne change à l'écran avant
   l'hydratation. **Ne pas repasser un îlot en `client:load`** sans remesurer.
+- **Terminal du hero animé malgré `prefers-reduced-motion`** (demande explicite, 2026-09-15) : sous ce réglage, le
+  terminal restait figé et paraissait cassé (constaté sur un poste GNOME aux animations coupées). Écart assumé à la
+  règle « Toute animation respecte prefers-reduced-motion », limité au terminal : c'est du texte tapé, sans
+  déplacement ni zoom, et le bouton pause reste toujours disponible. Options écartées : un seul passage puis figé,
+  bouton « Lire l'animation ». **Ne pas étendre** à la démo du cas client, au FlowDiagram ni aux transitions.
 - **Menu mobile en `<dialog>` natif** : piège de focus, Échap et restitution du focus fournis par le navigateur,
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
 - **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).
@@ -450,6 +459,9 @@ Tolérées, à ne pas étendre sans raison :
     grand écran : il occupe la moitié droite du hero, le pointeur passe dessus dès qu'on le regarde. Sur tactile, pas
     de survol, donc l'animation tourne. Les captures headless ne le montrent pas (aucune souris). → Pause uniquement
     via un bouton explicite ; pour vérifier une animation, simuler un `mouseMoved` sur l'élément.
+    Autre cause du même symptôme : le poste de test a les animations coupées (GNOME :
+    `gsettings get org.gnome.desktop.a11y.interface reduced-motion` → `'reduce'`), le navigateur envoie
+    `prefers-reduced-motion: reduce`. Vérifier ce réglage **avant** de chercher un bug d'animation.
 19. **Montée de version majeure glissée dans un commit de version.** `chore: version 0.3.0` montait aussi
     `@fastify/static` 8 → 10, `nodemailer` 7 → 10 et `astro` 5 → 7. `@fastify/static` 10 ne passe plus d'objet
     doté de `res.setHeader` à `setHeaders` : crash à la première page servie, `/api/health` restant pourtant OK.

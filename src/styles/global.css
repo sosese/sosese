@@ -151,11 +151,12 @@
   100% { top: 100%; opacity: 0; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .terminal-cursor {
-    animation: blink var(--duration-blink) steps(1) infinite;
-  }
+/* Exception assumée : le terminal s'anime pour tous, y compris sous prefers-reduced-motion (DESIGN.md, « Terminal »). */
+.terminal-cursor {
+  animation: blink var(--duration-blink) steps(1) infinite;
+}
 
+@media (prefers-reduced-motion: no-preference) {
   .flow-pulse {
     animation: flow-y var(--duration-loop) var(--ease-out) infinite;
     animation-delay: var(--flow-delay, 0ms);
