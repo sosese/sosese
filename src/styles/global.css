@@ -124,6 +124,11 @@
   padding-inline: var(--gutter);
 }
 
+@utility fab-position {
+  right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
+}
+
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: var(--text-12);

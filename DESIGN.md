@@ -13,8 +13,9 @@
 ## Tokens
 Source unique : `src/styles/tokens.css`. Ils sont exposés à Tailwind dans `src/styles/global.css`
 (`bg-bg`, `bg-surface`, `text-ink`, `text-ink-muted`, `border-border`, `bg-accent`, `text-on-accent`,
-`rounded-md`, `shadow-md`, `text-14`, `font-mono`…). La palette, les rayons, les ombres et les tailles
-par défaut de Tailwind sont désactivés : une classe comme `bg-red-500` ou `text-sm` ne produit rien.
+`rounded-md`, `shadow-md`, `text-14`, `font-mono`…). La palette, les rayons, les ombres, les tailles de texte
+et les familles de polices par défaut de Tailwind sont désactivés : une classe comme `bg-red-500` ou `text-sm`
+ne produit rien (et sans erreur, voir « Pièges »).
 
 ```css
 :root {
@@ -73,40 +74,164 @@ par défaut de Tailwind sont désactivés : une classe comme `bg-red-500` ou `te
 }
 ```
 
-Tokens complémentaires dans `tokens.css` : échelle typographique (`--text-12` … `--text-64`, `--text-body`),
-`--leading-body`, `--measure`, `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`,
-`--duration-fast/base/slow` (ramenées à 0 si `prefers-reduced-motion`), `--ease-out`.
+Tokens complémentaires dans `tokens.css` :
+
+| Groupe | Tokens |
+|---|---|
+| Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
+| Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance` |
+| Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
+
+### Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1)
+| Couple | Clair | Sombre / invert |
+|---|---|---|
+| ink / bg | 18.19 | 17.25 |
+| ink-muted / bg | 5.77 | 6.74 |
+| ink-muted / bg-subtle | 5.35 | 6.42 |
+| ink-muted / surface | 5.97 | 6.18 |
+| accent / bg (texte accent) | 4.86 | 9.03 |
+| accent / surface | 5.02 | — |
+| on-accent / accent (bouton) | 5.02 | 8.76 |
+| on-accent / accent-hover | 7.09 | 11.27 |
+| **accent / accent-soft** | **4.28 ✗** | 7.28 |
+
+Conséquence : sur un fond `--accent-soft`, le texte est `--ink`, jamais `--accent` (cas du Badge accent).
+Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes avant usage.
 
 ## Thème
 - `data-theme="light" | "dark"` sur `<html>`, posé par le script inline en tête de `<head>` (`Base.astro`)
-  avant tout rendu : choix mémorisé (`localStorage.theme`), sinon préférence système.
+  avant tout rendu : choix mémorisé (`localStorage`, clé `theme`), sinon préférence système.
 - Sans choix mémorisé, un changement de préférence système est suivi en direct.
+- Chaque thème fixe aussi `color-scheme` (barres de défilement, contrôles natifs).
 - Variante Tailwind `dark:` branchée sur `data-theme`, à réserver aux cas où un token ne suffit pas
   (ex. icône soleil / lune).
 
 ## Typographie
 Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 Échelle : 12 14 16 18 21 28 36 48 64. Corps 17px, line-height 1.6.
-Polices variables auto-hébergées dans `public/fonts` (sous-ensemble latin), préchargées, `font-display: swap`.
-Capitales réservées aux eyebrow labels (utilitaire `eyebrow`).
+- Fichiers : `public/fonts/inter-var.woff2` et `jetbrains-mono-var.woff2`, polices **variables**, sous-ensemble
+  **latin** de Fontsource (couvre é, à, œ, €, guillemets et tirets typographiques). Licences OFL à côté.
+- Un seul fichier par famille couvre toutes les graisses : ce sont ces deux fichiers qui sont préchargés.
+- Noms de famille déclarés : `"Inter"` et `"JetBrains Mono"` (et non `"Inter Variable"`).
+- Pas d'italique chargée. En ajouter une = nouveau fichier + `@font-face`, pas de faux italique.
+- Titres `h1`–`h4` : `line-height: var(--leading-tight)`, `letter-spacing: -0.02em`, `text-wrap: balance`.
+- Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : mono, 12px, capitales, `--ink-muted`).
 
 ## Espacement
-Multiples de 4 (échelle Tailwind, `--spacing` = `--space-unit` = 4px).
-Rythme vertical des sections : 96px desktop / 64px mobile → `py-(--section-y)`.
-Conteneur : utilitaire `container-site` (`--container` + `--gutter`).
+- Unité : `--space-unit` = 0.25rem (4px). Tailwind est rebranché dessus (`--spacing`) : `p-4` = 16px, `gap-2` = 8px.
+- **Padding, marge et gap : pas entiers uniquement** (`px-2`, `gap-3`…), donc toujours un multiple de 4.
+  Les demi-pas (`px-2.5`, `gap-1.5`) sont interdits pour l'espacement.
+- Demi-pas tolérés hors espacement : micro-déplacements au survol (`translate-y-0.5` = 2px) et tailles
+  de pastilles (`size-1.5` = 6px).
+- Hauteurs de contrôles : `h-6` badge, `h-8` / `h-10` / `h-12` boutons sm / md / lg, `h-14` bouton flottant.
+  Icônes `size-5` dans des zones cliquables `size-10` (40px).
+
+| Token | Mobile | ≥ 768px | Usage |
+|---|---|---|---|
+| `--section-y` | 64px | 96px | rythme vertical des sections → `py-(--section-y)` |
+| `--gutter` | 20px | 32px | marge latérale du conteneur |
+| `--container` | 72rem | 72rem | largeur max → utilitaire `container-site` |
+| `--header-h` | 64px | 64px | hauteur du header et du header du menu mobile ; sert aussi au `scroll-padding-top` des ancres |
+| `--fab-offset` | 16px | — | distance du bouton flottant au bord (+ `env(safe-area-inset-*)`) |
+| `--fab-clearance` | 88px | — | espace réservé en bas du footer pour ne pas être masqué par le bouton flottant |
+
+## Mouvement
+- Transitions : `duration-(--duration-fast)` pour couleurs et boutons, `duration-(--duration-base)` pour les cartes,
+  toujours avec `ease-out` (= `--ease-out`).
+- Toute transformation (translate, scale) est préfixée `motion-safe:` ; les durées tombent en plus à 0 sous
+  `prefers-reduced-motion`. Défilement doux activé seulement si le mouvement est autorisé.
+- `transition-[…]` liste explicitement les propriétés animées, jamais `transition-all`.
+
+## Accessibilité (acquis du Lot 0)
+- Lien d'évitement « Aller au contenu » → `#contenu` (`<main tabindex="-1">`).
+- Focus : `outline 2px var(--accent)`, offset 2px, global sur `:focus-visible`. Ne jamais le retirer.
+- Icône seule = `aria-label` explicite, SVG en `aria-hidden`. Flèches décoratives « → » en `aria-hidden`.
+- Lien de navigation de la page courante : `aria-current="page"`, stylé via `aria-[current=page]:`.
+- Chaque `<nav>` porte un `aria-label` ou `aria-labelledby`.
+
+## Conventions de nommage et d'organisation
+| Élément | Convention |
+|---|---|
+| Primitives statiques | `src/components/ui/*.astro`, PascalCase |
+| Éléments de gabarit | `src/components/layout/*.astro` (Header, Footer, MobileCta) |
+| Îlots React | `src/components/islands/*.tsx`, export par défaut, PascalCase |
+| Sections de l'accueil (Lot 1) | `src/components/sections/*.astro`, noms du §6.3 |
+| Contenus de navigation, CTA, email | `src/config/site.ts` (`site`, `mainNav`, `legalNav`, `cta`) — jamais en dur dans un composant |
+| Tokens CSS | kebab-case, sans préfixe (`--ink-muted`), tailles de texte nommées par leur valeur en px (`--text-21`) |
+| Utilitaires Tailwind issus des tokens | `--color-X` → `bg-X` / `text-X` / `border-X` (d'où `bg-bg`, `border-border`) ; `--text-21` → `text-21` |
+| Token sans utilitaire dédié | syntaxe variable de Tailwind 4 : `py-(--section-y)`, `h-(--header-h)`, `max-w-(--measure)` |
+| Utilitaires maison | `@utility` dans `global.css` : `container-site`, `eyebrow`, `fab-position` |
+| Groupes de survol | nommés : `group/button`, `group/card` → `group-hover/card:text-accent` |
+| Props de variantes | `variant` (apparence), `size` (sm/md/lg), `href` bascule le rendu en `<a>`, `class` fusionnée via `class:list` |
+| Ancres | en français, sans accent : `#methode`, `#offre`, `#contenu` |
+| Textes d'interface | en français, y compris `aria-label` et commentaires |
+| Wordmark | `sosese<span class="text-accent">.</span>` — point en `--accent` (texte), pas `--accent-bright` |
 
 ## Composants disponibles
-| Composant | Fichier | Type |
+| Composant | Fichier | Type / API |
 |---|---|---|
-| Button | `src/components/ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>` |
-| Card | `src/components/ui/Card.astro` | statique — `interactive`, `padding` md/lg, `href` → `<a>` |
-| Badge | `src/components/ui/Badge.astro` | statique — `variant` neutral/accent, `dot` |
-| Header / Footer | `src/components/layout/` | statique |
-| ThemeToggle | `src/components/islands/ThemeToggle.tsx` | îlot React |
-| MobileNav | `src/components/islands/MobileNav.tsx` | îlot React (`<dialog>` modal) |
+| Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">` |
+| Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
+| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`) |
+| Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
+| Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
+| MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
+| ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:load` |
+| MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
+| Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
+
+`src/pages/index.astro` est une **page d'aperçu temporaire** (`noindex`) des tokens et primitives, à remplacer
+par l'accueil au Lot 1.
 
 Prévus aux lots suivants : BentoGrid, BentoCard, Terminal, BorderBeam, DotPattern, Tabs, Accordion.
 Toujours réutiliser avant de créer.
+
+## Décisions et écarts par rapport au cahier des charges
+- **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`
+  (absents du §3.3, fuite du thème clair sinon).
+- **Badge accent en `text-ink`** au lieu de `text-accent` (contraste, voir tableau).
+- **CTA mobile** : bouton flottant toujours visible (demande explicite), et non « après le premier scroll » (§4).
+- **Hydratation** : `ThemeToggle` en `client:load` (dans le header, visible dès le chargement) et `MobileNav` en
+  `client:idle`, au lieu du `client:visible` générique du §6.1.
+- **Menu mobile en `<dialog>` natif** : piège de focus, Échap et restitution du focus fournis par le navigateur,
+  sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
+- **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).
+  Il reste ~30 ko pour tous les autres îlots de l'accueil (terminal, Motion…) : à surveiller à chaque ajout.
+
+## Exceptions connues aux valeurs en dur
+Tolérées, à ne pas étendre sans raison :
+- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, gros titres).
+- Anneau de focus : `2px` d'épaisseur et de décalage.
+- `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
+- `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
+- `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
+- Points de rupture de `tokens.css` (`768px`, aligné sur `md:`).
+
+## Pièges rencontrés
+1. **Auto-référence des variables Tailwind.** Les tokens `--radius-*`, `--shadow-*`, `--font-*`, `--text-*` portent
+   déjà les noms des variables de thème de Tailwind. Un `@theme inline` classique réémet
+   `--radius-sm: var(--radius-sm)` dans `@layer theme`. Ça ne marche que parce que `tokens.css` gagne la cascade.
+   → Le mapping est dans **`@theme inline reference`** : les utilitaires pointent sur les tokens, rien n'est réémis.
+   Ne pas retirer `reference`.
+2. **Classe inexistante = silence.** Palette et échelles par défaut désactivées : `text-sm`, `bg-gray-100`,
+   `rounded-xl`, `shadow-lg` ne génèrent rien, sans avertissement. Si un style « ne s'applique pas », vérifier
+   d'abord que la classe correspond à un token.
+3. **`hidden md:inline-flex` sur un composant qui fixe déjà son `display`.** Button porte `inline-flex` ;
+   `hidden` passé en `class` perd, car Tailwind émet `.inline-flex` après `.hidden`.
+   → Masquer ou afficher via un conteneur : `<div class="hidden md:block"><Button …/></div>`.
+4. **Hydratation d'un bouton dépendant du thème.** Le serveur ne connaît pas le thème. Rendre les deux
+   icônes et laisser `dark:hidden` / `dark:block` choisir, sinon flash ou incohérence d'hydratation. Le libellé
+   accessible reste générique (« Changer de thème ») jusqu'à l'hydratation.
+5. **Plusieurs ThemeToggle** (header + menu mobile) : chacun observe `data-theme` sur `<html>`
+   (`MutationObserver`) au lieu de garder un état local, sinon les icônes et libellés divergent.
+6. **`env(safe-area-inset-*)` vaut 0** sans `viewport-fit=cover` dans la balise viewport (déjà en place dans `Base.astro`).
+7. **Tout élément fixe en bas d'écran** doit réserver sa place en bas de page (`--fab-clearance`), sinon il
+   masque la dernière ligne du footer.
+8. **Pas de `backdrop-filter`** sur le header sticky : fond plein `bg-bg` (§8.1).
+9. **Rechercher une classe dans le CSS construit** : les caractères spéciaux y sont échappés
+   (`.py-\(--section-y\)`, `.hover\:bg-accent-hover:hover`).
+10. **`npm create astro` refuse un dossier non vide** : le projet a été initialisé à la main (package.json +
+    `astro.config.mjs`), à la racine du dépôt.
 
 ## Anti-patterns
 - Dégradés multicolores
@@ -115,3 +240,5 @@ Toujours réutiliser avant de créer.
 - Plus de 2 niveaux de titre par section
 - WebGL, backdrop-filter sur mobile
 - Faux témoignages, faux logos clients, chiffres inventés
+- `transition-all`, animation sans `motion-safe:` ou sans token de durée
+- Texte `--accent` sur fond `--accent-soft`
