@@ -23,7 +23,7 @@ const etapes = [
 
   <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
     <Card padding="lg">
-      <ContactForm client:load fallbackEmail={site.email} />
+      <ContactForm client:idle fallbackEmail={site.email} />
     </Card>
 
     <aside class="flex flex-col gap-8" aria-label="Coordonnées et suite de la démarche">
