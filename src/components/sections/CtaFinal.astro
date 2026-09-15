@@ -4,7 +4,8 @@ import DotPattern from "../ui/DotPattern.astro";
 import { cta } from "../../config/site";
 ---
 
-<section aria-labelledby="cta-titre" class="section-invert relative overflow-hidden border-y border-border py-(--section-y)">
+<!-- aria-label distinct : le titre reprend mot pour mot celui du hero, deux régions ne peuvent pas porter le même nom. -->
+<section aria-label="Prochaine étape" class="section-invert relative overflow-hidden border-y border-border py-(--section-y)">
   <DotPattern />
   <div class="container-site relative flex flex-col items-center gap-6 text-center">
     <p class="eyebrow">Prochaine étape</p>

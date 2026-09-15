@@ -32,7 +32,7 @@ const path = Astro.url.pathname;
     </nav>
 
     <div class="flex items-center gap-2">
-      <ThemeToggle client:load />
+      <ThemeToggle client:idle />
       <div class="hidden md:block">
         <Button href={cta.href} size="md">
           {cta.label}

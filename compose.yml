@@ -1,0 +1,42 @@
+# PRODUCTION — utilisé uniquement sur le VPS, dans /srv/sosese, par l'humain (§7.0, §7.6).
+#   cd /srv/sosese && docker compose pull && docker compose up -d
+#
+# Réseau, entrypoint et certresolver relevés dans la config Traefik du VPS (pré-vol §7.5, 2026-09-15).
+# ⚠ Avant le premier up : collisions de noms avec les autres projets vérifiées et DNS créé (§7.7).
+name: sosese          # isole le projet quel que soit le dossier d'exécution
+
+services:
+  web:
+    # Tag figé (et non :latest) : `docker compose pull` ne change jamais de version à l'insu de personne.
+    # Mise à jour ou rollback = modifier ce tag puis `docker compose up -d`.
+    image: ghcr.io/sosese/sosese:v0.2
+    container_name: sosese-web
+    restart: unless-stopped
+    env_file: .env
+    networks: [traefik]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    pids_limit: 100
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.sosese.rule=Host(`sosese.tech`) || Host(`www.sosese.tech`)"
+      - "traefik.http.routers.sosese.entrypoints=websecure"
+      - "traefik.http.routers.sosese.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.sosese.middlewares=sosese-www"
+      - "traefik.http.services.sosese.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.sosese-www.redirectregex.regex=^https://www\\.sosese\\.tech/(.*)"
+      - "traefik.http.middlewares.sosese-www.redirectregex.replacement=https://sosese.tech/$${1}"
+      - "traefik.http.middlewares.sosese-www.redirectregex.permanent=true"
+      # Pas de middleware de compression : Fastify compresse déjà (§7.8, jamais les deux).
+
+networks:
+  traefik:
+    external: true
+    name: traefik-net

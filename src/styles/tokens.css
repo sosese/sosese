@@ -27,7 +27,7 @@
   --shadow-md: 0 8px 24px rgba(20,17,14,0.10);
 
   /* Typographie */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --text-12: 0.75rem;

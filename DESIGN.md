@@ -95,8 +95,14 @@ Tokens complémentaires dans `tokens.css` :
 | on-accent / accent (bouton) | 5.02 | 8.76 |
 | on-accent / accent-hover | 7.09 | 11.27 |
 | **accent / accent-soft** | **4.28 ✗** | 7.28 |
+| **accent / bg-subtle** | **4.49 ✗** (axe) | 6.42 |
+| accent-hover / bg-subtle | 6.35 | — |
 
-Conséquence : sur un fond `--accent-soft`, le texte est `--ink`, jamais `--accent` (cas du Badge accent).
+Conséquences :
+- sur un fond `--accent-soft`, le texte est `--ink`, jamais `--accent` (cas du Badge accent) ;
+- sur un fond `--bg-subtle`, pas de texte `--accent` : fond `--bg` ou `--surface` à la place (numéros du FlowDiagram),
+  ou `--accent-hover` pour un état de survol (questions de la FAQ). Exemptés : le point du wordmark (logotype) et les
+  « ✓ » décoratifs en `aria-hidden`.
 Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes avant usage.
 
 ## Thème
@@ -114,6 +120,9 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
   **latin** de Fontsource (couvre é, à, œ, €, guillemets et tirets typographiques). Licences OFL à côté.
 - Un seul fichier par famille couvre toutes les graisses : ce sont ces deux fichiers qui sont préchargés.
 - Noms de famille déclarés : `"Inter"` et `"JetBrains Mono"` (et non `"Inter Variable"`).
+- Police de secours **`"Inter Fallback"`** (Arial / Liberation Sans / Helvetica locales) avec `size-adjust` et
+  `ascent/descent/line-gap-override` mesurés sur `inter-var.woff2` : l'arrivée d'Inter ne change pas la taille du
+  texte (pas de saut, pas de second LCP). **Remplacer le fichier Inter = remesurer ces valeurs.**
 - Pas d'italique chargée. En ajouter une = nouveau fichier + `@font-face`, pas de faux italique.
 - Titres `h1`–`h4` : `line-height: var(--leading-tight)`, `letter-spacing: -0.02em`, `text-wrap: balance`.
 - Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : mono, 12px, capitales, `--ink-muted`).
@@ -176,16 +185,16 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `w-fit` (ne s'étire pas dans un flex en colonne) |
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < lg, horizontal ≥ lg ; impulsion CSS sur les liaisons, masquée sous mouvement réduit |
-| TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:visible` — voir « Terminal » |
+| TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
-| ContactForm | `islands/ContactForm.tsx` | îlot React, `client:load` — voir « Formulaire de contact » |
+| ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
-| ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:load` |
+| ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
@@ -268,6 +277,32 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - Versions : le tag `vX.Y` correspond à `version` dans `package.json` (`X.Y.0`). Un tag = une mise en production =
   l'unité de rollback (§7.2).
 
+### Mise en production (`compose.yml`)
+- Utilisé **uniquement sur le VPS**, dans `/srv/sosese`, par l'humain. Jamais lancé depuis la session de code.
+- Écarts avec le §7.4 : image au **tag figé** (`:v0.1`, pas `:latest`, pour qu'un `pull` ne change jamais de version
+  en silence ; mise à jour et rollback = changer ce tag), `cap_drop: [ALL]` et `pids_limit: 100` en plus. Aucun
+  middleware de compression Traefik (Fastify compresse).
+- Pré-vol §7.5 (2026-09-15) : réseau `traefik-net`, entrypoint `websecure`, certresolver `letsencrypt` (challenge
+  HTTP), redirection HTTP → HTTPS globale dans Traefik. Projets voisins : `traefik-a1wt`, `fastmcp-extrabat`,
+  `crowdsec`, `filebrowser` — aucun nom de projet, conteneur, routeur, middleware ou service `sosese`. VPS x86,
+  92 Go libres, ~7 Go de RAM disponible, sans swap. DNS : `sosese.tech` → IP du VPS, `www` en CNAME.
+- Traefik écrit un **journal d'accès** (`/var/log/traefik/access.log`, IP et chemins) sans rotation : mentionné dans
+  la politique de confidentialité avec une conservation de **6 mois** (logrotate hebdomadaire × 26 sur le VPS : si la
+  rotation change, changer `legal.dureeJournauxTechniques`). CrowdSec lit ce journal : déclaré comme outil
+  d'analyse et comme destinataire (CrowdSec SAS) des IP signalées.
+
+### Audits locaux (Lot 5, avant mise en production)
+Lighthouse 12 mobile (4G simulée) et axe-core 4.13, sur l'image servie par `server/index.mjs` :
+| Page | Perf | A11y | Bonnes pratiques | SEO | LCP | CLS | JS |
+|---|---|---|---|---|---|---|---|
+| `/` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 75 ko |
+| `/contact` | 100 | 100 | 100 | 100 | 1,7 s | 0 | 77 ko |
+| `/a-propos` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 73 ko |
+| `/mentions-legales` | 100 | 100 | 100 | 100 | 1,7 s | 0 | 73 ko |
+
+axe : **0 violation** sur les 6 pages dans les deux thèmes (FAQ ouverte) et sur le menu mobile ouvert. Aucune requête
+tierce. À refaire en production (§10 Lot 5) : TTFB et TLS réels, Traefik en frontal.
+
 ### Contenus éditables (Content Collections)
 Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul fichier Markdown**, rien d'autre.
 | Collection | Dossier | Frontmatter | Corps |
@@ -298,8 +333,12 @@ Toujours réutiliser avant de créer.
   (absents du §3.3, fuite du thème clair sinon).
 - **Badge accent en `text-ink`** au lieu de `text-accent` (contraste, voir tableau).
 - **CTA mobile** : bouton flottant toujours visible (demande explicite), et non « après le premier scroll » (§4).
-- **Hydratation** : `ThemeToggle` en `client:load` (dans le header, visible dès le chargement) et `MobileNav` en
-  `client:idle`, au lieu du `client:visible` générique du §6.1.
+- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, ContactForm), au lieu du
+  `client:visible` du §6.1. Mesuré au Lot 5 : tout îlot chargé avant l'affichage du titre (`client:load`, ou
+  `client:visible` au-dessus de la ligne de flottaison) fait partir le runtime React (63 ko) tôt et porte le LCP
+  mobile simulé à 2,0–2,1 s ; en `client:idle`, 1,5–1,7 s. Le HTML serveur de chaque îlot est déjà utilisable
+  (thème posé par le script inline, terminal dans son état final, formulaire rendu) : rien ne change à l'écran avant
+  l'hydratation. **Ne pas repasser un îlot en `client:load`** sans remesurer.
 - **Menu mobile en `<dialog>` natif** : piège de focus, Échap et restitution du focus fournis par le navigateur,
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
 - **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).

@@ -38,8 +38,19 @@ import { legal, site } from "../config/site";
         <li>secteur d'activité, sujets sélectionnés et message libre.</li>
       </ul>
       <p>
-        Pour limiter les envois abusifs, l'adresse IP à l'origine de la demande est utilisée temporairement, en mémoire
-        du serveur, pour compter les envois. Elle n'est pas enregistrée.
+        Pour limiter les envois abusifs, l'adresse IP à l'origine d'une demande de contact est utilisée temporairement,
+        en mémoire du serveur applicatif, pour compter les envois. Elle n'y est pas enregistrée.
+      </p>
+
+      <h3>Journal technique des connexions</h3>
+      <p>
+        Comme pour tout site, le serveur frontal qui reçoit les connexions tient un journal technique : adresse IP, date
+        et heure, page demandée et code de réponse. Ce journal ne contient aucune donnée saisie dans le formulaire.
+      </p>
+      <p>
+        Ce journal est analysé automatiquement par un outil de détection d'intrusion, CrowdSec. Une adresse IP au
+        comportement manifestement malveillant (tentatives d'intrusion, analyses automatisées) peut être bloquée et
+        signalée au réseau collaboratif CrowdSec.
       </p>
 
       <h2>Finalité et base légale</h2>
@@ -48,11 +59,19 @@ import { legal, site } from "../config/site";
         traitement repose sur votre <strong>consentement</strong>, recueilli par la case à cocher du formulaire
         (article 6.1.a du RGPD). Vous pouvez le retirer à tout moment.
       </p>
+      <p>
+        Le journal technique des connexions sert uniquement à la sécurité du site et au diagnostic des incidents. Il
+        repose sur l'<strong>intérêt légitime</strong> de {site.name} à protéger son service (article 6.1.f du RGPD).
+      </p>
 
       <h2>Destinataires</h2>
       <p>
         Les demandes ne sont pas stockées sur le serveur du site : elles sont transmises par email et conservées dans la
         messagerie de {site.name}, seul destinataire.
+      </p>
+      <p>
+        Les adresses IP signalées comme malveillantes par l'outil de détection d'intrusion sont partagées avec
+        CrowdSec SAS (France), éditeur de cet outil, pour protéger les autres membres de son réseau.
       </p>
       <p>
         L'envoi de ces emails passe par un prestataire technique (sous-traitant) :
@@ -64,7 +83,7 @@ import { legal, site } from "../config/site";
       <ul>
         <li>Échanges liés à une demande de contact : {legal.dureeConservation}.</li>
         <li>
-          Journaux techniques du serveur :
+          Journal technique des connexions :
           {" "}{legal.dureeJournauxTechniques ?? <ACompleter label="durée de conservation des journaux" />}.
         </li>
       </ul>
