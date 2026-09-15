@@ -282,8 +282,13 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - Écarts avec le §7.4 : image au **tag figé** (`:v0.1`, pas `:latest`, pour qu'un `pull` ne change jamais de version
   en silence ; mise à jour et rollback = changer ce tag), `cap_drop: [ALL]` et `pids_limit: 100` en plus. Aucun
   middleware de compression Traefik (Fastify compresse).
-- Les valeurs `A_RENSEIGNER_*` (réseau Traefik, entrypoint HTTPS, certresolver) viennent du pré-vol §7.5.
-  `grep -n A_RENSEIGNER compose.yml` doit être vide avant le premier `up`.
+- Pré-vol §7.5 (2026-09-15) : réseau `traefik-net`, entrypoint `websecure`, certresolver `letsencrypt` (challenge
+  HTTP), redirection HTTP → HTTPS globale dans Traefik. Projets voisins : `traefik-a1wt`, `fastmcp-extrabat`,
+  `crowdsec`, `filebrowser` — aucun nom de projet, conteneur, routeur, middleware ou service `sosese`. VPS x86,
+  92 Go libres, ~7 Go de RAM disponible, sans swap. DNS : `sosese.tech` → IP du VPS, `www` en CNAME.
+- Traefik écrit un **journal d'accès** (`/var/log/traefik/access.log`, IP et chemins) sans rotation : mentionné dans
+  la politique de confidentialité, durée de conservation à fixer (logrotate sur le VPS). CrowdSec tourne sur le
+  VPS : s'il lit ce journal et remonte des signaux à la console CrowdSec, c'est un destinataire à déclarer.
 
 ### Audits locaux (Lot 5, avant mise en production)
 Lighthouse 12 mobile (4G simulée) et axe-core 4.13, sur l'image servie par `server/index.mjs` :
