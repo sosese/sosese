@@ -324,12 +324,13 @@ de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, e
 suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
 
 ### Terminal
-- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation,
-  la boucle démarre par la tenue de l'état final (4 s), puis efface et retape (~12 s au total).
+- L'état initial (SSR, sans JS, mouvement réduit) est l'**état final** complet : pas de flash à l'hydratation.
+  Premier passage : état final tenu 1,2 s seulement (`FIRST_HOLD`), puis efface et retape ; les passages suivants
+  tiennent l'état final 4 s (~12 s au total).
 - Toutes les lignes sont toujours dans le DOM ; les parties non tapées sont en `invisible` : hauteur fixe, zéro CLS.
 - Bloc animé en `aria-hidden`, transcription complète en `sr-only`.
-- Pause : survol, bouton pause/lecture dans la barre de titre (WCAG 2.2.2, le survol seul ne suffit pas au
-  clavier ni au tactile), hors viewport (`IntersectionObserver`). Sous mouvement réduit : pas de boucle, pas de bouton.
+- Pause : bouton pause/lecture dans la barre de titre (WCAG 2.2.2), hors viewport (`IntersectionObserver`).
+  Sous mouvement réduit : pas de boucle, pas de bouton. **Pas de pause au survol** : voir piège 18.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
 ### Cas client (L'Atelier des Sols & Fils)
@@ -434,6 +435,10 @@ Tolérées, à ne pas étendre sans raison :
     lecture seule — un client final de L'Atelier des Sols & Fils n'a donné aucun accord pour apparaître sur sosese.tech.
     Seuls le nom de l'entreprise cliente (accord explicite) et des chiffres d'impact déjà validés avec elle
     peuvent être utilisés ; toute démonstration visuelle reste un scénario inventé, explicitement légendé comme tel.
+18. **Animation qui ne tourne « que sur mobile ».** Une pause au survol (`onMouseEnter`) fige le terminal sur
+    grand écran : il occupe la moitié droite du hero, le pointeur passe dessus dès qu'on le regarde. Sur tactile, pas
+    de survol, donc l'animation tourne. Les captures headless ne le montrent pas (aucune souris). → Pause uniquement
+    via un bouton explicite ; pour vérifier une animation, simuler un `mouseMoved` sur l'élément.
 
 ## Anti-patterns
 - Dégradés multicolores
