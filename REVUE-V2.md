@@ -12,6 +12,44 @@
 
 ---
 
+## État d'avancement (2026-09-16, branche `feat/v0.8-socle-visuel`)
+
+| Lot | Items | État |
+|---|---|---|
+| v0.8 | C0, C1, C2, B8 | ✅ livré — commit `b930817` |
+| v1.0 | C3, C4, C6, C7, C8, C9, C11 | ✅ livré — commit `3cdc7fb` |
+| v0.6, v0.7, v0.9, v1.1 | A1–A7, B1–B7, B9, D1–D3, C5, C10 | ⏳ en attente des décisions et données humaines (§7, §8) |
+
+Mesures avant / après (`a22870a` → HEAD), même méthode, contenu replié et libellés de schéma distingués :
+
+| Indicateur | Avant | Après |
+|---|---:|---:|
+| Prose de l'accueil (ce qui se lit en phrases) | 1 170 mots | **935 mots** (−20 %) |
+| dont Méthode | 124 | **66** (−47 %) |
+| dont Exemples | 233 | **135** (−42 %) |
+| dont Cas client | 260 | **155** (−40 %) |
+| Texte visible total (prose + libellés de schéma) | 1 595 | 1 482 (−7 %) |
+| JS de l'accueil (gzip) | 76,9 ko | 77,3 ko (plafond 150) |
+| CLS | 0 | 0 |
+| Îlots React au-dessus de la ligne de flottaison | 1 (terminal) | **0** |
+
+Lecture honnête de ces chiffres : la prose des trois sections reconstruites autour d'un schéma baisse de 40 à
+47 %, ce qui valide la méthode. Le total ne baisse que de 7 % parce que deux blocs **ajoutent** du texte
+d'interface assumé : le calculateur (C4, ~70 mots, mais le visiteur produit son propre chiffre) et le schéma
+« qui décide quoi » (C8, ~35 mots de libellés qui remplacent cinq répétitions ailleurs). La cible de 1 000 mots
+du §3 portait sur une mesure qui confondait prose et libellés ; **la cible réelle à tenir est la prose**, et il
+reste à en retirer par B2 (chapeau du hero, 32 mots), B4 (bandeau d'engagements) et C10 (nombre de sections).
+
+Vérifié après chaque lot : `npm run build`, aucun débordement horizontal à 360 / 640 / 1024 / 1280 px **dans les
+deux thèmes**, un seul `h1`, hiérarchie de titres sans saut, aucun `aria-labelledby` orphelin, CLS 0, empreintes
+CSP du script inline calculées au démarrage du serveur.
+
+Restent ouverts sur ce qui a été livré : la carte « Solutions sur-mesure » du bento a perdu deux puces (B8) et
+respire un peu trop — à retraiter avec C5 (bandeau d'outils) ; l'eyebrow « Pour votre responsable informatique »
+de « Sous le capot » contredit la cible 1–50 et attend la passe B1.
+
+---
+
 ## 0. Mode d'emploi pour le LLM qui produit la roadmap
 
 1. Chaque item porte un **ID stable** (`A1`, `C4`…). Utiliser ces IDs dans la roadmap, les branches (`feat/c4-calculateur`) et les commits.
@@ -462,9 +500,9 @@ Une évolution à la fois, une branche par item ou par petit groupe cohérent, u
 |---|---|---|
 | **v0.6 — Crédibilité** | A1, A3, A4, A5 | Sans dépendance, sans décision commerciale, corrige un défaut légal et le partage de liens. À faire tout de suite. |
 | **v0.7 — Preuve** | A2, A6, B5, B7 | Donne un visage et une voix au site. Dépend des ressources 1 à 3. |
-| **v0.8 — Socle visuel** | C0, C1, C2, B8 | Le socle de schémas, ses deux premières applications, et la déduplication. **C'est le lot qui fait baisser le volume de texte.** |
+| ~~**v0.8 — Socle visuel**~~ | C0, C1, C2, B8 | ✅ **livré** (`b930817`). Le socle de schémas, ses deux premières applications, et la déduplication. |
 | **v0.9 — Conversion** | B1, B2, B3, B4, B6, C5, D1 | Réécriture du haut de page et alignement sur la cible 1–50 ; n'attend plus que la décision de prix (B6). La mesure (D1) part dans le même lot, pour constater l'effet. |
-| **v1.0 — Show don't tell** | C3, C4, C6, C7, C8, C9, C11 | Le reste du système visuel, calculateur inclus. |
+| ~~**v1.0 — Show don't tell**~~ | C3, C4, C6, C7, C8, C9, C11 | ✅ **livré** (`3cdc7fb`). Le reste du système visuel, calculateur inclus. C11 tranché avec l'humain : hero = mockup métier enrichi (mobilité, connecteur, retour dans le fil). |
 | **v1.1 — Architecture** | C10, D2, D3 | Resserrage de la page et boucle de mesure, une fois les briques stabilisées. |
 
 Effort indicatif : v0.6 et v0.7 sont courts ; v0.8 et v1.0 portent l'essentiel de la charge.
