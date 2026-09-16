@@ -135,8 +135,7 @@ export default function DicteeChiffrageDemo() {
           </span>
         )}
         <p className="text-14 text-ink-muted">
-          Consultation et chiffrage libres, sans trace. L'écriture dans le logiciel de gestion n'a lieu qu'après votre
-          accord explicite.
+          Le devis n'est créé qu'après le « oui » du client sur le chantier.
         </p>
       </div>
     </div>

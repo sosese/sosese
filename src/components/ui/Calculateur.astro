@@ -1,0 +1,97 @@
+---
+// C4 — le seul bloc interactif de l'accueil hors îlots React. Écrit en JS natif et `is:inline` :
+// deux curseurs et une multiplication ne valent pas 67 ko de runtime (DESIGN.md, « Décisions »).
+// L'empreinte sha256 du script est calculée au démarrage du serveur depuis dist/ : rien à configurer.
+// Le résultat affiché par le serveur est déjà juste — sans JS, le bloc reste une estimation lisible.
+const NB = 10;
+const MINUTES = 30;
+const SEMAINES = 4.33; // semaines par mois
+const heures = Math.round((NB * MINUTES * SEMAINES) / 60);
+---
+
+<div class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 sm:p-8" data-calculateur>
+  <div class="flex flex-col gap-2">
+    <p class="eyebrow">Votre ordre de grandeur</p>
+    <p class="text-16 text-ink-muted">
+      Prenez la tâche qui revient le plus souvent chez vous, et déplacez les deux curseurs.
+    </p>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <label for="calc-nb" class="text-16 text-ink">Combien de fois par semaine ?</label>
+      <input
+        id="calc-nb"
+        type="range"
+        min="1"
+        max="60"
+        step="1"
+        value={NB}
+        class="w-full accent-accent"
+      />
+      <p class="font-mono text-14 text-ink-muted"><span data-calc-nb>{NB}</span> fois par semaine</p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="calc-min" class="text-16 text-ink">Combien de temps à chaque fois ?</label>
+      <input
+        id="calc-min"
+        type="range"
+        min="5"
+        max="90"
+        step="5"
+        value={MINUTES}
+        class="w-full accent-accent"
+      />
+      <p class="font-mono text-14 text-ink-muted"><span data-calc-min>{MINUTES}</span> minutes</p>
+    </div>
+  </div>
+
+  <p class="flex flex-wrap items-baseline gap-x-3 border-t border-border pt-6 text-18 text-ink">
+    <output for="calc-nb calc-min" class="font-mono text-36 text-accent">
+      ≈ <span data-calc-heures>{heures}</span> h
+    </output>
+    <span>par mois, passées sur cette seule tâche.</span>
+  </p>
+
+  <p class="text-14 text-ink-muted">
+    Une estimation faite avec vos chiffres, pas une promesse. Ce qui est réellement automatisable, et ce que ça
+    vaut, se décide pendant l'atelier.
+  </p>
+
+  <a
+    data-calc-lien
+    href="/contact"
+    class="group/calc w-fit font-mono text-14 text-accent transition-colors duration-(--duration-fast) ease-out hover:text-accent-hover"
+  >
+    Nous décrire cette tâche
+    <span aria-hidden="true" class="inline-block transition-transform duration-(--duration-fast) ease-out motion-safe:group-hover/calc:translate-x-1">→</span>
+  </a>
+</div>
+
+<script is:inline>
+  (function () {
+    var racine = document.querySelector("[data-calculateur]");
+    if (!racine) return;
+    var nb = racine.querySelector("#calc-nb");
+    var min = racine.querySelector("#calc-min");
+    var sortieNb = racine.querySelector("[data-calc-nb]");
+    var sortieMin = racine.querySelector("[data-calc-min]");
+    var sortieHeures = racine.querySelector("[data-calc-heures]");
+    var lien = racine.querySelector("[data-calc-lien]");
+
+    function calculer() {
+      var fois = Number(nb.value);
+      var minutes = Number(min.value);
+      var heures = Math.round((fois * minutes * 4.33) / 60);
+      sortieNb.textContent = String(fois);
+      sortieMin.textContent = String(minutes);
+      sortieHeures.textContent = String(heures);
+      lien.setAttribute("href", "/contact?heures=" + heures);
+    }
+
+    nb.addEventListener("input", calculer);
+    min.addEventListener("input", calculer);
+    calculer();
+  })();
+</script>

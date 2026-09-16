@@ -60,6 +60,17 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
     if (status === "success") successRef.current?.focus();
   }, [status]);
 
+  // Reprise de l'estimation du calculateur de l'accueil (/contact?heures=12) : le visiteur ne la retape pas.
+  // Paramètre validé (chiffres seuls) avant d'être réinjecté dans un texte.
+  useEffect(() => {
+    const heures = new URLSearchParams(window.location.search).get("heures");
+    if (!heures || !/^\d{1,4}$/.test(heures)) return;
+    const champ = formRef.current?.elements.namedItem("message");
+    if (champ instanceof HTMLTextAreaElement && !champ.value) {
+      champ.value = `D'après l'estimation faite sur votre site, une tâche qui revient nous prend environ ${heures} h par mois.`;
+    }
+  }, []);
+
   const clearError = (name: FieldName) =>
     setErrors((current) => {
       if (!current[name]) return current;

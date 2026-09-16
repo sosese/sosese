@@ -1,23 +1,27 @@
 ---
 import Card from "../ui/Card.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
+import Figure from "../ui/diagrams/Figure.astro";
+import Calculateur from "../ui/Calculateur.astro";
+
+// Journée type, pas une mesure (même statut que la section Exemples, §5 ligne 6) : les plages sont
+// plausibles et légendées comme telles. Aucun total n'est affiché — le visiteur calcule le sien plus bas.
+const DEBUT = 8;
+const FIN = 19;
+const plages = [
+  { de: 8, a: 8.75, quoi: "tri des demandes du matin" },
+  { de: 10, a: 10.5, quoi: "le devis recopié dans la facture" },
+  { de: 12, a: 12.4, quoi: "relances" },
+  { de: 14, a: 15, quoi: "saisie dans le tableau de suivi" },
+  { de: 17, a: 18.5, quoi: "devis et compte-rendu du soir" },
+];
+const heures = [8, 11, 14, 17, 19];
+const pct = (h: number) => ((h - DEBUT) / (FIN - DEBUT)) * 100;
 
 const problemes = [
-  {
-    titre: "La même saisie, trois fois",
-    texte:
-      "Une commande tapée dans le devis, puis dans la facture, puis dans le tableau de suivi. Trois fois le temps, trois occasions de se tromper.",
-  },
-  {
-    titre: "La peur de l'erreur qui coûte cher",
-    texte:
-      "Un métrage mal reporté, une TVA à taux multiples oubliée, une référence de catalogue périmée : le temps passé à tout revérifier finit par coûter plus cher que l'erreur elle-même.",
-  },
-  {
-    titre: "Des process qui tiennent à une personne",
-    texte:
-      "Quand la personne qui sait est absente, le dossier attend. Le savoir-faire n'est écrit nulle part et repart avec elle.",
-  },
+  { titre: "La même saisie, trois fois", texte: "Une commande tapée dans le devis, puis dans la facture, puis dans le tableau de suivi." },
+  { titre: "La peur de l'erreur qui coûte cher", texte: "Un métrage mal reporté, une TVA oubliée : tout revérifier finit par coûter plus cher que l'erreur." },
+  { titre: "Des process qui tiennent à une personne", texte: "Quand la personne qui sait est absente, le dossier attend." },
 ];
 ---
 
@@ -26,6 +30,42 @@ const problemes = [
     <SectionHeading id="probleme-titre" eyebrow="Le constat" title="Ce qui ralentit vos équipes, sans que personne l'ait choisi">
       Ces tâches ne figurent dans aucune fiche de poste, mais elles remplissent les journées.
     </SectionHeading>
+
+    <Figure
+      label="Une journée type"
+      caption="Exemple type, pas une mesure. En ambre, les tâches qui reviennent tous les jours."
+    >
+      <div class="flex flex-col gap-2">
+        <div aria-hidden="true" class="relative h-12 overflow-hidden rounded-md border border-border bg-surface">
+          {
+            plages.map((plage) => (
+              <span
+                class="absolute inset-y-2 rounded-sm bg-accent"
+                style={`left: ${pct(plage.de).toFixed(2)}%; width: max(${(pct(plage.a) - pct(plage.de)).toFixed(2)}%, calc(var(--space-unit) * 2))`}
+              />
+            ))
+          }
+        </div>
+        <div aria-hidden="true" class="relative h-4 font-mono text-12 text-ink-muted">
+          {
+            // Premier et dernier repère alignés sur le bord : centrés, ils seraient coupés.
+            heures.map((h, i) => (
+              <span
+                class:list={["absolute whitespace-nowrap", i > 0 && i < heures.length - 1 && "-translate-x-1/2"]}
+                style={i === heures.length - 1 ? "right: 0" : `left: ${pct(h).toFixed(2)}%`}
+              >
+                {h} h
+              </span>
+            ))
+          }
+        </div>
+        <p class="sr-only">
+          Sur une journée de 8 h à 19 h, les tâches répétitives reviennent cinq fois : {plages.map((p) => p.quoi).join(", ")}.
+        </p>
+      </div>
+    </Figure>
+
+    <Calculateur />
 
     <ul class="grid gap-4 md:grid-cols-3">
       {

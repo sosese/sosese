@@ -1,6 +1,7 @@
 ---
 import DotPattern from "../ui/DotPattern.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
+import TerminalDemo from "../islands/TerminalDemo";
 
 // À VALIDER : remplacer par la stack réellement utilisée (seul endroit où le jargon est autorisé, §2.1).
 const technos = [
@@ -15,8 +16,12 @@ const technos = [
 const blocs = [
   { titre: "Votre SI existant", items: ["ERP / gestion commerciale", "CRM", "messagerie", "fichiers partagés"] },
   { titre: "Couche d'intégration", items: ["connecteurs, API, webhooks", "file de tâches", "journal des traitements"], accent: true },
-  { titre: "Traitements IA — UE", items: ["lecture de documents", "génération de brouillons", "recherche dans vos documents"] },
+  { titre: "Traitements IA", items: ["lecture de documents", "génération de brouillons", "recherche dans vos documents"], ue: true },
 ];
+
+// Porte de validation sur la liaison qui écrit dans le SI. La promesse elle-même est argumentée une
+// seule fois, dans la section Confiance (B8) : ici, on montre seulement où elle se situe.
+const liaisons = ["écriture : votre accord", null];
 ---
 
 <section aria-labelledby="capot-titre" class="section-invert relative overflow-hidden border-y border-border py-(--section-y)">
@@ -33,15 +38,23 @@ const blocs = [
           blocs.map((bloc, i) => (
             <>
               <li class:list={["flex flex-col gap-3 rounded-lg border bg-surface p-6", bloc.accent ? "border-accent" : "border-border-strong"]}>
-                <p class="font-mono text-14 text-ink">{bloc.titre}</p>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <p class="font-mono text-14 text-ink">{bloc.titre}</p>
+                  {bloc.ue && <span class="rounded-full border border-dashed border-accent px-2 py-1 font-mono text-12 text-ink">UE</span>}
+                </div>
                 <ul class="flex flex-col gap-1 font-mono text-12 text-ink-muted">
                   {bloc.items.map((item) => <li>{item}</li>)}
                 </ul>
               </li>
               {i < blocs.length - 1 && (
-                <li aria-hidden="true" class="flex items-center justify-center py-1 font-mono text-16 text-accent lg:px-2 lg:py-0">
+                <li aria-hidden="true" class="flex items-center justify-center gap-2 py-1 font-mono text-16 text-accent lg:flex-col lg:px-2 lg:py-0">
                   <span class="lg:hidden">↕</span>
                   <span class="hidden lg:inline">⇄</span>
+                  {liaisons[i] && (
+                    <span class="rounded-full border border-border-strong px-2 py-1 font-mono text-12 whitespace-nowrap text-ink-muted lg:whitespace-normal lg:text-center">
+                      {liaisons[i]}
+                    </span>
+                  )}
                 </li>
               )}
             </>
@@ -49,21 +62,39 @@ const blocs = [
         }
       </ol>
       <p class="font-mono text-12 text-ink-muted">
-        Toute action sortante — envoi d'un email, écriture dans l'ERP — peut exiger une validation humaine.
+        Les traitements tournent dans l'Union européenne. Rien n'est écrit chez vous sans votre accord.
       </p>
     </div>
 
-    <ul class="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-      {
-        technos.map((t) => (
-          <li class="flex flex-col gap-3 bg-bg p-6 transition-colors duration-(--duration-fast) ease-out hover:bg-bg-subtle">
-            <p class="eyebrow">{t.domaine}</p>
-            <ul class="flex flex-col gap-1 font-mono text-14 text-ink">
-              {t.items.map((item) => <li>{item}</li>)}
-            </ul>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="flex flex-col gap-4">
+      <p class="eyebrow">Une mission, vue de la ligne de commande</p>
+      <TerminalDemo client:idle />
+    </div>
+
+    <details class="group">
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-6 border-b border-border py-6 text-18 font-medium text-ink transition-colors duration-(--duration-fast) ease-out hover:text-accent [&::-webkit-details-marker]:hidden"
+      >
+        <span>La pile technique en détail</span>
+        <span
+          aria-hidden="true"
+          class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border font-mono text-16 text-ink-muted transition-transform duration-(--duration-base) ease-out group-open:rotate-45"
+        >
+          +
+        </span>
+      </summary>
+      <ul class="mt-6 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        {
+          technos.map((t) => (
+            <li class="flex flex-col gap-3 bg-bg p-6 transition-colors duration-(--duration-fast) ease-out hover:bg-bg-subtle">
+              <p class="eyebrow">{t.domaine}</p>
+              <ul class="flex flex-col gap-1 font-mono text-14 text-ink">
+                {t.items.map((item) => <li>{item}</li>)}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </details>
   </div>
 </section>

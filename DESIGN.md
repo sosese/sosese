@@ -8,7 +8,8 @@
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
 - Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal du hero** (voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
-- Les composants interactifs sont des îlots React. Tout le reste est statique.
+- Les composants interactifs sont des îlots React, **sauf le calculateur** (JS natif `is:inline`, voir « Décisions »).
+  Tout le reste est statique. Avant de créer un îlot, vérifier qu'un composant statique ou quelques lignes de JS natif ne suffisent pas.
 
 ## Tokens
 Source unique : `src/styles/tokens.css`. Ils sont exposés à Tailwind dans `src/styles/global.css`
@@ -190,6 +191,9 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
+| MicroFlux | `ui/diagrams/MicroFlux.astro` | statique — flux court tenant dans une carte : `steps`, `label`. Flèche portée par l'étape qu'elle introduit (pas de flèche orpheline au retour à la ligne). Sans animation |
+| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique — mockup du hero : cadre téléphone, bulle dictée, chiffrage, porte de validation. Zéro JS, zéro image |
+| Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact` |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
 | CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
@@ -200,6 +204,8 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | DicteeChiffrageDemo | `islands/DicteeChiffrageDemo.tsx` | îlot React, `client:idle` — voir « Cas client » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
+
+Le **hero** porte `DicteeMobile` (mockup métier) depuis le 2026-09-16 ; le terminal est descendu dans « Sous le capot ».
 
 Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
 BentoOffre (`#offre`), Exemples (`#exemples`), CasClient (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
@@ -346,6 +352,8 @@ du texte qu'elle supprime.
   rester sur `transform` ou `opacity` pour cette raison.
 
 ### Terminal
+- **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
+  `.section-invert` : dans une section déjà invert, il se lit comme un panneau bordé, ce qui est voulu.
 - **Ignore `prefers-reduced-motion`** (décision du 2026-09-15, voir « Décisions ») : boucle, curseur clignotant et
   bouton pause identiques pour tous les visiteurs.
 - L'état initial (SSR, sans JS) est l'**état final** complet : pas de flash à l'hydratation.
@@ -406,6 +414,15 @@ Toujours réutiliser avant de créer.
   bouton « Lire l'animation ». **Ne pas étendre** à la démo du cas client, au FlowDiagram ni aux transitions.
 - **Menu mobile en `<dialog>` natif** : piège de focus, Échap et restitution du focus fournis par le navigateur,
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
+- **Hero : mockup métier, pas terminal** (2026-09-16, suite à la cible 1–50 salariés). Un terminal noir évoque au
+  dirigeant de PME le prestataire informatique dont il se méfie ; `DicteeMobile` lui montre son métier : une phrase
+  dictée depuis le chantier, le chiffrage fait sur son catalogue, la réponse qui revient dans le même fil, au
+  téléphone comme au bureau, et la porte de validation avant création. Le terminal descend dans « Sous le capot ».
+  Effet de bord mesuré : plus aucun îlot React au-dessus de la ligne de flottaison, le hero est du HTML pur.
+- **Calculateur en JS natif `is:inline`** (2026-09-16) plutôt qu'en îlot React : deux curseurs et une
+  multiplication ne valent pas le runtime. L'empreinte sha256 du script est calculée au démarrage du serveur
+  depuis `dist/` — rien à configurer, mais **le serveur doit être redémarré après chaque build** (déjà vrai, piège 16).
+  Le résultat rendu par le serveur est déjà juste : sans JS, le bloc reste une estimation lisible.
 - **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent.
   Mesuré le 2026-09-15 avec le cas client : ~74 ko gzip de JS sur l'accueil (runtime 67 ko + îlots ~7 ko).
 - **Budget JS porté à 150 ko gzip sur l'accueil** (décision du 2026-09-16, écart au §8.1 qui fixait 100 ko).
@@ -449,6 +466,9 @@ Tolérées, à ne pas étendre sans raison :
 - Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
   `flex-grow` (`Methode`, frise du déroulé) — des proportions, pas des espacements.
 - `Methode` et `CasClient` : grilles `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
+- `DicteeMobile` : `max-w-sm` (largeur de téléphone, échelle Tailwind conservée comme pour le footer), et
+  `rounded-br-sm` / `rounded-bl-sm` sur les bulles — le coin rentrant qui fait lire une bulle de conversation.
+- `Probleme` : plages de la journée type positionnées en pourcentage d'une amplitude 8 h – 19 h, calculées en ligne.
 
 ## Pièges rencontrés
 1. **Auto-référence des variables Tailwind.** Les tokens `--radius-*`, `--shadow-*`, `--font-*`, `--text-*` portent
