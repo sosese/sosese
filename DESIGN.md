@@ -352,33 +352,50 @@ du texte qu'elle supprime.
   rester sur `transform` ou `opacity` pour cette raison.
 
 ### Mockup du hero (DicteeMobile)
-Quatre métiers — paysagiste, maçonnerie, pose de sols, menuiserie — joués **à la suite, en boucle, sans bouton de
-sélection** (demande explicite du 2026-09-16) : l'objectif est que le visiteur reste pour voir si le sien passe.
-Chaque scène dure ~9 s, le cycle complet ~36 s (rythme ralenti à la demande le 2026-09-16 ; les cinq constantes
-de durée sont en tête du script du composant). Le **connecteur** est le bloc mis en valeur, littéralement placé
-entre la dictée et le devis ; ses règles s'allument une par une pour montrer qu'il est assemblé sur les règles du client.
+**Cinq tâches** très différentes jouées à la suite, en boucle, **sans bouton de sélection** (demande explicite du
+2026-09-16) : devis dicté, fiche client depuis un email, relance déclenchée automatiquement, rendez-vous posé
+depuis la route, question de gestion. L'objectif est double : le visiteur reste pour voir si son métier passe, et
+il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 à 10 s, le cycle complet **~50 s**.
 
-- **Scénarios dans `src/config/demo-hero.ts`.** Inventés, légendés « scénario type, pas un devis réel ». Les règles
-  métier restent **génériques** : on nomme la nature de la règle (« vos taux de TVA »), **jamais sa valeur**. Un taux
-  faux sur un site qui vend de l'automatisation de devis coûte plus cher que tout ce que la démo rapporte. Aucun taux
-  n'est affiché, seul un « Total TTC » plausible. Passer à des valeurs exactes = décision humaine, pas une amélioration.
-- **Les quatre scènes sont empilées dans une même cellule de grille** (`col-start-1 row-start-1`) et présentes en
-  permanence dans le DOM : la hauteur du bloc vaut celle de la plus haute, donc elle ne bouge jamais au changement de
-  métier. **C'est ce qui tient le CLS à 0** (mesuré sur un cycle complet : hauteur constante à 457 px). Corollaire :
-  garder les scénarios de longueur comparable — même nombre de lignes, dictée de longueur voisine — sinon un scénario
-  bavard creuse un trou sous les trois autres.
+- **Scénarios dans `src/config/demo-hero.ts`**, inventés, légendés « scénario type, pas un document réel ».
+  Les en-têtes du fichier portent les règles de rédaction : elles font partie du contrat, pas du commentaire.
+- **Le connecteur est le bloc central.** Chaque règle est affichée **avec la source d'où elle est lue**
+  (catalogue, CRM, agenda, gestion, compta, boîte mail) : c'est ce qui montre que les règles existent déjà chez le
+  client. Ce sont des **catégories d'outils, jamais une marque** — pas de logo ni de nom de logiciel tiers sur une
+  page publique. Les règles restent **génériques** : on nomme la nature de la règle (« vos taux de TVA »), jamais sa
+  valeur. Aucun taux affiché nulle part. Passer à des valeurs exactes = décision humaine.
+- **Quatre formes de sortie** : `lignes` (tableau ou fiche), `message`, `agenda` (bande horaire), `barres`
+  (classement). La forme suit le besoin — c'est l'argument de polyvalence. En ajouter une = un bloc conditionnel
+  dans le composant, les éléments révélés portent `data-item`.
+- **Chaque scénario se termine par une action faite**, pas par un texte : « devis créé », « email envoyé »,
+  « rendez-vous posé ». L'action n'arrive **qu'après la porte** (`porte`), et le scénario de lecture (question de
+  gestion) **n'a pas de porte** : son action est « lecture seule — rien n'a été modifié ». Cette asymétrie est
+  volontaire : c'est la doctrine de la section Confiance, montrée au lieu d'être répétée.
+- **Une entrée dictée se transcrit mot à mot** ; un email ou un déclencheur **apparaît d'un bloc** — transcrire un
+  email caractère par caractère serait un contresens. Le type est porté par `data-entree`.
+- **Les scènes sont empilées dans une même cellule de grille** (`col-start-1 row-start-1`, `self-start`) et présentes
+  en permanence : la hauteur du bloc vaut celle de la plus haute, elle ne bouge jamais. **C'est ce qui tient le CLS
+  à 0.** Corollaire : garder les scénarios de masse comparable (entrée de 13 à 16 mots, 4 règles, 3 à 4 éléments de
+  sortie). Écart mesuré aujourd'hui : 497 à 541 px, soit 44 px de vide au pire.
+- **Les libellés d'en-tête sont empilés de la même façon.** Écrire le contexte et le métier dans un seul span et en
+  changer le texte faisait varier sa largeur, donc bouger le point séparateur : **CLS 0,005 mesuré**. Cinq spans
+  empilés, un seul opaque : plus rien ne bouge.
+- **`min-w-0` sur le nom de la règle** : sans lui, l'élément flex refuse de passer à la ligne et déborde à 360 px
+  (piège 12). Un nom de règle dépasse rarement 22 caractères ; au-delà il passe à la ligne sous 390 px, ce qui reste
+  lisible mais grandit le bloc.
 - **État rendu par le serveur = état final du premier scénario.** Sans JS, le hero reste un scénario complet et
   lisible. Au premier passage, cet état est tenu 1,8 s avant que la boucle prenne la main : le LCP est déjà mesuré.
 - **Respecte `prefers-reduced-motion`** (l'exception du terminal ne s'étend pas) : le script sort immédiatement, le
-  premier scénario reste affiché, et la liste des quatre métiers est donnée en toutes lettres dans la légende
+  premier scénario reste affiché, et la liste des métiers est donnée en toutes lettres dans la légende
   (`motion-reduce:block`) — sans rotation, il faut bien les nommer.
 - **Bouton pause toujours rendu** hors mouvement réduit (`motion-reduce:hidden`) : l'animation démarre seule et dure
-  plus de 5 s, WCAG 2.2.2 impose un moyen de l'arrêter. Ce n'est pas un bouton de navigation entre métiers — il n'y en
-  a pas, c'est voulu. **Ne jamais le retirer.** Aussi mis en pause hors viewport (`IntersectionObserver`).
-- Bloc animé en `aria-hidden`, transcription `sr-only` couvrant les quatre métiers.
-- Guillemets collés à leur mot par une **espace fine insécable** (U+202F) : typographie française correcte, et la
-  découpe en mots du script ne peut pas isoler un « » en fin de bulle.
-- Le bloc du devis apparaît d'un coup **avant** que ses lignes tombent : sinon on regarde un cadre vide pendant une seconde.
+  plus de 5 s, WCAG 2.2.2 impose un moyen de l'arrêter. Ce n'est pas un bouton de navigation entre scénarios — il n'y
+  en a pas, c'est voulu. **Ne jamais le retirer.** Mise en pause aussi hors viewport (`IntersectionObserver`).
+- Bloc animé en `aria-hidden`, transcription `sr-only` couvrant les cinq scénarios.
+- Guillemets collés par une **espace fine insécable** (U+202F) : typographie française correcte, et la découpe en
+  mots du script ne peut pas isoler un « » en fin de bulle.
+- **Vérifier après toute modification** : aucun chevauchement de deux scènes (échantillonner l'opacité pendant un
+  cycle), CLS nul sur un cycle complet, et `scrollWidth` à 360 px — c'est là que ça casse en premier.
 
 ### Terminal
 - **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
@@ -448,9 +465,10 @@ Toujours réutiliser avant de créer.
   dictée depuis le chantier, le chiffrage fait sur son catalogue, la réponse qui revient dans le même fil, au
   téléphone comme au bureau, et la porte de validation avant création. Le terminal descend dans « Sous le capot ».
   Effet de bord mesuré : plus aucun îlot React au-dessus de la ligne de flottaison, le hero est du HTML pur.
-- **Hero animé, quatre métiers en boucle, sans bouton de sélection** (2026-09-16). Écrit en JS natif `is:inline`
-  (~1,5 ko gzip) et non en îlot React : garder le hero en HTML pur est ce qui tient le LCP. Mesuré après ajout :
-  78,8 ko de JS sur l'accueil, LCP inchangé, CLS 0.
+- **Hero animé, cinq tâches en boucle, sans bouton de sélection** (2026-09-16). Écrit en JS natif `is:inline`
+  (~2 ko gzip) et non en îlot React : garder le hero en HTML pur est ce qui tient le LCP. Mesuré : 79,1 ko de JS
+  sur l'accueil, LCP inchangé, CLS 0. **Contrepartie assumée : le cycle complet dure ~50 s**, donc un visiteur qui
+  ne reste pas ne verra pas les cinq. Réduire le nombre de scénarios ou la tenue finale (`TENUE`) est le levier.
 - **Calculateur en JS natif `is:inline`** (2026-09-16) plutôt qu'en îlot React : deux curseurs et une
   multiplication ne valent pas le runtime. L'empreinte sha256 du script est calculée au démarrage du serveur
   depuis `dist/` — rien à configurer, mais **le serveur doit être redémarré après chaque build** (déjà vrai, piège 16).

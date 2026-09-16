@@ -1,20 +1,32 @@
 ---
-// Mockup animé du hero (registre R2). Quatre métiers joués à la suite, en boucle : la dictée se
-// transcrit mot à mot, le connecteur s'assemble sur les règles du client, puis le devis tombe ligne
-// à ligne et attend un accord. Scénarios inventés (voir src/config/demo-hero.ts).
+// Mockup animé du hero (registre R2). Cinq tâches jouées à la suite, en boucle, pour montrer que le
+// connecteur n'est pas un outil à devis : il lit les règles déjà présentes dans les logiciels de
+// l'entreprise, rend la forme qu'appelle le besoin (tableau, fiche, message, agenda, classement) et
+// se termine par une action réellement faite — après accord, sauf en lecture seule.
+// Scénarios inventés : voir src/config/demo-hero.ts.
 //
 // Contrat, identique à celui du terminal et de la démo du cas client :
 // - l'état rendu par le serveur est l'état FINAL du premier scénario : lisible sans JS, aucun flash ;
-// - les quatre scènes sont empilées dans une même cellule de grille et présentes en permanence :
-//   la hauteur du bloc est constante, donc CLS 0 même au changement de métier ;
-// - sous prefers-reduced-motion, rien ne bouge (l'exception du terminal ne s'étend pas, DESIGN.md) :
-//   le premier scénario reste affiché et la liste des métiers est donnée en toutes lettres ;
+// - les scènes sont empilées dans une même cellule de grille et présentes en permanence : la hauteur
+//   du bloc est constante, donc CLS 0 même au changement de scénario ;
+// - sous prefers-reduced-motion, rien ne bouge (l'exception du terminal ne s'étend pas) ;
 // - bloc animé en aria-hidden, transcription complète en sr-only ;
-// - bouton pause toujours rendu (WCAG 2.2.2 : l'animation dure plus de 5 s et démarre seule).
+// - bouton pause toujours rendu hors mouvement réduit (WCAG 2.2.2).
 import { scenarios } from "../../../config/demo-hero";
 
 const premier = scenarios[0];
-const metiers = scenarios.map((s) => s.metier);
+const metiers = [...new Set(scenarios.map((s) => s.metier))];
+
+const icones = {
+  voix: '<rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" />',
+  email: '<rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" />',
+  declencheur: '<circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />',
+};
+
+const resume = (s: (typeof scenarios)[number]) =>
+  `${s.metier}, ${s.contexte} : « ${s.entree.texte} » Règles lues dans vos outils : ${s.regles
+    .map((r) => `${r.regle} (${r.source})`)
+    .join(", ")}. ${s.sortie.titre}. ${s.porte ? `${s.porte} ` : ""}${s.action}.`;
 ---
 
 <figure class="flex flex-col items-center gap-4">
@@ -25,13 +37,25 @@ const metiers = scenarios.map((s) => s.metier);
 
     <div class="flex flex-col gap-3 rounded-md border border-border bg-bg p-3">
       <div class="flex items-center justify-between gap-2">
-        <p aria-hidden="true" class="flex items-center gap-2 font-mono text-12 text-ink-muted">
-          <svg viewBox="0 0 24 24" class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" />
-          </svg>
-          sur le chantier
-          <span class="text-accent">·</span>
-          <span data-metier-actif>{premier.metier}</span>
+        <p aria-hidden="true" class="grid font-mono text-12 text-ink-muted">
+          {
+            scenarios.map((scenario, i) => (
+              <span
+                data-libelle
+                class:list={[
+                  "col-start-1 row-start-1 flex items-center gap-2 whitespace-nowrap transition-opacity duration-(--duration-base) ease-out",
+                  i === 0 ? "opacity-100" : "opacity-0",
+                ]}
+              >
+                <svg viewBox="0 0 24 24" class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" />
+                </svg>
+                {scenario.contexte}
+                <span class="text-accent">·</span>
+                {scenario.metier}
+              </span>
+            ))
+          }
         </p>
         <button
           type="button"
@@ -54,79 +78,145 @@ const metiers = scenarios.map((s) => s.metier);
             <div
               data-scene={i}
               data-metier={scenario.metier}
+              data-contexte={scenario.contexte}
+              data-entree={scenario.entree.type}
               class:list={[
-                "col-start-1 row-start-1 flex flex-col gap-3 transition-opacity duration-(--duration-base) ease-out",
+                "col-start-1 row-start-1 flex flex-col gap-3 self-start transition-opacity duration-(--duration-base) ease-out",
                 i === 0 ? "opacity-100" : "opacity-0",
               ]}
             >
-              {/* Ce qui est dit sur le chantier, transcrit au fil de la phrase. */}
+              {/* L'entrée : une phrase dictée, un email reçu, ou un déclencheur automatique. */}
               <div class="ml-4 flex flex-col gap-2 rounded-md rounded-br-sm border border-accent bg-accent-soft p-3">
                 <p class="flex items-center gap-2 font-mono text-12 text-ink">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
-                  </svg>
-                  dicté
+                  <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={icones[scenario.entree.type]} />
+                  {scenario.entree.libelle}
                 </p>
                 {/* Le texte complet reste là, invisible : la bulle ne change jamais de hauteur. */}
                 <p class="text-14 text-ink">
-                  <span data-dictee-vue>{`\u00ab\u202f${scenario.dictee}\u202f\u00bb`}</span><span data-dictee-reste class="invisible" />
+                  <span data-entree-vue>
+                    {scenario.entree.cite ? `« ${scenario.entree.texte} »` : scenario.entree.texte}
+                  </span><span data-entree-reste class="invisible" />
                 </p>
               </div>
 
-              {/* Le connecteur : assemblé sur les règles du client, placé entre la voix et le devis. */}
+              {/* Le connecteur : assemblé sur des règles lues dans les outils déjà en place. */}
               <div data-zone="connecteur" class="flex flex-col gap-2 rounded-md border border-accent bg-surface p-3 transition-opacity duration-(--duration-base) ease-out">
-                <p class="flex items-center justify-between gap-2">
+                {/* Sous sm, les deux libellés se cassent en deux lignes chacun : on les empile proprement. */}
+                <p class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-2">
                   <span class="eyebrow">connecteur sosese</span>
-                  <span class="font-mono text-12 text-ink-muted">vos règles</span>
+                  <span class="font-mono text-12 text-ink-muted">lu dans vos outils</span>
                 </p>
-                <ul class="flex flex-wrap gap-1">
-                  {scenario.regles.map((regle) => (
-                    <li
-                      data-regle
-                      class="flex items-center gap-1 rounded-full border border-accent bg-accent-soft px-2 py-1 font-mono text-12 text-ink transition-opacity duration-(--duration-base) ease-out"
-                    >
-                      <span aria-hidden="true" class="size-1.5 shrink-0 rounded-full bg-accent-bright" />
-                      {regle}
+                <ul class="flex flex-col gap-1">
+                  {scenario.regles.map((r) => (
+                    <li data-regle class="flex items-baseline justify-between gap-3 font-mono text-12 transition-opacity duration-(--duration-base) ease-out">
+                      {/* min-w-0 : sans lui, le nom de la règle refuse de passer à la ligne et déborde à 360 px (piège 12). */}
+                      <span class="flex min-w-0 items-baseline gap-2 text-ink">
+                        <span aria-hidden="true" class="size-1.5 shrink-0 translate-y-[-0.15em] rounded-full bg-accent-bright" />
+                        {r.regle}
+                      </span>
+                      <span class="shrink-0 rounded-full border border-border bg-bg px-2 text-ink-muted">{r.source}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Ce qui revient dans le même fil. */}
-              <div data-zone="devis" class="mr-4 flex flex-col gap-2 rounded-md rounded-bl-sm border border-border bg-surface p-3 transition-opacity duration-(--duration-base) ease-out">
-                <ul class="flex flex-col gap-1 font-mono text-12">
-                  {scenario.lignes.map((ligne) => (
-                    <li data-ligne class="flex items-baseline justify-between gap-2 transition-opacity duration-(--duration-base) ease-out">
-                      <span class="text-ink-muted">{ligne.designation}</span>
-                      <span class="shrink-0 text-ink">{ligne.total}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p data-total class="flex items-baseline justify-between gap-2 border-t border-border pt-2 font-mono text-14 transition-opacity duration-(--duration-base) ease-out">
-                  <span class="text-ink">Total TTC</span>
-                  <span class="text-accent">{scenario.totalTtc}</span>
-                </p>
+              {/* La sortie : elle prend la forme du besoin. */}
+              <div data-zone="sortie" class="mr-4 flex flex-col gap-2 rounded-md rounded-bl-sm border border-border bg-surface p-3 transition-opacity duration-(--duration-base) ease-out">
+                <p class="eyebrow">{scenario.sortie.titre}</p>
+
+                {scenario.sortie.forme === "lignes" && (
+                  <ul class="flex flex-col gap-1 font-mono text-12">
+                    {scenario.sortie.items.map((item) => (
+                      <li data-item class="flex items-baseline justify-between gap-2 transition-opacity duration-(--duration-base) ease-out">
+                        <span class="text-ink-muted">{item.label}</span>
+                        <span class="shrink-0 text-ink">{item.valeur}</span>
+                      </li>
+                    ))}
+                    {scenario.sortie.total && (
+                      <li data-item class="flex items-baseline justify-between gap-2 border-t border-border pt-2 font-mono text-14 transition-opacity duration-(--duration-base) ease-out">
+                        <span class="text-ink">{scenario.sortie.total.label}</span>
+                        <span class="shrink-0 text-accent">{scenario.sortie.total.valeur}</span>
+                      </li>
+                    )}
+                  </ul>
+                )}
+
+                {scenario.sortie.forme === "message" && (
+                  <div class="flex flex-col gap-2">
+                    <p data-item class="font-mono text-12 text-ink transition-opacity duration-(--duration-base) ease-out">
+                      Objet : {scenario.sortie.objet}
+                    </p>
+                    {scenario.sortie.corps.map((ligne) => (
+                      <p data-item class="text-14 text-ink-muted transition-opacity duration-(--duration-base) ease-out">
+                        {ligne}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                {scenario.sortie.forme === "agenda" && (
+                  <div class="flex flex-col gap-2">
+                    <p data-item class="font-mono text-12 text-ink transition-opacity duration-(--duration-base) ease-out">
+                      {scenario.sortie.jour}
+                    </p>
+                    <div data-item class="flex flex-col gap-1 transition-opacity duration-(--duration-base) ease-out">
+                      <div class="relative h-8 overflow-hidden rounded-sm border border-border bg-bg">
+                        <span
+                          class="absolute inset-y-1 rounded-sm bg-accent"
+                          style={`left: ${(((scenario.sortie.creneau.de - scenario.sortie.debut) / (scenario.sortie.fin - scenario.sortie.debut)) * 100).toFixed(2)}%; width: ${(((scenario.sortie.creneau.a - scenario.sortie.creneau.de) / (scenario.sortie.fin - scenario.sortie.debut)) * 100).toFixed(2)}%`}
+                        />
+                      </div>
+                      <p class="flex justify-between font-mono text-12 text-ink-muted">
+                        <span>{scenario.sortie.debut} h</span>
+                        <span>{scenario.sortie.fin} h</span>
+                      </p>
+                    </div>
+                    <p data-item class="font-mono text-12 text-ink transition-opacity duration-(--duration-base) ease-out">
+                      {scenario.sortie.creneau.de} h – {scenario.sortie.creneau.a} h · {scenario.sortie.label}
+                    </p>
+                  </div>
+                )}
+
+                {scenario.sortie.forme === "barres" && (
+                  <ul class="flex flex-col gap-2">
+                    {scenario.sortie.items.map((item) => (
+                      <li data-item class="flex flex-col gap-1 transition-opacity duration-(--duration-base) ease-out">
+                        <p class="flex items-baseline justify-between gap-2 font-mono text-12">
+                          <span class="text-ink-muted">{item.label}</span>
+                          <span class="shrink-0 text-ink">{item.valeur}</span>
+                        </p>
+                        <span class="block h-1.5 rounded-full bg-accent" style={`width: ${item.part}%`} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
+
+              {/* La porte, puis l'action réellement faite. Pas de porte quand il n'y a rien à écrire. */}
+              {scenario.porte && (
+                <div data-porte class="flex flex-wrap items-center gap-2 transition-opacity duration-(--duration-base) ease-out">
+                  <span class="text-14 text-ink-muted">{scenario.porte}</span>
+                  <span class="rounded-full bg-accent px-3 py-1 font-mono text-12 text-on-accent">oui</span>
+                  <span class="rounded-full border border-border-strong px-3 py-1 font-mono text-12 text-ink-muted">corriger</span>
+                </div>
+              )}
+
+              <p data-action class="flex items-baseline gap-2 font-mono text-12 text-accent transition-opacity duration-(--duration-base) ease-out">
+                <span aria-hidden="true">✓</span>
+                <span>{scenario.action}</span>
+              </p>
             </div>
           ))
         }
-      </div>
-
-      {/* La porte : identique pour les quatre métiers, donc rendue une seule fois. */}
-      <div aria-hidden="true" data-porte class="flex flex-wrap items-center gap-2 transition-opacity duration-(--duration-base) ease-out">
-        <span class="text-14 text-ink-muted">Je crée le devis ?</span>
-        <span class="rounded-full bg-accent px-3 py-1 font-mono text-12 text-on-accent">oui</span>
-        <span class="rounded-full border border-border-strong px-3 py-1 font-mono text-12 text-ink-muted">corriger</span>
       </div>
     </div>
   </div>
 
   <p class="sr-only">
-    Démonstration : une phrase dictée sur le chantier, un connecteur assemblé sur les règles de
-    l'entreprise, un devis chiffré qui attend un accord avant d'être créé. Le même principe est joué
-    pour quatre métiers : {metiers.join(", ")}. Exemple pour un {premier.metier} : « {premier.dictee} ».
-    Le connecteur applique {premier.regles.join(", ")}. Résultat : {premier.lignes.map((l) => `${l.designation}, ${l.quantite}, ${l.total}`).join(" ; ")}.
-    Total TTC {premier.totalTtc}, à valider avant création. Scénario type, pas un devis réel.
+    Démonstration : cinq tâches très différentes traitées par le même connecteur, qui lit à chaque fois
+    des règles déjà présentes dans les logiciels de l'entreprise et termine par une action, faite
+    seulement après accord — sauf en lecture seule. {scenarios.map((s) => resume(s)).join(" ")} Scénarios
+    types, aucun n'est un document réel.
   </p>
 
   <figcaption class="flex flex-col items-center gap-2 text-center">
@@ -140,9 +230,9 @@ const metiers = scenarios.map((s) => s.metier);
       </svg>
       sur le chantier comme au bureau
     </p>
-    {/* Sans animation, la rotation des métiers n'a pas lieu : on les nomme. */}
+    {/* Sans animation, la rotation n'a pas lieu : on nomme ce qu'elle aurait montré. */}
     <p class="hidden font-mono text-12 text-ink-muted motion-reduce:block">{metiers.join(" · ")}</p>
-    <p class="font-mono text-12 text-ink-muted">Scénario type, pas un devis réel.</p>
+    <p class="font-mono text-12 text-ink-muted">Scénario type, pas un document réel.</p>
   </figcaption>
 </figure>
 
@@ -153,18 +243,18 @@ const metiers = scenarios.map((s) => s.metier);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     var conteneur = document.querySelector("[data-scenes]");
-    var porte = document.querySelector("[data-porte]");
-    var etiquette = document.querySelector("[data-metier-actif]");
+    var libelles = Array.prototype.slice.call(document.querySelectorAll("[data-libelle]"));
     var bouton = document.querySelector("[data-pause]");
     var iconePause = document.querySelector("[data-icone-pause]");
     var iconeLecture = document.querySelector("[data-icone-lecture]");
 
     var MOT = 115; // un mot de transcription
-    var REGLE = 320; // une règle qui s'ajoute au connecteur
-    var LIGNE = 360; // une ligne de devis qui tombe
+    var ENTREE = 700; // une entrée qui n'est pas dictée (email, déclencheur) : elle apparaît d'un bloc
+    var REGLE = 460; // une règle lue dans un outil du client — la partie que le visiteur doit lire
+    var ITEM = 360; // un élément de la sortie
     var TENUE = 3400; // temps de lecture de l'état final
     var PREMIERE_TENUE = 1800; // au premier passage : l'état final rendu par le serveur ne s'éternise pas
-    var BASCULE = 420; // fondu entre deux métiers
+    var BASCULE = 420; // fondu entre deux scénarios
 
     var index = 0;
     var premier = true;
@@ -183,81 +273,96 @@ const metiers = scenarios.map((s) => s.metier);
 
     function zones(scene) {
       return {
-        vue: scene.querySelector("[data-dictee-vue]"),
-        reste: scene.querySelector("[data-dictee-reste]"),
+        vue: scene.querySelector("[data-entree-vue]"),
+        reste: scene.querySelector("[data-entree-reste]"),
         connecteur: scene.querySelector('[data-zone="connecteur"]'),
-        devis: scene.querySelector('[data-zone="devis"]'),
         regles: Array.prototype.slice.call(scene.querySelectorAll("[data-regle]")),
-        lignes: Array.prototype.slice.call(scene.querySelectorAll("[data-ligne]")),
-        total: scene.querySelector("[data-total]"),
+        sortie: scene.querySelector('[data-zone="sortie"]'),
+        items: Array.prototype.slice.call(scene.querySelectorAll("[data-item]")),
+        porte: scene.querySelector("[data-porte]"),
+        action: scene.querySelector("[data-action]"),
       };
+    }
+
+    function montrer(el) {
+      if (!el) return;
+      el.classList.remove("opacity-0");
+      el.classList.add("opacity-100");
+    }
+
+    function cacher(el) {
+      if (!el) return;
+      el.classList.add("opacity-0");
+      el.classList.remove("opacity-100");
     }
 
     // Texte complet mémorisé une fois : c'est lui qui réserve la hauteur pendant la transcription.
     scenes.forEach(function (scene) {
-      var z = zones(scene);
-      scene.dataset.texte = z.vue.textContent;
+      scene.dataset.texte = zones(scene).vue.textContent.trim();
     });
 
     function masquer(scene) {
       var z = zones(scene);
       z.vue.textContent = "";
       z.reste.textContent = scene.dataset.texte;
-      [z.connecteur, z.devis].forEach(function (el) {
-        el.classList.add("opacity-0");
-        el.classList.remove("opacity-100");
-      });
-      z.regles.concat(z.lignes).concat([z.total]).forEach(function (el) {
-        el.classList.add("opacity-0");
-        el.classList.remove("opacity-100");
-      });
+      [z.connecteur, z.sortie, z.porte, z.action].concat(z.regles).concat(z.items).forEach(cacher);
     }
 
     function jouer(scene) {
       var z = zones(scene);
-      var mots = scene.dataset.texte.split(" ");
       var t = 0;
 
-      mots.forEach(function (mot, i) {
-        t += MOT;
+      if (scene.dataset.entree === "voix") {
+        // Une dictée se transcrit au fil de la phrase.
+        var mots = scene.dataset.texte.split(" ");
+        mots.forEach(function (mot, i) {
+          t += MOT;
+          planifier(function () {
+            z.vue.textContent = mots.slice(0, i + 1).join(" ");
+            z.reste.textContent = (i + 1 < mots.length ? " " : "") + mots.slice(i + 1).join(" ");
+          }, t);
+        });
+      } else {
+        // Un email ou un déclencheur arrive d'un bloc : le transcrire mot à mot serait un contresens.
+        t += ENTREE;
         planifier(function () {
-          z.vue.textContent = mots.slice(0, i + 1).join(" ");
-          z.reste.textContent = (i + 1 < mots.length ? " " : "") + mots.slice(i + 1).join(" ");
+          z.vue.textContent = scene.dataset.texte;
+          z.reste.textContent = "";
         }, t);
-      });
+      }
 
       t += 300;
       planifier(function () {
-        z.connecteur.classList.remove("opacity-0");
-        z.connecteur.classList.add("opacity-100");
+        montrer(z.connecteur);
       }, t);
 
       z.regles.forEach(function (regle) {
         t += REGLE;
         planifier(function () {
-          regle.classList.remove("opacity-0");
-          regle.classList.add("opacity-100");
+          montrer(regle);
         }, t);
       });
 
-      t += 200;
+      t += 260;
       planifier(function () {
-        z.devis.classList.remove("opacity-0");
-        z.devis.classList.add("opacity-100");
+        montrer(z.sortie);
       }, t);
 
-      z.lignes.concat([z.total]).forEach(function (el) {
-        t += LIGNE;
+      z.items.forEach(function (item) {
+        t += ITEM;
         planifier(function () {
-          el.classList.remove("opacity-0");
-          el.classList.add("opacity-100");
+          montrer(item);
         }, t);
       });
 
-      t += 400;
+      t += 420;
       planifier(function () {
-        porte.classList.remove("opacity-0");
-        porte.classList.add("opacity-100");
+        montrer(z.porte);
+      }, t);
+
+      t += z.porte ? 900 : 300;
+      planifier(function () {
+        montrer(z.action);
       }, t);
 
       t += TENUE;
@@ -269,16 +374,14 @@ const metiers = scenarios.map((s) => s.metier);
       index = (index + 1) % scenes.length;
       var entrante = scenes[index];
 
-      porte.classList.add("opacity-0");
-      porte.classList.remove("opacity-100");
-      sortante.classList.add("opacity-0");
-      sortante.classList.remove("opacity-100");
-
+      cacher(sortante);
       masquer(entrante);
       planifier(function () {
-        etiquette.textContent = entrante.dataset.metier;
-        entrante.classList.remove("opacity-0");
-        entrante.classList.add("opacity-100");
+        libelles.forEach(function (libelle, i) {
+          if (i === index) montrer(libelle);
+          else cacher(libelle);
+        });
+        montrer(entrante);
         jouer(entrante);
       }, BASCULE);
     }
@@ -290,8 +393,6 @@ const metiers = scenarios.map((s) => s.metier);
         // L'état final du serveur reste à l'écran le temps d'être vu, puis la boucle prend la main.
         planifier(function () {
           masquer(scenes[0]);
-          porte.classList.add("opacity-0");
-          porte.classList.remove("opacity-100");
           planifier(function () {
             jouer(scenes[0]);
           }, 200);
