@@ -169,6 +169,24 @@
   }
 }
 
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+}
+
+/* Schémas (DESIGN.md, « Schémas ») : l'état final est rendu côté serveur, l'animation n'est qu'un
+   enrichissement piloté par le défilement. Sans prise en charge de animation-timeline, ou sous
+   mouvement réduit, la barre est simplement là, à sa longueur finale. Aucun JS, aucun CLS. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .bar-grow {
+      transform-origin: left center;
+      animation: bar-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 30% entry 90%;
+    }
+  }
+}
+
 @utility dot-pattern {
   background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
   background-size: var(--dot-gap) var(--dot-gap);

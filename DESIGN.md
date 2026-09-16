@@ -190,6 +190,8 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
+| Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
+| CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
@@ -323,6 +325,26 @@ de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, e
 **Bento** : pas de composant BentoGrid / BentoCard. Une grille `md:grid-cols-3 md:grid-rows-2` et des `Card`
 suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
 
+### Schémas
+Registres autorisés (décision du 2026-09-16, voir « Décisions ») : **R1 schéma de flux**, **R2 mockup stylisé**,
+**R3 comparaison de grandeurs**. Rien d'autre. Un schéma **remplace** du texte : toute nouvelle figure s'accompagne
+du texte qu'elle supprime.
+
+- Primitives dans `src/components/ui/diagrams/`. `Figure` porte le libellé et la légende, le schéma vit dans son slot.
+- **La valeur chiffrée est toujours écrite**, la barre ou le tracé ne fait que la mettre en proportion. Les éléments
+  purement graphiques (barres, liaisons, pastilles) sont en `aria-hidden` quand le texte à côté dit déjà tout.
+- Longueur minimale d'une barre : `max(<pct>%, calc(var(--space-unit) * 2))` — sans ce plancher, une valeur très
+  petite (2 min contre 40) disparaît complètement.
+- Proportions : `flex-basis: 0` + `flex-grow` proportionnel (`style="flex-grow: 20"`), jamais des largeurs en dur.
+  Les **libellés ne sont pas dans le segment proportionnel** : un segment étroit (2 jours sur 27) ne peut pas
+  contenir de texte. Ils vivent sous la barre, ou dans une grille à colonnes égales en dessous.
+- **Animation** : `.bar-grow` dans `global.css`, `transform: scaleX()` piloté par `animation-timeline: view()`,
+  sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
+  état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
+  visiteur n'en veut pas. **Ne pas remplacer par un `IntersectionObserver`** : ce serait du React pour une décoration.
+- `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
+  rester sur `transform` ou `opacity` pour cette raison.
+
 ### Terminal
 - **Ignore `prefers-reduced-motion`** (décision du 2026-09-15, voir « Décisions ») : boucle, curseur clignotant et
   bouton pause identiques pour tous les visiteurs.
@@ -384,9 +406,29 @@ Toujours réutiliser avant de créer.
   bouton « Lire l'animation ». **Ne pas étendre** à la démo du cas client, au FlowDiagram ni aux transitions.
 - **Menu mobile en `<dialog>` natif** : piège de focus, Échap et restitution du focus fournis par le navigateur,
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
-- **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).
-  Il reste ~30 ko pour tous les autres îlots de l'accueil (terminal, Motion…) : à surveiller à chaque ajout.
+- **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent.
   Mesuré le 2026-09-15 avec le cas client : ~74 ko gzip de JS sur l'accueil (runtime 67 ko + îlots ~7 ko).
+- **Budget JS porté à 150 ko gzip sur l'accueil** (décision du 2026-09-16, écart au §8.1 qui fixait 100 ko).
+  Le plafond monte, **l'objectif ne change pas** : temps de chargement minimal, LCP < 1,8 s, CLS 0. Les 76 ko
+  dégagés ne sont pas un budget à dépenser, mais une marge pour les évolutions de la v2. Conditions :
+  toute dépendance ajoutée est **très légère** (< 10 ko gzip, vérifié avant installation, jamais un paquet
+  qui en tire d'autres) ; à fonctionnalité égale, on préfère du JS natif en ligne à une bibliothèque, et un
+  composant Astro statique à un îlot ; le JS gzip de l'accueil est **remesuré et consigné ici à chaque lot**,
+  avec le LCP. Dépasser 120 ko sans gain de LCP mesuré = le changement est refusé.
+- **Cible éditoriale : PME de 1 à 50 salariés** (décision du 2026-09-16), sans fermer la porte aux structures
+  plus grandes — celles-ci restent accueillies, mais le site ne leur parle pas en priorité. Conséquences pour
+  la rédaction : vocabulaire du dirigeant qui fait lui-même, pas du responsable informatique ; pas de
+  « service IT », « conduite du changement » ni « gouvernance » ; les chiffres d'exemple sont à l'échelle
+  d'une petite structure. `src/pages/a-propos.astro` annonce encore « de 15 à 150 personnes » : **écart connu**,
+  corrigé dans la passe de réécriture de la v2 (item B1 de `REVUE-V2.md`), pas avant.
+- **Visuels : schémas SVG, pas d'images** (décision du 2026-09-16). Toute nouvelle illustration est un schéma
+  en SVG en ligne (ou un mockup construit avec les tokens), jamais un bitmap, jamais un fichier importé d'une
+  banque d'images. Trois registres autorisés et pas un de plus : schéma de flux, mockup stylisé d'interface,
+  comparaison de grandeurs (barres, jauges). Un schéma **remplace** du texte, il ne s'y ajoute pas. Contrat
+  identique à celui des îlots existants : état final rendu côté serveur, dimensions fixes (CLS 0), équivalent
+  textuel (`aria-label` ou `sr-only`), couleur jamais seule porteuse de sens, animation en enrichissement sous
+  `prefers-reduced-motion`. Seules exceptions bitmap prévues : le portrait de `/a-propos` et l'image de partage
+  Open Graph, toutes deux via `astro:assets`, dimensions déclarées. Détail dans `REVUE-V2.md` §4.
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
@@ -404,6 +446,9 @@ Tolérées, à ne pas étendre sans raison :
 - DicteeChiffrageDemo : seuil `IntersectionObserver` à 0,4 et `min-w-120` (480px) du tableau de chiffrage.
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
+- Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
+  `flex-grow` (`Methode`, frise du déroulé) — des proportions, pas des espacements.
+- `Methode` et `CasClient` : grilles `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
 
 ## Pièges rencontrés
 1. **Auto-référence des variables Tailwind.** Les tokens `--radius-*`, `--shadow-*`, `--font-*`, `--text-*` portent
@@ -473,6 +518,8 @@ Tolérées, à ne pas étendre sans raison :
 ## Anti-patterns
 - Dégradés multicolores
 - Imagerie IA stock (cerveaux, robots, réseaux de neurones)
+- Illustration bitmap ou image de banque là où un schéma SVG fait le travail
+- Bibliothèque JS ajoutée pour un effet qu'un composant statique ou quelques lignes de JS natif suffisent à produire
 - Emojis dans l'interface
 - Plus de 2 niveaux de titre par section
 - WebGL, backdrop-filter sur mobile
