@@ -23,6 +23,7 @@
 - FAQ et exemples : un fichier Markdown dans `src/content/faq/` ou `src/content/exemples/`.
 - Navigation, email, mentions légales, personne : `src/config/site.ts` (`null` = « à compléter », jamais de valeur inventée).
 - Règles du formulaire (client et serveur) : `shared/contact.json`.
+- Scénarios métier du mockup du hero : `src/config/demo-hero.ts` (inventés, règles génériques — voir `DESIGN.md`).
 - Couleurs, rayons, espacements, typo : `src/styles/tokens.css`.
 
 ## Règles de code

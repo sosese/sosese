@@ -192,7 +192,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | MicroFlux | `ui/diagrams/MicroFlux.astro` | statique — flux court tenant dans une carte : `steps`, `label`. Flèche portée par l'étape qu'elle introduit (pas de flèche orpheline au retour à la ligne). Sans animation |
-| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique — mockup du hero : cadre téléphone, bulle dictée, chiffrage, porte de validation. Zéro JS, zéro image |
+| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script `is:inline` — mockup animé du hero : quatre métiers joués en boucle, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact` |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
 | CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
@@ -351,6 +351,34 @@ du texte qu'elle supprime.
 - `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
   rester sur `transform` ou `opacity` pour cette raison.
 
+### Mockup du hero (DicteeMobile)
+Quatre métiers — paysagiste, maçonnerie, pose de sols, menuiserie — joués **à la suite, en boucle, sans bouton de
+sélection** (demande explicite du 2026-09-16) : l'objectif est que le visiteur reste pour voir si le sien passe.
+Chaque scène dure ~7,5 s, le cycle complet ~30 s. Le **connecteur** est le bloc mis en valeur, littéralement placé
+entre la dictée et le devis ; ses règles s'allument une par une pour montrer qu'il est assemblé sur les règles du client.
+
+- **Scénarios dans `src/config/demo-hero.ts`.** Inventés, légendés « scénario type, pas un devis réel ». Les règles
+  métier restent **génériques** : on nomme la nature de la règle (« vos taux de TVA »), **jamais sa valeur**. Un taux
+  faux sur un site qui vend de l'automatisation de devis coûte plus cher que tout ce que la démo rapporte. Aucun taux
+  n'est affiché, seul un « Total TTC » plausible. Passer à des valeurs exactes = décision humaine, pas une amélioration.
+- **Les quatre scènes sont empilées dans une même cellule de grille** (`col-start-1 row-start-1`) et présentes en
+  permanence dans le DOM : la hauteur du bloc vaut celle de la plus haute, donc elle ne bouge jamais au changement de
+  métier. **C'est ce qui tient le CLS à 0** (mesuré sur un cycle complet : hauteur constante à 457 px). Corollaire :
+  garder les scénarios de longueur comparable — même nombre de lignes, dictée de longueur voisine — sinon un scénario
+  bavard creuse un trou sous les trois autres.
+- **État rendu par le serveur = état final du premier scénario.** Sans JS, le hero reste un scénario complet et
+  lisible. Au premier passage, cet état est tenu 1,4 s avant que la boucle prenne la main : le LCP est déjà mesuré.
+- **Respecte `prefers-reduced-motion`** (l'exception du terminal ne s'étend pas) : le script sort immédiatement, le
+  premier scénario reste affiché, et la liste des quatre métiers est donnée en toutes lettres dans la légende
+  (`motion-reduce:block`) — sans rotation, il faut bien les nommer.
+- **Bouton pause toujours rendu** hors mouvement réduit (`motion-reduce:hidden`) : l'animation démarre seule et dure
+  plus de 5 s, WCAG 2.2.2 impose un moyen de l'arrêter. Ce n'est pas un bouton de navigation entre métiers — il n'y en
+  a pas, c'est voulu. **Ne jamais le retirer.** Aussi mis en pause hors viewport (`IntersectionObserver`).
+- Bloc animé en `aria-hidden`, transcription `sr-only` couvrant les quatre métiers.
+- Guillemets collés à leur mot par une **espace fine insécable** (U+202F) : typographie française correcte, et la
+  découpe en mots du script ne peut pas isoler un « » en fin de bulle.
+- Le bloc du devis apparaît d'un coup **avant** que ses lignes tombent : sinon on regarde un cadre vide pendant une seconde.
+
 ### Terminal
 - **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
   `.section-invert` : dans une section déjà invert, il se lit comme un panneau bordé, ce qui est voulu.
@@ -419,6 +447,9 @@ Toujours réutiliser avant de créer.
   dictée depuis le chantier, le chiffrage fait sur son catalogue, la réponse qui revient dans le même fil, au
   téléphone comme au bureau, et la porte de validation avant création. Le terminal descend dans « Sous le capot ».
   Effet de bord mesuré : plus aucun îlot React au-dessus de la ligne de flottaison, le hero est du HTML pur.
+- **Hero animé, quatre métiers en boucle, sans bouton de sélection** (2026-09-16). Écrit en JS natif `is:inline`
+  (~1,5 ko gzip) et non en îlot React : garder le hero en HTML pur est ce qui tient le LCP. Mesuré après ajout :
+  78,8 ko de JS sur l'accueil, LCP inchangé, CLS 0.
 - **Calculateur en JS natif `is:inline`** (2026-09-16) plutôt qu'en îlot React : deux curseurs et une
   multiplication ne valent pas le runtime. L'empreinte sha256 du script est calculée au démarrage du serveur
   depuis `dist/` — rien à configurer, mais **le serveur doit être redémarré après chaque build** (déjà vrai, piège 16).
