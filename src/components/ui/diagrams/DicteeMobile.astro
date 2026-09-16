@@ -159,11 +159,12 @@ const metiers = scenarios.map((s) => s.metier);
     var iconePause = document.querySelector("[data-icone-pause]");
     var iconeLecture = document.querySelector("[data-icone-lecture]");
 
-    var MOT = 80; // un mot de transcription
-    var REGLE = 220; // une règle qui s'ajoute au connecteur
-    var LIGNE = 260; // une ligne de devis qui tombe
-    var TENUE = 2600; // temps de lecture de l'état final
-    var PREMIERE_TENUE = 1400; // au premier passage : l'état final rendu par le serveur ne s'éternise pas
+    var MOT = 115; // un mot de transcription
+    var REGLE = 320; // une règle qui s'ajoute au connecteur
+    var LIGNE = 360; // une ligne de devis qui tombe
+    var TENUE = 3400; // temps de lecture de l'état final
+    var PREMIERE_TENUE = 1800; // au premier passage : l'état final rendu par le serveur ne s'éternise pas
+    var BASCULE = 420; // fondu entre deux métiers
 
     var index = 0;
     var premier = true;
@@ -279,7 +280,7 @@ const metiers = scenarios.map((s) => s.metier);
         entrante.classList.remove("opacity-0");
         entrante.classList.add("opacity-100");
         jouer(entrante);
-      }, 320);
+      }, BASCULE);
     }
 
     function demarrer() {

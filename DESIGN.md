@@ -354,7 +354,8 @@ du texte qu'elle supprime.
 ### Mockup du hero (DicteeMobile)
 Quatre métiers — paysagiste, maçonnerie, pose de sols, menuiserie — joués **à la suite, en boucle, sans bouton de
 sélection** (demande explicite du 2026-09-16) : l'objectif est que le visiteur reste pour voir si le sien passe.
-Chaque scène dure ~7,5 s, le cycle complet ~30 s. Le **connecteur** est le bloc mis en valeur, littéralement placé
+Chaque scène dure ~9 s, le cycle complet ~36 s (rythme ralenti à la demande le 2026-09-16 ; les cinq constantes
+de durée sont en tête du script du composant). Le **connecteur** est le bloc mis en valeur, littéralement placé
 entre la dictée et le devis ; ses règles s'allument une par une pour montrer qu'il est assemblé sur les règles du client.
 
 - **Scénarios dans `src/config/demo-hero.ts`.** Inventés, légendés « scénario type, pas un devis réel ». Les règles
@@ -367,7 +368,7 @@ entre la dictée et le devis ; ses règles s'allument une par une pour montrer q
   garder les scénarios de longueur comparable — même nombre de lignes, dictée de longueur voisine — sinon un scénario
   bavard creuse un trou sous les trois autres.
 - **État rendu par le serveur = état final du premier scénario.** Sans JS, le hero reste un scénario complet et
-  lisible. Au premier passage, cet état est tenu 1,4 s avant que la boucle prenne la main : le LCP est déjà mesuré.
+  lisible. Au premier passage, cet état est tenu 1,8 s avant que la boucle prenne la main : le LCP est déjà mesuré.
 - **Respecte `prefers-reduced-motion`** (l'exception du terminal ne s'étend pas) : le script sort immédiatement, le
   premier scénario reste affiché, et la liste des quatre métiers est donnée en toutes lettres dans la légende
   (`motion-reduce:block`) — sans rotation, il faut bien les nommer.
