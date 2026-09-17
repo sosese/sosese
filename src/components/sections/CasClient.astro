@@ -4,7 +4,7 @@ import Card from "../ui/Card.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 import CompareBars from "../ui/diagrams/CompareBars.astro";
 import Figure from "../ui/diagrams/Figure.astro";
-import DicteeChiffrageDemo from "../islands/DicteeChiffrageDemo.tsx";
+import EnchainementClient from "../ui/diagrams/EnchainementClient.astro";
 
 // Chiffres mesurés du cas réel (DESIGN.md, « Cas client »). Ne pas les modifier sans l'accord du client.
 const tempsDevis = [
@@ -61,6 +61,6 @@ const tempsDevis = [
       </ul>
     </div>
 
-    <DicteeChiffrageDemo client:idle />
+    <EnchainementClient />
   </div>
 </section>

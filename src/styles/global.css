@@ -169,6 +169,18 @@
   }
 }
 
+/* Action faite dans le mockup du hero : un halo ambre qui s'élargit et s'éteint, deux fois. */
+@keyframes action-eclat {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-bright) 55%, transparent); }
+  100% { box-shadow: 0 0 0 calc(var(--space-unit) * 2) transparent; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .action-eclat {
+    animation: action-eclat var(--duration-blink) var(--ease-out) 2;
+  }
+}
+
 @keyframes bar-grow {
   from { transform: scaleX(0); }
 }
@@ -184,6 +196,36 @@
       animation-timeline: view();
       animation-range: entry 30% entry 90%;
     }
+  }
+}
+
+/* Méthode (DESIGN.md, « Schémas ») : les classes de masquage ne sont posées que par le script de la
+   section, et seulement hors mouvement réduit. Sans JS, tout est visible. */
+[data-revele] {
+  transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+}
+
+.revele-cache {
+  opacity: 0;
+  transform: translateY(calc(var(--space-unit) * 3));
+}
+
+[data-revele="trait"] {
+  transform-origin: center top;
+}
+
+[data-revele="trait"].revele-cache {
+  opacity: 1;
+  transform: scaleY(0);
+}
+
+@media (min-width: 768px) {
+  [data-revele="trait"] {
+    transform-origin: left center;
+  }
+
+  [data-revele="trait"].revele-cache {
+    transform: scaleX(0);
   }
 }
 

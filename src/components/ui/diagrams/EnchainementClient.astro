@@ -1,0 +1,286 @@
+---
+// Démonstration du cas client (registre R2) : une visite sur place qui s'enchaîne en trois actions — fiche
+// client dictée, devis rattaché à cette fiche, intervention posée —, puis l'analyse, en lecture seule.
+// Jouée en boucle.
+//
+// Règles dures (DESIGN.md, « Cas client ») :
+// - scénario INVENTÉ : client, commune, montants et créneaux ne viennent d'aucune pièce réelle (piège 17) ;
+// - chaque écriture arrive après le « oui » ; l'analyse n'écrit rien et le dit ;
+// - aucun jargon technique, y compris dans les libellés mono.
+//
+// Contrat, identique à celui du mockup du hero :
+// - l'état rendu par le serveur est l'état FINAL (tout visible) : lisible sans JS, aucun flash ;
+// - tout le contenu reste dans le DOM, seule l'opacité change : hauteur constante, CLS 0 ;
+// - sous prefers-reduced-motion, rien ne bouge ;
+// - bouton pause toujours rendu hors mouvement réduit (WCAG 2.2.2), pause aussi hors écran.
+
+type Ligne = { label: string; valeur: string; fort?: boolean };
+type Etape = { numero: string; contexte: string; titre: string; dicte: string; lignes: Ligne[]; action: string };
+
+const etapes: Etape[] = [
+  {
+    numero: "01",
+    contexte: "sur place, à la voix",
+    titre: "La fiche client",
+    dicte: "« Nouveau client : famille Martin, à Pessac. Le séjour à refaire en parquet, 25 m². »",
+    lignes: [
+      { label: "Client", valeur: "famille Martin" },
+      { label: "Commune", valeur: "Pessac" },
+      { label: "Besoin", valeur: "parquet, 25 m²" },
+      { label: "Origine", valeur: "visite sur place" },
+    ],
+    action: "fiche créée dans votre logiciel",
+  },
+  {
+    numero: "02",
+    contexte: "dans la foulée",
+    titre: "Le devis de ce client",
+    dicte: "« Fais-lui le devis : parquet chêne collé, plinthes, ponçage et vitrification. »",
+    lignes: [
+      { label: "Parquet chêne, 25 m²", valeur: "2 250,00 €" },
+      { label: "Plinthes, 12 ml", valeur: "96,00 €" },
+      { label: "Vitrification", valeur: "350,00 €" },
+      { label: "Total TTC", valeur: "2 965,60 €", fort: true },
+    ],
+    action: "devis créé sur la fiche Martin",
+  },
+  {
+    numero: "03",
+    contexte: "devis accepté",
+    titre: "L'intervention",
+    dicte: "« C'est signé. Cale la pose sur deux jours avec l'équipe de Karim. »",
+    lignes: [
+      { label: "Mardi", valeur: "8 h – 17 h · pose" },
+      { label: "Mercredi", valeur: "8 h – 12 h · finitions" },
+      { label: "Équipe", valeur: "Karim + 1 poseur" },
+      { label: "Client", valeur: "prévenu" },
+    ],
+    action: "intervention posée à l'agenda",
+  },
+];
+
+const analyse = {
+  question: "« Qu'est-ce qui fait signer nos devis ? »",
+  axes: [
+    "signature par type de chantier",
+    "délai entre visite et signature",
+    "communes les plus demandées",
+    "temps prévu contre temps passé",
+  ],
+};
+---
+
+<div data-cc class="flex w-full flex-col gap-6 rounded-lg border border-border bg-surface p-6 sm:p-8">
+  <div class="flex items-start justify-between gap-4">
+    <div class="flex flex-col gap-1">
+      <p class="eyebrow">Aperçu du principe</p>
+      <p class="text-14 text-ink-muted">Une visite, trois actions enchaînées, chacune validée à l'oral.</p>
+    </div>
+    <button
+      type="button"
+      data-cc-pause
+      aria-pressed="false"
+      aria-label="Mettre l'animation en pause"
+      title="Mettre l'animation en pause"
+      class="inline-flex size-8 shrink-0 items-center justify-center rounded-sm text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:text-ink motion-reduce:hidden"
+    >
+      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-3" fill="currentColor">
+        <path data-cc-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
+        <path data-cc-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
+      </svg>
+    </button>
+  </div>
+
+  <ol class="grid gap-4 lg:grid-cols-3">
+    {
+      etapes.map((etape) => (
+        <li
+          data-cc-etape
+          class="flex flex-col gap-3 rounded-md border border-border bg-bg p-4 transition-colors duration-(--duration-slow) ease-out"
+        >
+          <p class="flex items-center gap-2 font-mono text-12">
+            <span class="text-accent">{etape.numero}</span>
+            <span class="text-ink-muted">{etape.contexte}</span>
+          </p>
+          <h3 class="text-18 font-semibold">{etape.titre}</h3>
+
+          <p data-cc-pas class="rounded-md rounded-br-sm border border-accent bg-accent-soft p-3 text-14 text-ink transition-opacity duration-(--duration-slow) ease-out">
+            {etape.dicte}
+          </p>
+
+          {/* Le cadre arrive avec sa première ligne : jamais de cadre vide à l'écran. */}
+          <ul data-cc-pas class="flex flex-col gap-1 rounded-md border border-border bg-surface p-3 font-mono text-12 transition-opacity duration-(--duration-slow) ease-out">
+            {etape.lignes.map((ligne, i) => (
+              <li
+                data-cc-pas={i > 0 ? "" : undefined}
+                class:list={[
+                  "flex items-baseline justify-between gap-2 transition-opacity duration-(--duration-slow) ease-out",
+                  ligne.fort && "border-t border-border pt-2",
+                ]}
+              >
+                <span class={ligne.fort ? "text-ink" : "text-ink-muted"}>{ligne.label}</span>
+                <span class:list={["shrink-0 text-right", ligne.fort ? "text-accent" : "text-ink"]}>{ligne.valeur}</span>
+              </li>
+            ))}
+          </ul>
+
+          <p data-cc-pas class="mt-auto flex flex-wrap items-center gap-2 font-mono text-12 text-accent transition-opacity duration-(--duration-slow) ease-out">
+            <span class="rounded-full bg-accent px-2 text-on-accent">oui</span>
+            <span aria-hidden="true">✓</span>
+            <span>{etape.action}</span>
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div
+    data-cc-etape
+    class="grid gap-4 rounded-md border border-border bg-bg p-4 transition-colors duration-(--duration-slow) ease-out lg:grid-cols-[2fr_3fr] lg:gap-8"
+  >
+    <div class="flex flex-col gap-2">
+      <p class="flex items-center gap-2 font-mono text-12">
+        <span class="text-accent">04</span>
+        <span class="text-ink-muted">et ensuite, vos chiffres</span>
+      </p>
+      <h3 class="text-18 font-semibold">L'analyse</h3>
+      <p class="text-14 text-ink-muted">
+        L'IA va consulter ce qui est déjà dans vos logiciels — fiches, devis, interventions — et en sort des axes
+        d'analyse. Elle lit, elle ne modifie rien.
+      </p>
+    </div>
+    <div class="flex flex-col gap-3">
+      <p data-cc-pas class="rounded-md rounded-br-sm border border-accent bg-accent-soft p-3 text-14 text-ink transition-opacity duration-(--duration-slow) ease-out">
+        {analyse.question}
+      </p>
+      <ul class="flex flex-wrap gap-2">
+        {
+          analyse.axes.map((axe) => (
+            <li data-cc-pas class="rounded-full border border-border bg-surface px-3 py-1 font-mono text-12 text-ink transition-opacity duration-(--duration-slow) ease-out">
+              {axe}
+            </li>
+          ))
+        }
+      </ul>
+      <p data-cc-pas class="flex items-baseline gap-2 font-mono text-12 text-accent transition-opacity duration-(--duration-slow) ease-out">
+        <span aria-hidden="true">✓</span>
+        <span>lecture seule — rien n'a été modifié</span>
+      </p>
+    </div>
+  </div>
+
+  <p class="text-12 text-ink-muted">Scénario type : client, montants et créneaux inventés — pas une pièce réelle.</p>
+</div>
+
+<script is:inline>
+  (function () {
+    var racine = document.querySelector("[data-cc]");
+    if (!racine || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var etapes = Array.prototype.slice.call(racine.querySelectorAll("[data-cc-etape]"));
+    var bouton = racine.querySelector("[data-cc-pause]");
+    var iconePause = racine.querySelector("[data-cc-icone-pause]");
+    var iconeLecture = racine.querySelector("[data-cc-icone-lecture]");
+
+    var PAS = 520; // un élément révélé
+    var ENTREE = 700; // avant le premier élément d'une étape
+    var APRES = 1100; // l'étape terminée reste en avant avant de passer la main
+    var TENUE = 3800; // tout est visible, le temps de relire
+    var EFFACE = 700; // fondu avant de rejouer
+
+    var minuteurs = [];
+    var enPause = false;
+    var visible = false;
+
+    function planifier(fn, delai) {
+      minuteurs.push(window.setTimeout(fn, delai));
+    }
+
+    function stopper() {
+      minuteurs.forEach(window.clearTimeout);
+      minuteurs = [];
+    }
+
+    function pas(etape) {
+      return Array.prototype.slice.call(etape.querySelectorAll("[data-cc-pas]"));
+    }
+
+    function activer(etape, oui) {
+      etape.classList.toggle("border-accent", oui);
+      etape.classList.toggle("border-border", !oui);
+    }
+
+    function montrer(el, oui) {
+      el.classList.toggle("opacity-0", !oui);
+    }
+
+    function effacer() {
+      etapes.forEach(function (etape) {
+        activer(etape, false);
+        pas(etape).forEach(function (el) {
+          montrer(el, false);
+        });
+      });
+    }
+
+    function cycle() {
+      stopper();
+      effacer();
+      var t = EFFACE;
+      etapes.forEach(function (etape) {
+        planifier(function () {
+          activer(etape, true);
+        }, t);
+        t += ENTREE;
+        pas(etape).forEach(function (el) {
+          planifier(function () {
+            montrer(el, true);
+          }, t);
+          t += PAS;
+        });
+        t += APRES;
+        planifier(function () {
+          activer(etape, false);
+        }, t);
+      });
+      t += TENUE;
+      planifier(cycle, t);
+    }
+
+    function demarrer() {
+      if (!enPause && visible) cycle();
+    }
+
+    bouton.addEventListener("click", function () {
+      enPause = !enPause;
+      bouton.setAttribute("aria-pressed", String(enPause));
+      var libelle = enPause ? "Relancer l'animation" : "Mettre l'animation en pause";
+      bouton.setAttribute("aria-label", libelle);
+      bouton.setAttribute("title", libelle);
+      iconePause.classList.toggle("hidden", enPause);
+      iconeLecture.classList.toggle("hidden", !enPause);
+      if (enPause) {
+        // En pause, on rend l'état complet : rien ne reste à moitié affiché.
+        stopper();
+        effacer();
+        etapes.forEach(function (etape) {
+          pas(etape).forEach(function (el) {
+            montrer(el, true);
+          });
+        });
+      } else demarrer();
+    });
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(
+        function (entrees) {
+          var etait = visible;
+          visible = entrees[0].isIntersecting;
+          if (!visible) stopper();
+          else if (!etait) demarrer();
+        },
+        { threshold: 0.3 },
+      ).observe(racine);
+    }
+  })();
+</script>
