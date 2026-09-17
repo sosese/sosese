@@ -1,6 +1,12 @@
 ---
 import Card from "../ui/Card.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
+import Figure from "../ui/diagrams/Figure.astro";
+
+// C8 : lieu canonique de la promesse de validation humaine. Elle ne doit plus être réénoncée ailleurs
+// sur l'accueil (B8) — le bandeau d'engagements, la carte sur-mesure et « Sous le capot » l'ont perdue.
+const libre = ["lire les demandes qui arrivent", "chercher dans vos documents", "chiffrer sur votre catalogue", "préparer le brouillon"];
+const accord = ["envoyer un message à un client", "créer un devis dans votre logiciel", "modifier une fiche", "engager un prix"];
 
 const engagements = [
   {
@@ -10,7 +16,7 @@ const engagements = [
   },
   {
     titre: "Aucun entraînement sur vos données",
-    texte: "Vos documents servent à votre usage, et à rien d'autre. Ils ne sont jamais utilisés pour entraîner des modèles.",
+    texte: "Vos documents servent à votre usage. Jamais à entraîner des modèles.",
     icone: '<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>',
   },
   {
@@ -20,7 +26,7 @@ const engagements = [
   },
   {
     titre: "Réversibilité",
-    texte: "Une documentation est remise à chaque livraison : votre équipe ou un autre prestataire peut reprendre la main.",
+    texte: "La documentation remise à chaque livraison permet à votre équipe, ou à un autre prestataire, de reprendre la main.",
     icone: '<path d="M4 9h13l-3-3M20 15H7l3 3"/>',
   },
 ];
@@ -29,10 +35,36 @@ const engagements = [
 <section id="confiance" aria-labelledby="confiance-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
     <SectionHeading id="confiance-titre" eyebrow="Confiance & données" title="Vos données restent les vôtres">
-      Quatre engagements, écrits noir sur blanc dans chaque contrat. Le même principe s'applique partout : la
-      recherche, la consultation et le chiffrage sont libres, mais toute écriture dans vos outils attend votre
-      accord explicite.
+      Et rien ne sort de chez vous sans que vous ayez dit oui.
     </SectionHeading>
+
+    <Figure label="Qui décide quoi" caption="La même règle s'applique à toutes les automatisations que nous construisons.">
+      <div class="grid items-stretch gap-2 lg:grid-cols-[1fr_auto_1fr]">
+        <div class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6">
+          <p class="font-mono text-14 text-ink">L'automatisation le fait seule</p>
+          <ul class="flex flex-col gap-2 text-16 text-ink-muted">
+            {libre.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div aria-hidden="true" class="flex items-center justify-center gap-3 py-2 lg:flex-col lg:px-4 lg:py-0">
+          <span class="font-mono text-16 text-accent lg:hidden">↓</span>
+          <span class="hidden font-mono text-16 text-accent lg:inline">→</span>
+          <span class="rounded-full border border-accent bg-bg px-3 py-1 font-mono text-12 whitespace-nowrap text-ink">
+            votre accord
+          </span>
+          <span class="font-mono text-16 text-accent lg:hidden">↓</span>
+          <span class="hidden font-mono text-16 text-accent lg:inline">→</span>
+        </div>
+
+        <div class="flex flex-col gap-4 rounded-lg border border-accent bg-surface p-6">
+          <p class="font-mono text-14 text-ink">Rien ne part sans vous</p>
+          <ul class="flex flex-col gap-2 text-16 text-ink">
+            {accord.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </div>
+    </Figure>
 
     <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {

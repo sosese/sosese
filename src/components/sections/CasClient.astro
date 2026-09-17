@@ -2,68 +2,65 @@
 import Badge from "../ui/Badge.astro";
 import Card from "../ui/Card.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
-import DicteeChiffrageDemo from "../islands/DicteeChiffrageDemo.tsx";
+import CompareBars from "../ui/diagrams/CompareBars.astro";
+import Figure from "../ui/diagrams/Figure.astro";
+import EnchainementClient from "../ui/diagrams/EnchainementClient.astro";
+
+// Chiffres mesurés du cas réel (DESIGN.md, « Cas client »). Ne pas les modifier sans l'accord du client.
+const tempsDevis = [
+  {
+    label: "Avant — ressaisi le soir, au bureau",
+    value: 40,
+    display: "40 min",
+    note: "Le client attendait son chiffre 24 à 48 heures.",
+    tone: "muted" as const,
+  },
+  {
+    label: "Après — dicté sur le chantier",
+    value: 2,
+    display: "2 min",
+    note: "Il l'a maintenant avant que le camion reparte.",
+    tone: "accent" as const,
+  },
+];
 ---
 
 <section id="cas-client" aria-labelledby="cas-client-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
     <div class="flex flex-col gap-4">
       <SectionHeading id="cas-client-titre" eyebrow="Cas client réel" title="Le devis part du chantier, pas du bureau">
-        Chez L'Atelier des Sols &amp; Fils, entreprise de pose de sols, le chiffrage part maintenant du chantier : une phrase
-        dictée sur place, un chiffrage exact sur leur catalogue, un devis prêt dans Extrabat avant même de reprendre
-        la route.
+        Chez L'Atelier des Sols &amp; Fils, poseur de sols, le chiffrage se fait désormais sur place.
       </SectionHeading>
       <Badge variant="accent" dot>L'Atelier des Sols &amp; Fils — pose de sols</Badge>
     </div>
 
-    <ul class="grid gap-4 md:grid-cols-2">
-      <li class="flex">
-        <Card class="flex w-full flex-col gap-4">
-          <Badge>avant</Badge>
-          <h3 class="text-21 font-semibold">La soirée de ressaisie</h3>
-          <ul class="flex flex-col gap-3 text-16 text-ink-muted">
-            <li>Le métrage est noté à la main sur le chantier.</li>
-            <li>Le soir, tout est ressaisi dans le logiciel de gestion : 40 minutes par devis.</li>
-            <li>Le client attend son chiffre 24 à 48 heures.</li>
-            <li>Un métrage mal reporté ou une TVA oubliée, et le devis est à refaire.</li>
-          </ul>
-        </Card>
-      </li>
+    <div class="grid gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12">
+      <Card padding="lg">
+        <Figure label="Le temps d'un devis" caption="Mesuré chez L'Atelier des Sols & Fils, sur leurs propres devis.">
+          <CompareBars bars={tempsDevis} />
+        </Figure>
+      </Card>
 
-      <li class="flex">
-        <Card class="flex w-full flex-col gap-4">
-          <Badge variant="accent" dot>après</Badge>
-          <h3 class="text-21 font-semibold">Le chiffrage fait sur place</h3>
-          <ul class="flex flex-col gap-3 text-16 text-ink">
-            <li>Une phrase dictée sur place suffit à décrire le chantier.</li>
-            <li>Le chiffrage se fait aussitôt, sur le vrai catalogue, TVA comprise.</li>
-            <li>Un « oui » à l'oral, et le devis est prêt dans Extrabat, rendez-vous posé.</li>
-          </ul>
-        </Card>
-      </li>
-    </ul>
+      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+        <li class="flex">
+          <Card class="flex w-full flex-col gap-2">
+            <p class="font-mono text-36 text-accent">0</p>
+            <p class="text-14 text-ink-muted">
+              ressaisie : le métrage pris sur le chantier est celui qui part sur le devis
+            </p>
+          </Card>
+        </li>
+        <li class="flex">
+          <Card class="flex w-full flex-col gap-2">
+            <p class="font-mono text-36 text-accent">100 %</p>
+            <p class="text-14 text-ink-muted">
+              des devis créés après un accord explicite : le chiffrage est libre, l'écriture ne l'est jamais
+            </p>
+          </Card>
+        </li>
+      </ul>
+    </div>
 
-    <ul class="grid gap-4 sm:grid-cols-3">
-      <li class="flex">
-        <Card class="flex w-full flex-col gap-2">
-          <p class="font-mono text-36 text-accent">2 min</p>
-          <p class="text-14 text-ink-muted">entre la première phrase dictée et le devis prêt, contre 40 minutes en fin de journée</p>
-        </Card>
-      </li>
-      <li class="flex">
-        <Card class="flex w-full flex-col gap-2">
-          <p class="font-mono text-36 text-accent">0</p>
-          <p class="text-14 text-ink-muted">ressaisie : le métrage pris sur le chantier est celui qui va sur le devis</p>
-        </Card>
-      </li>
-      <li class="flex">
-        <Card class="flex w-full flex-col gap-2">
-          <p class="font-mono text-36 text-accent">100 %</p>
-          <p class="text-14 text-ink-muted">consultation et chiffrage libres ; écriture dans le logiciel seulement après votre accord explicite</p>
-        </Card>
-      </li>
-    </ul>
-
-    <DicteeChiffrageDemo client:idle />
+    <EnchainementClient />
   </div>
 </section>

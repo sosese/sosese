@@ -4,13 +4,13 @@ import DotPattern from "../ui/DotPattern.astro";
 import { cta } from "../../config/site";
 ---
 
-<!-- aria-label distinct : le titre reprend mot pour mot celui du hero, deux régions ne peuvent pas porter le même nom. -->
+<!-- aria-label distinct du titre : deux régions de page ne peuvent pas porter le même nom accessible. -->
 <section aria-label="Prochaine étape" class="section-invert relative overflow-hidden border-y border-border py-(--section-y)">
   <DotPattern />
   <div class="container-site relative flex flex-col items-center gap-6 text-center">
     <p class="eyebrow">Prochaine étape</p>
     <h2 id="cta-titre" class="max-w-(--measure) text-36 font-semibold tracking-tight md:text-48">
-      Vos tâches répétitives, automatisées. <span class="text-ink-muted">Sans changer vos outils.</span>
+      Par où commencer <span class="text-ink-muted">chez vous ?</span>
     </h2>
     <p class="max-w-(--measure) text-18 text-ink-muted">
       Dites-nous où votre équipe perd du temps. On vous répond franchement : ce qui vaut la peine d'être automatisé,

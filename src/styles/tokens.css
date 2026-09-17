@@ -48,6 +48,7 @@
   /* Espacement — multiples de 4 */
   --space-unit: 0.25rem;
   --section-y: 64px;
+  --hero-y: 32px;     /* hero plus serré : le bandeau des promesses doit rester visible sur un écran de portable */
   --gutter: 20px;
   --container: 72rem;
   --header-h: 64px;
@@ -67,6 +68,7 @@
 @media (min-width: 768px) {
   :root {
     --section-y: 96px;
+    --hero-y: 64px;
     --gutter: 32px;
   }
 }

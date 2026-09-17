@@ -1,11 +1,11 @@
 ---
 import Button from "../ui/Button.astro";
-import TerminalDemo from "../islands/TerminalDemo";
+import DicteeMobile from "../ui/diagrams/DicteeMobile.astro";
 import { cta } from "../../config/site";
 ---
 
 <section aria-labelledby="hero-titre" class="border-b border-border">
-  <div class="container-site grid items-center gap-12 py-(--section-y) lg:grid-cols-[1fr_1fr] lg:gap-16">
+  <div class="container-site grid items-center gap-12 py-(--hero-y) lg:grid-cols-[1fr_1fr] lg:gap-16">
     <div class="flex flex-col gap-6">
       <p class="eyebrow">Studio IA pour PME</p>
       <h1 id="hero-titre" class="text-36 font-semibold tracking-tight sm:text-48">
@@ -24,6 +24,6 @@ import { cta } from "../../config/site";
       </div>
     </div>
 
-    <TerminalDemo client:idle />
+    <DicteeMobile />
   </div>
 </section>

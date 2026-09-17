@@ -3,6 +3,23 @@ import Badge from "../ui/Badge.astro";
 import Card from "../ui/Card.astro";
 import FlowDiagram from "../ui/FlowDiagram.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
+
+// Ce que change une solution sur-mesure. Aucune promesse chiffrée ici : ce sont des principes de
+// fonctionnement, cohérents avec les engagements (aucune écriture sans accord, code et données remis).
+const arguments_ = [
+  {
+    titre: "Pas un outil en plus, des tâches en moins.",
+    texte: "Vos équipes gardent leurs logiciels et leurs habitudes : ce sont les saisies, les recopies et les relances qui disparaissent.",
+  },
+  {
+    titre: "Vos données travaillent pour vous.",
+    texte: "Tarifs, catalogue, historique client : ce qui dort dans vos logiciels sert enfin à préparer le travail, au lieu d'être recopié à la main.",
+  },
+  {
+    titre: "C'est vous qui décidez de ses fonctions, et vous l'améliorez en l'utilisant.",
+    texte: "Vous n'êtes plus limité à ce qu'un logiciel du marché a prévu : chaque correction que vous apportez sert à l'ajuster, et quand un nouveau besoin apparaît, la solution évolue avec lui, tout au long de son utilisation.",
+  },
+];
 ---
 
 <section id="offre" aria-labelledby="offre-titre" class="py-(--section-y)">
@@ -40,16 +57,22 @@ import SectionHeading from "../ui/SectionHeading.astro";
             <Badge variant="accent" dot>sur-mesure</Badge>
             <h3 class="text-28 font-semibold tracking-tight">Solutions sur-mesure</h3>
             <p class="max-w-(--measure) text-16 text-ink-muted">
-              Des automatisations branchées sur les logiciels que vous utilisez déjà. Pas de nouvel outil à
-              apprendre, et le code comme les accès vous appartiennent.
+              Des automatisations branchées sur les logiciels que vous utilisez déjà.
             </p>
+            <ul class="flex max-w-(--measure) flex-col gap-3 text-16 text-ink-muted">
+              {
+                arguments_.map((a) => (
+                  <li>
+                    <strong class="font-medium text-ink">{a.titre}</strong> {a.texte}
+                  </li>
+                ))
+              }
+            </ul>
             <ul class="flex flex-col gap-2 pt-2 text-16 text-ink">
               {
                 [
-                  "Branché sur vos logiciels actuels",
+                  "Construit sur votre façon de travailler, pas sur un modèle",
                   "Mis en service avec vos équipes",
-                  "Aucune écriture sans votre accord explicite",
-                  "Code, accès et documentation remis",
                 ].map(
                   (item) => (
                     <li class="flex items-center gap-3">

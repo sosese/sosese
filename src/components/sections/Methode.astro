@@ -8,7 +8,7 @@ const etapes = [
     texte: "Sur site, avec les personnes qui font le travail. On cartographie vos processus et on repère ce qui peut être automatisé.",
     duree: "2 jours",
     livrable: "Cartographie des processus et diagnostic",
-    tempsClient: "2 jours avec les équipes concernées",
+    tempsClient: "1/2 journée avec les équipes",
   },
   {
     titre: "Feuille de route",
@@ -21,7 +21,7 @@ const etapes = [
     titre: "Construction",
     texte: "On construit la solution retenue, branchée sur vos outils, puis on la met en service avec vos équipes.",
     duree: "4 semaines",
-    livrable: "Solution en service, documentée, code et accès remis",
+    livrable: "Solution en service et documentée",
     tempsClient: "1 heure de point par semaine",
   },
 ];
@@ -33,36 +33,36 @@ const etapes = [
       Vous décidez de la suite à la fin de chaque étape, sur la base de ce qui a été produit.
     </SectionHeading>
 
-    <ol class="grid gap-8 md:grid-cols-3 md:gap-6">
+    <ol data-methode class="grid gap-8 md:grid-cols-3 md:gap-6">
       {
         etapes.map((etape, i) => (
           <li class="relative flex gap-4 md:flex-col md:gap-6">
             <div class="flex flex-col items-center md:flex-row">
-              <span class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface font-mono text-14 text-accent">
+              <span data-revele class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface font-mono text-14 text-accent">
                 {i + 1}
               </span>
               {i < etapes.length - 1 && (
-                <span aria-hidden="true" class="w-px flex-1 bg-border-strong md:-mr-6 md:h-px md:w-auto" />
+                <span aria-hidden="true" data-revele="trait" class="w-px flex-1 bg-border-strong md:-mr-6 md:h-px md:w-auto" />
               )}
             </div>
 
             <div class="flex flex-1 flex-col gap-4 pb-2 md:pr-4">
-              <div class="flex flex-col gap-2">
+              <div data-revele class="flex flex-col gap-2">
                 <h3 class="text-21 font-semibold">{etape.titre}</h3>
                 <p class="text-16 text-ink-muted">{etape.texte}</p>
               </div>
-              <dl class="flex flex-col divide-y divide-border rounded-md border border-border bg-surface text-14">
-                <div class="flex flex-col gap-1 px-4 py-3">
-                  <dt class="eyebrow">Durée</dt>
-                  <dd class="font-mono text-ink">{etape.duree}</dd>
-                </div>
-                <div class="flex flex-col gap-1 px-4 py-3">
-                  <dt class="eyebrow">Livrable</dt>
-                  <dd class="text-ink">{etape.livrable}</dd>
-                </div>
+              <dl data-revele class="flex flex-col divide-y divide-border rounded-md border border-border bg-surface text-14">
                 <div class="flex flex-col gap-1 px-4 py-3">
                   <dt class="eyebrow">Votre temps</dt>
                   <dd class="text-ink">{etape.tempsClient}</dd>
+                </div>
+                <div data-revele class="flex flex-col gap-1 px-4 py-3">
+                  <dt class="eyebrow">Durée</dt>
+                  <dd class="font-mono text-ink">{etape.duree}</dd>
+                </div>
+                <div data-revele class="flex flex-col gap-1 px-4 py-3">
+                  <dt class="eyebrow">Livrable</dt>
+                  <dd class="text-ink">{etape.livrable}</dd>
                 </div>
               </dl>
             </div>
@@ -72,3 +72,38 @@ const etapes = [
     </ol>
   </div>
 </section>
+
+<script>
+  // Révèle les trois étapes l'une après l'autre, de gauche à droite : pastille, texte, puis le détail
+  // ligne par ligne (le cadre arrive avec la première, jamais vide), puis le trait vers l'étape
+  // suivante. L'ordre du DOM est l'ordre de lecture.
+  // Sans JS ou sous mouvement réduit, rien n'est masqué. Une seule lecture, au premier passage.
+  (function () {
+    var liste = document.querySelector("[data-methode]");
+    if (!liste || !("IntersectionObserver" in window)) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var PAS = 260; // entre deux éléments
+    var PAS_TRAIT = 420; // le trait qui mène à l'étape suivante
+    var elements = Array.prototype.slice.call(liste.querySelectorAll("[data-revele]"));
+    elements.forEach(function (el) {
+      el.classList.add("revele-cache");
+    });
+
+    var observateur = new IntersectionObserver(
+      function (entrees) {
+        if (!entrees[0].isIntersecting) return;
+        observateur.disconnect();
+        var t = 0;
+        elements.forEach(function (el) {
+          t += el.dataset.revele === "trait" ? PAS_TRAIT : PAS;
+          window.setTimeout(function () {
+            el.classList.remove("revele-cache");
+          }, t);
+        });
+      },
+      { threshold: 0.25 },
+    );
+    observateur.observe(liste);
+  })();
+</script>

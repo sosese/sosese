@@ -1,0 +1,28 @@
+---
+// Micro-schéma de flux (registre R1) tenant dans une carte : trois étapes courtes, séparées par une flèche.
+// Volontairement sans animation : cinq de ces schémas sur un même écran, ça clignoterait.
+type Props = {
+  steps: string[];
+  label: string;
+  class?: string;
+};
+
+const { steps, label, class: className } = Astro.props;
+---
+
+<ol aria-label={label} class:list={["flex flex-wrap items-center gap-x-2 gap-y-2", className]}>
+  {
+    // La flèche est dans le <li> de l'étape qu'elle introduit : au retour à la ligne, elle ne
+    // se retrouve jamais seule en fin de ligne.
+    steps.map((step, i) => (
+      <li class="flex items-center gap-2">
+        {i > 0 && (
+          <span aria-hidden="true" class="font-mono text-12 text-accent">
+            →
+          </span>
+        )}
+        <span class="rounded-md border border-border bg-bg px-2 py-1 font-mono text-12 text-ink">{step}</span>
+      </li>
+    ))
+  }
+</ol>

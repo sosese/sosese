@@ -23,11 +23,15 @@
 - FAQ et exemples : un fichier Markdown dans `src/content/faq/` ou `src/content/exemples/`.
 - Navigation, email, mentions légales, personne : `src/config/site.ts` (`null` = « à compléter », jamais de valeur inventée).
 - Règles du formulaire (client et serveur) : `shared/contact.json`.
+- Scénarios métier du mockup du hero : `src/config/demo-hero.ts` (inventés, règles génériques — voir `DESIGN.md`).
+- Démonstration du cas client (fiche → devis → intervention → analyse) : `src/components/ui/diagrams/EnchainementClient.astro` (données inventées).
+- Étapes de la méthode : `src/components/sections/Methode.astro` ; arguments de l'offre sur-mesure : `src/components/sections/BentoOffre.astro`.
 - Couleurs, rayons, espacements, typo : `src/styles/tokens.css`.
 
 ## Règles de code
 - Aucune couleur, rayon ou espacement en dur : toujours un token de `tokens.css`.
-- Tout est statique sauf les îlots React explicitement listés dans `DESIGN.md` (en `client:idle`, voir pourquoi).
+- Tout est statique sauf les îlots React explicitement listés dans `DESIGN.md` (en `client:idle`, voir pourquoi)
+  et les scripts natifs des composants listés (jamais en `is:inline` : ils grossiraient le HTML et le LCP).
 - Vérifier systématiquement le rendu dans les deux thèmes.
 - Tout composant, décision ou piège nouveau est ajouté à `DESIGN.md` dans le même tour.
 

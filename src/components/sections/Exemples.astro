@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Card from "../ui/Card.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
+import MicroFlux from "../ui/diagrams/MicroFlux.astro";
 import { cta } from "../../config/site";
 
 const exemples = (await getCollection("exemples")).sort((a, b) => a.data.ordre - b.data.ordre);
@@ -10,26 +11,18 @@ const exemples = (await getCollection("exemples")).sort((a, b) => a.data.ordre -
 <section id="exemples" aria-labelledby="exemples-titre" class="border-t border-border py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
     <SectionHeading id="exemples-titre" eyebrow="Exemples illustratifs" title="À quoi ça ressemble, concrètement">
-      Ces exemples décrivent des cas types, pas des missions clients. Les gains indiqués sont des ordres de
-      grandeur : le vôtre est estimé pendant l'atelier.
+      Des cas types, pas des missions clients. Les gains sont des ordres de grandeur : le vôtre est estimé
+      pendant l'atelier.
     </SectionHeading>
 
     <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {
         exemples.map(({ data }) => (
           <li class="flex">
-            <Card interactive class="flex w-full flex-col gap-6">
+            <Card interactive class="flex w-full flex-col gap-4">
               <h3 class="text-18 font-semibold">{data.titre}</h3>
-              <dl class="flex flex-col gap-4 text-14">
-                <div class="flex flex-col gap-1">
-                  <dt class="eyebrow">Avant</dt>
-                  <dd class="text-ink-muted">{data.avant}</dd>
-                </div>
-                <div class="flex flex-col gap-1">
-                  <dt class="eyebrow">Après</dt>
-                  <dd class="text-ink">{data.apres}</dd>
-                </div>
-              </dl>
+              <MicroFlux steps={data.flux} label={`Étapes : ${data.flux.join(", puis ")}`} />
+              <p class="text-14 text-ink-muted">{data.apres}</p>
               <p class="mt-auto flex items-baseline gap-2 border-t border-border pt-4 font-mono text-14 text-accent">
                 <span aria-hidden="true">→</span>
                 <span>{data.gain}</span>

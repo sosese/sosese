@@ -6,9 +6,11 @@
 - --accent-bright n'est jamais une couleur de texte sur fond clair.
 - Bordures 1px sur --border. Ombres réservées aux éléments flottants.
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
-- Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal du hero** (voir « Décisions »).
+- Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal** (aujourd'hui dans « Sous le capot », voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
-- Les composants interactifs sont des îlots React. Tout le reste est statique.
+- Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode et la démonstration du
+  cas client : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
+  Tout le reste est statique. Avant de créer un îlot, vérifier qu'un composant statique ou quelques lignes de JS natif ne suffisent pas.
 
 ## Tokens
 Source unique : `src/styles/tokens.css`. Ils sont exposés à Tailwind dans `src/styles/global.css`
@@ -79,7 +81,7 @@ Tokens complémentaires dans `tokens.css` :
 | Groupe | Tokens |
 |---|---|
 | Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
-| Espacement / gabarit | `--space-unit`, `--section-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
+| Espacement / gabarit | `--space-unit`, `--section-y`, `--hero-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
 | Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
@@ -139,6 +141,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Token | Mobile | ≥ 768px | Usage |
 |---|---|---|---|
 | `--section-y` | 64px | 96px | rythme vertical des sections → `py-(--section-y)` |
+| `--hero-y` | 32px | 64px | rythme vertical du hero seul, plus serré pour laisser voir le bandeau des promesses |
 | `--gutter` | 20px | 32px | marge latérale du conteneur |
 | `--container` | 72rem | 72rem | largeur max → utilitaire `container-site` |
 | `--header-h` | 64px | 64px | hauteur du header et du header du menu mobile ; sert aussi au `scroll-padding-top` des ancres |
@@ -190,18 +193,25 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
+| MicroFlux | `ui/diagrams/MicroFlux.astro` | statique — flux court tenant dans une carte : `steps`, `label`. Flèche portée par l'étape qu'elle introduit (pas de flèche orpheline au retour à la ligne). Sans animation |
+| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — mockup animé du hero : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup du hero » |
+| Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
+| Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
+| CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
-| DicteeChiffrageDemo | `islands/DicteeChiffrageDemo.tsx` | îlot React, `client:idle` — voir « Cas client » |
+| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client : fiche client dictée → devis → intervention, puis l'analyse. Voir « Cas client » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
+
+Le **hero** porte `DicteeMobile` (mockup métier) depuis le 2026-09-16 ; le terminal est descendu dans « Sous le capot ».
 
 Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
 BentoOffre (`#offre`), Exemples (`#exemples`), CasClient (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
-Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` + `container-site` ;
+Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
@@ -247,7 +257,7 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 | `GET /api/health` | `{ ok: true }` |
 | `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
 | Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
-| Sécurité | helmet ; CSP `script-src 'self'` + empreintes sha256 des scripts inline, calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
+| Sécurité | helmet ; CSP `script-src 'self'` (scripts des composants en fichiers `/_astro`) + empreintes sha256 des scripts restés inline (anti-flash du thème), calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
 | Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |
 | Proxy | `trustProxy: 1` : l'IP du rate limit est celle vue par Traefik |
 
@@ -308,6 +318,24 @@ tierce.
 `/contact`, `/a-propos` ; LCP 1,2–1,4 s ; CLS 0 ; TTFB 20–30 ms. axe : 0 violation (6 pages × 2 thèmes + menu mobile).
 Certificat Let's Encrypt couvrant `sosese.tech` et `www.sosese.tech` ; `www` et HTTP redirigent en 301 ; HSTS,
 CSP, cache et compression brotli conformes. Build local du tag identique à la production (hors `uid` des îlots).
+**Avant la v0.6** (2026-09-17, branche `feat/schemas-v08-v10`, serveur `server/index.mjs` local, Lighthouse 12.8 mobile
+simulé, axe-core 4.13) :
+
+| Page | Perf | A11y | Bonnes pratiques | SEO | LCP | CLS | JS |
+|---|---|---|---|---|---|---|---|
+| `/` | 98–100 | 100 | 100 | 100 | 1,8 s (1,5 s sur `main`, même machine) | 0 | 76 ko |
+| `/contact` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 79 ko |
+| `/a-propos` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 74 ko |
+| `/mentions-legales` | 100 | 100 | 100 | 100 | 1,7 s | 0 | 74 ko |
+
+axe : 0 violation sur les 6 pages dans les deux thèmes (FAQ ouverte) et sur le menu mobile ouvert. Aucun débordement
+horizontal à 360 / 640 / 1024 / 1280 px dans les deux thèmes ; un seul `h1`, aucun saut de titre, aucun
+`aria-labelledby` orphelin. **CLS mesuré à 0** pendant l'animation du hero (navigation comprise), la révélation de la
+Méthode et un cycle complet du cas client ; hauteurs des deux démonstrations constantes. Mouvement réduit : rien de
+masqué, pas de lecture automatique, boutons pause masqués, précédent / suivant opérants. Focus visible (contour 2 px)
+atteint au clavier sur les quatre nouveaux boutons. Aucune erreur console, aucune requête en erreur, aucune requête
+tierce. Test de démarrage de l'image Docker : laissé à GitHub Actions (non rejoué en local).
+
 Procédures de publication, déploiement et vérification : **`RUNBOOK.md`**.
 
 ### Contenus éditables (Content Collections)
@@ -320,10 +348,109 @@ Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul f
 Les exemples sont **illustratifs** et présentés comme tels dans la section (§5 ligne 6) ; `gain` est un ordre
 de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, en kebab-case sans accent.
 
+**Offre, carte « Solutions sur-mesure »** (2026-09-17) : trois arguments (`arguments_` en tête de
+`BentoOffre.astro`), chacun une phrase d'accroche en `text-ink` suivie d'une ou deux phrases. Aucun chiffre, aucune
+promesse d'apprentissage automatique : « la solution s'ajuste » veut dire que vos corrections servent à l'ajuster.
+
 **Bento** : pas de composant BentoGrid / BentoCard. Une grille `md:grid-cols-3 md:grid-rows-2` et des `Card`
 suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si un second bento apparaît.
 
+### Schémas
+Registres autorisés (décision du 2026-09-16, voir « Décisions ») : **R1 schéma de flux**, **R2 mockup stylisé**,
+**R3 comparaison de grandeurs**. Rien d'autre. Un schéma **remplace** du texte : toute nouvelle figure s'accompagne
+du texte qu'elle supprime.
+
+- Primitives dans `src/components/ui/diagrams/`. `Figure` porte le libellé et la légende, le schéma vit dans son slot.
+- **La valeur chiffrée est toujours écrite**, la barre ou le tracé ne fait que la mettre en proportion. Les éléments
+  purement graphiques (barres, liaisons, pastilles) sont en `aria-hidden` quand le texte à côté dit déjà tout.
+- Longueur minimale d'une barre : `max(<pct>%, calc(var(--space-unit) * 2))` — sans ce plancher, une valeur très
+  petite (2 min contre 40) disparaît complètement.
+- Proportions : `flex-basis: 0` + `flex-grow` proportionnel (`style="flex-grow: 20"`), jamais des largeurs en dur.
+  Les **libellés ne sont pas dans le segment proportionnel** : un segment étroit (2 jours sur 27) ne peut pas
+  contenir de texte. Ils vivent sous la barre, ou dans une grille à colonnes égales en dessous.
+- **Méthode** (2026-09-17) : revenue au format de `main` (pastilles numérotées reliées par un trait, carte Votre
+  temps / Durée / Livrable, **« Votre temps » en premier**). Frise proportionnelle et `CompareBars` retirés de cette
+  section. **Révélation séquentielle, de gauche à droite** : pastille, texte, cadre du détail avec sa première
+  ligne, lignes suivantes, puis le trait vers l'étape suivante (`scaleY` sous `md`, `scaleX` au-dessus) ; ~5 s au
+  total, une seule fois. Script natif du composant : `IntersectionObserver` (seuil 0,25) puis minuteurs, éléments marqués
+  `data-revele` (`="trait"` pour le trait), masquage par `.revele-cache` dans `global.css`. **Écart assumé à la
+  règle « pas d'`IntersectionObserver` » ci-dessous** (2026-09-17) : la version en `animation-timeline: view()`
+  ne s'est pas jouée chez l'humain (Firefox ne la gère pas) et ne sait pas enchaîner les trois colonnes dans le
+  temps. Les classes ne sont posées que par le script : sans JS ou sous mouvement réduit, tout est visible.
+  **Le cadre `dl` porte `data-revele`, pas sa première ligne** : sinon il apparaît vide avant son contenu.
+- **Animation** : `.bar-grow` dans `global.css`, `transform: scaleX()` piloté par `animation-timeline: view()`,
+  sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
+  état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
+  visiteur n'en veut pas. **Ne pas remplacer par un `IntersectionObserver`** : ce serait du React pour une décoration.
+- `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
+  rester sur `transform` ou `opacity` pour cette raison.
+
+### Mockup du hero (DicteeMobile)
+**Cinq tâches** très différentes jouées à la suite, en boucle (demande explicite du
+2026-09-16), avec **précédent / suivant** depuis le 2026-09-17 pour aller directement au cas qui intéresse : devis dicté, fiche client depuis un email, relance déclenchée automatiquement, rendez-vous posé
+depuis la route, question de gestion. L'objectif est double : le visiteur reste pour voir si son métier passe, et
+il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 à 10 s, le cycle complet **~50 s**.
+
+- **Tout le mockup est sombre, dans les deux thèmes** (2026-09-17) : le bloc porte `.section-invert`, bulles
+  comprises, pour ressortir sur le hero clair. (Une variante « cadre sombre, bulles claires » a été essayée puis
+  abandonnée le même jour.)
+- **Lecteur à pause réelle** : le script ne chaîne pas des `setTimeout` mais charge la liste datée des événements
+  d'une scène (`charger`) et les joue un par un (`avancer`). `suspendre` mémorise le temps déjà attendu vers le
+  prochain événement ; la reprise n'attend que le reste. Pause, sortie de l'écran et reprise ne rejouent rien.
+- **Précédent / suivant** (`data-precedent`, `data-suivant`) : saut immédiat au scénario. En lecture, il se joue
+  depuis le début ; en pause, il s'affiche complet et se jouera à la reprise. **Aussi actifs sous mouvement réduit**
+  (affichage complet, sans animation) : c'est le seul moyen d'y voir les autres métiers. Sous `sm`, l'icône du
+  libellé est masquée pour que libellé + trois boutons tiennent à 360 px.
+- **Action faite mise en avant** : pastille bordée ambre, coche pleine, et halo `.action-eclat` (`global.css`,
+  `box-shadow` qui s'élargit et s'éteint, deux fois, sous `prefers-reduced-motion: no-preference`) relancé à chaque
+  apparition. `box-shadow` ne touche pas la mise en page : CLS 0.
+- **Pas de cadre de téléphone** (retiré le 2026-09-17, avec la barre de préhension) : un seul bloc bordé
+  `border-border-strong`, gain ≈ 40 px de hauteur. Avec `--hero-y`, le bandeau des promesses est entièrement visible
+  à 1440 × 900 (mesuré : hero 707 px).
+- **Scénarios dans `src/config/demo-hero.ts`**, inventés, dits tels dans la transcription `sr-only`. **Aucune
+  légende visible sous le cadre** (retirée le 2026-09-17 pour que le bandeau des promesses remonte vers la ligne de
+  flottaison) : ne pas la rajouter sans rediscuter la hauteur du hero.
+  Les en-têtes du fichier portent les règles de rédaction : elles font partie du contrat, pas du commentaire.
+- **Le connecteur est le bloc central.** Chaque règle est affichée **avec la source d'où elle est lue**
+  (catalogue, CRM, agenda, gestion, compta, boîte mail) : c'est ce qui montre que les règles existent déjà chez le
+  client. Ce sont des **catégories d'outils, jamais une marque** — pas de logo ni de nom de logiciel tiers sur une
+  page publique. Les règles restent **génériques** : on nomme la nature de la règle (« vos taux de TVA »), jamais sa
+  valeur. Aucun taux affiché nulle part. Passer à des valeurs exactes = décision humaine.
+- **Quatre formes de sortie** : `lignes` (tableau ou fiche), `message`, `agenda` (bande horaire), `barres`
+  (classement). La forme suit le besoin — c'est l'argument de polyvalence. En ajouter une = un bloc conditionnel
+  dans le composant, les éléments révélés portent `data-item`.
+- **Chaque scénario se termine par une action faite**, pas par un texte : « devis créé », « email envoyé »,
+  « rendez-vous posé ». L'action n'arrive **qu'après la porte** (`porte`), et le scénario de lecture (question de
+  gestion) **n'a pas de porte** : son action est « lecture seule — rien n'a été modifié ». Cette asymétrie est
+  volontaire : c'est la doctrine de la section Confiance, montrée au lieu d'être répétée.
+- **Une entrée dictée se transcrit mot à mot** ; un email ou un déclencheur **apparaît d'un bloc** — transcrire un
+  email caractère par caractère serait un contresens. Le type est porté par `data-entree`.
+- **Les scènes sont empilées dans une même cellule de grille** (`col-start-1 row-start-1`, `self-start`) et présentes
+  en permanence : la hauteur du bloc vaut celle de la plus haute, elle ne bouge jamais. **C'est ce qui tient le CLS
+  à 0.** Corollaire : garder les scénarios de masse comparable (entrée de 13 à 16 mots, **3 règles**, 3 à 4 éléments de
+  sortie). Passées de 4 à 3 le 2026-09-17 pour gagner une ligne de hauteur. Écart mesuré à 1440 px : 472 à 516 px,
+  soit 44 px de vide au pire.
+- **Les libellés d'en-tête sont empilés de la même façon.** Écrire le contexte et le métier dans un seul span et en
+  changer le texte faisait varier sa largeur, donc bouger le point séparateur : **CLS 0,005 mesuré**. Cinq spans
+  empilés, un seul opaque : plus rien ne bouge.
+- **`min-w-0` sur le nom de la règle** : sans lui, l'élément flex refuse de passer à la ligne et déborde à 360 px
+  (piège 12). Un nom de règle dépasse rarement 22 caractères ; au-delà il passe à la ligne sous 390 px, ce qui reste
+  lisible mais grandit le bloc.
+- **État rendu par le serveur = état final du premier scénario.** Sans JS, le hero reste un scénario complet et
+  lisible. Au premier passage, cet état est tenu 1,8 s avant que la boucle prenne la main : le LCP est déjà mesuré.
+- **Respecte `prefers-reduced-motion`** (l'exception du terminal ne s'étend pas) : aucune lecture automatique, le
+  premier scénario reste affiché, précédent / suivant permettent de voir les autres, complets.
+- **Bouton pause toujours rendu** hors mouvement réduit (`motion-reduce:hidden`) : l'animation démarre seule et dure
+  plus de 5 s, WCAG 2.2.2 impose un moyen de l'arrêter. **Ne jamais le retirer**, même avec précédent / suivant. Mise en pause aussi hors viewport (`IntersectionObserver`).
+- Bloc animé en `aria-hidden`, transcription `sr-only` couvrant les cinq scénarios.
+- Guillemets collés par une **espace fine insécable** (U+202F) : typographie française correcte, et la découpe en
+  mots du script ne peut pas isoler un « » en fin de bulle.
+- **Vérifier après toute modification** : aucun chevauchement de deux scènes (échantillonner l'opacité pendant un
+  cycle), CLS nul sur un cycle complet, et `scrollWidth` à 360 px — c'est là que ça casse en premier.
+
 ### Terminal
+- **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
+  `.section-invert` : dans une section déjà invert, il se lit comme un panneau bordé, ce qui est voulu.
 - **Ignore `prefers-reduced-motion`** (décision du 2026-09-15, voir « Décisions ») : boucle, curseur clignotant et
   bouton pause identiques pour tous les visiteurs.
 - L'état initial (SSR, sans JS) est l'**état final** complet : pas de flash à l'hydratation.
@@ -345,18 +472,25 @@ suffisent (grande carte `md:col-span-2 md:row-span-2`). À extraire seulement si
 - Placée après Exemples, avant SousLeCapot ; `border-t border-border bg-bg-subtle` (alternance de fond),
   pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot (même schéma qu'Exemples → BentoOffre).
 - Les trois chiffres d'impact (2 min, 0 ressaisie, 100 % validation explicite) sont les résultats mesurés du cas
-  réel. Le mockup interactif (`DicteeChiffrageDemo`) illustre le *mécanisme* avec un scénario type et une
-  légende explicite (« pas un devis réel ») : les lignes et montants du tableau de chiffrage sont inventés,
+  réel. La démonstration (`EnchainementClient`) illustre le *mécanisme* avec un scénario type et une
+  légende explicite (« pas une pièce réelle ») : client, commune, montants et créneaux sont inventés,
   jamais issus d'une pièce commerciale réelle.
 - **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce) :
   seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
 - Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
-  labels en français neutre (« Aperçu du principe », « Dicté sur le chantier », « Chiffré sur le catalogue »).
-- `DicteeChiffrageDemo` reprend le schéma de `TerminalDemo` : état final tenu par défaut (SSR et
-  `prefers-reduced-motion`), animation déclenchée une fois par `IntersectionObserver`, bouton « Revoir »
-  affiché seulement hors mouvement réduit (même pattern que le bouton pause du terminal). Le contenu de
-  chaque zone reste dans le DOM en continu (`opacity`, jamais retiré) : rien n'est réservé aux lecteurs
-  d'écran via `aria-hidden`/`sr-only`, contrairement au terminal (ici pas de frappe caractère par caractère).
+  labels en français neutre (« Aperçu du principe », « sur place, à la voix », « et ensuite, vos chiffres »).
+- **`EnchainementClient`** (2026-09-17, remplace l'îlot React `DicteeChiffrageDemo`, supprimé) : montre un
+  **enchaînement de fonctions** sur un même client — 01 fiche client dictée sur place, 02 devis rattaché à cette
+  fiche, 03 intervention posée —, puis **04 l'analyse** : l'IA consulte les données déjà présentes et propose des
+  axes d'analyse, **en lecture seule** (asymétrie volontaire, comme dans le hero). Chaque écriture porte le « oui ».
+- Joué **en boucle** (~25 s) : l'étape en cours prend `border-accent`, ses éléments `data-cc-pas` apparaissent un à
+  un, tenue finale 3,8 s, fondu, reprise. Même contrat que le mockup du hero : état final rendu par le serveur,
+  contenu toujours dans le DOM (`opacity` seule, CLS 0 mesuré), rien sous mouvement réduit, **bouton pause toujours
+  rendu** (WCAG 2.2.2 — en pause, l'état complet est réaffiché), arrêt hors écran. Pas d'`aria-hidden` : tout le
+  contenu est du vrai texte.
+- **Le cadre d'une liste porte `data-cc-pas`, pas sa première ligne** : sinon il apparaît vide avant son contenu
+  (même règle que la Méthode).
+- JS natif et non React : un îlot de moins sur l'accueil.
 
 Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
@@ -371,7 +505,7 @@ Toujours réutiliser avant de créer.
   (absents du §3.3, fuite du thème clair sinon).
 - **Badge accent en `text-ink`** au lieu de `text-accent` (contraste, voir tableau).
 - **CTA mobile** : bouton flottant toujours visible (demande explicite), et non « après le premier scroll » (§4).
-- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, DicteeChiffrageDemo, ContactForm), au lieu du
+- **Hydratation : tous les îlots en `client:idle`** (ThemeToggle, MobileNav, TerminalDemo, ContactForm ; DicteeChiffrageDemo jusqu'au 2026-09-17), au lieu du
   `client:visible` du §6.1. Mesuré au Lot 5 : tout îlot chargé avant l'affichage du titre (`client:load`, ou
   `client:visible` au-dessus de la ligne de flottaison) fait partir le runtime React (63 ko) tôt et porte le LCP
   mobile simulé à 2,0–2,1 s ; en `client:idle`, 1,5–1,7 s. Le HTML serveur de chaque îlot est déjà utilisable
@@ -384,9 +518,51 @@ Toujours réutiliser avant de créer.
   bouton « Lire l'animation ». **Ne pas étendre** à la démo du cas client, au FlowDiagram ni aux transitions.
 - **Menu mobile en `<dialog>` natif** : piège de focus, Échap et restitution du focus fournis par le navigateur,
   sans dépendance. Le défilement de la page est bloqué sur `<html>` à l'ouverture et rétabli sur l'événement `close`.
-- **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent (seuil §8.1 : 100 ko sur l'accueil).
-  Il reste ~30 ko pour tous les autres îlots de l'accueil (terminal, Motion…) : à surveiller à chaque ajout.
+- **Hero : mockup métier, pas terminal** (2026-09-16, suite à la cible 1–50 salariés). Un terminal noir évoque au
+  dirigeant de PME le prestataire informatique dont il se méfie ; `DicteeMobile` lui montre son métier : une phrase
+  dictée depuis le chantier, le chiffrage fait sur son catalogue, la réponse qui revient dans le même fil, au
+  téléphone comme au bureau, et la porte de validation avant création. Le terminal descend dans « Sous le capot ».
+  Effet de bord mesuré : plus aucun îlot React au-dessus de la ligne de flottaison, le hero est du HTML pur.
+- **Hero animé, cinq tâches en boucle** (2026-09-16 ; précédent / suivant ajoutés le 2026-09-17). Écrit en JS natif
+  (~2 ko gzip) et non en îlot React : garder le hero en HTML pur est ce qui tient le LCP. Mesuré : 79,1 ko de JS
+  sur l'accueil, LCP inchangé, CLS 0. **Contrepartie assumée : le cycle complet dure ~50 s**, donc un visiteur qui
+  ne reste pas ne verra pas les cinq. Réduire le nombre de scénarios ou la tenue finale (`TENUE`) est le levier.
+- **Calculateur en JS natif `is:inline`** (2026-09-16) plutôt qu'en îlot React : deux curseurs et une
+  multiplication ne valent pas le runtime. L'empreinte sha256 du script est calculée au démarrage du serveur
+  depuis `dist/` — rien à configurer, mais **le serveur doit être redémarré après chaque build** (déjà vrai, piège 16).
+  Le résultat rendu par le serveur est déjà juste : sans JS, le bloc reste une estimation lisible.
+- **Scripts des composants en fichiers externes** (2026-09-17, mesuré avant mise en production). Le hero à cinq
+  scénarios et la démonstration du cas client ont porté le HTML de l'accueil de 12,6 à 19,5 ko (brotli, tel que servi),
+  au-delà de la première fenêtre TCP (~14 ko) : LCP Lighthouse mobile de 1,5 s (`main`) à 1,8–2,3 s. Les trois
+  scripts (hero, Méthode, cas client) étaient en `is:inline` ; ils sont désormais de simples `<script>` Astro, et
+  `vite.build.assetsInlineLimit` (`astro.config.mjs`) empêche Astro de les réinjecter dans la page même s'ils font
+  moins de 4 ko. Résultat : HTML servi 16,2 ko, LCP 1,8 s (4 passages sur 5), fichiers `/_astro` en cache immuable.
+  **Ne pas remettre `is:inline`** sur ces composants. **Écart restant assumé** : ~0,3 s de LCP simulé de plus que
+  `main`, dû au contenu lui-même (cinq scénarios empilés, démonstration en quatre étapes). Les leviers, si la mesure
+  en production dépasse 1,8 s : moins de scénarios dans le hero, ou démonstration du cas client allégée.
+- **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent.
   Mesuré le 2026-09-15 avec le cas client : ~74 ko gzip de JS sur l'accueil (runtime 67 ko + îlots ~7 ko).
+- **Budget JS porté à 150 ko gzip sur l'accueil** (décision du 2026-09-16, écart au §8.1 qui fixait 100 ko).
+  Le plafond monte, **l'objectif ne change pas** : temps de chargement minimal, LCP < 1,8 s, CLS 0. Les 76 ko
+  dégagés ne sont pas un budget à dépenser, mais une marge pour les évolutions de la v2. Conditions :
+  toute dépendance ajoutée est **très légère** (< 10 ko gzip, vérifié avant installation, jamais un paquet
+  qui en tire d'autres) ; à fonctionnalité égale, on préfère du JS natif en ligne à une bibliothèque, et un
+  composant Astro statique à un îlot ; le JS gzip de l'accueil est **remesuré et consigné ici à chaque lot**,
+  avec le LCP. Dépasser 120 ko sans gain de LCP mesuré = le changement est refusé.
+- **Cible éditoriale : PME de 1 à 50 salariés** (décision du 2026-09-16), sans fermer la porte aux structures
+  plus grandes — celles-ci restent accueillies, mais le site ne leur parle pas en priorité. Conséquences pour
+  la rédaction : vocabulaire du dirigeant qui fait lui-même, pas du responsable informatique ; pas de
+  « service IT », « conduite du changement » ni « gouvernance » ; les chiffres d'exemple sont à l'échelle
+  d'une petite structure. `src/pages/a-propos.astro` annonce encore « de 15 à 150 personnes » : **écart connu**,
+  corrigé dans la passe de réécriture de la v2 (item B1 de `REVUE-V2.md`), pas avant.
+- **Visuels : schémas SVG, pas d'images** (décision du 2026-09-16). Toute nouvelle illustration est un schéma
+  en SVG en ligne (ou un mockup construit avec les tokens), jamais un bitmap, jamais un fichier importé d'une
+  banque d'images. Trois registres autorisés et pas un de plus : schéma de flux, mockup stylisé d'interface,
+  comparaison de grandeurs (barres, jauges). Un schéma **remplace** du texte, il ne s'y ajoute pas. Contrat
+  identique à celui des îlots existants : état final rendu côté serveur, dimensions fixes (CLS 0), équivalent
+  textuel (`aria-label` ou `sr-only`), couleur jamais seule porteuse de sens, animation en enrichissement sous
+  `prefers-reduced-motion`. Seules exceptions bitmap prévues : le portrait de `/a-propos` et l'image de partage
+  Open Graph, toutes deux via `astro:assets`, dimensions déclarées. Détail dans `REVUE-V2.md` §4.
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
@@ -401,9 +577,15 @@ Tolérées, à ne pas étendre sans raison :
 - Formulaire : champ piège positionné hors écran (`-left-[9999px]`), largeur de colonne des `dl` de `prose-site` (60 × `--space-unit`).
 - DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
 - Formulaire : `mt-0.5` sur la case de consentement (alignement optique sur la première ligne de texte).
-- DicteeChiffrageDemo : seuil `IntersectionObserver` à 0,4 et `min-w-120` (480px) du tableau de chiffrage.
+- EnchainementClient : seuil `IntersectionObserver` à 0,3 ; rythme en millisecondes dans le script (`PAS` 520, `TENUE` 3 800…).
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
+- Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
+  `flex-grow` — des proportions, pas des espacements.
+- `CasClient` : grille `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
+- `Methode` : pas de révélation de 260 ms (420 ms pour un trait) dans le script, décalage `translateY(calc(var(--space-unit) * 3))` de `.revele-cache`.
+- `DicteeMobile` : `max-w-sm` (largeur de téléphone, échelle Tailwind conservée comme pour le footer), et
+  `rounded-br-sm` / `rounded-bl-sm` sur les bulles — le coin rentrant qui fait lire une bulle de conversation.
 
 ## Pièges rencontrés
 1. **Auto-référence des variables Tailwind.** Les tokens `--radius-*`, `--shadow-*`, `--font-*`, `--text-*` portent
@@ -473,6 +655,8 @@ Tolérées, à ne pas étendre sans raison :
 ## Anti-patterns
 - Dégradés multicolores
 - Imagerie IA stock (cerveaux, robots, réseaux de neurones)
+- Illustration bitmap ou image de banque là où un schéma SVG fait le travail
+- Bibliothèque JS ajoutée pour un effet qu'un composant statique ou quelques lignes de JS natif suffisent à produire
 - Emojis dans l'interface
 - Plus de 2 niveaux de titre par section
 - WebGL, backdrop-filter sur mobile
