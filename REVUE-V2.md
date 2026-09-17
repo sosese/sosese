@@ -34,7 +34,7 @@
 Conséquences sur les mesures ci-dessous : la prose de la Méthode et du Constat remonte au niveau de `main`, et le
 LCP simulé de l'accueil passe de 1,5 à 1,8 s (HTML plus lourd, voir `DESIGN.md`, « Scripts des composants en
 fichiers externes »). **Numérotation** : les lots v0.8 et v1.0 de ce document sont des lots de travail, pas des tags ;
-ils partent en production ensemble sous le tag **v0.6** (le tag suivant la v0.5 en production).
+ils partent en production ensemble sous le tag **v0.7** (le tag `v0.6` a échoué au test de démarrage, voir `DESIGN.md`, piège 19).
 
 Mesures avant / après (`a22870a` → HEAD), même méthode, contenu replié et libellés de schéma distingués :
 

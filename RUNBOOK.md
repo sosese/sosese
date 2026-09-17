@@ -145,11 +145,30 @@ Rien ne part sur le VPS.
 Dans une branche `chore/vX.Y`, puis PR et merge comme en 1.7 :
 
 ```bash
-npm pkg set version=0.3.0 && npm install --package-lock-only
-sed -i 's#sosese/sosese:v0.2#sosese/sosese:v0.3#' compose.yml
+# Numéro de version seul, sans npm install : ne résout ni ne met à jour aucune dépendance.
+node -e '
+const fs=require("fs"), v=process.argv[1];
+for (const f of ["package.json","package-lock.json"]) {
+  const j=JSON.parse(fs.readFileSync(f,"utf8")); j.version=v; if (j.packages) j.packages[""].version=v;
+  fs.writeFileSync(f, JSON.stringify(j,null,2)+"\n");
+}' 0.8.0
+sed -i 's#sosese/sosese:v0.7#sosese/sosese:v0.8#' compose.yml
+
+# Contrôle bloquant : exactement 3 fichiers, 4 lignes changées, rien d'autre.
+git diff --stat
+git diff package.json package-lock.json | grep '^[-+] '   # uniquement des lignes "version"
+
+npm ci && npm run build && npm start   # http://localhost:3000 : parcourir les pages avant de committer
+
 git add package.json package-lock.json compose.yml
-git commit -m "chore: version 0.3.0"
+git commit -m "chore: version 0.8.0"
 ```
+
+⚠ **Ne jamais utiliser `npm install --package-lock-only` pour une version.** Les tags `v0.3` et `v0.6` ont tous deux
+échoué au test de démarrage parce que le commit de version montait aussi `astro` 5 → 7, `@fastify/static` 8 → 10 et
+`nodemailer` 7 → 10 (`DESIGN.md`, piège 19). Si `git diff --stat` montre plus de 4 lignes sur les deux fichiers
+`package*.json` : `git checkout -- package.json package-lock.json` et recommencer. Les montées de dépendances se
+font dans leur propre branche, jamais dans une branche `chore/vX.Y`.
 
 `compose.yml` sur `main` est la source de vérité du VPS : il doit toujours désigner la version déployée.
 
