@@ -83,7 +83,7 @@ Tokens complémentaires dans `tokens.css` :
 | Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
 | Espacement / gabarit | `--space-unit`, `--section-y`, `--hero-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
-| Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (flux dans les tuyaux du schéma du hero, impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
+| Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
 ### Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1)
 | Couple | Clair | Sombre / invert |
@@ -195,7 +195,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | MicroFlux | `ui/diagrams/MicroFlux.astro` | statique — flux court tenant dans une carte : `steps`, `label`. Flèche portée par l'étape qu'elle introduit (pas de flèche orpheline au retour à la ligne). Sans animation |
 | DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — mockup animé de **l'offre** (dans le hero jusqu'au 2026-09-17) : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de l'offre » |
-| ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma animé du **hero** : les données éparpillées du client alimentent un hub par des tuyaux, il en ressort des actions déjà préparées qui attendent un « oui ». Boucle ~10,8 s, pause réelle. Voir « Schéma du hero » |
+| ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du **hero** : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
 | CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
@@ -462,41 +462,49 @@ il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 
 
 ### Schéma du hero (ConvergenceDonnees)
 Remplace `DicteeMobile` dans le hero le 2026-09-17 (voir « Décisions »). Registre **R1, schéma de flux**. Ce qu'il
-dit, dans l'ordre : vos données existent déjà mais elles sont **éparpillées** ; elles alimentent **un seul endroit**
-par des tuyaux où l'on voit passer quelque chose ; ce qui en ressort n'est **pas une liste de choses à faire** mais
-du travail déjà préparé, qui attend un « oui ». Moins de tâches, pas plus — c'est tout l'argument. Boucle **~10,8 s**.
+dit, dans l'ordre : vos données existent déjà mais elles sont **éparpillées** ; elles alimentent **un seul endroit** ;
+ce qui en ressort n'est **pas une liste de choses à faire** mais du travail déjà préparé, qui attend un « oui ».
+Moins de tâches, pas plus — c'est tout l'argument.
 
-- **Libellés des sources en HTML, tuyaux en SVG.** Un texte SVG suit l'échelle du `viewBox` : à 360 px de large il
-  tombait à ~8 px, illisible (piège 20). Les pastilles sont donc des `<li>` en `font-mono text-12`, taille constante
-  à toutes les largeurs.
-- **Les tuyaux passent DERRIÈRE les pastilles et derrière le hub**, tous deux opaques (`bg-surface`). C'est ce qui
-  supprime tout calage au pixel : le SVG est en `absolute inset-0` avec un `viewBox` 100 × 100 et
-  `preserveAspectRatio="none"`, il s'étire avec la zone et rien ne casse quand la colonne change de largeur.
-  `vector-effect="non-scaling-stroke"` garde l'épaisseur du trait (et le pointillé) constante malgré l'étirement.
-- **Les y de départ sont les centres des pastilles** : cinq blocs `h-7` séparés par `gap-2` font 172 px, donc
-  8,1 / 29,1 / 50 / 70,9 / 91,9 %. **Changer la hauteur ou l'espacement des pastilles impose de recalculer ces y.**
-- **Les y d'arrivée sont étalés** (28 à 40) et le coude de chaque tuyau est à un x différent : cinq traits qui se
-  pincent sur un même point se lisent comme des rayons laser, pas comme des tuyaux. Arrivée à x = 96, bien au-delà
-  du bord gauche du hub (62 % à 360 px, 77 % à 1280 px) : ils se terminent derrière lui, jamais à sa frontière.
-- **Le désordre est le message** : `decalage` (`ml-0`, `ml-6`, `ml-2`, `ml-8`, `ml-3`) empêche les pastilles d'être
-  alignées. Ne pas « ranger » la colonne.
-- **Le tuyau de sortie vit dans la colonne du hub, juste sous lui**, et se termine par une pointe vers le bas. Placé
-  ailleurs il flottait au milieu du bloc et se lisait comme un cul-de-sac. Largeur fixe (`w-28`), donc pas de
-  déformation : `viewBox` 112 × 56 à l'échelle 1.
-- **Ce qui circule** : `.tuyau-flux` dans `global.css`, `stroke-dashoffset` animé (pointillé 8/32, décalage -40 =
-  une période, donc boucle sans raccord). `stroke-dashoffset` ne touche ni la mise en page ni la géométrie : CLS 0.
-  Le pointillé n'est déclaré **que** dans la media query : sous mouvement réduit le tuyau est un trait plein et
-  immobile, pas un tracé en pointillé figé qui paraîtrait cassé.
-- **Porte et « fait » occupent la même cellule de grille** dans chaque proposition : passer de l'un à l'autre ne
-  décale rien. Même contrat que partout ailleurs — tout est toujours dans le DOM, seule l'opacité bouge, l'état
-  rendu par le serveur est l'état **final**, bloc en `aria-hidden` + transcription `sr-only`, bouton pause toujours
-  rendu hors mouvement réduit (WCAG 2.2.2), arrêt hors écran (`IntersectionObserver`).
-- **Le scénario de lecture seule n'existe pas ici** : les deux propositions sont des écritures, donc les deux
-  passent par le « oui ». La doctrine reste visible dans l'état final grâce au bilan, qui nomme les « deux oui ».
+- **Un seul axe vertical** : sources → tronc → hub → flèche → propositions. Une première version en L (hub à
+  droite, propositions dessous) a été abandonnée le 2026-09-17 : le lien entre le hub et les actions ne se voyait
+  pas. Le hub est une **barre pleine largeur**, ce qui rend l'enchaînement évident.
+- **Une seule passe, pas de boucle** (2026-09-17, demande explicite). L'état final rendu par le serveur est tenu
+  1,4 s (le temps que le LCP soit pris), puis le schéma se rembobine et se trace une fois, en ~3,1 s. Ensuite il ne
+  bouge plus. **Pas de bouton pause** : le mouvement dure moins de 5 s et ne repart jamais, WCAG 2.2.2 ne
+  s'applique pas. **Remettre une boucle = remettre le bouton, sans discussion.**
+- **Pas de cadre** (2026-09-17) : contrairement à `DicteeMobile`, le bloc ne porte ni `.section-invert`, ni bordure,
+  ni fond. Il vit sur le fond de la page, dans les deux thèmes. Conséquence : les traits sont en `--accent`
+  (contraste correct partout) et **non** en `--accent-bright`, qui serait délavé sur fond clair.
+- **Trois sources seulement**, et une quatrième ligne sans pastille ni liaison — « … et tous les autres » — pour
+  dire qu'il y en a bien plus. Au-delà de trois, le schéma se lit comme un inventaire.
+- **Libellés en HTML, liaisons en SVG.** Un texte SVG suit l'échelle du `viewBox` (piège 20). Les liaisons sont
+  dans un SVG `absolute` à `viewBox` 100 × 100 et `preserveAspectRatio="none"`, qui s'étire avec la zone ;
+  `vector-effect="non-scaling-stroke"` garde l'épaisseur du trait constante. Elles passent **derrière** les
+  pastilles, opaques : aucun calage au pixel, rien ne casse quand la colonne change de largeur.
+- **Tracé orthogonal, pas des courbes** : trois départs horizontaux, un tronc vertical, une arrivée dans le hub.
+  Les courbes essayées le même jour passaient derrière les pastilles du bas et se lisaient comme des fragments
+  détachés (piège 21). Des segments droits ne se déforment pas quand la zone s'étire.
+- **Le tronc est à x = 62 %**, à droite de tout ce que porte la colonne de gauche : la pastille la plus large (35 %)
+  et la ligne « et tous les autres » (49 % à 360 px). À 50 %, mesuré, le tronc traversait cette ligne à 360 px.
+  **Rallonger un libellé ou décaler une pastille impose de revérifier à 360 px.**
+- **Les y des liaisons sont les centres des lignes** : quatre blocs `h-7` séparés par `gap-2` font 136 px, plus
+  12 px de débord en bas, soit 148 px — d'où 9,5 / 34 / 58 %. **Changer la hauteur des lignes, leur nombre ou leur
+  espacement impose de recalculer ces y.**
+- **`pb-3 -mb-3` sur la zone de dessin** : elle déborde de 12 px dans le `gap` de la figure et la marge négative
+  reprend ces 12 px, si bien que le bas du tronc tombe exactement sur le haut du hub. Ne **pas** écrire cela avec
+  `-bottom-3` sur le SVG (piège 22).
+- **Le désordre est le message** : `decalage` (`ml-0`, `ml-8`, `ml-3`) empêche les pastilles d'être alignées. Ne pas
+  « ranger » la colonne.
+- **Propositions d'une ligne** : le constat à gauche (« 3 devis sans réponse »), l'action faite à droite
+  (« ✓ relances envoyées »). Porte et « fait » occupent la même cellule de grille : passer de l'un à l'autre ne
+  décale rien, et la cellule garde la largeur du plus large des deux.
+- Même contrat que partout ailleurs : tout est toujours dans le DOM, seule l'opacité bouge, l'état rendu par le
+  serveur est l'état **final**, bloc en `aria-hidden` + transcription `sr-only`, rien ne bouge sous mouvement réduit.
 - **Contenus inventés**, dits tels dans la transcription : aucun nom de client, aucun montant, aucune pièce réelle
   (piège 17). Les sources sont des **catégories** (« vos devis », « votre agenda »), jamais une marque.
-- **Vérifier après toute modification** : `scrollWidth` à 360 px, CLS nul sur un cycle complet, hauteur du bloc
-  constante, et qu'aucune pastille ne dépasse la zone des tuyaux.
+- **Vérifier après toute modification** : `scrollWidth` à 360 px, CLS nul, hauteur du bloc constante, et qu'aucun
+  libellé de la colonne de gauche n'atteint le tronc à 360 px.
 
 ### Terminal
 - **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
@@ -585,11 +593,15 @@ Toujours réutiliser avant de créer.
   endroit, et il en sort du travail déjà fait. Formulation retenue par l'humain : **« moins de tâches à faire, pas
   plus »** — le hub propose des actions accomplies, jamais une liste de choses à faire. Une variante « la question
   du matin » (on pose une question, la réponse revient) a été écartée au profit du schéma, plus direct.
-  **Coût mesuré** (même machine, 3 passages, mobile 360 px bridé 4G + CPU ×4) : LCP médian 724 ms sur `main` contre
-  **800 ms** sur la branche, soit **+76 ms** ; HTML de l'accueil +0,8 ko gzip (17,3 → 18,1 ko), JS inchangé à
-  75,5 ko gzip. Le surcoût vient du DOM ajouté, pas du transfert : l'accueil porte désormais **deux** démonstrations
-  animées. Si la mesure en production dérive, le levier est là — alléger `DicteeMobile` (moins de scénarios) plutôt
-  que le schéma du hero, qui est au-dessus de la ligne de flottaison. Gain au passage : hero 678 px contre 707 px.
+  **Simplifié le même jour**, après une première version jugée trop chargée : plus de cadre sombre, largeur réduite
+  (`max-w-md`), cinq sources ramenées à **trois** plus une ligne « … et tous les autres », propositions d'une ligne,
+  tracé orthogonal, et surtout **une seule passe au lieu d'une boucle** — donc plus de bouton pause (voir « Schéma
+  du hero »).
+  **Coût mesuré** (même machine, 3 passages, mobile 360 px bridé 4G + CPU ×4) : LCP médian 696 ms sur `main` contre
+  **740 ms** sur la branche, soit **+44 ms** ; HTML de l'accueil +0,5 ko gzip, JS +0,6 ko (77,0 ko au total). Le
+  surcoût vient du DOM ajouté, pas du transfert : l'accueil porte désormais **deux** démonstrations. Si la mesure en
+  production dérive, le levier est là — alléger `DicteeMobile` (moins de scénarios) plutôt que le schéma du hero,
+  qui est au-dessus de la ligne de flottaison. Gain au passage : hero 585 px contre 707 px.
 - **Hero animé, cinq tâches en boucle** (2026-09-16 ; précédent / suivant ajoutés le 2026-09-17). Écrit en JS natif
   (~2 ko gzip) et non en îlot React : garder le hero en HTML pur est ce qui tient le LCP. Mesuré : 79,1 ko de JS
   sur l'accueil, LCP inchangé, CLS 0. **Contrepartie assumée : le cycle complet dure ~50 s**, donc un visiteur qui
@@ -651,9 +663,10 @@ Tolérées, à ne pas étendre sans raison :
   `flex-grow` — des proportions, pas des espacements.
 - `CasClient` : grille `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
 - `Methode` : pas de révélation de 260 ms (420 ms pour un trait) dans le script, décalage `translateY(calc(var(--space-unit) * 3))` de `.revele-cache`.
-- `ConvergenceDonnees` : `viewBox` 100 × 100 en `preserveAspectRatio="none"` (proportions, pas des espacements),
-  `stroke-width` 7 (gaine) et 3 (flux) en `non-scaling-stroke`, pointillé `8 32` et décalage `-40` de `.tuyau-flux`,
-  et les coordonnées des tracés — géométrie d'un schéma, calculée dans le composant et commentée là-bas.
+- `ConvergenceDonnees` : `viewBox` 100 × 100 en `preserveAspectRatio="none"` et `viewBox` 16 × 24 de la flèche
+  (proportions, pas des espacements), `stroke-width` 2 en `non-scaling-stroke`, et les coordonnées des tracés —
+  géométrie d'un schéma, calculée dans le composant et commentée là-bas. `max-w-md` (échelle Tailwind conservée,
+  comme `max-w-sm` de `DicteeMobile`) et `pb-3 -mb-3` sur la zone de dessin (débord volontaire dans le `gap`).
 - `DicteeMobile` : `max-w-sm` (largeur de téléphone, échelle Tailwind conservée comme pour le footer), et
   `rounded-br-sm` / `rounded-bl-sm` sur les bulles — le coin rentrant qui fait lire une bulle de conversation.
 
@@ -732,9 +745,22 @@ Tolérées, à ne pas étendre sans raison :
     → Les libellés d'un schéma qui s'étire sont du **HTML** posé au-dessus du SVG ; le SVG ne porte que la
     géométrie. Corollaire utile : si le HTML est opaque, les tracés peuvent passer dessous et aucun calage au pixel
     n'est nécessaire.
-21. **Cinq tracés qui convergent vers un point unique** se lisent comme des rayons, pas comme des liaisons. Étaler
-    les points d'arrivée et décaler les coudes suffit à retrouver un schéma. De même, un tracé qui s'arrête dans le
-    vide se lit comme un cul-de-sac : il finit derrière un bloc opaque, ou par une pointe.
+21. **Courbes qui passent derrière des blocs opaques.** Dans une zone large et basse, des courbes qui convergent
+    depuis une colonne de pastilles repassent sous les pastilles du bas : on ne voit plus que des fragments, et le
+    schéma devient illisible. Deux symptômes voisins : des tracés qui se pincent sur un point unique se lisent comme
+    des rayons, et un tracé qui s'arrête dans le vide se lit comme un cul-de-sac.
+    → Dans une zone étirée, préférer un **tracé orthogonal** (départs horizontaux, tronc vertical) placé à droite de
+    tout ce que porte la colonne, et faire finir chaque tracé **dans** un bloc ou par une pointe.
+22. **SVG en `absolute` avec `top` et `bottom` : la hauteur n'est pas celle qu'on croit.** Un SVG est un élément
+    remplacé : `top-0` + `-bottom-3` ne l'étirent pas, il reprend le ratio de son `viewBox`. Mesuré le 2026-09-17 :
+    448 px de haut au lieu des 148 attendus, donc un tracé qui traversait la moitié de la page.
+    → Donner sa hauteur au **parent** (`pb-3`, et `-mb-3` si le débord doit manger un `gap`) et poser le SVG en
+    `inset-0 size-full`.
+23. **`pathLength` est ignoré quand `vector-effect="non-scaling-stroke"` est posé.** Le tiret d'un
+    `stroke-dasharray="1"` normalisé par `pathLength="1"` vaut alors **1 pixel** : la liaison apparaît en pointillé
+    minuscule au lieu de se tracer. Vérifiable en une ligne (`getComputedStyle(path).strokeDasharray` → `"1px"`).
+    → Les deux ne se combinent pas. Soit on renonce à `non-scaling-stroke`, soit — comme ici — on révèle le tracé à
+    l'opacité, ce qui est de toute façon plus simple.
 
 ## Anti-patterns
 - Dégradés multicolores
