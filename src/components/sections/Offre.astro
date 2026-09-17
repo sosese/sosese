@@ -1,0 +1,75 @@
+---
+import DicteeMobile from "../ui/diagrams/DicteeMobile.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+// Une seule offre depuis le 2026-09-17 : « Audit & diagnostic » et « Ateliers & acculturation »
+// répétaient les étapes 1 et 2 de la Méthode, juste au-dessus. La grille bento a disparu avec elles.
+//
+// Ce que change une solution sur-mesure. Aucune promesse chiffrée ici : ce sont des principes de
+// fonctionnement, cohérents avec les engagements (aucune écriture sans accord, code et données remis).
+const arguments_ = [
+  {
+    titre: "Pas un outil en plus, des tâches en moins.",
+    texte: "Vos équipes gardent leurs logiciels et leurs habitudes : ce sont les saisies, les recopies et les relances qui disparaissent.",
+  },
+  {
+    titre: "Vos données travaillent pour vous.",
+    texte: "Tarifs, catalogue, historique client : ce qui dort dans vos logiciels sert enfin à préparer le travail, au lieu d'être recopié à la main.",
+  },
+  {
+    titre: "C'est vous qui décidez de ses fonctions, et vous l'améliorez en l'utilisant.",
+    texte: "Vous n'êtes plus limité à ce qu'un logiciel du marché a prévu : chaque correction que vous apportez sert à l'ajuster, et quand un nouveau besoin apparaît, la solution évolue avec lui, tout au long de son utilisation.",
+  },
+];
+
+const points = [
+  "Construite sur votre façon de travailler, pas sur un modèle",
+  "Branchée sur les logiciels que vous utilisez déjà",
+  "Mise en service avec vos équipes",
+];
+---
+
+<section id="offre" aria-labelledby="offre-titre" class="py-(--section-y)">
+  <div class="container-site flex flex-col gap-12">
+    <SectionHeading id="offre-titre" eyebrow="L'offre" title="Une solution construite pour vous, et pour vous seul">
+      Au bout de la méthode, une solution qui vous appartient : elle fait ce que votre métier demande, et rien
+      d'autre.
+    </SectionHeading>
+
+    {/* Le mockup fait 24rem : la colonne de texte prend le reste, et les deux passent l'une sous l'autre
+        avant lg. */}
+    <div class="grid items-start gap-12 lg:grid-cols-[1fr_auto] lg:gap-16">
+      <div class="flex flex-col gap-8">
+        <ul class="flex max-w-(--measure) flex-col gap-4 text-16 text-ink-muted">
+          {
+            arguments_.map((a) => (
+              <li>
+                <strong class="font-medium text-ink">{a.titre}</strong> {a.texte}
+              </li>
+            ))
+          }
+        </ul>
+
+        <ul class="flex flex-col gap-2 text-16 text-ink">
+          {
+            points.map((point) => (
+              <li class="flex items-center gap-3">
+                <span aria-hidden="true" class="font-mono text-accent">
+                  ✓
+                </span>
+                {point}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      {/* La démonstration animée, descendue du hero le 2026-09-17 : c'est ici, en face des arguments,
+          qu'elle prouve la polyvalence au lieu de servir d'illustration d'accueil. */}
+      <div class="flex w-full max-w-sm flex-col gap-3 justify-self-center lg:justify-self-end">
+        <p class="eyebrow">cinq demandes, cinq réponses</p>
+        <DicteeMobile />
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,390 @@
+---
+// Schéma du hero (registre R1, schéma de flux). Remplace le mockup DicteeMobile, descendu dans
+// « L'offre » le 2026-09-17.
+//
+// Ce que la scène doit dire, dans cet ordre :
+// 1. vos données existent déjà, mais elles sont éparpillées — les sources sont volontairement
+//    posées de travers, jamais alignées en colonne : c'est le désordre qui est le problème ;
+// 2. elles alimentent un seul endroit, par des tuyaux où l'on voit passer quelque chose ;
+// 3. ce qui en ressort n'est PAS une liste de choses à faire, mais des actions déjà préparées,
+//    qu'il suffit d'accepter. Moins de tâches, pas plus. C'est tout l'argument.
+// 4. rien ne s'écrit sans le « oui » (même doctrine que la section Confiance).
+//
+// Règles dures, identiques au reste du site :
+// - contenus INVENTÉS, dits tels dans la transcription sr-only. Aucun nom de client, aucun montant,
+//   aucune pièce réelle (DESIGN.md, piège 17) ;
+// - les sources sont des CATÉGORIES (« vos devis », « votre agenda »), jamais une marque ;
+// - tout est toujours dans le DOM, seule l'opacité bouge : la hauteur ne change jamais (CLS 0) ;
+// - l'état rendu par le serveur est l'état FINAL : lisible sans JS, sans flash ;
+// - sous prefers-reduced-motion, rien ne bouge et l'état final reste affiché ;
+// - bloc en aria-hidden, transcription complète en sr-only ;
+// - bouton pause toujours rendu hors mouvement réduit (WCAG 2.2.2).
+
+// Les sources. Le libellé est du HTML (mono 12, taille constante) et non du texte SVG : un texte SVG
+// suit l'échelle du viewBox et tombait à ~8 px à 360 px de large. `decalage` est la mise en désordre,
+// en pas d'espacement : les pastilles ne sont jamais alignées, c'est ce désordre qui porte le message.
+const sources = [
+  { label: "vos devis", decalage: "ml-0" },
+  { label: "vos clients", decalage: "ml-6" },
+  { label: "votre agenda", decalage: "ml-2" },
+  { label: "vos factures", decalage: "ml-8" },
+  { label: "vos emails", decalage: "ml-3" },
+];
+
+// Les tuyaux, dans un viewBox 100 × 100 étiré sur toute la zone (`preserveAspectRatio="none"`) : les
+// tracés se déforment avec elle, ce qui est sans importance pour un tuyau, et `vector-effect` garde
+// l'épaisseur du trait constante. Ils PASSENT DERRIÈRE les pastilles et derrière le hub, tous deux
+// opaques : aucun calage au pixel n'est nécessaire, donc rien ne casse quand la colonne change de
+// largeur.
+// - y de départ (8, 29, 50, 71, 92) : les centres des cinq pastilles. Cinq blocs de h-7 séparés par
+//   gap-2 font 172 px, les centres tombent à 8,1 / 29,1 / 50 / 70,9 / 91,9 %.
+// - y d'arrivée ÉTALÉS (28 à 40) autour du centre du hub, et non un point unique : cinq traits qui
+//   se pincent sur un même pixel se lisent comme des rayons laser, pas comme des tuyaux.
+// - le coude de chaque tuyau est placé à un x différent : c'est ce qui les empêche d'être parallèles.
+// - x d'arrivée 96, donc bien au-delà du bord gauche du hub (62 % à 360 px, 77 % à 1280 px) : les
+//   tuyaux se terminent derrière lui, jamais à sa frontière.
+const tuyaux = [
+  "M0,8 C 40,8 52,28 96,28",
+  "M0,29 C 30,29 62,31 96,31",
+  "M0,50 C 50,50 55,34 96,34",
+  "M0,71 C 34,71 58,37 96,37",
+  "M0,92 C 44,92 50,40 96,40",
+];
+
+// Le tuyau de sortie : il quitte le hub par le bas et redescend vers les propositions. Il vit dans la
+// même colonne que le hub, juste sous lui, sinon il flotte au milieu du bloc. Largeur fixe (celle du
+// hub, w-28 = 112 px), donc pas de déformation, et une pointe vers le bas — sans elle, le tuyau se
+// lisait comme un cul-de-sac.
+const sortie = "M56,0 C 56,24 40,28 38,44";
+
+// Ce que le hub propose. Une proposition = un travail déjà fait, pas une tâche à faire.
+const propositions = [
+  {
+    texte: "Trois devis sont sans réponse depuis dix jours. Les relances sont écrites.",
+    fait: "3 relances envoyées",
+  },
+  {
+    texte: "Le chantier de jeudi n'a pas encore d'équipe. Le créneau et les bonnes personnes sont trouvés.",
+    fait: "rendez-vous posé, équipe prévenue",
+  },
+];
+---
+
+<figure data-cv class="section-invert flex w-full flex-col gap-3 rounded-lg border border-border-strong p-3">
+  <div class="flex items-center justify-between gap-3">
+    <p aria-hidden="true" class="eyebrow">vos données, là où elles sont déjà</p>
+    <button
+      type="button"
+      data-cv-pause
+      aria-pressed="false"
+      aria-label="Mettre l'animation en pause"
+      title="Mettre l'animation en pause"
+      class="inline-flex size-6 shrink-0 items-center justify-center rounded-sm text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:text-ink motion-reduce:hidden"
+    >
+      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-3" fill="currentColor">
+        <path data-cv-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z"></path>
+        <path data-cv-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z"></path>
+      </svg>
+    </button>
+  </div>
+
+  {/* Le schéma. Hauteur fixée par les cinq pastilles (172 px) : elle ne dépend pas de la largeur,
+      donc elle ne bouge jamais. */}
+  <div class="relative grid grid-cols-[1fr_auto] items-center gap-3">
+    <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" class="absolute inset-0 size-full">
+      {
+        tuyaux.map((d, i) => (
+          <g data-cv-tuyau={i} class="opacity-100 transition-opacity duration-(--duration-base) ease-out">
+            {/* La gaine, puis ce qui circule dedans. */}
+            <path d={d} class="stroke-border-strong" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke" />
+            <path
+              d={d}
+              class="tuyau-flux stroke-accent-bright"
+              stroke-width="3"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+              style={`--flux-delai: ${i * 180}ms`}
+            />
+          </g>
+        ))
+      }
+    </svg>
+
+    <ul aria-hidden="true" class="relative flex flex-col items-start gap-2">
+      {
+        sources.map((source, i) => (
+          <li
+            data-cv-source={i}
+            class:list={[
+              "flex h-7 items-center gap-2 rounded-full border border-border-strong bg-surface px-3 font-mono text-12 whitespace-nowrap text-ink opacity-100 transition-opacity duration-(--duration-base) ease-out",
+              source.decalage,
+            ]}
+          >
+            <span aria-hidden="true" class="size-1.5 shrink-0 rounded-full bg-accent-bright" />
+            {source.label}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div aria-hidden="true" class="relative flex w-28 flex-col items-center">
+      <p
+        data-cv-hub
+        class="flex h-14 w-28 items-center justify-center rounded-lg border border-accent bg-surface font-mono text-16 text-ink opacity-100 transition-opacity duration-(--duration-base) ease-out"
+      >
+        sosese<span class="text-accent">.</span>
+      </p>
+      <svg data-cv-sortie viewBox="0 0 112 56" fill="none" class="h-14 w-28 opacity-100 transition-opacity duration-(--duration-base) ease-out">
+        <path d={sortie} class="stroke-border-strong" stroke-width="7" stroke-linecap="round" />
+        <path d={sortie} class="tuyau-flux stroke-accent-bright" stroke-width="3" stroke-linecap="round" style="--flux-delai: 900ms" />
+        <path d="M38,56 L30,40 L46,40 Z" class="fill-accent-bright" />
+      </svg>
+    </div>
+  </div>
+
+  <p aria-hidden="true" data-cv-titre class="eyebrow opacity-100 transition-opacity duration-(--duration-base) ease-out">
+    ce qu'on vous propose ce matin
+  </p>
+
+  <ul aria-hidden="true" class="flex flex-col gap-3">
+    {
+      propositions.map((proposition, i) => (
+        <li
+          data-cv-carte={i}
+          class="flex flex-col gap-3 rounded-md border border-border bg-surface p-3 opacity-100 transition-opacity duration-(--duration-base) ease-out"
+        >
+          <p class="text-14 text-ink">{proposition.texte}</p>
+          {/* Les deux états occupent la même cellule : passer de la porte au « fait » ne décale rien. */}
+          <div class="grid">
+            <div data-cv-porte class="col-start-1 row-start-1 flex flex-wrap items-center gap-2 opacity-0 transition-opacity duration-(--duration-base) ease-out">
+              <span class="rounded-full bg-accent px-3 py-1 font-mono text-12 text-on-accent">oui</span>
+              <span class="rounded-full border border-border-strong px-3 py-1 font-mono text-12 text-ink-muted">modifier</span>
+            </div>
+            <div data-cv-fait class="col-start-1 row-start-1 flex flex-wrap items-center gap-2 opacity-100 transition-opacity duration-(--duration-base) ease-out">
+              <span class="flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-3 py-1 font-mono text-12 text-ink">
+                <span aria-hidden="true" class="flex size-4 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">✓</span>
+                {proposition.fait}
+              </span>
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p
+    aria-hidden="true"
+    data-cv-bilan
+    class="flex items-center gap-2 self-start rounded-md border border-accent bg-accent-soft px-2 py-1 font-mono text-12 text-ink opacity-100 transition-opacity duration-(--duration-base) ease-out"
+  >
+    <span aria-hidden="true" class="flex size-4 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">✓</span>
+    <span>deux «&#8239;oui&#8239;», et votre liste a raccourci</span>
+  </p>
+
+  <p class="sr-only">
+    Schéma : vos données sont déjà là, éparpillées dans vos outils — {sources.map((s) => s.label).join(", ")}.
+    Elles alimentent toutes le même endroit, qui ne vous rend pas une liste de choses à faire, mais du
+    travail déjà préparé. {propositions.map((p) => p.texte).join(" ")} Rien n'est envoyé ni enregistré
+    sans votre accord : chaque proposition attend votre « oui ». Ensuite : {propositions.map((p) => p.fait).join(", ")}.
+    Exemple type, aucune donnée réelle.
+  </p>
+</figure>
+
+<script>
+  (function () {
+    var figure = document.querySelector("[data-cv]");
+    if (!figure) return;
+
+    var sources = Array.prototype.slice.call(document.querySelectorAll("[data-cv-source]"));
+    var tuyaux = Array.prototype.slice.call(document.querySelectorAll("[data-cv-tuyau]"));
+    var hub = document.querySelector("[data-cv-hub]");
+    var sortie = document.querySelector("[data-cv-sortie]");
+    var titre = document.querySelector("[data-cv-titre]");
+    var cartes = Array.prototype.slice.call(document.querySelectorAll("[data-cv-carte]"));
+    var bilan = document.querySelector("[data-cv-bilan]");
+    var bouton = document.querySelector("[data-cv-pause]");
+    var iconePause = document.querySelector("[data-cv-icone-pause]");
+    var iconeLecture = document.querySelector("[data-cv-icone-lecture]");
+
+    var auto = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!auto) return; // L'état final est déjà rendu : sous mouvement réduit, on n'y touche pas.
+
+    var SOURCE = 300; // une source qui s'allume et son tuyau qui part
+    var PORTE = 1300; // temps laissé pour lire la proposition avant le « oui »
+    var TENUE = 4200; // lecture de l'état final
+    var PREMIERE_TENUE = 1800; // au premier passage : le LCP est déjà mesuré, on ne s'éternise pas
+    var BASCULE = 420; // fondu avant la reprise
+
+    var enPause = false;
+    var visible = true;
+
+    // Même lecteur que le mockup de l'offre : une liste d'événements datés, joués un par un. La pause
+    // mémorise le temps déjà attendu vers le prochain ; la reprise n'attend que le reste.
+    var evenements = [];
+    var prochain = 0;
+    var horloge = 0;
+    var attendu = 0;
+    var debut = 0;
+    var minuteur = null;
+
+    function arrete() {
+      return enPause || !visible;
+    }
+
+    function avancer() {
+      if (minuteur || arrete() || prochain >= evenements.length) return;
+      var ev = evenements[prochain];
+      debut = Date.now();
+      minuteur = window.setTimeout(function () {
+        minuteur = null;
+        horloge = ev.t;
+        attendu = 0;
+        prochain++;
+        ev.fn();
+        avancer();
+      }, Math.max(0, ev.t - horloge - attendu));
+    }
+
+    function suspendre() {
+      if (!minuteur) return;
+      window.clearTimeout(minuteur);
+      minuteur = null;
+      attendu += Date.now() - debut;
+    }
+
+    function charger(liste) {
+      suspendre();
+      evenements = liste;
+      prochain = 0;
+      horloge = 0;
+      attendu = 0;
+      avancer();
+    }
+
+    function montrer(el) {
+      if (!el) return;
+      el.classList.remove("opacity-0");
+      el.classList.add("opacity-100");
+    }
+
+    function cacher(el) {
+      if (!el) return;
+      el.classList.add("opacity-0");
+      el.classList.remove("opacity-100");
+    }
+
+    function porte(carte) {
+      return carte.querySelector("[data-cv-porte]");
+    }
+
+    function fait(carte) {
+      return carte.querySelector("[data-cv-fait]");
+    }
+
+    function eclat(el) {
+      // Relance l'animation CSS : retirer la classe, forcer un recalcul, la remettre.
+      el.classList.remove("action-eclat");
+      void el.offsetWidth;
+      el.classList.add("action-eclat");
+    }
+
+    function masquer() {
+      sources.concat(tuyaux).concat([hub, sortie, titre, bilan]).forEach(cacher);
+      bilan.classList.remove("action-eclat");
+      cartes.forEach(function (carte) {
+        cacher(carte);
+        cacher(porte(carte));
+        cacher(fait(carte));
+      });
+    }
+
+    // Une passe complète, à partir de la date t.
+    function jouer(t) {
+      var liste = [];
+      var at = function (fn) {
+        liste.push({ t: t, fn: fn });
+      };
+
+      sources.forEach(function (source, i) {
+        t += SOURCE;
+        at(function () {
+          montrer(source);
+          montrer(tuyaux[i]);
+        });
+      });
+
+      t += 500;
+      at(function () {
+        montrer(hub);
+      });
+
+      t += 400;
+      at(function () {
+        montrer(sortie);
+      });
+
+      t += 300;
+      at(function () {
+        montrer(titre);
+      });
+
+      cartes.forEach(function (carte) {
+        t += 320;
+        at(function () {
+          montrer(carte);
+          montrer(porte(carte));
+        });
+        t += PORTE;
+        at(function () {
+          cacher(porte(carte));
+          montrer(fait(carte));
+        });
+      });
+
+      t += 500;
+      at(function () {
+        montrer(bilan);
+        eclat(bilan);
+      });
+
+      t += TENUE;
+      at(function () {
+        masquer();
+        charger(jouer(BASCULE));
+      });
+
+      return liste;
+    }
+
+    bouton.addEventListener("click", function () {
+      enPause = !enPause;
+      bouton.setAttribute("aria-pressed", String(enPause));
+      var libelle = enPause ? "Relancer l'animation" : "Mettre l'animation en pause";
+      bouton.setAttribute("aria-label", libelle);
+      bouton.setAttribute("title", libelle);
+      iconePause.classList.toggle("hidden", enPause);
+      iconeLecture.classList.toggle("hidden", !enPause);
+      if (enPause) suspendre();
+      else avancer();
+    });
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entrees) {
+        visible = entrees[0].isIntersecting;
+        if (visible) avancer();
+        else suspendre();
+      }).observe(figure);
+    }
+
+    // Premier passage : l'état final rendu par le serveur reste le temps d'être vu, puis la boucle part.
+    charger([
+      {
+        t: PREMIERE_TENUE,
+        fn: function () {
+          masquer();
+          charger(jouer(200));
+        },
+      },
+    ]);
+  })();
+</script>

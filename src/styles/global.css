@@ -169,7 +169,24 @@
   }
 }
 
-/* Action faite dans le mockup du hero : un halo ambre qui s'élargit et s'éteint, deux fois. */
+/* Schéma du hero (ConvergenceDonnees) : ce qui circule dans les tuyaux. Un pointillé qui défile le
+   long du tracé — période 40 u (8 + 32), donc un décalage de -40 u boucle sans raccord visible.
+   stroke-dashoffset ne touche ni la mise en page ni la géométrie : CLS 0.
+   Le pointillé n'est déclaré QUE dans la media query : sous mouvement réduit, le tuyau est un trait
+   plein et immobile, pas un tracé en pointillé figé qui ferait « cassé ». */
+@keyframes tuyau-flux {
+  to { stroke-dashoffset: -40; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tuyau-flux {
+    stroke-dasharray: 8 32;
+    animation: tuyau-flux var(--duration-loop) linear infinite;
+    animation-delay: var(--flux-delai, 0ms);
+  }
+}
+
+/* Action faite dans les schémas animés : un halo ambre qui s'élargit et s'éteint, deux fois. */
 @keyframes action-eclat {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-bright) 55%, transparent); }
   100% { box-shadow: 0 0 0 calc(var(--space-unit) * 2) transparent; }
