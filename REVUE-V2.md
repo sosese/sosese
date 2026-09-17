@@ -20,6 +20,22 @@
 | v1.0 | C3, C4, C6, C7, C8, C9, C11 | ✅ livré — commit `3cdc7fb` |
 | v0.6, v0.7, v0.9, v1.1 | A1–A7, B1–B7, B9, D1–D3, C5, C10 | ⏳ en attente des décisions et données humaines (§7, §8) |
 
+**Retours humains du 2026-09-17, avant mise en production** (même branche, détail dans `DESIGN.md`) :
+
+| Item | Livré le 2026-09-16 | Devenu |
+|---|---|---|
+| C2 — frise de la Méthode | frise proportionnelle + barres « ce que ça vous demande » | **retiré** : format de `main` (étapes numérotées, Votre temps / Durée / Livrable), « Votre temps » en tête, atelier « 1/2 journée avec les équipes », révélation séquentielle de gauche à droite |
+| C3 — journée type | bande horaire | **retiré** : section Constat revenue au format de `main` |
+| C4 — calculateur | deux curseurs | **retiré de la page** (composant conservé, non utilisé) |
+| C11 — hero | mockup métier | **conservé et enrichi** : cinq tâches, trois règles par connecteur, sans légende ni cadre de téléphone, toujours sombre, pause réelle, précédent / suivant, action mise en avant ; hero resserré (`--hero-y`) pour laisser voir le bandeau des promesses |
+| Cas client (démo) | `DicteeChiffrageDemo`, îlot React | **remplacé** par `EnchainementClient` : fiche client dictée → devis → intervention, puis analyse en lecture seule, en boucle |
+| B8 — carte « Solutions sur-mesure » | deux puces | **développée** : trois arguments (tâches en moins, données qui travaillent, fonctions décidées et améliorées à l'usage) |
+
+Conséquences sur les mesures ci-dessous : la prose de la Méthode et du Constat remonte au niveau de `main`, et le
+LCP simulé de l'accueil passe de 1,5 à 1,8 s (HTML plus lourd, voir `DESIGN.md`, « Scripts des composants en
+fichiers externes »). **Numérotation** : les lots v0.8 et v1.0 de ce document sont des lots de travail, pas des tags ;
+ils partent en production ensemble sous le tag **v0.6** (le tag suivant la v0.5 en production).
+
 Mesures avant / après (`a22870a` → HEAD), même méthode, contenu replié et libellés de schéma distingués :
 
 | Indicateur | Avant | Après |
@@ -44,8 +60,8 @@ Vérifié après chaque lot : `npm run build`, aucun débordement horizontal à 
 deux thèmes**, un seul `h1`, hiérarchie de titres sans saut, aucun `aria-labelledby` orphelin, CLS 0, empreintes
 CSP du script inline calculées au démarrage du serveur.
 
-Restent ouverts sur ce qui a été livré : la carte « Solutions sur-mesure » du bento a perdu deux puces (B8) et
-respire un peu trop — à retraiter avec C5 (bandeau d'outils) ; l'eyebrow « Pour votre responsable informatique »
+Restent ouverts sur ce qui a été livré : ~~la carte « Solutions sur-mesure » du bento respire un peu trop~~ (traité le
+2026-09-17, trois arguments ajoutés) ; l'eyebrow « Pour votre responsable informatique »
 de « Sous le capot » contredit la cible 1–50 et attend la passe B1.
 
 ---

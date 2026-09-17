@@ -6,9 +6,10 @@
 - --accent-bright n'est jamais une couleur de texte sur fond clair.
 - Bordures 1px sur --border. Ombres réservées aux éléments flottants.
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
-- Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal du hero** (voir « Décisions »).
+- Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal** (aujourd'hui dans « Sous le capot », voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
-- Les composants interactifs sont des îlots React, **sauf le calculateur** (JS natif `is:inline`, voir « Décisions »).
+- Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode et la démonstration du
+  cas client : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
   Tout le reste est statique. Avant de créer un îlot, vérifier qu'un composant statique ou quelques lignes de JS natif ne suffisent pas.
 
 ## Tokens
@@ -193,8 +194,8 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | MicroFlux | `ui/diagrams/MicroFlux.astro` | statique — flux court tenant dans une carte : `steps`, `label`. Flèche portée par l'étape qu'elle introduit (pas de flèche orpheline au retour à la ligne). Sans animation |
-| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script `is:inline` — mockup animé du hero : quatre métiers joués en boucle, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup du hero » |
-| Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) |
+| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — mockup animé du hero : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup du hero » |
+| Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
 | CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
@@ -203,7 +204,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
-| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script `is:inline` — démonstration en boucle du cas client : fiche client dictée → devis → intervention, puis l'analyse. Voir « Cas client » |
+| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client : fiche client dictée → devis → intervention, puis l'analyse. Voir « Cas client » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 Le **hero** porte `DicteeMobile` (mockup métier) depuis le 2026-09-16 ; le terminal est descendu dans « Sous le capot ».
@@ -256,7 +257,7 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 | `GET /api/health` | `{ ok: true }` |
 | `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
 | Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
-| Sécurité | helmet ; CSP `script-src 'self'` + empreintes sha256 des scripts inline, calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
+| Sécurité | helmet ; CSP `script-src 'self'` (scripts des composants en fichiers `/_astro`) + empreintes sha256 des scripts restés inline (anti-flash du thème), calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
 | Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |
 | Proxy | `trustProxy: 1` : l'IP du rate limit est celle vue par Traefik |
 
@@ -317,6 +318,24 @@ tierce.
 `/contact`, `/a-propos` ; LCP 1,2–1,4 s ; CLS 0 ; TTFB 20–30 ms. axe : 0 violation (6 pages × 2 thèmes + menu mobile).
 Certificat Let's Encrypt couvrant `sosese.tech` et `www.sosese.tech` ; `www` et HTTP redirigent en 301 ; HSTS,
 CSP, cache et compression brotli conformes. Build local du tag identique à la production (hors `uid` des îlots).
+**Avant la v0.6** (2026-09-17, branche `feat/schemas-v08-v10`, serveur `server/index.mjs` local, Lighthouse 12.8 mobile
+simulé, axe-core 4.13) :
+
+| Page | Perf | A11y | Bonnes pratiques | SEO | LCP | CLS | JS |
+|---|---|---|---|---|---|---|---|
+| `/` | 98–100 | 100 | 100 | 100 | 1,8 s (1,5 s sur `main`, même machine) | 0 | 76 ko |
+| `/contact` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 79 ko |
+| `/a-propos` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 74 ko |
+| `/mentions-legales` | 100 | 100 | 100 | 100 | 1,7 s | 0 | 74 ko |
+
+axe : 0 violation sur les 6 pages dans les deux thèmes (FAQ ouverte) et sur le menu mobile ouvert. Aucun débordement
+horizontal à 360 / 640 / 1024 / 1280 px dans les deux thèmes ; un seul `h1`, aucun saut de titre, aucun
+`aria-labelledby` orphelin. **CLS mesuré à 0** pendant l'animation du hero (navigation comprise), la révélation de la
+Méthode et un cycle complet du cas client ; hauteurs des deux démonstrations constantes. Mouvement réduit : rien de
+masqué, pas de lecture automatique, boutons pause masqués, précédent / suivant opérants. Focus visible (contour 2 px)
+atteint au clavier sur les quatre nouveaux boutons. Aucune erreur console, aucune requête en erreur, aucune requête
+tierce. Test de démarrage de l'image Docker : laissé à GitHub Actions (non rejoué en local).
+
 Procédures de publication, déploiement et vérification : **`RUNBOOK.md`**.
 
 ### Contenus éditables (Content Collections)
@@ -353,7 +372,7 @@ du texte qu'elle supprime.
   temps / Durée / Livrable, **« Votre temps » en premier**). Frise proportionnelle et `CompareBars` retirés de cette
   section. **Révélation séquentielle, de gauche à droite** : pastille, texte, cadre du détail avec sa première
   ligne, lignes suivantes, puis le trait vers l'étape suivante (`scaleY` sous `md`, `scaleX` au-dessus) ; ~5 s au
-  total, une seule fois. Script `is:inline` : `IntersectionObserver` (seuil 0,25) puis minuteurs, éléments marqués
+  total, une seule fois. Script natif du composant : `IntersectionObserver` (seuil 0,25) puis minuteurs, éléments marqués
   `data-revele` (`="trait"` pour le trait), masquage par `.revele-cache` dans `global.css`. **Écart assumé à la
   règle « pas d'`IntersectionObserver` » ci-dessous** (2026-09-17) : la version en `animation-timeline: view()`
   ne s'est pas jouée chez l'humain (Firefox ne la gère pas) et ne sait pas enchaîner les trois colonnes dans le
@@ -504,7 +523,7 @@ Toujours réutiliser avant de créer.
   dictée depuis le chantier, le chiffrage fait sur son catalogue, la réponse qui revient dans le même fil, au
   téléphone comme au bureau, et la porte de validation avant création. Le terminal descend dans « Sous le capot ».
   Effet de bord mesuré : plus aucun îlot React au-dessus de la ligne de flottaison, le hero est du HTML pur.
-- **Hero animé, cinq tâches en boucle** (2026-09-16 ; précédent / suivant ajoutés le 2026-09-17). Écrit en JS natif `is:inline`
+- **Hero animé, cinq tâches en boucle** (2026-09-16 ; précédent / suivant ajoutés le 2026-09-17). Écrit en JS natif
   (~2 ko gzip) et non en îlot React : garder le hero en HTML pur est ce qui tient le LCP. Mesuré : 79,1 ko de JS
   sur l'accueil, LCP inchangé, CLS 0. **Contrepartie assumée : le cycle complet dure ~50 s**, donc un visiteur qui
   ne reste pas ne verra pas les cinq. Réduire le nombre de scénarios ou la tenue finale (`TENUE`) est le levier.
@@ -512,6 +531,15 @@ Toujours réutiliser avant de créer.
   multiplication ne valent pas le runtime. L'empreinte sha256 du script est calculée au démarrage du serveur
   depuis `dist/` — rien à configurer, mais **le serveur doit être redémarré après chaque build** (déjà vrai, piège 16).
   Le résultat rendu par le serveur est déjà juste : sans JS, le bloc reste une estimation lisible.
+- **Scripts des composants en fichiers externes** (2026-09-17, mesuré avant mise en production). Le hero à cinq
+  scénarios et la démonstration du cas client ont porté le HTML de l'accueil de 12,6 à 19,5 ko (brotli, tel que servi),
+  au-delà de la première fenêtre TCP (~14 ko) : LCP Lighthouse mobile de 1,5 s (`main`) à 1,8–2,3 s. Les trois
+  scripts (hero, Méthode, cas client) étaient en `is:inline` ; ils sont désormais de simples `<script>` Astro, et
+  `vite.build.assetsInlineLimit` (`astro.config.mjs`) empêche Astro de les réinjecter dans la page même s'ils font
+  moins de 4 ko. Résultat : HTML servi 16,2 ko, LCP 1,8 s (4 passages sur 5), fichiers `/_astro` en cache immuable.
+  **Ne pas remettre `is:inline`** sur ces composants. **Écart restant assumé** : ~0,3 s de LCP simulé de plus que
+  `main`, dû au contenu lui-même (cinq scénarios empilés, démonstration en quatre étapes). Les leviers, si la mesure
+  en production dépasse 1,8 s : moins de scénarios dans le hero, ou démonstration du cas client allégée.
 - **Coût du runtime React** : ~67 ko gzip dès qu'un îlot est présent.
   Mesuré le 2026-09-15 avec le cas client : ~74 ko gzip de JS sur l'accueil (runtime 67 ko + îlots ~7 ko).
 - **Budget JS porté à 150 ko gzip sur l'accueil** (décision du 2026-09-16, écart au §8.1 qui fixait 100 ko).
