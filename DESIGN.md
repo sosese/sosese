@@ -318,7 +318,7 @@ tierce.
 `/contact`, `/a-propos` ; LCP 1,2–1,4 s ; CLS 0 ; TTFB 20–30 ms. axe : 0 violation (6 pages × 2 thèmes + menu mobile).
 Certificat Let's Encrypt couvrant `sosese.tech` et `www.sosese.tech` ; `www` et HTTP redirigent en 301 ; HSTS,
 CSP, cache et compression brotli conformes. Build local du tag identique à la production (hors `uid` des îlots).
-**Avant la v0.6** (2026-09-17, branche `feat/schemas-v08-v10`, serveur `server/index.mjs` local, Lighthouse 12.8 mobile
+**Avant la v0.7** (tag `v0.6` non publié, piège 19 ; 2026-09-17, branche `feat/schemas-v08-v10`, serveur `server/index.mjs` local, Lighthouse 12.8 mobile
 simulé, axe-core 4.13) :
 
 | Page | Perf | A11y | Bonnes pratiques | SEO | LCP | CLS | JS |
@@ -648,6 +648,10 @@ Tolérées, à ne pas étendre sans raison :
     `@fastify/static` 8 → 10, `nodemailer` 7 → 10 et `astro` 5 → 7. `@fastify/static` 10 ne passe plus d'objet
     doté de `res.setHeader` à `setHeaders` : crash à la première page servie, `/api/health` restant pourtant OK.
     Le test de démarrage de la CI a bloqué la publication (tag `v0.3` jamais publié, correctif en `v0.4`).
+    **Récidive le 2026-09-17 sur `v0.6`**, avec les mêmes paquets (patchs plus récents : la montée a été
+    re-résolue, pas recopiée d'une ancienne branche). Même symptôme, même blocage par la CI ; correctif en `v0.7`
+    (dépendances et lockfile de la `v0.5` restaurés, build identique au build audité : mêmes empreintes `/_astro`).
+    La recette du RUNBOOK (§2.1) n'appelle plus `npm install` et impose un `git diff` de contrôle.
     → Un commit de version ne touche que `version` (`git diff` de `package.json` : une ligne). Les montées de
     dépendances se font dans leur propre branche `chore/`, avec `npm ci && npm run build && npm start` et un
     parcours des pages avant la PR.
