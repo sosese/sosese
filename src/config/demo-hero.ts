@@ -10,13 +10,13 @@
 // 4. l'action n'a lieu qu'après accord (`porte`), sauf en lecture seule — voir le scénario 5.
 //
 // Règles dures :
-// - Scénarios INVENTÉS, légendés comme tels dans le composant. Aucune ligne, aucun montant, aucun
+// - Scénarios INVENTÉS, dits tels dans la transcription sr-only du composant. Aucune ligne, aucun montant, aucun
 //   nom de client ne vient d'une pièce réelle ni d'un outil connecté (DESIGN.md, piège 17).
 // - Les règles métier restent GÉNÉRIQUES : on nomme la nature de la règle (« vos taux de TVA »),
 //   jamais sa valeur. Aucun taux affiché. Passer à des valeurs exactes = décision humaine.
 // - Les sources sont des CATÉGORIES d'outils (catalogue, CRM, agenda, gestion, compta, boîte mail),
 //   jamais une marque : pas de logo ni de nom de logiciel tiers sur une page publique.
-// - Garder les scénarios de masse comparable : entrée de 13 à 16 mots, 4 règles, 3 à 4 éléments de
+// - Garder les scénarios de masse comparable : entrée de 13 à 16 mots, 3 règles, 3 à 4 éléments de
 //   sortie. Les scènes sont empilées dans une même cellule de grille, donc la hauteur du bloc est
 //   celle du plus grand — un scénario bavard creuse un trou sous tous les autres.
 // - Nom de règle : 22 caractères au plus. Au-delà, il passe à la ligne à côté de sa source sur un
@@ -52,7 +52,6 @@ export const scenarios: Scenario[] = [
     },
     regles: [
       { regle: "vos tarifs de pose", source: "catalogue" },
-      { regle: "vos temps par m²", source: "historique" },
       { regle: "vos remises client", source: "CRM" },
       { regle: "vos taux de TVA", source: "gestion" },
     ],
@@ -82,7 +81,6 @@ export const scenarios: Scenario[] = [
       { regle: "vos champs requis", source: "CRM" },
       { regle: "vos doublons connus", source: "CRM" },
       { regle: "vos zones desservies", source: "gestion" },
-      { regle: "votre nomenclature", source: "CRM" },
     ],
     sortie: {
       forme: "lignes",
@@ -107,7 +105,6 @@ export const scenarios: Scenario[] = [
       cite: false,
     },
     regles: [
-      { regle: "vos délais de paiement", source: "gestion" },
       { regle: "l'historique du client", source: "compta" },
       { regle: "votre ton habituel", source: "boîte mail" },
       { regle: "votre lien de paiement", source: "gestion" },
@@ -135,7 +132,6 @@ export const scenarios: Scenario[] = [
     },
     regles: [
       { regle: "vos disponibilités", source: "agenda" },
-      { regle: "vos temps de trajet", source: "agenda" },
       { regle: "les équipes en poste", source: "planning" },
       { regle: "vos horaires d'atelier", source: "gestion" },
     ],
@@ -163,7 +159,6 @@ export const scenarios: Scenario[] = [
     regles: [
       { regle: "vos ventes", source: "gestion" },
       { regle: "vos familles produits", source: "catalogue" },
-      { regle: "vos marges par article", source: "compta" },
       { regle: "votre exercice", source: "gestion" },
     ],
     sortie: {

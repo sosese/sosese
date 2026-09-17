@@ -357,7 +357,9 @@ du texte qu'elle supprime.
 depuis la route, question de gestion. L'objectif est double : le visiteur reste pour voir si son métier passe, et
 il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 à 10 s, le cycle complet **~50 s**.
 
-- **Scénarios dans `src/config/demo-hero.ts`**, inventés, légendés « scénario type, pas un document réel ».
+- **Scénarios dans `src/config/demo-hero.ts`**, inventés, dits tels dans la transcription `sr-only`. **Aucune
+  légende visible sous le cadre** (retirée le 2026-09-17 pour que le bandeau des promesses remonte vers la ligne de
+  flottaison) : ne pas la rajouter sans rediscuter la hauteur du hero.
   Les en-têtes du fichier portent les règles de rédaction : elles font partie du contrat, pas du commentaire.
 - **Le connecteur est le bloc central.** Chaque règle est affichée **avec la source d'où elle est lue**
   (catalogue, CRM, agenda, gestion, compta, boîte mail) : c'est ce qui montre que les règles existent déjà chez le
@@ -375,8 +377,9 @@ il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 
   email caractère par caractère serait un contresens. Le type est porté par `data-entree`.
 - **Les scènes sont empilées dans une même cellule de grille** (`col-start-1 row-start-1`, `self-start`) et présentes
   en permanence : la hauteur du bloc vaut celle de la plus haute, elle ne bouge jamais. **C'est ce qui tient le CLS
-  à 0.** Corollaire : garder les scénarios de masse comparable (entrée de 13 à 16 mots, 4 règles, 3 à 4 éléments de
-  sortie). Écart mesuré aujourd'hui : 497 à 541 px, soit 44 px de vide au pire.
+  à 0.** Corollaire : garder les scénarios de masse comparable (entrée de 13 à 16 mots, **3 règles**, 3 à 4 éléments de
+  sortie). Passées de 4 à 3 le 2026-09-17 pour gagner une ligne de hauteur. Écart mesuré à 1440 px : 472 à 516 px,
+  soit 44 px de vide au pire.
 - **Les libellés d'en-tête sont empilés de la même façon.** Écrire le contexte et le métier dans un seul span et en
   changer le texte faisait varier sa largeur, donc bouger le point séparateur : **CLS 0,005 mesuré**. Cinq spans
   empilés, un seul opaque : plus rien ne bouge.
@@ -386,8 +389,8 @@ il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 
 - **État rendu par le serveur = état final du premier scénario.** Sans JS, le hero reste un scénario complet et
   lisible. Au premier passage, cet état est tenu 1,8 s avant que la boucle prenne la main : le LCP est déjà mesuré.
 - **Respecte `prefers-reduced-motion`** (l'exception du terminal ne s'étend pas) : le script sort immédiatement, le
-  premier scénario reste affiché, et la liste des métiers est donnée en toutes lettres dans la légende
-  (`motion-reduce:block`) — sans rotation, il faut bien les nommer.
+  premier scénario reste affiché. La liste des métiers en toutes lettres (`motion-reduce:block`) a disparu avec la
+  légende le 2026-09-17 : sous ce réglage, seul le premier métier est visible.
 - **Bouton pause toujours rendu** hors mouvement réduit (`motion-reduce:hidden`) : l'animation démarre seule et dure
   plus de 5 s, WCAG 2.2.2 impose un moyen de l'arrêter. Ce n'est pas un bouton de navigation entre scénarios — il n'y
   en a pas, c'est voulu. **Ne jamais le retirer.** Mise en pause aussi hors viewport (`IntersectionObserver`).

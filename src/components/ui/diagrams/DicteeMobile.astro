@@ -15,7 +15,6 @@
 import { scenarios } from "../../../config/demo-hero";
 
 const premier = scenarios[0];
-const metiers = [...new Set(scenarios.map((s) => s.metier))];
 
 const icones = {
   voix: '<rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" />',
@@ -218,22 +217,6 @@ const resume = (s: (typeof scenarios)[number]) =>
     seulement après accord — sauf en lecture seule. {scenarios.map((s) => resume(s)).join(" ")} Scénarios
     types, aucun n'est un document réel.
   </p>
-
-  <figcaption class="flex flex-col items-center gap-2 text-center">
-    <p class="flex items-center justify-center gap-2 font-mono text-12 text-ink-muted">
-      <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" />
-      </svg>
-      <span aria-hidden="true">+</span>
-      <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="12" rx="2" /><path d="M2 20h20" />
-      </svg>
-      sur le chantier comme au bureau
-    </p>
-    {/* Sans animation, la rotation n'a pas lieu : on nomme ce qu'elle aurait montré. */}
-    <p class="hidden font-mono text-12 text-ink-muted motion-reduce:block">{metiers.join(" · ")}</p>
-    <p class="font-mono text-12 text-ink-muted">Scénario type, pas un document réel.</p>
-  </figcaption>
 </figure>
 
 <script is:inline>
