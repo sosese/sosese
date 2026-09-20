@@ -1,4 +1,5 @@
 ---
+import ACompleter from "../ui/ACompleter.astro";
 import DotPattern from "../ui/DotPattern.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 import TerminalDemo from "../islands/TerminalDemo";
@@ -27,12 +28,12 @@ const liaisons = ["écriture : votre accord", null];
 <section aria-labelledby="capot-titre" class="section-invert relative overflow-hidden border-y border-border py-(--section-y)">
   <DotPattern />
   <div class="container-site relative flex flex-col gap-12">
-    <SectionHeading id="capot-titre" eyebrow="Pour votre responsable informatique" title="Sous le capot">
-      Une architecture sobre, documentée et réversible, qui s'ajoute à votre système d'information sans le remplacer.
+    <SectionHeading id="capot-titre" eyebrow="Pour qui s'occupe de votre informatique" title="Sous le capot">
+      Ça s'ajoute à ce que vous avez, ça ne le remplace pas. Et tout est documenté pour que vous puissiez reprendre la main, ou la confier à quelqu'un d'autre.
     </SectionHeading>
 
     <div class="flex flex-col gap-4">
-      <p class="eyebrow">Schéma d'intégration</p>
+      <p class="eyebrow">Comment ça se branche chez vous</p>
       <ol class="grid items-stretch gap-2 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
         {
           blocs.map((bloc, i) => (
@@ -66,9 +67,17 @@ const liaisons = ["écriture : votre accord", null];
       </p>
     </div>
 
-    <div class="flex flex-col gap-4">
-      <p class="eyebrow">Une mission, vue de la ligne de commande</p>
-      <TerminalDemo client:idle />
+    {/* Écran partagé : le terminal à gauche, un second visuel à droite, à venir. La moitié droite
+        porte le marqueur `ACompleter` et non un vide — un trou silencieux se met en production
+        sans qu'on le voie (§9). Avant lg, les deux passent l'une sous l'autre. */}
+    <div class="grid gap-8 lg:grid-cols-2 lg:gap-6">
+      <div class="flex flex-col gap-4">
+        <p class="eyebrow">Une mission, vue de la ligne de commande</p>
+        <TerminalDemo client:idle />
+      </div>
+      <div class="flex min-h-56 flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border-strong p-6">
+        <ACompleter label="second visuel de « Sous le capot »" />
+      </div>
     </div>
 
     <details class="group">

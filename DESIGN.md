@@ -185,7 +185,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 |---|---|---|
 | Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">` |
 | Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
-| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `w-fit` (ne s'étire pas dans un flex en colonne) |
+| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `href` → rendu en `<a>` avec `rel="noopener"` et soulignement au survol (cas client), `w-fit` (ne s'étire pas dans un flex en colonne) |
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit. **Non utilisé depuis le 2026-09-17** (retiré de l'offre, doublon avec `DicteeMobile` placé juste à côté) ; conservé |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
@@ -193,12 +193,13 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
-| MicroFlux | `ui/diagrams/MicroFlux.astro` | statique — flux court tenant dans une carte : `steps`, `label`. Flèche portée par l'étape qu'elle introduit (pas de flèche orpheline au retour à la ligne). Sans animation |
-| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — mockup animé de **l'offre** (dans le hero jusqu'au 2026-09-17) : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de l'offre » |
-| ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du **hero** : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. Voir « Schéma du hero » |
+| DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — **non utilisé depuis le 2026-09-20** (hero jusqu'au 2026-09-17, « L'offre » jusqu'au 2026-09-19, « Sous le capot » une journée) ; conservé : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de la dictée » |
+| RotationEcrans | `ui/diagrams/RotationEcrans.astro` | statique + script natif — mockup animé de **« L'offre »** depuis le 2026-09-19, en 24 rem depuis le 2026-09-20 (hero le 2026-09-19, le temps d'une itération) : le même enchaînement joué dans quatre décors (messagerie, boîte mail, téléphone, application de gestion), quatre boutons pour aller à l'un d'eux, bouton pause. Voir « Rotation d'écrans » |
+| VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — visuel du **hero** depuis le 2026-09-19 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
+| ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
-| CompareBars | `ui/diagrams/CompareBars.astro` | statique — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`. Voir « Schémas » |
+| CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas » |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
@@ -208,11 +209,15 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client : fiche client dictée → devis → intervention, puis l'analyse. Voir « Cas client » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
-Le **hero** porte `ConvergenceDonnees` (schéma de flux) depuis le 2026-09-17 ; `DicteeMobile` est descendu dans « L'offre »
-(il y avait remplacé le terminal le 2026-09-16, lui-même descendu dans « Sous le capot »).
+Le **hero** porte `VracEnActions` (le passage) depuis le 2026-09-19. Chaque visuel remplacé descend d'un cran dans la
+page plutôt que d'être supprimé : `RotationEcrans` (quatre décors, hero le 2026-09-19) est descendu dans « L'offre »,
+où il remplace `DicteeMobile`, descendu à son tour dans « Sous le capot ». Avant eux : `ConvergenceDonnees` (schéma de
+flux, hero le 2026-09-17), conservé mais non utilisé. `DicteeMobile` avait elle-même remplacé le terminal dans
+« L'offre » le 2026-09-16, terminal descendu dans « Sous le capot », où les deux se répondent aujourd'hui — la même
+mission (un devis préparé depuis le catalogue) vue côté personne puis côté machine.
 
 Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
-Offre (`#offre`), Exemples (`#exemples`), CasClient (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
+Offre (`#offre`), Clients (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
 Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
@@ -345,10 +350,9 @@ Schémas dans `src/content.config.ts`. Ajouter un élément = créer **un seul f
 | Collection | Dossier | Frontmatter | Corps |
 |---|---|---|---|
 | `faq` | `src/content/faq/*.md` | `question`, `ordre` | réponse en Markdown (paragraphes) ; aussi injectée en texte brut dans le JSON-LD `FAQPage` |
-| `exemples` | `src/content/exemples/*.md` | `titre`, `avant`, `apres`, `gain`, `ordre` | vide |
 
-Les exemples sont **illustratifs** et présentés comme tels dans la section (§5 ligne 6) ; `gain` est un ordre
-de grandeur, jamais un résultat client. Le nom de fichier sert d'identifiant, en kebab-case sans accent.
+La collection `exemples` **a été supprimée** le 2026-09-18 avec la section qu'elle alimentait (voir « Exemples
+illustratifs : supprimés »). Le nom de fichier sert d'identifiant, en kebab-case sans accent.
 
 **Offre : une seule chose** (2026-09-17). « Audit & diagnostic » et « Ateliers & acculturation » **ont été
 supprimées** : elles répétaient les étapes 1 et 2 de la Méthode, juste au-dessus, et faisaient lire trois fois la
@@ -362,6 +366,26 @@ pas en carte à côté du sur-mesure : la Méthode la décrit déjà.
 `BentoOffre.astro` est devenu `Offre.astro`. La section est désormais une grille `lg:grid-cols-[1fr_auto]` —
 arguments à gauche, démonstration `DicteeMobile` (24rem) à droite, empilées avant `lg`. Toujours pas de composant
 BentoGrid / BentoCard : à créer seulement si un vrai bento réapparaît.
+
+**Les deux colonnes se répondent** (2026-09-18) : `lg:items-center`. La colonne de texte est plus courte que le
+mockup ; alignées en haut (`items-start`), elles laissaient un vide d'une centaine de pixels sous les `points`
+cochés et la section paraissait bancale. `items-start` reste en vigueur sous `lg`, où les deux blocs sont empilés.
+
+**Une icône par argument** (2026-09-18) : chaque argument porte un pictogramme ambre dans une pastille
+`size-9 rounded-md bg-accent-soft text-accent`, même contrat que les cartes de la section Confiance — tracé SVG
+en ligne, chaîne statique passée en `set:html`, `aria-hidden` (l'argument est écrit juste à côté, l'icône
+n'ajoute aucune information). Les trois tracés disent ce que dit l'argument : des lignes de tâches barrées,
+des données empilées d'où repart une flèche, des curseurs de réglage. Pas de bibliothèque d'icônes : quatre
+tracés dans Confiance, trois ici, c'est tout ce dont le site a besoin.
+
+**Exemples illustratifs : supprimés** (2026-09-18, demande explicite). La section `Exemples` (`#exemples`), la
+collection `exemples` et son composant `MicroFlux` ont été **supprimés** — cinq cartes de cas types juste avant
+le cas client réel, qui dit la même chose avec des chiffres mesurés. Ce qui reste du registre « exemple » : les
+scénarios de `DicteeMobile` (offre) et la démonstration d'`EnchainementClient` (cas client), tous deux
+explicitement donnés pour des scénarios types. La carte d'appel « Un processus qui vous coûte du temps ? » qui
+fermait la grille disparaît avec elle : `CtaFinal` porte déjà l'appel. Si des exemples illustratifs
+reviennent, ils reviennent **après** le cas client, jamais avant — un cas mesuré ne se fait pas précéder de cas
+inventés.
 
 Le **`FlowDiagram` « Exemple : une demande de devis »** a été retiré de la carte en même temps : `DicteeMobile`
 arrive juste à côté et montre le même circuit en mieux. Un schéma remplace du texte, il ne redouble pas un autre
@@ -394,10 +418,82 @@ du texte qu'elle supprime.
   sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
   état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
   visiteur n'en veut pas. **Ne pas remplacer par un `IntersectionObserver`** : ce serait du React pour une décoration.
+- **`CompareBars reveal`** (2026-09-18, cas client) : révélation ligne par ligne au défilement, à la place de
+  `.bar-grow`. Libellé + valeur, puis la barre qui se déploie depuis la gauche, puis la note — pas de 260 ms,
+  même rythme et même machinerie que la Méthode (`IntersectionObserver` au seuil 0,25, `data-revele`,
+  `.revele-cache`). La comparaison se lit alors dans l'ordre de l'histoire : les 40 minutes d'abord, les 2 minutes
+  ensuite. La barre porte `data-revele="barre"` : `transform-origin: left center`, et son état masqué est
+  `scaleX(0)` **à `opacity: 1`** — elle se déploie, elle n'apparaît pas. Les deux animations **s'excluent** :
+  avec `reveal`, la classe `.bar-grow` n'est pas émise, sinon la barre finirait sa croissance au défilement
+  pendant qu'elle est encore masquée, et serait déjà pleine en apparaissant.
 - `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
   rester sur `transform` ou `opacity` pour cette raison.
 
-### Mockup de l'offre (DicteeMobile)
+### Le passage du hero (VracEnActions)
+Visuel du hero depuis le 2026-09-19, mis au point au labo (neuf versions, T6a → T6i). Registre **R1 assoupli** : c'est
+un schéma, mais ses entrées sont des objets de bureau, pas des icônes de fichiers. Ce qu'il dit, en trois temps et
+trois intertitres : **« Il analyse ce qui arrive »** (des post-it jetés de travers et une note vocale), **« Il va
+chercher pour vous »** (il se branche sur l'agenda, les tarifs, les fiches clients, qui se cochent un par un),
+**« Il fait, vous validez »** (deux actions prêtes, chacune avec son bouton). Une boucle dure ~15 s.
+
+- **Les entrées sont des post-it et une note vocale**, pas des documents bien rangés : ce qui encombre une journée,
+  ce sont des choses notées à la main. Positions, largeurs et angles sont **posés à la main** dans le frontmatter —
+  une formule donne un désordre régulier, c'est-à-dire pas du désordre. La note vocale est dessinée comme une bulle
+  de BD, queue comprise, et se nomme elle-même (« Message vocal · 0:14 » + la phrase entre guillemets).
+- **La queue de la bulle est un SVG**, pas deux triangles CSS superposés. La technique des deux bordures ne trace un
+  filet que sur l'arête du haut : les deux arêtes obliques restaient nues, donc invisibles sur un fond de la même
+  couleur. Le SVG pose le remplissage (qui recouvre la bordure basse de la bulle) puis les deux obliques.
+- **Le délai de bascule de chaque entrée se calcule sur sa position horizontale**, jamais sur un numéro d'ordre
+  (`lu(centre)` dans le frontmatter). C'est la seule chose qui tient le scan synchronisé avec des post-it qui ne
+  sont pas alignés — voir piège 25. La bande elle-même est en `linear` pour la même raison.
+- **Un seul aplat de couleur dans toute la scène** : le bouton « Valider », et il arrive en dernier. Tout le reste
+  ne fait que changer de bordure ou de texte. C'est ce qui fait que la décision se voit sans qu'on l'explique.
+- **Les outils et les actions partagent la même case de la grille** (`.apres`, `grid-area: 1 / 1`) : ils ne sont
+  jamais à l'écran ensemble, la scène n'a donc pas à réserver la place des deux. C'est ce qui permet le **7/5** —
+  un carré écrase le h1 posé à côté.
+- **La colonne coulisse, en trois positions seulement** : l'entrée, le connecteur au travail, les actions. Le
+  glissement de l'étape 3 attend la fin de l'absorption (`transition-delay`), sinon le vrac remonte au lieu de
+  descendre dans le boîtier.
+- **Rythme** : l'entrée (2,2 s + 2,9 s) et la sortie (4,7 s) durent un tiers de plus que la réflexion (1,6 s +
+  2,6 s). Ce sont les deux moments qu'on regarde vraiment ; la consultation ne gagne rien à être allongée.
+- **Largeur 31 rem dans le hero** : assez grande pour que les post-it et la phrase du connecteur se lisent sans
+  effort, assez petite pour ne pas écraser le h1. Tout étant en `cqw`, elle se redimensionne d'un bloc.
+- **Le connecteur est l'élément le plus présent de la scène** (2026-09-20) : c'est l'offre entière. Trois moyens,
+  tous sans aplat de couleur supplémentaire — `--shadow-md` quand tout le reste de la scène est en `--shadow-sm`
+  (c'est ce décalage seul qui le met au premier plan), un halo `0 0 0 0.6cqw var(--accent-soft)` à l'activation,
+  et la marque qui passe de `--ink-muted` à `--ink` pendant le travail. **Ne pas lui donner de fond ambre** : le
+  bouton « Valider » doit rester le seul aplat de la scène.
+- **Elle illustre une phrase précise du hero, et le dit.** La maquette porte l'eyebrow « l'outil qui s'en occupe »,
+  qui reprend mot pour mot la phrase mise en `font-medium text-ink` dans la colonne de texte (« On construit
+  l'outil qui s'en occupe à votre place »). Les deux se répondent à trente centimètres l'une de l'autre : si l'une
+  des deux formulations change, **changer l'autre dans le même tour**.
+- **Les intertitres n'ont pas de pronom pour la machine** (2026-09-20) : « Tout ce qui vous arrive » → « Recoupé
+  dans vos outils » → « Fait. Vous validez. » Lus bout à bout, les trois font une seule phrase, et le seul sujet
+  nommé de la scène est le visiteur. Les versions précédentes commençaient toutes par « Il », ce qui donnait un
+  personnage à une machine et contredisait le « elle » employé partout ailleurs sur la page.
+- **Tout est en `cqw`** (`container-type: inline-size` sur `.scene`) **sauf le padding de la scène**, qui reste en
+  % : un élément ne peut pas interroger sa propre taille de conteneur.
+- **Bouton pause obligatoire** : la scène boucle et dure bien plus de 5 s (WCAG 2.2.2). Même mécanique que
+  `RotationEcrans` — `data-fige` gèle les animations CSS, le minuteur retient **ce qu'il restait à attendre**, et un
+  `IntersectionObserver` suspend tout hors écran. **Ne jamais le retirer.**
+- **Le bouton est dans le cadre, en haut à droite** (2026-09-20) : posé sous la scène, il ajoutait une ligne sous un
+  visuel qui n'en demandait pas. Conséquence de structure : `aria-hidden="true"` est descendu de `.scene` sur
+  `.visuel`, sinon la commande serait masquée aux technologies d'assistance avec le décor. `.scene` garde
+  `data-etape` — tous les sélecteurs en dépendent — et devient le bloc de positionnement ; `top`/`right` du bouton
+  sont en `cqw` et tombent donc pile sur le padding de 5 %.
+- **Deux actions en sortie, et rien en dessous** (2026-09-20) : le boîtier annonce « 2 actions prêtes », les deux
+  sont montrées. La ligne « + 1 autre action prête » a disparu — un rappel de volume sous deux cartes déjà visibles
+  n'ajoutait rien et faisait une troisième ligne de texte dans un visuel qui vit de son silence.
+- **L'état rendu par le serveur est l'état final** (`data-etape="5"`, les actions prêtes) : lisible sans JS, aucun
+  flash à l'arrivée du script, et c'est aussi l'état servi sous `prefers-reduced-motion`, où rien ne boucle.
+- **Les trois intertitres sont empilés à la même place** (les deux derniers en `absolute`, `left: 0`) ; sans le
+  `left`, le second se poserait après l'espace que le premier occupe encore. **Seul le troisième passe en accent** :
+  c'est le seul des trois qui annonce un résultat.
+- **Données inventées** (piège 17) : noms, dates et montants sont des exemples, dits tels dans la transcription
+  `sr-only` portée par le `<figcaption>`. Les outils restent des **catégories** — Agenda, Tarifs, Clients — jamais
+  une marque.
+
+### Mockup de la dictée (DicteeMobile)
 **Cinq tâches** très différentes jouées à la suite, en boucle (demande explicite du
 2026-09-16), avec **précédent / suivant** depuis le 2026-09-17 pour aller directement au cas qui intéresse : devis dicté, fiche client depuis un email, relance déclenchée automatiquement, rendez-vous posé
 depuis la route, question de gestion. L'objectif est double : le visiteur reste pour voir si son métier passe, et
@@ -460,7 +556,68 @@ il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 
 - **Vérifier après toute modification** : aucun chevauchement de deux scènes (échantillonner l'opacité pendant un
   cycle), CLS nul sur un cycle complet, et `scrollWidth` à 360 px — c'est là que ça casse en premier.
 
-### Schéma du hero (ConvergenceDonnees)
+### Rotation d'écrans (RotationEcrans)
+Visuel du hero le 2026-09-19, descendu dans « L'offre » le jour même, repris d'une planche de maquettes. Registre **R2, écrans plutôt que schéma**.
+Ce qu'il dit : le travail préparé **arrive là où la personne se trouve déjà**. Le même enchaînement — une demande
+arrive, la solution consulte les outils de l'entreprise un par un en montrant ce qu'elle y trouve, une action prête
+à valider en sort — joué dans quatre décors : messagerie, boîte mail, téléphone, application de gestion.
+
+- **Un écran = un scénario.** Huit écrans depuis le 2026-09-19, **deux par décor** : messagerie (devis, création de
+  fiche client), boîte mail (rendez-vous avancé, dépannage sous garantie), téléphone (question de gestion, recherche
+  dans l'historique), application (relances, analyse de ventes). Ils sont joués dans l'ordre du DOM, qui alterne les
+  décors — jamais deux fois le même de suite. Un tour complet dure ~100 s.
+- **Quatre boutons sous la maquette**, un par décor, qui portent la **liste** de leurs écrans (`data-jalon="0,4"`).
+  Un clic va au premier exemple du décor ; un deuxième clic passe à l'autre. Le clic **prend la main** : la rotation
+  automatique s'arrête, l'écran choisi joue sa séquence une fois et reste. L'état est porté par `aria-pressed`, pas
+  par une classe. Les scénarios n'ont pas de bouton propre : huit libellés ne tiennent pas sous une maquette de 24 rem.
+- **La largeur vient de la piste de grille, pas de la `max-width`.** Dans « L'offre », la colonne de droite est en
+  `lg:grid-cols-[1fr_24rem]` : avec `auto`, la piste se calait sur le max-content de la maquette — c'est-à-dire sur
+  la barre de libellés — et élargir sa `max-width` ne produisait rien du tout. **21 rem est le plancher** : c'est la
+  largeur la plus étroite où les quatre libellés et le bouton de lecture tiennent encore sur une ligne.
+- **L'écart entre les arguments est fixe, pas réparti** (2026-09-20) : `lg:gap-16` (64 px) sur la liste, et
+  `lg:items-center` sur la grille. Réparti sur la hauteur de la maquette (`justify-between`), l'écart montait à
+  90 px — une ligne de corps de trop, la liste se lisait comme quatre blocs sans rapport. À 64 px elle respire
+  encore et reste un ensemble ; elle est un peu plus courte que la maquette, qui la centre en face d'elle.
+- **`data-deroule="confirme"`** sur les écrans qui se terminent par une confirmation (aujourd'hui : les relances) :
+  ils gardent une cinquième étape. Les autres s'arrêtent à l'étape 4.
+- **Libellés courts** (`Messagerie`, `Boîte mail`, `Téléphone`, `Gestion`) : en mono 12, les quatre plus le bouton
+  pause tiennent sur **une seule ligne** dans 24 rem — la largeur la plus étroite où la maquette ait tourné —, et
+  jusqu'à 360 px. Un libellé plus long (« Application ») les fait
+  passer à deux lignes et laisse le bouton pause seul en bas. Le `title` porte la phrase entière.
+- **Actif = souligné en `--accent` sur texte `--ink`**, pas de pastille pleine : `accent` sur `accent-soft` est à
+  4,28:1 en clair (voir contrastes), donc inutilisable pour du texte 12.
+- **Bouton pause obligatoire** : la rotation boucle et dure bien plus de 5 s (WCAG 2.2.2). Rendu hors mouvement
+  réduit (`motion-reduce:hidden`), mis en pause aussi hors viewport (`IntersectionObserver`). **Ne jamais le retirer.**
+- **La pause est une vraie pause** (2026-09-19). Deux choses s'ajoutent à l'arrêt du minuteur :
+  1. `data-fige` sur la racine passe toutes les animations CSS des écrans en `animation-play-state: paused`. Sans
+     ça, l'anneau de consultation et la barre de progression continuaient de tourner : rien n'avait l'air arrêté.
+  2. Le minuteur retient **ce qu'il restait à attendre** (`reste`, `depart`) et la reprise ne programme que ce
+     reliquat. Avant, la lecture repartait au début de l'exemple. Même mécanique que `DicteeMobile`.
+  Si plus rien n'est en attente (l'écran choisi à la main a fini sa séquence), le bouton relance l'enchaînement
+  depuis l'écran affiché — jamais depuis le premier.
+- **Le bouton de lecture est en tête de la barre**, en pastille bordée (`rounded-full border border-border`, accent
+  quand la lecture est arrêtée) : posé après les libellés et sans contour, il se lisait comme un glyphe de texte.
+- **Sous `prefers-reduced-motion`** : aucune rotation automatique, aucune séquence. Les boutons changent d'écran et
+  l'écran arrive directement dans son état final.
+- **L'état rendu par le serveur est l'état final du premier écran** (`data-etape="4"`, `data-actif`) : lisible sans
+  JS, aucun flash à l'arrivée du script. Les quatre écrans sont empilés dans la même cellule de grille et toujours
+  présents : hauteur constante, CLS 0 au changement.
+- **Le fondu est séquentiel, pas croisé** : le sortant s'efface entièrement (`--rot-sortie`) avant que l'entrant
+  n'arrive (`--rot-entree` après `--rot-attente`). Deux chromes superposés à mi-fondu — les coins arrondis du
+  téléphone sur le carré blanc de la messagerie — donnaient une bouillie. Passer par le fond de page une fraction
+  de seconde se lit comme un changement d'appareil.
+- **Les durées de la CSS et celles du script se répondent** (`--rot-entree` / `ENTREE`, `--rot-sortie` / `SORTIE`) :
+  changer l'une oblige à changer l'autre, sinon l'écran qui arrive joue son premier pas dans le vide.
+- **Poids** : les huit écrans font ~32 ko de HTML dans le hero, mais ils sont très répétitifs — la page entière
+  tient en 21,5 ko une fois compressée. Vérifier ce chiffre avant d'ajouter un neuvième écran.
+- **CSS de composant, pas Tailwind** : les quatre décors sont ~22 ko de CSS reprise telle quelle de la maquette,
+  dans le `<style>` scopé du composant. Toutes les couleurs y sont des tokens ; les tailles sont en `cqw`
+  (`container-type: inline-size` sur l'écran), donc la maquette se redimensionne d'un bloc, comme une capture.
+- **Données inventées** (piège 17) : noms, dates et montants sont des exemples, dits tels dans la transcription
+  `sr-only`. Les outils consultés restent des **catégories** — « votre catalogue », « votre planning », « vos fiches
+  clients », « votre comptabilité » — jamais une marque.
+
+### Schéma du hero (ConvergenceDonnees) — retiré du hero le 2026-09-19, conservé
 Remplace `DicteeMobile` dans le hero le 2026-09-17 (voir « Décisions »). Registre **R1, schéma de flux**. Ce qu'il
 dit, dans l'ordre : vos données existent déjà mais elles sont **éparpillées** ; elles alimentent **un seul endroit** ;
 ce qui en ressort n'est **pas une liste de choses à faire** mais du travail déjà préparé, qui attend un « oui ».
@@ -506,6 +663,30 @@ Moins de tâches, pas plus — c'est tout l'argument.
 - **Vérifier après toute modification** : `scrollWidth` à 360 px, CLS nul, hauteur du bloc constante, et qu'aucun
   libellé de la colonne de gauche n'atteint le tronc à 360 px.
 
+### Écran partagé de « Sous le capot »
+Depuis le 2026-09-20, le terminal n'occupe plus toute la largeur : il tient la moitié gauche d'une grille
+`lg:grid-cols-2`, la moitié droite attendant un second visuel. Cette moitié porte le marqueur `ACompleter` (§9)
+dans un cadre en pointillés, **jamais un vide** : un trou silencieux part en production sans que personne le voie,
+un marqueur ambre non. Le panneau n'est pas en `items-start` — il prend la hauteur de la colonne de gauche, sinon
+le partage ressemble à un oubli plutôt qu'à une intention.
+
+### Qui décide quoi (Confiance)
+Refait le 2026-09-20 : deux listes plates séparées par un petit badge ne se lisaient pas, et rien n'y avait le
+poids de ce qui est promis.
+- **Les deux panneaux ont un titre de vrai titre** (`text-18 font-semibold`), pas une étiquette mono : « Elle
+  avance seule » / « Elle s'arrête net ». Ce sont les deux moitiés d'une même phrase, il faut qu'on les lise
+  avant les listes.
+- **Chaque geste porte son signe** : une coche à gauche, un glyphe de pause à droite, tous deux en `--accent`,
+  alignés sur la première ligne (`mt-1`). C'est ce qui donne le rythme que les listes nues n'avaient pas.
+- **La porte est le seul aplat de couleur de la section** : pastille `bg-accent` / `text-on-accent` (5,02:1,
+  voir contrastes). Les engagements en dessous n'ont que des fonds `accent-soft`, donc rien ne lui dispute
+  l'attention.
+- **Le trait qui la traverse est un filet, pas une flèche** : `h-5 w-px` empilé avant lg, `lg:h-px lg:w-5` en
+  ligne ensuite. Deux flèches `→` empilées verticalement dans une colonne `auto` disaient l'inverse du sens de
+  lecture.
+- **Le chapeau est en trois phrases courtes** (« Elle lit ce qu'il faut. Elle n'en garde rien. Elle n'envoie
+  rien sans vous. ») et non en une phrase à trois virgules : c'est la même information, scandée.
+
 ### Terminal
 - **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
   `.section-invert` : dans une section déjà invert, il se lit comme un panneau bordé, ce qui est voulu.
@@ -522,19 +703,76 @@ Moins de tâches, pas plus — c'est tout l'argument.
 - Curseur : `.terminal-cursor` déclaré hors de toute media query dans `global.css`.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
-### Cas client (L'Atelier des Sols & Fils)
+### Clients (section « Ils nous ont fait confiance »)
+Titre de section et libellé de navigation changés le 2026-09-19 : eyebrow `Clients`, titre
+**« Ils nous ont fait confiance »**, entrée de menu **« Clients »**. Le composant s'appelle désormais
+`sections/Clients.astro`. **L'ancre reste `#cas-client`** : elle est publiée depuis la v1, la renommer
+casserait les liens existants. Le titre du cas (« Le devis part du chantier, pas du bureau ») est descendu
+en `h3` sous le h2 de section : la section parle des clients, ce cas n'en est qu'un.
+
+- **Compteurs de production** (`production`, 2026-09-19) : +50 devis créés, +30 rendez-vous posés,
+  +40 fiches clients créées, 3 rapports d'analyse annuels. Fournis par le client, **jamais lus dans un outil
+  connecté** (voir « Aucune donnée de tiers » ci-dessous) et jamais estimés. Le « + » fait partie de la valeur :
+  ce sont des planchers. Rendus dans **un seul cadre** (`Card` + `Figure`, 2 × 2), **à côté** de la comparaison
+  de temps et non au-dessus (2026-09-20, grille `lg:grid-cols-[2fr_3fr]`) : le « combien » et le « combien de
+  temps » se lisent ensemble, et la section ne double pas sa hauteur pour les séparer. Le rapport 2/3 n'est pas
+  décoratif — il amène les deux cartes à la même hauteur, sinon la comparaison gouverne et laisse un fond de
+  carte vide à gauche.
+- **L'intro et les compteurs partagent une rangée** (2026-09-20, `lg:grid-cols-[3fr_2fr]`) : le titre, le logo et
+  le paragraphe tiennent dans la colonne de mesure, ce qui laissait toute la moitié droite du haut de section
+  vide. La comparaison de temps passe **pleine largeur** en dessous — ses libellés et ses notes tiennent alors sur
+  une seule ligne au lieu de deux.
+- **Les deux cartes « 0 soirée » et « 100 % » ont été retirées** (2026-09-20, demande de réduction de la
+  section). Les deux affirmations restent sur la page, mais en prose et non plus en chiffre mesuré : la
+  ressaisie du soir est dite dans la note de la comparaison, la validation explicite est le sujet entier de la
+  section Confiance et la fin du paragraphe du cas (« une fois qu'ils ont dit oui »). **Si on veut remettre un
+  chiffre mesuré, c'est celui-là qu'il faut rechercher auprès du client, pas le réinventer.**
+- **Deux comparaisons de temps, côte à côte** (`lg:grid-cols-2`, 2026-09-20) : le devis (40 min → 2 min) et la
+  fiche client (5 min → 30 s). Chaque `CompareBars` cale ses longueurs sur **le maximum de son propre tableau** —
+  mises à la même échelle, les 5 min de la fiche client seraient invisibles à côté des 40 min du devis.
+  `items-start` sur la rangée : la fiche client n'a pas de note sous ses barres, sa carte est plus courte, et
+  l'étirer ne faisait que lui ajouter du blanc.
+- **Pas de note inventée sous les barres de la fiche client** : le client a donné les deux durées, rien de plus.
+  Sur un cas réel, on ne comble pas les trous — une carte plus courte est préférable à une phrase plausible.
+- **La légende des compteurs date la mesure** (2026-09-20) : « Statistiques mesurées au bout de 6 semaines
+  d'utilisation. » Fourni par le client. Si les compteurs sont mis à jour, **mettre à jour la durée avec eux** :
+  un nombre sans sa fenêtre de mesure n'est pas vérifiable.
+- **Le logiciel de gestion du client est nommé** (`casClient.logiciel` = Extrabat) : c'est le seul nom de
+  logiciel tiers du site, **exception assumée au piège 17**, qui interdit les marques dans les démonstrations
+  inventées. Ici, ce n'est pas une démonstration : c'est ce qui a été construit. Le **nom seul**, jamais le
+  logo, jamais de mention de partenariat ou de certification. `null` fait disparaître la phrase entière.
+
+#### Le cas (L'Atelier des Sols & Fils)
 - Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5, voir
-  « Contenus éditables ») : section dédiée (`CasClient.astro`, `#cas-client`), distincte de la collection
+  « Contenus éditables ») : section dédiée (`Clients.astro`, `#cas-client`), distincte de la collection
   `exemples`, réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le
   même accord pour chaque nouveau cas ; par défaut, un nouveau cas client reste dans `exemples` (illustratif).
 - Placée après Exemples, avant SousLeCapot ; `border-t border-border bg-bg-subtle` (alternance de fond),
-  pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot (même schéma qu'Exemples → Offre).
-- Les trois chiffres d'impact (2 min, 0 ressaisie, 100 % validation explicite) sont les résultats mesurés du cas
-  réel. La démonstration (`EnchainementClient`) illustre le *mécanisme* avec un scénario type et une
-  légende explicite (« pas une pièce réelle ») : client, commune, montants et créneaux sont inventés,
-  jamais issus d'une pièce commerciale réelle.
+  pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot. Offre, juste au-dessus, n'a pas
+  non plus de `border-t` : celui-ci lui vient du `border-y` de la Méthode.
+- Les chiffres d'impact (2 min pour un devis, et les compteurs de production) sont les résultats mesurés du cas
+  réel. La démonstration (`EnchainementClient`) illustre le *mécanisme* : client, commune, montants et créneaux
+  sont inventés, jamais issus d'une pièce commerciale réelle. **La règle d'invention reste entière** ; seule sa
+  mention visible (« Scénario type : … pas une pièce réelle ») a été retirée le 2026-09-19, sur demande
+  explicite. Ne pas la remettre sans le redemander.
 - **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce) :
   seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
+- **Identité du client** (2026-09-18) : nom, métier, prénom du dirigeant (**Jason**), lien vers son site et logo
+  vivent dans `casClient`, `src/config/site.ts` — publiés **avec son accord explicite**, comme le reste de la
+  section. Rien ne s'ajoute là sans le même accord : un prénom est une donnée personnelle, pas un détail de mise
+  en page.
+- **Logo** : fichier fourni par le client, déposé dans `public/clients/` (`casClient.logo` = son chemin). Le
+  composant vérifie sa présence au build (`existsSync`, `process.cwd()` — pas `import.meta.url`, qui pointe sur
+  un chunk après compilation) : **fichier absent, pas d'image** — jamais de vignette cassée, jamais de logo
+  reconstitué. La largeur est déduite du `viewBox` du SVG pour réserver la place (CLS 0).
+- **Le logo est posé sur une plaque `.section-invert`** : le lettrage du client est blanc sur fond transparent,
+  il disparaîtrait sur le fond clair. Une plaque sombre dans les deux thèmes (même procédé que le terminal) plutôt
+  qu'un logo retouché — on ne modifie pas l'identité d'un tiers. Tout nouveau logo de client se juge d'abord sur
+  les deux fonds.
+- **Un seul lien vers le site du client** : porté par le nom (`Badge href`, avec `↗` en `aria-hidden`). Le logo,
+  juste à côté, est décoratif (`alt=""`) — deux liens vers la même destination alourdissent la navigation au
+  clavier et au lecteur d'écran sans rien apporter.
+- Le temps d'un devis est révélé ligne par ligne au défilement (`CompareBars reveal`, voir « Schémas »).
 - Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
   labels en français neutre (« Aperçu du principe », « sur place, à la voix », « et ensuite, vos chiffres »).
 - **`EnchainementClient`** (2026-09-17, remplace l'îlot React `DicteeChiffrageDemo`, supprimé) : montre un
@@ -553,10 +791,87 @@ Moins de tâches, pas plus — c'est tout l'argument.
 Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
 
+### Constat — étiquettes de coût
+Au bas de chaque carte du constat, deux étiquettes en `--accent` traduisent le problème en risque :
+« perte de temps / risque d'erreur », « occasions manquées / perte de contrôle », « délais
+supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole la section.
+
+- **Une seule ligne par carte, à la plus grande taille possible** (demandes du 2026-09-19). Tout le
+  reste en découle.
+- **Trois colonnes à partir de `xl`**, plus `md` : mesuré, une carte offre 176 px de contenu à 768 px,
+  254 px à 1024 px, 302 px à partir de 1152 px — et **302 px est un plafond**, le conteneur étant
+  plafonné à 72 rem. Sous `xl`, une colonne : les cartes sont larges (639 px de contenu à 768 px), la
+  ligne ne se coupe jamais. **À `lg`, la paire la plus longue passe à deux lignes** — ne pas y remonter
+  la grille sans raccourcir les étiquettes.
+- **`text-14`, la plus grande taille de l'échelle qui tienne.** Mesuré dans la carte réelle sur la
+  paire la plus longue (carte 3), contre 302 px : `text-12` → 264 px, **`text-14` → 288 px**,
+  `text-15` → 318 px, `text-16` → 336 px. Il reste 14 px de marge ; `text-16` déborde quelle que soit
+  la longueur des libellés. Mesures refaites **sans la webfont** : la police de secours est 3 px plus
+  étroite, le FOUT ne peut pas casser la ligne.
+- **19 caractères par étiquette au plus.** « opportunités manquées » (21) débordait, « occasions
+  manquées » (18) aussi une fois passé en `text-14` (300 px pour 302) ; « occasions perdues » (17)
+  passe. Toute étiquette plus longue impose de revenir à `text-12`.
+- **Apparence d'un `Badge variant="accent" dot`, en plus compact** : même fond `--accent-soft`, même
+  pastille `--accent-bright`, même texte `--ink` (`accent` sur `accent-soft` = 4,28:1 en clair, donc
+  jamais de texte accent sur ce fond). Pas le composant lui-même : ses `h-6`, `px-2`, `gap-2` et sa
+  police mono demandent 277 px pour la paire la plus courte, 320 px pour la plus longue — davantage que
+  ce que la grille offre à n'importe quelle largeur. D'où la reprise en local : police sans, `px-1.5`,
+  `py-0.5`, pastille `size-1`. **Si le Badge de série devient plus compact, revenir au composant.**
+- `mt-auto` sur la rangée : les étiquettes s'alignent d'une carte à l'autre quelle que soit la longueur
+  du texte au-dessus. `flex-wrap` est conservé comme filet de sécurité — jamais de débordement de carte.
+- Vérifié avec **et sans** la webfont (`--disable-remote-fonts`) : la police de secours est 2 px plus
+  étroite, le FOUT ne peut pas casser la ligne.
+
 ### Bandeau d'engagements
 - Rangée fluide (`flex-wrap`, libellés en `whitespace-nowrap` à partir de `sm`), pas de grille à colonnes fixes :
   les libellés mono de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
-- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 35 caractères.
+- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 32 caractères.
+- Contenu et registre du bandeau : voir « Copy (ligne éditoriale) » — pas de « elle » ici, le pronom n'a pas
+  encore d'antécédent à cette hauteur de page.
+
+## Copy (ligne éditoriale)
+Passe du 2026-09-19 : la promesse de l'accueil est resserrée sur « on part de vos outils, l'administratif en
+moins, vos données enfin utiles, elle prend les devants, vous l'améliorez en l'utilisant, elle ne garde rien ».
+Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
+
+- **Mots simples, concepts d'adulte.** Le registre n'est jamais oral appuyé : ni « calé », ni « vaut le coup »,
+  ni « c'est top ». Un mot courant à la place d'un mot technique, jamais une phrase qui prend le lecteur de haut.
+- **Vocabulaire retiré de l'accueil** : *studio IA*, *cartographier vos processus*, *livrable* (→ « vous
+  recevez »), *système d'information* (→ « vos logiciels »), *réversibilité* (→ « vous pouvez reprendre la
+  main »), *accord explicite* (→ « votre oui »), *documentation remise à la livraison* (→ « le mode d'emploi est
+  livré avec »). Le jargon reste autorisé dans « Sous le capot » **uniquement** (§2.1) — et sur `/a-propos`,
+  « studio » décrit ce que sosese est, ce qui est le sujet de la page.
+- **« elle » désigne la solution, et a besoin d'un antécédent.** La solution est nommée une seule fois, dans le
+  chapeau de l'offre (« une solution qui connaît vos prix… **Elle** prépare le travail »). Partout **au-dessus**
+  de ce chapeau — hero, bandeau, constat — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
+  encore de sujet. En dessous (offre, cas client, confiance, FAQ), « elle » partout, plus jamais
+  « l'automatisation » comme sujet.
+- **Règles ≠ données.** « Elle retient vos corrections » (offre) et « rien n'est mémorisé par défaut » (bandeau,
+  confiance) se contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *elle
+  garde vos règles, pas vos données*. **Ne jamais écrire que la solution « apprend de vos documents ».**
+- **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « elle ne calcule jamais un prix
+  elle-même, elle lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie
+  tient à la porte de validation, pas à une propriété du modèle.
+- **Pro-activité (2026-09-19)** : « elle prend les devants » est tenue par des routines — heure fixe ou seuil de
+  déclenchement. Le copy nomme les deux (« tous les lundis matin, ou dès qu'un dossier dépasse le délai que vous
+  avez fixé ») : la promesse doit rester adossée à un mécanisme réel.
+- **Exception à B8 (un argument, un seul endroit)** : « rien n'est mémorisé par défaut » est énoncé **en fait**
+  dans le bandeau d'engagements (réflexe de méfiance nº 1 face à l'IA) et **argumenté** une seule fois, dans la
+  section Confiance. Aucun autre argument n'a droit à ce doublon.
+- **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. C'est pourquoi la carte
+  de Confiance s'appelle « Rien de mémorisé, rien qui serve à entraîner l'IA » et non « Aucun entraînement » avec
+  la mémoire dans le corps. La grille `lg:grid-cols-4` impose **quatre cartes** : toute carte ajoutée en remplace
+  une autre ou fusionne avec elle.
+- **Porte de validation (Confiance)** : le libellé est passé de « votre accord » à « elle attend votre oui »,
+  puis à **« votre oui »** seul le 2026-09-20. Entre deux panneaux qui disent « Elle avance seule » et « Elle
+  s'arrête net », la phrase entière était redondante ; deux mots dans une pastille tiennent en `nowrap` sans
+  manger la largeur des panneaux, ce que l'ancien libellé imposait de corriger au `lg:whitespace-normal`.
+- **Méthode : des noms courts en titre** (Atelier / Feuille de route / Construction), la phrase d'action en
+  première ligne de description. Trois titres commençant par « On » font de sosese le sujet de sa propre
+  méthode, et ne se survolent pas.
+- **Cas client** : pas de « réel » ni de « vrai » dans l'eyebrow — on ne précise « vrai » que là où le doute
+  existe. L'eyebrow est `Cas client`, les chiffres prouvent. La note de `CompareBars` dit « avant la fin du
+  rendez-vous » : l'image du camion appartient au chapeau, elle n'est pas répétée.
 
 ## Décisions et écarts par rapport au cahier des charges
 - **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`
@@ -587,6 +902,12 @@ Toujours réutiliser avant de créer.
   qu'il prouve la polyvalence au lieu de servir d'illustration d'accueil. Le `FlowDiagram` de la carte part avec
   (doublon). Conséquence à accepter : **une prestation d'audit détachable n'est plus vendue comme telle sur
   l'accueil**, la Méthode la porte seule.
+- **Exemples illustratifs retirés, cas client renforcé** (2026-09-18, demande explicite). La section `Exemples`
+  précédait le cas client réel et disait la même chose en moins bien : des cas types inventés juste avant des
+  chiffres mesurés. Supprimée, avec sa collection et son composant `MicroFlux`. En face, le cas client gagne
+  l'identité du client — logo, lien vers son site, prénom du dirigeant — c'est-à-dire ce qui distingue un cas
+  réel d'un cas type : **on peut aller vérifier**. Conséquence à accepter : l'accueil ne montre plus de deuxième
+  domaine d'activité que par les cinq scénarios de `DicteeMobile`, dans l'offre.
 - **Hero : schéma de convergence, pas mockup d'interface** (2026-09-17, demande explicite). Le mockup était jugé
   trop « geek » en ouverture : il montrait un connecteur, des règles lues et des sources d'outils, c'est-à-dire le
   *comment*. Le hero dit maintenant le *quoi* : vos données sont déjà là, éparpillées, elles alimentent un seul
@@ -642,6 +963,10 @@ Toujours réutiliser avant de créer.
   textuel (`aria-label` ou `sr-only`), couleur jamais seule porteuse de sens, animation en enrichissement sous
   `prefers-reduced-motion`. Seules exceptions bitmap prévues : le portrait de `/a-propos` et l'image de partage
   Open Graph, toutes deux via `astro:assets`, dimensions déclarées. Détail dans `REVUE-V2.md` §4.
+  **Exception ajoutée le 2026-09-18 : le logo d'un client** (cas client). Un logo n'est pas une illustration :
+  c'est l'identité d'un tiers, on ne la redessine pas. Fichier fourni par le client, déposé dans `public/`, servi
+  tel quel — pas d'`astro:assets` (l'image ne doit être ni recadrée ni recomposée), `loading="lazy"`, dimensions
+  déclarées. Un seul logo de client à la fois, et seulement dans la section « Cas client ».
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
@@ -655,14 +980,24 @@ Tolérées, à ne pas étendre sans raison :
 - Proportions de grille : `lg:grid-cols-[1fr_1fr]` (hero), `lg:grid-cols-[1fr_2fr]` (FAQ), `lg:grid-cols-[1fr_auto_1fr_auto_1fr]` (schéma d'intégration).
 - Formulaire : champ piège positionné hors écran (`-left-[9999px]`), largeur de colonne des `dl` de `prose-site` (60 × `--space-unit`).
 - DotPattern : points de 1px et masque radial (20 % → 75 %) dans l'utilitaire `dot-pattern`.
+- Mockups animés (`VracEnActions`, `RotationEcrans`, `DicteeMobile`, `EnchainementClient`) : les **filets** —
+  bordures, tiges de liaison, fil du balayage — sont en `px` (`1px`, `1.5px`), pas en `cqw`. Un trait en `cqw`
+  passe sous le pixel aux petites largeurs et disparaît. Tout le reste de ces scènes est bien en `cqw`.
 - Formulaire : `mt-0.5` sur la case de consentement (alignement optique sur la première ligne de texte).
 - EnchainementClient : seuil `IntersectionObserver` à 0,3 ; rythme en millisecondes dans le script (`PAS` 520, `TENUE` 3 800…).
+- RotationEcrans : CSS de composant reprise d'une maquette — tailles en `cqw` (la maquette se redimensionne d'un
+  bloc), `--rot-entree` 420 ms et `--rot-attente` 260 ms (ramenées à 0 sous mouvement réduit), rythme en
+  millisecondes dans le script (`TOUR`, `ENTREE`, `SORTIE`), seuil `IntersectionObserver` à 0,2. **Couleurs : que
+  des tokens**, aucune exception.
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 - Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
   `flex-grow` — des proportions, pas des espacements.
-- `CasClient` : grille `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
+- `Clients` : grille `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
 - `Methode` : pas de révélation de 260 ms (420 ms pour un trait) dans le script, décalage `translateY(calc(var(--space-unit) * 3))` de `.revele-cache`.
+- `CompareBars reveal` : même pas de 260 ms, seuil `IntersectionObserver` à 0,25.
+- `Clients` : logo rendu en `h-12` (48 px), largeur calculée depuis le `viewBox` du SVG.
+- `Offre` : pastilles d'icônes en `size-9`, tracé en `size-5` (échelle Tailwind, comme les cartes de Confiance).
 - `ConvergenceDonnees` : `viewBox` 100 × 100 en `preserveAspectRatio="none"` et `viewBox` 16 × 24 de la flèche
   (proportions, pas des espacements), `stroke-width` 2 en `non-scaling-stroke`, et les coordonnées des tracés —
   géométrie d'un schéma, calculée dans le composant et commentée là-bas. `max-w-md` (échelle Tailwind conservée,
@@ -761,6 +1096,26 @@ Tolérées, à ne pas étendre sans raison :
     minuscule au lieu de se tracer. Vérifiable en une ligne (`getComputedStyle(path).strokeDasharray` → `"1px"`).
     → Les deux ne se combinent pas. Soit on renonce à `non-scaling-stroke`, soit — comme ici — on révèle le tracé à
     l'opacité, ce qui est de toute façon plus simple.
+24. **`import.meta.url` ne pointe pas sur les sources dans le frontmatter d'un `.astro` au build.** Lire un fichier
+    du dépôt avec `new URL("../../../public/…", import.meta.url)` marche en `dev` et échoue silencieusement au
+    `build` : le module est alors un chunk de `dist`, l'URL vise à côté, `existsSync` répond `false` et le rendu
+    part sans l'image — sans la moindre erreur. Rencontré le 2026-09-18 sur le logo du cas client.
+    → Résoudre depuis `process.cwd()` (Astro est toujours lancé depuis la racine du projet), et **vérifier dans
+    `dist/`**, pas seulement en `dev`.
+25. **Une révélation séquentielle calée sur l'index des éléments se désynchronise dès qu'ils ne sont plus alignés.**
+    Un balayage qui traverse un bloc et fait basculer les éléments « lus » derrière lui ne peut pas tirer son délai
+    d'un `calc(var(--i) * 300ms)` : ça ne tient que si les éléments sont d'égale largeur et régulièrement espacés.
+    Dès qu'ils sont posés librement — des post-it de tailles et de positions différentes — le balayage passe sur
+    l'un pendant qu'un autre s'allume. Rencontré le 2026-09-19 sur `VracEnActions`.
+    → Calculer le délai depuis la **position horizontale réelle** de chaque élément (`lu(centre)` dans le
+    frontmatter, à partir des mêmes % que ceux qui le positionnent), et animer le balayage en `linear` : deux
+    courbes d'accélération différentes suffisent à décaler le tout.
+26. **Un mockup qui porte déjà `section-invert` disparaît quand on le pose dans une section invert.** `DicteeMobile`
+    a son propre `section-invert` pour rester sombre dans les deux thèmes. Descendue dans « Sous le capot », qui
+    l'est aussi, il ne lui restait que sa bordure : même fond, aucun relief. Rencontré le 2026-09-19 (elle en est
+    ressortie depuis, mais la règle vaut pour tout mockup qu'on y descendrait).
+    → L'encadrer dans une carte `bg-surface` (`--surface` reste un cran plus clair que `--bg` dans le jeu invert),
+    et la contraindre en largeur — une carte pleine largeur autour d'un mockup de 24 rem fait une boîte vide.
 
 ## Anti-patterns
 - Dégradés multicolores

@@ -1,7 +1,7 @@
 ---
-question: Qui s'occupe de la maintenance ensuite ?
-ordre: 6
+question: Et après, qui s'en occupe ?
+ordre: 7
 ---
-Vous choisissez : un suivi assuré par nous, ou une reprise par votre équipe ou un autre prestataire.
+Vous choisissez : on assure le suivi, ou votre équipe — ou quelqu'un d'autre — reprend la main.
 
-Dans tous les cas, le code, les accès et la documentation vous sont remis.
+Dans tous les cas, le code, les accès et le mode d'emploi vous sont remis.

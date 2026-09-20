@@ -214,6 +214,17 @@
   transform-origin: center top;
 }
 
+/* Comparaison de grandeurs révélée ligne à ligne (`CompareBars` avec `reveal`) : la barre ne glisse
+   pas, elle se déploie depuis la gauche — elle mesure une durée, l'allonger la raconte. */
+[data-revele="barre"] {
+  transform-origin: left center;
+}
+
+[data-revele="barre"].revele-cache {
+  opacity: 1;
+  transform: scaleX(0);
+}
+
 [data-revele="trait"].revele-cache {
   opacity: 1;
   transform: scaleY(0);
