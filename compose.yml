@@ -9,7 +9,7 @@ services:
   web:
     # Tag figé (et non :latest) : `docker compose pull` ne change jamais de version à l'insu de personne.
     # Mise à jour ou rollback = modifier ce tag puis `docker compose up -d`.
-    image: ghcr.io/sosese/sosese:v0.7
+    image: ghcr.io/sosese/sosese:v0.8
     container_name: sosese-web
     restart: unless-stopped
     env_file: .env
