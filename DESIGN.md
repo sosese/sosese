@@ -1117,6 +1117,33 @@ Tolérées, à ne pas étendre sans raison :
     → L'encadrer dans une carte `bg-surface` (`--surface` reste un cran plus clair que `--bg` dans le jeu invert),
     et la contraindre en largeur — une carte pleine largeur autour d'un mockup de 24 rem fait une boîte vide.
 
+27. **Une animation en `both` dont la dernière image est l'état éteint écrase pour toujours la règle
+    d'état.** Un balayage qui passe sur une liste — chaque élément s'allume puis s'éteint — se pose
+    naturellement en `animation: scan … both`. Mais l'élément qui doit *rester* allumé ensuite ne le
+    fait jamais : le `fill: both` conserve la dernière image du balayage (état éteint) indéfiniment,
+    et elle bat la déclaration simple `.choisi { color: var(--accent) }`, qui ne se voit donc plus.
+    Aucune erreur, aucune console : l'élément reste simplement gris. Rencontré le 2026-09-20 sur la
+    planche d'architecture du labo (compétence retenue du serveur).
+    → L'élément qui survit au balayage a **son propre déroulé**, qui contient le passage du balayage,
+    l'attente, puis l'allumage final ; sa dernière image est alors l'état d'arrivée et le `both` joue
+    pour nous. Ne jamais compter sur une règle d'état pour reprendre la main après une animation `both`.
+28. **Un enfant en `position: absolute` d'un conteneur `flex` se pose au début de la ligne.** Sa
+    position statique n'est pas là où il est écrit dans le HTML : un élément hors flux d'un conteneur
+    flex est aligné comme s'il était le seul élément, donc en `flex-start`. Un compteur posé après un
+    libellé (« Vos règles 3 » puis « 4 » en fondu) atterrit sur la première lettre du libellé.
+    → Empiler deux états au même endroit se fait avec une **grille d'une seule case**
+    (`display: inline-grid` + `grid-area: 1 / 1`) : la boîte réserve la largeur du plus large, rien
+    n'est sorti du flux, et le fondu croisé fonctionne partout.
+29. **Une capture headless ne tombe jamais sur l'instant voulu.** `--virtual-time-budget=2600` ne
+    garantit pas que la page est photographiée à 2 600 ms : le temps virtuel n'avance que quand il y a
+    du travail, et les animations d'`opacity` sont composées hors du fil principal. Conséquence
+    observée le 2026-09-20 : un état transitoire correct (vérifié par `getComputedStyle`) était
+    absent de trois captures d'affilée, ce qui donne toutes les apparences d'un bug de CSS.
+    → Pour photographier un état transitoire, figer explicitement :
+    `document.getAnimations().forEach(a => { a.pause(); a.currentTime = T })` — `currentTime` inclut
+    le délai, donc T se lit directement dans la feuille de style. C'est ce que fait `?fige=N` sur la
+    page de contrôle du labo. `--run-all-compositor-stages-before-draw` aide, mais ne suffit pas.
+
 ## Anti-patterns
 - Dégradés multicolores
 - Imagerie IA stock (cerveaux, robots, réseaux de neurones)
