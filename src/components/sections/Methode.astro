@@ -3,25 +3,27 @@ import SectionHeading from "../ui/SectionHeading.astro";
 
 // À VALIDER : durées, livrables et temps demandé au client (§5 ligne 4, contenu non fourni par le §9).
 const etapes = [
+  // Titres : des noms courts, pas des phrases. On survole ces trois mots ; la phrase d'action ouvre la
+  // description (2026-09-19). Durées et temps demandé au client inchangés.
   {
     titre: "Atelier",
-    texte: "Sur site, avec les personnes qui font le travail. On cartographie vos processus et on repère ce qui peut être automatisé.",
+    texte: "On étudie comment vous travaillez avec vos équipes sur le terrain. On identifie les tâches chronophages et les meilleurs candidats à l'automatisation IA",
     duree: "2 jours",
-    livrable: "Cartographie des processus et diagnostic",
-    tempsClient: "1/2 journée avec les équipes",
+    livrable: "le déroulé de vos processus, et où ça coince",
+    tempsClient: "une demi-journée avec vos équipes",
   },
   {
     titre: "Feuille de route",
-    texte: "Chaque piste est chiffrée : temps gagné, coût, faisabilité. Vous choisissez par quoi commencer, et si vous continuez.",
+    texte: "On vous dit ce qui mérite d'être fait. On mesure le temps gagné, le coût et la faisabilité. Vous choisissez par quoi commencer.",
     duree: "1 semaine",
-    livrable: "Feuille de route chiffrée et priorisée",
-    tempsClient: "1 heure de restitution",
+    livrable: "liste chiffrée, dans l'ordre où on la ferait",
+    tempsClient: "1 heure pour en parler",
   },
   {
     titre: "Construction",
-    texte: "On construit la solution retenue, branchée sur vos outils, puis on la met en service avec vos équipes.",
+    texte: "On construit, et on branche. Ce que vous avez choisi, sur vos outils actuels, puis entre les mains de vos équipes. Vous voyez avancer chaque semaine.",
     duree: "4 semaines",
-    livrable: "Solution en service et documentée",
+    livrable: "solution en service, avec mode d'emploi",
     tempsClient: "1 heure de point par semaine",
   },
 ];
@@ -29,8 +31,8 @@ const etapes = [
 
 <section id="methode" aria-labelledby="methode-titre" class="border-y border-border bg-bg-subtle py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
-    <SectionHeading id="methode-titre" eyebrow="La méthode" title="Trois étapes, un livrable concret à chacune">
-      Vous décidez de la suite à la fin de chaque étape, sur la base de ce qui a été produit.
+    <SectionHeading id="methode-titre" eyebrow="Comment on travaille" title="Trois étapes, et vous décidez à la fin de chacune">
+      Rien ne se construit avant que vous ayez vu, en face, ce que ça coûte et ce que ça rapporte.
     </SectionHeading>
 
     <ol data-methode class="grid gap-8 md:grid-cols-3 md:gap-6">
@@ -61,7 +63,7 @@ const etapes = [
                   <dd class="font-mono text-ink">{etape.duree}</dd>
                 </div>
                 <div data-revele class="flex flex-col gap-1 px-4 py-3">
-                  <dt class="eyebrow">Livrable</dt>
+                  <dt class="eyebrow">Vous recevez</dt>
                   <dd class="text-ink">{etape.livrable}</dd>
                 </div>
               </dl>

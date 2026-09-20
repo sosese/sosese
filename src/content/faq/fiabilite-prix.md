@@ -1,7 +1,7 @@
 ---
-question: Et si l'IA se trompe dans un devis, ou invente un prix ?
-ordre: 8
+question: Et si elle invente un prix ?
+ordre: 9
 ---
-Impossible par construction : l'automatisation interroge votre catalogue et vos règles de TVA réels, elle ne peut pas inventer un prix.
+Elle ne calcule jamais un prix elle-même : elle lit vos tarifs et vos règles de TVA dans votre logiciel.
 
-Le montant exact vous est toujours soumis avant création : tant que vous ne l'avez pas validé, rien n'est écrit dans votre logiciel de gestion.
+Le montant vous est toujours montré avant d'être écrit. Tant que vous ne l'avez pas validé, rien n'est créé dans votre logiciel de gestion.

@@ -169,7 +169,7 @@
   }
 }
 
-/* Action faite dans le mockup du hero : un halo ambre qui s'élargit et s'éteint, deux fois. */
+/* Action faite dans les schémas animés : un halo ambre qui s'élargit et s'éteint, deux fois. */
 @keyframes action-eclat {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-bright) 55%, transparent); }
   100% { box-shadow: 0 0 0 calc(var(--space-unit) * 2) transparent; }
@@ -212,6 +212,17 @@
 
 [data-revele="trait"] {
   transform-origin: center top;
+}
+
+/* Comparaison de grandeurs révélée ligne à ligne (`CompareBars` avec `reveal`) : la barre ne glisse
+   pas, elle se déploie depuis la gauche — elle mesure une durée, l'allonger la raconte. */
+[data-revele="barre"] {
+  transform-origin: left center;
+}
+
+[data-revele="barre"].revele-cache {
+  opacity: 1;
+  transform: scaleX(0);
 }
 
 [data-revele="trait"].revele-cache {

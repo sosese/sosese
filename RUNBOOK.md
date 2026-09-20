@@ -311,9 +311,11 @@ docker logs traefik --since 2m 2>&1 | grep -iE "sosese|error"
 Vérifier immédiatement les autres services (3.3) : Traefik recharge à chaud, et un nom de routeur ou de middleware
 en double écrase silencieusement un voisin. Tous les noms doivent commencer par `sosese`.
 
-### Ajouter une question de FAQ ou un exemple
+### Ajouter une question de FAQ
 
-Un seul fichier Markdown dans `src/content/faq/` ou `src/content/exemples/` (voir `DESIGN.md`).
+Un seul fichier Markdown dans `src/content/faq/` (voir `DESIGN.md`). La collection `exemples` a été supprimée
+le 2026-09-18 avec la section qu'elle alimentait.
+
 Pas de session Claude Code nécessaire : `npm run build` pour valider, puis branche, PR, version, déploiement.
 
 ### Compléter les mentions légales ou la politique de confidentialité

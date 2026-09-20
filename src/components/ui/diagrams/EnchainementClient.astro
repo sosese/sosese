@@ -4,7 +4,9 @@
 // Jouée en boucle.
 //
 // Règles dures (DESIGN.md, « Cas client ») :
-// - scénario INVENTÉ : client, commune, montants et créneaux ne viennent d'aucune pièce réelle (piège 17) ;
+// - scénario INVENTÉ : client, commune, montants et créneaux ne viennent d'aucune pièce réelle (piège 17).
+//   La mention visible « Scénario type… » a été retirée le 2026-09-19 (demande explicite) : la règle
+//   d'invention, elle, ne bouge pas — voir DESIGN.md, « Clients » ;
 // - chaque écriture arrive après le « oui » ; l'analyse n'écrit rien et le dit ;
 // - aucun jargon technique, y compris dans les libellés mono.
 //
@@ -70,7 +72,7 @@ const analyse = {
 };
 ---
 
-<div data-cc class="flex w-full flex-col gap-6 rounded-lg border border-border bg-surface p-6 sm:p-8">
+<div data-cc class="flex w-full flex-col gap-5 rounded-lg border border-border bg-surface p-6">
   <div class="flex items-start justify-between gap-4">
     <div class="flex flex-col gap-1">
       <p class="eyebrow">Aperçu du principe</p>
@@ -91,12 +93,12 @@ const analyse = {
     </button>
   </div>
 
-  <ol class="grid gap-4 lg:grid-cols-3">
+  <ol class="grid gap-3 lg:grid-cols-3">
     {
       etapes.map((etape) => (
         <li
           data-cc-etape
-          class="flex flex-col gap-3 rounded-md border border-border bg-bg p-4 transition-colors duration-(--duration-slow) ease-out"
+          class="flex flex-col gap-2.5 rounded-md border border-border bg-bg p-3.5 transition-colors duration-(--duration-slow) ease-out"
         >
           <p class="flex items-center gap-2 font-mono text-12">
             <span class="text-accent">{etape.numero}</span>
@@ -136,7 +138,7 @@ const analyse = {
 
   <div
     data-cc-etape
-    class="grid gap-4 rounded-md border border-border bg-bg p-4 transition-colors duration-(--duration-slow) ease-out lg:grid-cols-[2fr_3fr] lg:gap-8"
+    class="grid gap-3 rounded-md border border-border bg-bg p-3.5 transition-colors duration-(--duration-slow) ease-out lg:grid-cols-[2fr_3fr] lg:gap-8"
   >
     <div class="flex flex-col gap-2">
       <p class="flex items-center gap-2 font-mono text-12">
@@ -168,8 +170,6 @@ const analyse = {
       </p>
     </div>
   </div>
-
-  <p class="text-12 text-ink-muted">Scénario type : client, montants et créneaux inventés — pas une pièce réelle.</p>
 </div>
 
 <script>
