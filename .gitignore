@@ -6,3 +6,7 @@ dist/
 .astro/
 *.local
 .DS_Store
+
+# Matériel de travail local : planches, captures, notes de recherche visuelle.
+# Ne doit jamais partir dans le dépôt ni dans l'image.
+test_visuel/
