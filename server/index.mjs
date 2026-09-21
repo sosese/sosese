@@ -72,10 +72,10 @@ await app.register(fastifyStatic, {
   root: DIST,
   redirect: false,
   cacheControl: false,
-  setHeaders(res, path) {
-    if (path.includes(`${sep}_astro${sep}`)) res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-    else if (path.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
-    else res.setHeader("Cache-Control", "public, max-age=604800");
+  setHeaders(reply, path) {
+    if (path.includes(`${sep}_astro${sep}`)) reply.header("Cache-Control", "public, max-age=31536000, immutable");
+    else if (path.endsWith(".html")) reply.header("Cache-Control", "no-cache");
+    else reply.header("Cache-Control", "public, max-age=604800");
   },
 });
 

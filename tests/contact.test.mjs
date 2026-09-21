@@ -79,7 +79,7 @@ test('cohabitation : V1, V2 isolée, contact désactivé, liens et non-indexatio
   assert.ok((await (await fetch(app.base+'/contact')).text()).includes('<form'));
   for(const path of ['/v2','/v2/','/v2/accompagnement','/v2/realisations/atelier-sols-fils','/v2/editeurs','/v2/a-propos','/v2/contact']) {
    const res=await fetch(app.base+path);assert.equal(res.status,200,path);
-   assert.match(res.headers.get('x-robots-tag'),/noindex/);
+   assert.match(res.headers.get('x-robots-tag'),/noindex/);assert.equal(res.headers.get('cache-control'),'no-cache');
    const html=await res.text();assert.match(html,/<meta name="robots" content="noindex"/);
    assert.equal((html.match(/<h1(?:\s|>)/g)||[]).length,1);
    assert.ok(!html.includes('<form'),path+' must not contain a form');

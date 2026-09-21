@@ -2,7 +2,7 @@
   "name": "sosese",
   "private": true,
   "type": "module",
-  "version": "0.8.0",
+  "version": "0.9.0-v2-preview.1",
   "scripts": {
     "dev": "astro dev",
     "build": "node scripts/build-both.mjs",
@@ -15,9 +15,9 @@
     "@fastify/compress": "^8.3.1",
     "@fastify/helmet": "^13.1.1",
     "@fastify/rate-limit": "^10.3.0",
-    "@fastify/static": "^8.3.0",
+    "@fastify/static": "10.1.4",
     "fastify": "^5.12.4",
-    "nodemailer": "^7.0.13",
+    "nodemailer": "10.0.10",
     "zod": "^4.6.5"
   },
   "devDependencies": {

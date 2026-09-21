@@ -1190,3 +1190,7 @@ Tolérées, à ne pas étendre sans raison :
 - V2 sans formulaire, contact email. API /api/contact conservée au contrat V1 ; aucun endpoint V2. Corrections anti-spam et refus SMTP maintenues.
 - V2 noindex dans HTML et en-tête HTTP ; aucun sitemap V2. Erreurs V2 rendent une 404 propre à la V2. Liens, scripts, images et fontes préfixés /v2/.
 - La publication de l’image et la commande VPS sont des étapes suivantes ; compose.yml continue à désigner v0.8 jusque-là.
+
+## Correctifs serveur avant publication V2
+
+Fastify Static 10.1.4 et Nodemailer 10.0.10 figés dans package.json/lock. Callback setHeaders adapté à reply.header. Audit runtime sans vulnérabilité signalée ; alertes du build évaluées dans SECURITE-V2.md.

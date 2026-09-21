@@ -37,7 +37,7 @@ Le serveur web sera brièvement redémarré ; aucune promesse de déploiement sa
 
 - Parcours LinkedIn détaillé en attente d’accès ; faits connus seulement sur À propos.
 - Pages légales laissées au chantier séparé demandé. La V2 est une préversion publique non indexable, pas une page privée.
-- Le build npm signale des vulnérabilités dans les dépendances existantes (dont deux de sévérité élevée pour l’exécution). Aucun changement automatique de dépendances n’a été appliqué ; revue à prévoir avant publication.
+- Audit des dépendances d’exécution après correction : zéro vulnérabilité signalée. Trois alertes persistent dans les outils de compilation (Astro, sharp, esbuild), absents de l’image finale. Voir SECURITE-V2.md pour le périmètre et les limites.
 - Les tests de compréhension, le suivi des leads, les conditions commerciales détaillées et la qualification des chiffres clients restent décrits dans le rapport d’audit initial.
 
 ## Recette de cette préparation
