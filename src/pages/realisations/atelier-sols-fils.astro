@@ -1,0 +1,28 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHeader from "../../components/ui/PageHeader.astro";
+import Section from "../../components/v2/Section.astro";
+import NextStep from "../../components/v2/NextStep.astro";
+import CompareBars from "../../components/ui/diagrams/CompareBars.astro";
+import EnchainementClient from "../../components/ui/diagrams/EnchainementClient.astro";
+import {casClient} from "../../config/site";
+import {preuve} from "../../config/editorial";
+---
+<Base title="Devis dictés sur chantier dans Extrabat : le cas Atelier des Sols & Fils | sosese" description="Une première réalisation sosese : devis, rendez-vous et fiches clients dans Extrabat. Contexte, fonctionnement et résultats rapportés par le client.">
+ <PageHeader eyebrow="Réalisation · L’Atelier des Sols & Fils" title="Du chantier au devis, dans Extrabat.">Une intégration sur mesure pour une entreprise de pose de sols : préparer devis, rendez-vous et fiches clients à partir d’une demande formulée sur le terrain.</PageHeader>
+ <Section id="contexte" title="Le travail commençait sur place. La saisie attendait le bureau.">
+  <div class="grid gap-8 lg:grid-cols-[3fr_2fr]"><div class="prose-site"><p>Chez {casClient.nom}, Jason devait reprendre au bureau les informations nécessaires au devis. La solution permet désormais de formuler une demande sur le chantier et de préparer le devis dans le logiciel de gestion déjà utilisé.</p><p>Le connecteur s’appuie sur le catalogue et les tarifs dans Extrabat. Il permet aussi de créer des fiches clients, de poser des rendez-vous et de produire des analyses, avec validation des actions prévues.</p><p>Il s’agit d’une intégration réalisée pour ce client. La mention d’Extrabat décrit le logiciel connecté et n’implique pas de partenariat avec son éditeur.</p></div><aside class="rounded-lg border border-border bg-bg-subtle p-6"><p class="eyebrow mb-4">Le projet</p><dl class="space-y-4 text-16"><div><dt class="text-ink-muted">Client</dt><dd class="font-medium">{casClient.nom}</dd></div><div><dt class="text-ink-muted">Métier</dt><dd>Pose de sols</dd></div><div><dt class="text-ink-muted">Logiciel connecté</dt><dd>Extrabat</dd></div></dl><a class="v2-link mt-6 inline-block" href={casClient.site}>Découvrir l’entreprise ↗</a></aside></div>
+ </Section>
+ <Section id="resultats" tone="subtle" eyebrow="Résultats rapportés" title="Des durées réduites sur deux tâches.">
+  <div class="grid gap-6 md:grid-cols-2"><article class="rounded-lg border border-border bg-surface p-6"><h3 class="mb-6 text-21 font-semibold">Préparer un devis</h3><CompareBars bars={[...preuve.devis]} /></article><article class="rounded-lg border border-border bg-surface p-6"><h3 class="mb-6 text-21 font-semibold">Créer une fiche client</h3><CompareBars bars={[...preuve.fiche]} /></article></div>
+  <p class="mt-6 max-w-(--measure) text-14 text-ink-muted">Durées rapportées pour ce cas. Le nombre de mesures et le protocole de chronométrage ne sont pas documentés ici. Ces résultats ne constituent ni une moyenne garantie, ni une prévision pour un autre projet.</p>
+  <h3 class="mt-10 text-21 font-semibold">{preuve.periode}</h3>
+  <dl class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{preuve.production.map(p=><div class="border-l border-border-strong pl-5"><dd class="font-mono text-36">{p.valeur}</dd><dt class="mt-2 text-16 text-ink-muted">{p.label}</dt></div>)}</dl>
+  <p class="mt-6 text-14 text-ink-muted">{preuve.date}. Les « + » indiquent des planchers. Les trois rapports portent sur des périodes annuelles ; ils ont été produits pendant cette période de six semaines.</p>
+ </Section>
+ <Section id="fonctionnement" title="Une demande, plusieurs actions reliées." intro="La démonstration ci-dessous illustre le fonctionnement. Les noms, montants et contenus affichés sont fictifs ; ils ne représentent pas les dossiers du client.">
+  <div class="rounded-lg border border-border bg-surface p-6 md:p-8"><EnchainementClient /></div>
+ </Section>
+ <Section id="transposition" eyebrow="Et dans votre entreprise ?" title="Un point de départ, pas une recette universelle." intro="Un même besoin peut demander une autre solution selon vos logiciels, vos données et vos règles métier. Le premier échange sert à identifier ce qui est transposable et ce qu’il faut vérifier."><a class="v2-link" href="/accompagnement">Comprendre l’accompagnement →</a></Section>
+ <NextStep />
+</Base>

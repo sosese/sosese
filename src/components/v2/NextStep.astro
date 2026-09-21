@@ -1,0 +1,18 @@
+---
+import Button from "../ui/Button.astro";
+type Props={editeur?:boolean};
+const {editeur=false}=Astro.props;
+---
+<section class="section-invert border-t border-border bg-bg py-(--section-y)">
+  <div class="container-site grid items-center gap-8 lg:grid-cols-[3fr_2fr]">
+    <div>
+      <p class="eyebrow mb-3">La prochaine étape</p>
+      <h2 class="text-28 font-semibold md:text-36">{editeur ? "Partons d’un usage de vos clients." : "Quelle tâche aimeriez-vous simplifier ?"}</h2>
+      <p class="mt-4 max-w-(--measure) text-18 text-ink-muted">{editeur ? "Présentez votre logiciel, un usage envisagé et les accès disponibles. Nous pourrons examiner un premier périmètre d’intégration." : "Votre contexte, les outils utilisés et une tâche qui revient : quelques lignes suffisent pour commencer la discussion."}</p>
+    </div>
+    <div class="flex flex-col items-start gap-3 lg:items-end">
+      <Button href={editeur ? "/contact?intention=editeur" : "/contact"} size="lg">{editeur ? "Discuter d’une intégration" : "Parlons de votre besoin"}<span aria-hidden="true">→</span></Button>
+      <p class="text-14 text-ink-muted">Un premier échange pour vérifier l’intérêt du projet.</p>
+    </div>
+  </div>
+</section>

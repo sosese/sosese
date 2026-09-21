@@ -1155,3 +1155,18 @@ Tolérées, à ne pas étendre sans raison :
 - Faux témoignages, faux logos clients, chiffres inventés
 - `transition-all`, animation sans `motion-safe:` ou sans token de durée
 - Texte `--accent` sur fond `--accent-soft`
+
+
+## V2 locale — architecture validée le 21 septembre 2026
+
+- Six pages commerciales : accueil, accompagnement, cas Atelier des Sols & Fils, éditeurs, à propos, contact. Pages légales conservées à la demande du porteur.
+- Public principal : indépendants/TPE/PME jusqu’à environ 50 salariés, Metz + environ 80 km. Parcours éditeurs distinct.
+- Direction visuelle conservée : tokens, fontes, ambre, schémas, deux thèmes. Pas de nouvelles dépendances.
+- Accueil raccourci : promesse, preuve, trois besoins, méthode synthétique, interlocuteur, trois questions, contact. L’ancien bouton flottant mobile n’est plus rendu.
+- Données du cas centralisées dans `src/config/editorial.ts`. Durées qualifiées de rapportées, pas de ROI extrapolé. Les métriques de production sont datées.
+- `src/components/v2` porte les nouveaux composants partagés. `ValidationGate` adapte le labo A5. `ProtocoleIntegration` reprend S3 en état final statique, sous un détail facultatif de la page éditeurs, avec texte équivalent.
+- Le jargon technique est concentré dans « Sous le capot » de la page éditeurs. L’architecture du schéma est une possibilité, pas une promesse universelle.
+- Les prototypes complets restent dans `references/src` en local, hors des routes Astro. Les sources originales du labo restent intactes dans la V1. Seules les adaptations utilisées sont versionnées.
+- Les illustrations du hero et du cas affichent une mention visible de données fictives.
+- Contact hydraté en `client:load` pour être disponible rapidement ; navigation et thème conservent leurs îlots existants. Sans JS, une alternative email est explicite.
+- Le parcours biographique détaillé attend l’accès au profil LinkedIn fourni par l’utilisateur. Aucun employeur, diplôme ou nombre d’années inventé.

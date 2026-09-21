@@ -1,0 +1,14 @@
+---
+type Props = { id?: string; eyebrow?: string; title: string; intro?: string; tone?: "plain" | "subtle" | "dark" };
+const {id, eyebrow, title, intro, tone="plain"}=Astro.props;
+---
+<section id={id} aria-labelledby={id ? `${id}-titre` : undefined} class:list={["border-t border-border py-(--section-y)", tone === "subtle" && "bg-bg-subtle", tone === "dark" && "section-invert bg-bg"]}>
+  <div class="container-site">
+    <div class="mb-8 max-w-3xl">
+      {eyebrow && <p class="eyebrow mb-3">{eyebrow}</p>}
+      <h2 id={id ? `${id}-titre` : undefined} class="text-28 font-semibold md:text-36">{title}</h2>
+      {intro && <p class="mt-4 max-w-(--measure) text-18 text-ink-muted">{intro}</p>}
+    </div>
+    <slot />
+  </div>
+</section>

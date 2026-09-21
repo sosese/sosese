@@ -17,13 +17,14 @@ const etapes = [
   title="Parlons de vos tâches répétitives | sosese"
   description="Décrivez où votre équipe perd du temps : on vous dit franchement ce qui vaut la peine d'être automatisé."
 >
-  <PageHeader eyebrow="Contact" title="Parlons de ce qui vous fait perdre du temps">
+  <PageHeader eyebrow="Contact" title="Parlons de votre besoin">
     Quelques informations suffisent. On vous répond franchement, y compris si l'automatisation n'est pas la bonne réponse.
   </PageHeader>
 
   <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
     <Card padding="lg">
-      <ContactForm client:idle fallbackEmail={site.email} />
+      <ContactForm client:load fallbackEmail={site.email} />
+      <noscript><p class="mt-6 text-16">Le formulaire nécessite JavaScript. Vous pouvez écrire à <a class="v2-link" href={`mailto:${site.email}`}>{site.email}</a>.</p></noscript>
     </Card>
 
     <aside class="flex flex-col gap-8" aria-label="Coordonnées et suite de la démarche">

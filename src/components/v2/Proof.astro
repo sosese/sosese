@@ -1,0 +1,26 @@
+---
+import {casClient} from "../../config/site";
+import {preuve} from "../../config/editorial";
+import CompareBars from "../ui/diagrams/CompareBars.astro";
+import Button from "../ui/Button.astro";
+---
+<section id="cas-client" aria-labelledby="preuve-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
+ <div class="container-site grid gap-8 lg:grid-cols-2 lg:gap-12">
+  <div>
+   <p class="eyebrow mb-3">Une première réalisation, sur le terrain</p>
+   <h2 id="preuve-titre" class="text-28 font-semibold md:text-36">Le devis commence sur le chantier.</h2>
+   <p class="mt-5 text-18 text-ink-muted">Chez {casClient.nom}, la solution prépare des devis dans Extrabat à partir d’une demande dictée. Le catalogue et les tarifs de l’entreprise restent la référence.</p>
+   <div class="mt-6 flex flex-wrap items-center gap-4">
+    <span class="section-invert rounded-md bg-bg px-4 py-3"><img src={casClient.logo!} alt={casClient.nom} width="160" height="40" loading="lazy" class="h-10 w-auto" /></span>
+    <span class="text-14 text-ink-muted">Pose de sols · intégration Extrabat</span>
+   </div>
+   <div class="mt-6"><Button href="/realisations/atelier-sols-fils" variant="secondary">Voir le cas client <span aria-hidden="true">→</span></Button></div>
+  </div>
+  <div class="rounded-lg border border-border bg-surface p-6 md:p-8">
+   <h3 class="mb-6 text-21 font-semibold">Préparer un devis</h3>
+   <CompareBars bars={[...preuve.devis]} />
+   <p class="mt-5 text-14 text-ink-muted">Durées rapportées pour ce cas client. Elles ne constituent pas une promesse de résultat pour un autre projet.</p>
+   <div class="mt-6 border-t border-border pt-5"><strong class="font-mono text-28">+50</strong><span class="ml-3 text-16">devis créés en six semaines</span></div>
+  </div>
+ </div>
+</section>

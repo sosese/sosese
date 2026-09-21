@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Section from "../components/v2/Section.astro";
+import Needs from "../components/v2/Needs.astro";
+import NextStep from "../components/v2/NextStep.astro";
+import ValidationGate from "../components/v2/ValidationGate.astro";
+import {etapes} from "../config/editorial";
+---
+<Base title="Automatiser une tâche avec vos outils | sosese, Metz" description="Un accompagnement pour indépendants, TPE et PME : comprendre le besoin, vérifier la faisabilité, construire et tester une automatisation délimitée.">
+ <PageHeader eyebrow="Accompagnement · indépendants, TPE et PME" title="Une tâche précise. Un projet que vous pouvez évaluer.">L’objectif est de simplifier votre travail quotidien. Nous partons de vos outils et de vos contraintes, puis nous choisissons ce qui mérite réellement d’être automatisé.</PageHeader>
+ <Section id="besoins" title="Où commencer ?"><Needs /></Section>
+ <Section id="deroulement" tone="subtle" eyebrow="Du premier échange à la mise en service" title="À chaque étape, une décision claire.">
+  <ol class="grid gap-6 md:grid-cols-2">{etapes.map((e,i)=><li class="rounded-lg border border-border bg-surface p-6 md:p-8"><p class="eyebrow mb-4">Étape 0{i+1}</p><h3 class="text-21 font-semibold">{e.titre}</h3><p class="mt-4 text-16 text-ink-muted">{e.texte}</p><p class="mt-5 border-t border-border pt-4 text-14"><strong>Ce que vous obtenez : </strong>{e.livrable}</p></li>)}</ol>
+ </Section>
+ <Section id="controle" eyebrow="Garder la main" title="Préparer une action n’est pas l’exécuter.">
+  <div class="grid items-center gap-8 lg:grid-cols-2"><div class="prose-site"><p>Un devis peut être préparé automatiquement et attendre votre accord. Nous définissons ensemble où placer ces validations, selon les conséquences de chaque action.</p><p>Les données nécessaires, les services utilisés et les droits accordés sont explicités dans le périmètre. Une automatisation doit aussi prévoir ce qui se passe lorsqu’une information manque ou qu’un logiciel ne répond pas.</p><p>Les accès techniques et les limites de vos logiciels peuvent rendre certaines idées impossibles ou disproportionnées. C’est une conclusion utile du cadrage.</p></div><ValidationGate /></div>
+ </Section>
+ <Section id="budget" tone="subtle" title="Le budget et le suivi font partie du périmètre.">
+  <div class="grid gap-8 md:grid-cols-2"><div><h3 class="text-21 font-semibold">Avant de démarrer</h3><p class="mt-4 text-16 text-ink-muted">La proposition précise les livrables, les exclusions, le calendrier envisagé et le coût de réalisation. Les abonnements ou frais d’usage nécessaires sont identifiés séparément.</p></div><div><h3 class="text-21 font-semibold">Après la mise en service</h3><p class="mt-4 text-16 text-ink-muted">Documentation, assistance, maintenance et évolutions : les responsabilités et les conditions de suivi sont convenues avant la livraison. Elles dépendent du projet.</p></div></div>
+  <p class="mt-8 text-16">Pour préparer l’échange : le nom de vos outils, un exemple de tâche répétée et la fréquence à laquelle elle revient suffisent. N’envoyez pas de données clients confidentielles.</p>
+ </Section>
+ <NextStep />
+</Base>

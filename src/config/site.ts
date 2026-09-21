@@ -1,11 +1,11 @@
 export const site = {
   name: "sosese",
-  title: "sosese — IA sur-mesure pour PME, branchée sur vos outils",
+  title: "sosese — Automatisation pour TPE et PME autour de Metz",
   description:
-    "On part de vos logiciels actuels : l'administratif en moins, vos données enfin utiles, et rien qui parte sans votre accord.",
+    "Moins de ressaisie, des devis préparés plus vite et des informations plus faciles à retrouver. Des automatisations adaptées à vos outils et à votre métier.",
   // À confirmer (§9) : adresse de contact et URL LinkedIn réelles.
   email: "contact@sosese.tech",
-  linkedin: null as string | null,
+  linkedin: "https://www.linkedin.com/in/joris-chamvoux-71881b84/" as string | null,
 };
 
 // Contenus bloquants du §9 : null = non fourni. Rendu en marqueur « à compléter », jamais inventé.
@@ -60,13 +60,12 @@ export const casClient = {
   logiciel: "Extrabat" as Texte,
 };
 
-export const zoneIntervention = null as Texte;
+export const zoneIntervention = "Metz et environ 80 km autour. À distance selon le projet.";
 
 export const mainNav = [
-  { label: "Méthode", href: "/#methode" },
-  { label: "Offre", href: "/#offre" },
-  // L'ancre reste `#cas-client` : elle est publiée depuis la v1, le libellé seul change.
-  { label: "Clients", href: "/#cas-client" },
+  { label: "Accompagnement", href: "/accompagnement" },
+  { label: "Réalisation", href: "/realisations/atelier-sols-fils" },
+  { label: "Éditeurs", href: "/editeurs" },
   { label: "À propos", href: "/a-propos" },
 ];
 
@@ -75,4 +74,4 @@ export const legalNav = [
   { label: "Confidentialité", href: "/confidentialite" },
 ];
 
-export const cta = { label: "Parlons-en", href: "/contact" };
+export const cta = { label: "Parlons de votre besoin", href: "/contact" };

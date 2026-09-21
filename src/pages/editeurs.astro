@@ -1,0 +1,26 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Section from "../components/v2/Section.astro";
+import NextStep from "../components/v2/NextStep.astro";
+import ProtocoleIntegration from "../components/v2/ProtocoleIntegration.astro";
+---
+<Base title="Intégrations IA pour éditeurs de logiciels métier | sosese" description="Partir d’un usage terrain pour concevoir une intégration à votre logiciel : un cas concret, un périmètre technique et un prototype à évaluer.">
+ <PageHeader eyebrow="Pour les éditeurs de logiciels métier" title="Relier votre logiciel aux nouveaux usages de vos clients.">Vos clients veulent décrire une action, retrouver une information ou préparer un document plus simplement. sosese propose d’explorer ces usages à partir de l’expérience du terrain.</PageHeader>
+ <Section id="terrain" eyebrow="Une expérience concrète" title="Un premier connecteur, utilisé chez un client.">
+  <div class="grid gap-8 md:grid-cols-2"><p class="text-18 text-ink-muted">L’intégration réalisée pour L’Atelier des Sols & Fils relie une demande formulée sur chantier à des actions dans Extrabat. Ce projet donne un point de départ concret pour discuter des usages, des validations et des limites.</p><div class="rounded-lg border border-border bg-bg-subtle p-6"><h3 class="text-21 font-semibold">Ce que ce retour terrain permet d’examiner</h3><ul class="mt-4 list-disc space-y-2 pl-5 text-16 text-ink-muted"><li>Les gestes réellement utiles à l’utilisateur.</li><li>Les informations nécessaires à une action fiable.</li><li>Les moments où une validation humaine est attendue.</li></ul><a class="v2-link mt-6 inline-block" href="/realisations/atelier-sols-fils">Voir la réalisation →</a></div></div>
+ </Section>
+ <Section id="collaboration" tone="subtle" title="Commencer par un usage et un prototype.">
+  <ol class="grid gap-6 md:grid-cols-3">{[
+   ["Choisir l’usage", "Un parcours utilisateur concret et des critères pour juger son intérêt."],
+   ["Délimiter l’intégration", "Les fonctions accessibles, les données échangées et les responsabilités de chacun."],
+   ["Évaluer un prototype", "Une démonstration sur un périmètre convenu, puis une décision sur la suite."],
+  ].map(([titre,texte],i)=><li class="rounded-lg border border-border bg-surface p-6"><p class="eyebrow mb-5">0{i+1}</p><h3 class="text-21 font-semibold">{titre}</h3><p class="mt-4 text-16 text-ink-muted">{texte}</p></li>)}</ol>
+  <p class="mt-6 max-w-(--measure) text-16 text-ink-muted">Ce parcours est une proposition de collaboration. Le modèle de partenariat, les engagements de support et les conditions de diffusion sont à définir ensemble.</p>
+ </Section>
+ <Section id="sous-le-capot" eyebrow="Sous le capot" title="Une interface entre l’usage et votre API." intro="Selon le projet, un serveur MCP peut exposer des actions métier à un assistant IA. Les accès, les contrôles et la gestion des erreurs doivent être conçus avec l’éditeur.">
+  <div class="grid gap-8 md:grid-cols-2"><div class="prose-site"><h3>Points à examiner</h3><ul><li>API disponible, documentation et environnement de test.</li><li>Authentification, permissions et séparation des clients.</li><li>Validation des écritures, doublons et reprise sur erreur.</li><li>Traçabilité, versionnement et responsabilités de maintenance.</li></ul></div><div class="prose-site"><h3>Ce que montre le schéma</h3><p>L’assistant décompose une demande. Un connecteur appelle les fonctions autorisées du logiciel, puis retourne un résultat exploitable.</p><p>La répartition des composants et la gestion des secrets présentées ci-dessous illustrent une architecture possible. Elles ne constituent pas une garantie applicable à toute intégration.</p></div></div>
+  <details class="mt-8 rounded-lg border border-border bg-surface p-5 md:p-8"><summary class="cursor-pointer text-18 font-medium">Explorer le schéma de principe</summary><p class="my-5 text-14 text-ink-muted">Planche issue du labo sosese, présentée ici sans animation. Sur petit écran, le schéma se fait défiler horizontalement.</p><div class="overflow-x-auto rounded-md" tabindex="0" role="region" aria-label="Schéma technique défilant"><div class="v2-protocol"><ProtocoleIntegration /></div></div></details>
+ </Section>
+ <NextStep editeur />
+</Base>
