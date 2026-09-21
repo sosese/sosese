@@ -98,7 +98,7 @@ const analyse = {
       etapes.map((etape) => (
         <li
           data-cc-etape
-          class="flex flex-col gap-2.5 rounded-md border border-border bg-bg p-3.5 transition-colors duration-(--duration-slow) ease-out"
+          class="flex flex-col gap-3 rounded-md border border-border bg-bg p-4 transition-colors duration-(--duration-slow) ease-out"
         >
           <p class="flex items-center gap-2 font-mono text-12">
             <span class="text-accent">{etape.numero}</span>
@@ -116,12 +116,12 @@ const analyse = {
               <li
                 data-cc-pas={i > 0 ? "" : undefined}
                 class:list={[
-                  "flex items-baseline justify-between gap-2 transition-opacity duration-(--duration-slow) ease-out",
+                  "flex flex-wrap items-baseline justify-between gap-2 transition-opacity duration-(--duration-slow) ease-out",
                   ligne.fort && "border-t border-border pt-2",
                 ]}
               >
                 <span class={ligne.fort ? "text-ink" : "text-ink-muted"}>{ligne.label}</span>
-                <span class:list={["shrink-0 text-right", ligne.fort ? "text-accent" : "text-ink"]}>{ligne.valeur}</span>
+                <span class:list={["ml-auto min-w-0 max-w-full text-right", ligne.fort ? "text-accent" : "text-ink"]}>{ligne.valeur}</span>
               </li>
             ))}
           </ul>
@@ -138,7 +138,7 @@ const analyse = {
 
   <div
     data-cc-etape
-    class="grid gap-3 rounded-md border border-border bg-bg p-3.5 transition-colors duration-(--duration-slow) ease-out lg:grid-cols-[2fr_3fr] lg:gap-8"
+    class="grid gap-3 rounded-md border border-border bg-bg p-4 transition-colors duration-(--duration-slow) ease-out lg:grid-cols-[2fr_3fr] lg:gap-8"
   >
     <div class="flex flex-col gap-2">
       <p class="flex items-center gap-2 font-mono text-12">

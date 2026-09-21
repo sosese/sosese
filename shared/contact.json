@@ -29,5 +29,9 @@
   "champPiege": "site_web",
   "dureeMinimaleMs": 3000,
   "emailRegex": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$",
-  "telephoneRegex": "^[0-9+().\\s-]{6,}$"
+  "telephoneRegex": "^[0-9+().\\s-]{6,}$",
+  "intentions": [
+    "entreprise",
+    "editeur"
+  ]
 }

@@ -14,9 +14,8 @@ export type ContactPayload = {
   societe: string;
   email: string;
   telephone: string;
-  secteur: string;
-  // Puces multi-sélection concaténées par « , » (§5.2).
-  irritants: string;
+  intention: "entreprise" | "editeur";
+
   message: string;
   consentement: true;
   // Anti-spam : champ piège (doit rester vide) et durée de remplissage en ms.

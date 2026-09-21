@@ -115,3 +115,5 @@
     --duration-slow: 0ms;
   }
 }
+
+:root { --hero-figure-w: 31rem; }

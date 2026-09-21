@@ -1170,3 +1170,17 @@ Tolérées, à ne pas étendre sans raison :
 - Les illustrations du hero et du cas affichent une mention visible de données fictives.
 - Contact hydraté en `client:load` pour être disponible rapidement ; navigation et thème conservent leurs îlots existants. Sans JS, une alternative email est explicite.
 - Le parcours biographique détaillé attend l’accès au profil LinkedIn fourni par l’utilisateur. Aucun employeur, diplôme ou nombre d’années inventé.
+
+### Contact V2
+- Choix visible entreprise/éditeur ; `/contact?intention=editeur` le présélectionne, et l’utilisateur peut le modifier.
+- Nom, email, message et accord obligatoires ; société et téléphone facultatifs. Les mêmes limites JSON sont partagées par le formulaire et le serveur.
+- Pas de soumission avant hydratation. Alternative email visible, et texte noscript. Le formulaire natif n’envoie pas de données vers un endpoint JSON sans JS.
+- Le client vérifie le statut HTTP ET `ok: true`. Les erreurs 400/422/429/502/503 et réseau sont distinguées ; les champs sont conservés. Limite de 15 s pour la requête, avec mention de confirmation incertaine.
+- Le seuil anti-spam temporel répond 422, jamais un faux succès humain. Le champ piège conserve sa réponse silencieuse. Un succès SMTP exige un destinataire accepté et aucun rejet.
+- La politique de confidentialité est laissée inchangée comme demandé. Sa liste des champs devra être alignée lors de la session juridique (intention ajoutée, secteur/irritants retirés), avant publication.
+
+- Les pages accompagnement, cas client et éditeurs ont également un CTA dès leur introduction, utile en particulier sur mobile. `PageHeader` accepte une action facultative.
+- Canonical sans slash final, cohérent avec les liens et le sitemap ; la racine conserve `/`. Sitemap de six pages et robots générés statiquement, sans dépendance supplémentaire.
+- Tests Node : parcours HTTP et vrai dialogue SMTP simulé sur loopback ; disponibilité, refus, validation, limitation, routes/liens/métadonnées/CSP. Scripts des illustrations exécutés avec préférence de mouvement réduit simulée : aucun timer ne démarre.
+
+- Recette 320 px : suppression du double cadre autour de la démonstration client et retour à la ligne des valeurs longues. Aucun débordement horizontal de page ; seule la planche technique dispose de son propre défilement.

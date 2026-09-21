@@ -48,21 +48,11 @@ const outils = [
 ];
 ---
 
-<figure data-vrac class="flex w-full max-w-[31rem] flex-col gap-3 justify-self-center lg:justify-self-end">
+<figure data-vrac class="flex w-full max-w-(--hero-figure-w) flex-col gap-3 justify-self-center lg:justify-self-end">
   {/* Le même mot que la phrase mise en avant dans la colonne de texte : la maquette n'illustre pas
       « l'offre » en général, elle illustre cette phrase-là, à trente centimètres d'elle. */}
-  <p class="eyebrow">Votre solution IA s'en occupe</p>
-  <figcaption class="sr-only">
-    Les tâches du matin arrivent en vrac : trois post-it jetés de travers — un devis urgent, un
-    client à rappeler, des heures à pointer déjà barrées — et une note vocale de quatorze secondes,
-    dessinée comme une bulle de bande dessinée : « Passe voir Bonnet jeudi matin ». Une bande de
-    lecture traverse l'ensemble de gauche à droite et tout passe en lu sur son passage. Le
-    connecteur annonce qu'il lit ce qui arrive, absorbe le tout, puis se branche sur les outils de
-    l'entreprise et les interroge l'un après l'autre — l'agenda, les tarifs, les fiches clients —
-    chacun se cochant une fois consulté. Il rend deux actions prêtes : un devis pour le sol du
-    magasin, trois postes, pose le 6 octobre, 1 240 euros, et le rendez-vous demandé dans la note
-    vocale, avec M. Bonnet le jeudi 25 à 9 h. Chacune a son bouton de validation.
-  </figcaption>
+  <p class="eyebrow">Des informations aux actions à valider</p>
+  <figcaption class="sr-only">Illustration avec données fictives : des notes et une demande vocale sont rapprochées de l’agenda, des tarifs et des fiches clients. Un devis et un rendez-vous sont préparés, puis proposés à la validation.</figcaption>
 
   <div class="scene" data-scene data-etape="5">
     {/* Bouton pause obligatoire : la scène boucle et dure bien plus de 5 s (WCAG 2.2.2).
@@ -75,9 +65,9 @@ const outils = [
       aria-pressed="false"
       aria-label="Mettre l'animation en pause"
       title="Mettre l'animation en pause"
-      class="commande inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
+      class="commande inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
     >
-      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-2.5" fill="currentColor">
+      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-3" fill="currentColor">
         <path data-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
         <path data-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
       </svg>

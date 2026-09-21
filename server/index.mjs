@@ -90,12 +90,11 @@ const L = regles.limites;
 const ligne = (max) => z.string().trim().min(1).max(max).regex(/^[^\r\n]*$/);
 const contactSchema = z.object({
   nom: ligne(L.nom),
-  societe: ligne(L.societe),
+  societe: z.string().trim().max(L.societe).regex(/^[^\r\n]*$/).default(""),
   email: z.string().trim().max(L.email).regex(new RegExp(regles.emailRegex)),
   telephone: z.string().trim().max(L.telephone).refine((v) => v === "" || new RegExp(regles.telephoneRegex).test(v)).default(""),
-  secteur: z.enum(regles.secteurs),
-  irritants: z.string().max(500).refine((v) => v === "" || v.split(", ").every((i) => regles.irritants.includes(i))).default(""),
-  message: z.string().trim().max(L.message).default(""),
+  intention: z.enum(regles.intentions),
+  message: z.string().trim().min(1).max(L.message),
   consentement: z.literal(true),
   [regles.champPiege]: z.string().max(500).default(""),
   dureeRemplissage: z.number().int().nonnegative(),
@@ -142,11 +141,12 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
   const d = parsed.data;
 
   // Robot probable : on répond comme un succès pour ne rien lui apprendre, sans envoyer.
-  if (d[regles.champPiege] || d.dureeRemplissage < regles.dureeMinimaleMs) {
+  if (d[regles.champPiege]) {
     const motif = d[regles.champPiege] ? "champ piège rempli" : `formulaire rempli en ${d.dureeRemplissage} ms`;
     req.log.warn({ motif }, "contact : demande ignorée (anti-spam), aucun email envoyé");
     return { ok: true };
   }
+  if (d.dureeRemplissage < regles.dureeMinimaleMs) return reply.code(422).send({ ok: false, erreur: "trop_rapide" });
   if (!transport) return reply.code(503).send({ ok: false, erreur: "indisponible" });
 
   try {
@@ -154,18 +154,18 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
       from: env.MAIL_FROM,
       to: env.MAIL_TO,
       replyTo: { name: d.nom, address: d.email },
-      subject: `Demande de contact — ${d.societe}`,
+      subject: `Demande ${d.intention === "editeur" ? "éditeur" : "entreprise"} — ${d.societe || d.nom}`,
       text: [
         `Nom : ${d.nom}`,
         `Société : ${d.societe}`,
         `Email : ${d.email}`,
         `Téléphone : ${d.telephone || "—"}`,
-        `Secteur : ${d.secteur}`,
-        `Où ils perdent du temps : ${d.irritants || "—"}`,
+        `Intention : ${d.intention}`,
         "",
         d.message || "(pas de message)",
       ].join("\n"),
     });
+    if (!info.accepted?.length || info.rejected?.length) return reply.code(502).send({ ok: false, erreur: "envoi" });
     // « Accepté » = pris en charge par le serveur SMTP, pas encore distribué : un rejet ultérieur revient en bounce sur MAIL_FROM.
     req.log.info(
       { reponse: info.response, messageId: info.messageId, acceptes: info.accepted.length, refuses: info.rejected.length },
