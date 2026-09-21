@@ -60,7 +60,7 @@ const heures = Math.round((NB * MINUTES * SEMAINES) / 60);
 
   <a
     data-calc-lien
-    href="/contact"
+    href="/v2/contact"
     class="group/calc w-fit font-mono text-14 text-accent transition-colors duration-(--duration-fast) ease-out hover:text-accent-hover"
   >
     Nous décrire cette tâche
@@ -86,7 +86,7 @@ const heures = Math.round((NB * MINUTES * SEMAINES) / 60);
       sortieNb.textContent = String(fois);
       sortieMin.textContent = String(minutes);
       sortieHeures.textContent = String(heures);
-      lien.setAttribute("href", "/contact?heures=" + heures);
+      lien.setAttribute("href", "/v2/contact?heures=" + heures);
     }
 
     nb.addEventListener("input", calculer);

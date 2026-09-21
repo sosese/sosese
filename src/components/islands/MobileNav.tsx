@@ -44,7 +44,7 @@ export default function MobileNav({ links, cta }: Props) {
         className="m-0 h-dvh max-h-none w-full max-w-none bg-bg p-0 text-ink backdrop:bg-transparent"
       >
         <div className="container-site flex h-(--header-h) items-center justify-between border-b border-border">
-          <a href="/" onClick={close} className="text-21 font-semibold tracking-tight">
+          <a href="/v2/" onClick={close} className="text-21 font-semibold tracking-tight">
             sosese<span className="text-accent">.</span>
           </a>
           <div className="flex items-center gap-1">

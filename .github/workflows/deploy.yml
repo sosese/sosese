@@ -47,6 +47,10 @@ jobs:
           test "$(curl -fsS http://localhost:3000/api/health)" = '{"ok":true}'
           test "$(statut /)" = 200
           test "$(statut /contact)" = 200
+          test "$(statut /v2/)" = 200
+          test "$(statut /v2/contact)" = 200
+          curl -fsSI http://localhost:3000/v2/ | grep -qi 'x-robots-tag: noindex'
+          ! curl -fsS http://localhost:3000/v2/contact | grep -q '<form'
           test "$(statut /page-inexistante)" = 404
           test "$(docker inspect -f '{{.Config.User}}' sosese-test)" = node
           for i in $(seq 1 20); do
@@ -75,7 +79,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE }}:${{ github.ref_name }}
-            ${{ env.IMAGE }}:latest
+            ${{ !contains(github.ref_name, '-') && format('{0}:latest', env.IMAGE) || '' }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}

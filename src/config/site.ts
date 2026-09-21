@@ -53,7 +53,7 @@ export const casClient = {
   metier: "pose de sols",
   prenom: "Jason",
   site: "https://www.atelier-sols-fils.com/",
-  logo: "/clients/atelier-sols-fils.svg" as Texte,
+  logo: "/v2/clients/atelier-sols-fils.svg" as Texte,
   // Le logiciel de gestion sur lequel le connecteur a été construit. Seul nom de logiciel tiers cité
   // sur le site : il dit ce qui a été fait, pas ce que nous vendons (DESIGN.md, « Cas client »).
   // Le nom seul, jamais le logo, et aucune mention de partenariat.
@@ -63,15 +63,15 @@ export const casClient = {
 export const zoneIntervention = "Metz et environ 80 km autour. À distance selon le projet.";
 
 export const mainNav = [
-  { label: "Accompagnement", href: "/accompagnement" },
-  { label: "Réalisation", href: "/realisations/atelier-sols-fils" },
-  { label: "Éditeurs", href: "/editeurs" },
-  { label: "À propos", href: "/a-propos" },
+  { label: "Accompagnement", href: "/v2/accompagnement" },
+  { label: "Réalisation", href: "/v2/realisations/atelier-sols-fils" },
+  { label: "Éditeurs", href: "/v2/editeurs" },
+  { label: "À propos", href: "/v2/a-propos" },
 ];
 
 export const legalNav = [
-  { label: "Mentions légales", href: "/mentions-legales" },
-  { label: "Confidentialité", href: "/confidentialite" },
+  { label: "Mentions légales", href: "/v2/mentions-legales" },
+  { label: "Confidentialité", href: "/v2/confidentialite" },
 ];
 
-export const cta = { label: "Parlons de votre besoin", href: "/contact" };
+export const cta = { label: "Parlons de votre besoin", href: "/v2/contact" };

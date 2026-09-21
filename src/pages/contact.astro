@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
 import Card from "../components/ui/Card.astro";
 import ACompleter from "../components/ui/ACompleter.astro";
-import ContactForm from "../components/islands/ContactForm";
+
 import { site, zoneIntervention } from "../config/site";
 
 const etapes = [
@@ -23,8 +23,10 @@ const etapes = [
 
   <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
     <Card padding="lg">
-      <ContactForm client:load fallbackEmail={site.email} />
-      <noscript><p class="mt-6 text-16">Le formulaire nécessite JavaScript. Vous pouvez écrire à <a class="v2-link" href={`mailto:${site.email}`}>{site.email}</a>.</p></noscript>
+      <h2 class="text-28 font-semibold">Échangeons par email</h2>
+      <p class="mt-4 text-16 text-ink-muted">Décrivez votre activité, les outils utilisés et ce que vous aimeriez simplifier. Pour une intégration à votre logiciel, indiquez l’usage envisagé.</p>
+      <a class="v2-link mt-6 inline-block text-18" href={`mailto:${site.email}`}>{site.email}</a>
+      <p class="mt-4 text-14 text-ink-muted">Le formulaire est désactivé sur cette préversion.</p>
     </Card>
 
     <aside class="flex flex-col gap-8" aria-label="Coordonnées et suite de la démarche">

@@ -12,3 +12,7 @@ dist
 compose*.yml
 Dockerfile
 .dockerignore
+
+references
+legacy-v1/dist
+legacy-v1/.astro

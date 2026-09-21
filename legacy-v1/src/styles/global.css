@@ -1,0 +1,330 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Palette, rayons, ombres et tailles par défaut de Tailwind retirés : seuls les tokens existent. */
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --text-*: initial;
+  --font-*: initial;
+}
+
+/* reference : les utilitaires pointent sur tokens.css sans que Tailwind réémette ces variables
+   (sinon --radius-sm: var(--radius-sm) dans @layer theme, auto-référence). */
+@theme inline reference {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-full: var(--radius-full);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --text-12: var(--text-12);
+  --text-14: var(--text-14);
+  --text-16: var(--text-16);
+  --text-body: var(--text-body);
+  --text-18: var(--text-18);
+  --text-21: var(--text-21);
+  --text-28: var(--text-28);
+  --text-36: var(--text-36);
+  --text-48: var(--text-48);
+  --text-64: var(--text-64);
+
+  --spacing: var(--space-unit);
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-var.woff2") format("woff2");
+}
+
+/* Police de secours calée sur les dimensions d'Inter (mesurées sur le fichier servi) : le passage à Inter
+   ne change plus la taille du texte, donc ne crée ni décalage ni nouveau LCP. */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("Liberation Sans"), local("Helvetica");
+  size-adjust: 106.65%;
+  ascent-override: 90.84%;
+  descent-override: 22.62%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-var.woff2") format("woff2");
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  html {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: calc(var(--header-h) + var(--space-unit) * 4);
+  }
+
+  body {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    background-color: var(--bg);
+  }
+
+  h1, h2, h3, h4 {
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--accent-soft);
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+}
+
+@utility container-site {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes flow-x {
+  0% { left: 0; opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+@keyframes flow-y {
+  0% { top: 0; opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Exception assumée : le terminal s'anime pour tous, y compris sous prefers-reduced-motion (DESIGN.md, « Terminal »). */
+.terminal-cursor {
+  animation: blink var(--duration-blink) steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .flow-pulse {
+    animation: flow-y var(--duration-loop) var(--ease-out) infinite;
+    animation-delay: var(--flow-delay, 0ms);
+  }
+
+  @media (min-width: 1280px) {
+    .flow-pulse {
+      animation-name: flow-x;
+    }
+  }
+}
+
+/* Action faite dans les schémas animés : un halo ambre qui s'élargit et s'éteint, deux fois. */
+@keyframes action-eclat {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-bright) 55%, transparent); }
+  100% { box-shadow: 0 0 0 calc(var(--space-unit) * 2) transparent; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .action-eclat {
+    animation: action-eclat var(--duration-blink) var(--ease-out) 2;
+  }
+}
+
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+}
+
+/* Schémas (DESIGN.md, « Schémas ») : l'état final est rendu côté serveur, l'animation n'est qu'un
+   enrichissement piloté par le défilement. Sans prise en charge de animation-timeline, ou sous
+   mouvement réduit, la barre est simplement là, à sa longueur finale. Aucun JS, aucun CLS. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .bar-grow {
+      transform-origin: left center;
+      animation: bar-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 30% entry 90%;
+    }
+  }
+}
+
+/* Méthode (DESIGN.md, « Schémas ») : les classes de masquage ne sont posées que par le script de la
+   section, et seulement hors mouvement réduit. Sans JS, tout est visible. */
+[data-revele] {
+  transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+}
+
+.revele-cache {
+  opacity: 0;
+  transform: translateY(calc(var(--space-unit) * 3));
+}
+
+[data-revele="trait"] {
+  transform-origin: center top;
+}
+
+/* Comparaison de grandeurs révélée ligne à ligne (`CompareBars` avec `reveal`) : la barre ne glisse
+   pas, elle se déploie depuis la gauche — elle mesure une durée, l'allonger la raconte. */
+[data-revele="barre"] {
+  transform-origin: left center;
+}
+
+[data-revele="barre"].revele-cache {
+  opacity: 1;
+  transform: scaleX(0);
+}
+
+[data-revele="trait"].revele-cache {
+  opacity: 1;
+  transform: scaleY(0);
+}
+
+@media (min-width: 768px) {
+  [data-revele="trait"] {
+    transform-origin: left center;
+  }
+
+  [data-revele="trait"].revele-cache {
+    transform: scaleX(0);
+  }
+}
+
+@utility dot-pattern {
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: var(--dot-gap) var(--dot-gap);
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
+/* Texte long (pages légales) : titres, paragraphes, listes et liens rédigés en HTML simple. */
+@utility prose-site {
+  max-width: var(--measure);
+  font-size: var(--text-16);
+  color: var(--ink-muted);
+
+  & h2 {
+    margin-top: calc(var(--space-unit) * 12);
+    margin-bottom: calc(var(--space-unit) * 4);
+    font-size: var(--text-21);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  & h2:first-child {
+    margin-top: 0;
+  }
+
+  & h3 {
+    margin-top: calc(var(--space-unit) * 8);
+    margin-bottom: calc(var(--space-unit) * 2);
+    font-size: var(--text-18);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  & :is(p, ul, dl) + :is(p, ul, dl) {
+    margin-top: calc(var(--space-unit) * 4);
+  }
+
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-unit) * 2);
+    padding-left: calc(var(--space-unit) * 5);
+    list-style: disc;
+  }
+
+  & dl {
+    display: grid;
+    gap: calc(var(--space-unit) * 2) calc(var(--space-unit) * 6);
+  }
+
+  & dt {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  @media (min-width: 768px) {
+    & dl {
+      grid-template-columns: calc(var(--space-unit) * 60) 1fr;
+    }
+  }
+
+  & strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  & a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  & a:hover {
+    color: var(--accent-hover);
+  }
+}
+
+@utility fab-position {
+  right: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}

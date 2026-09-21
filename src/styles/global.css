@@ -60,7 +60,7 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-var.woff2") format("woff2");
+  src: url("/v2/fonts/inter-var.woff2") format("woff2");
 }
 
 /* Police de secours calée sur les dimensions d'Inter (mesurées sur le fichier servi) : le passage à Inter
@@ -79,7 +79,7 @@
   font-style: normal;
   font-weight: 100 800;
   font-display: swap;
-  src: url("/fonts/jetbrains-mono-var.woff2") format("woff2");
+  src: url("/v2/fonts/jetbrains-mono-var.woff2") format("woff2");
 }
 
 @layer base {

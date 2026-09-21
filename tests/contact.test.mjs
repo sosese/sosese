@@ -42,18 +42,18 @@ async function smtp(reject=false) {
  server.listen(0,'127.0.0.1');await once(server,'listening');
  return {messages,env:{SMTP_HOST:'127.0.0.1',SMTP_PORT:String(server.address().port),MAIL_TO:'inbox@local.test',MAIL_FROM:'form@local.test'},stop:async()=>{for(const s of sockets)s.destroy();await new Promise(r=>server.close(r));}};
 }
-const valid={intention:'entreprise',nom:'Test local',email:'test@example.test',societe:'',telephone:'',message:'Un besoin de test local.',consentement:true,site_web:'',dureeRemplissage:4000};
+const valid={secteur:'Autre',irritants:'',nom:'Test local',email:'test@example.test',societe:'Test local',telephone:'',message:'Un besoin de test local.',consentement:true,site_web:'',dureeRemplissage:4000};
 async function post(app,data){const r=await fetch(app.base+'/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return {status:r.status,body:await r.json()};}
 
-test('contact : deux intentions, validation, rapidité et limitation, avec SMTP local uniquement',async()=>{
+test('contact : contrat V1, validation, rapidité et limitation, avec SMTP local uniquement',async()=>{
  const mail=await smtp();const app=await start(mail.env);
  try{
   assert.deepEqual(await post(app,valid),{status:200,body:{ok:true}});
-  assert.deepEqual(await post(app,{...valid,intention:'editeur',societe:'Logiciel test'}),{status:200,body:{ok:true}});
+  assert.deepEqual(await post(app,{...valid,societe:'Deuxième test'}),{status:200,body:{ok:true}});
   assert.equal(mail.messages.length,2);
-  assert.match(mail.messages[1],/Intention : editeur/);
-  const invalid=await post(app,{...valid,email:'invalide',message:'  '});assert.equal(invalid.status,400);assert.ok(invalid.body.champs.includes('email'));assert.ok(invalid.body.champs.includes('message'));
-  assert.equal((await post(app,{...valid,intention:'inconnue'})).status,400);
+  assert.match(mail.messages[1],/Secteur : Autre/);
+  const invalid=await post(app,{...valid,email:'invalide',nom:'  '});assert.equal(invalid.status,400);assert.ok(invalid.body.champs.includes('email'));assert.ok(invalid.body.champs.includes('nom'));
+  assert.equal((await post(app,{...valid,secteur:'inconnu'})).status,400);
   assert.deepEqual(await post(app,{...valid,dureeRemplissage:5}),{status:422,body:{ok:false,erreur:'trop_rapide'}});
   assert.equal((await post(app,valid)).status,429);
   assert.equal(mail.messages.length,2,'invalid requests must not produce mail');
@@ -71,22 +71,26 @@ test('contact : un rejet SMTP ne produit jamais de succès',async()=>{
   assert.deepEqual(await post(app,valid),{status:502,body:{ok:false,erreur:'envoi'}});assert.equal(mail.messages.length,0);
  }finally{await app.stop();await mail.stop();}
 });
-test('pages : routes, liens locaux, titres, canonical, sitemap, CSP et 404',async()=>{
- const app=await start();const paths=['/','/accompagnement','/realisations/atelier-sols-fils','/editeurs','/a-propos','/contact','/mentions-legales','/confidentialite'];
- try{
-  const checked=new Set();const titles=new Set();
-  for(const path of paths){
-   const res=await fetch(app.base+path);assert.equal(res.status,200,path);assert.match(res.headers.get('content-security-policy'),/script-src 'self'/);
-   const html=await res.text();assert.equal((html.match(/<h1(?:\s|>)/g)||[]).length,1,path);
-   const title=html.match(/<title>(.*?)<\/title>/)?.[1];assert.ok(title);assert.ok(!titles.has(title));titles.add(title);
-   assert.ok(html.includes(`href="https://sosese.tech${path}"`),`canonical ${path}`);
-   for(const [,target] of html.matchAll(/(?:href|src)="(\/[^"#?]*)(?:[^\"]*)"/g)){
-    if(checked.has(target))continue;checked.add(target);assert.equal((await fetch(app.base+target)).status,200,`broken ${target} on ${path}`);
+test('cohabitation : V1, V2 isolée, contact désactivé, liens et non-indexation',async()=>{
+ const app=await start();
+ try {
+  const home=await (await fetch(app.base+'/')).text();
+  assert.ok(!home.includes('Moins de ressaisie.'));
+  assert.ok((await (await fetch(app.base+'/contact')).text()).includes('<form'));
+  for(const path of ['/v2','/v2/','/v2/accompagnement','/v2/realisations/atelier-sols-fils','/v2/editeurs','/v2/a-propos','/v2/contact']) {
+   const res=await fetch(app.base+path);assert.equal(res.status,200,path);
+   assert.match(res.headers.get('x-robots-tag'),/noindex/);
+   const html=await res.text();assert.match(html,/<meta name="robots" content="noindex"/);
+   assert.equal((html.match(/<h1(?:\s|>)/g)||[]).length,1);
+   assert.ok(!html.includes('<form'),path+' must not contain a form');
+   for(const [,target] of html.matchAll(/(?:href|src)="(\/[^"#?]*)(?:[^\"]*)"/g)) {
+    assert.ok(target.startsWith('/v2/'),`V2 path escaped: ${target}`);
+    assert.equal((await fetch(app.base+target)).status,200,target);
    }
   }
-  assert.equal((await fetch(app.base+'/unknown-local-test')).status,404);
-  assert.equal((await fetch(app.base+'/labo')).status,404);
-  const sitemap=await (await fetch(app.base+'/sitemap.xml')).text();for(const p of paths.slice(0,6))assert.ok(sitemap.includes('https://sosese.tech'+p));
-  assert.match(await (await fetch(app.base+'/robots.txt')).text(),/Sitemap: https:\/\/sosese.tech\/sitemap.xml/);
- }finally{await app.stop();}
+  assert.equal((await fetch(app.base+'/v2/sitemap.xml')).status,404);
+  assert.equal((await fetch(app.base+'/v2/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(valid)})).status,404);
+  const missing=await fetch(app.base+'/v2/missing');assert.equal(missing.status,404);assert.match(missing.headers.get('x-robots-tag'),/noindex/);assert.ok((await missing.text()).includes('href="/v2/"'));
+  assert.equal((await fetch(app.base+'/missing')).status,404);
+ } finally {await app.stop();}
 });

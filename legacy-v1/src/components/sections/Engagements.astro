@@ -1,0 +1,29 @@
+---
+// B8 : un argument, un seul endroit. « Aucune écriture sans votre accord » vit dans la section
+// Confiance, « votre code vous appartient » aussi, « aucun nouveau logiciel » dans le titre du hero.
+// Ne restent ici que des faits que rien d'autre ne porte — à une exception près, assumée le 2026-09-19 :
+// « rien n'est mémorisé par défaut » est le réflexe de méfiance nº 1 face à l'IA. Il est énoncé ici en
+// quatre mots (un fait) et argumenté une seule fois, dans la section Confiance.
+// Pas de « elle » ici : la solution n'est nommée qu'en tête de l'offre, plus bas. Sans antécédent, le
+// pronom laisse le lecteur chercher le sujet.
+const engagements = [
+  "on est chez vous sous 15 jours",
+  "chiffré sur votre situation réelle",
+  "les accès de l'IA sont maîtrisés",
+  "pas de nouvel outil",
+];
+---
+
+<!-- Rangée fluide et non grille : des libellés mono de longueurs inégales débordent d'une colonne fixe (piège 12). -->
+<section aria-label="Nos engagements" class="border-b border-border bg-bg-subtle">
+  <ul class="container-site flex flex-col gap-x-8 gap-y-3 py-8 sm:flex-row sm:flex-wrap">
+    {
+      engagements.map((item) => (
+        <li class="flex items-baseline gap-3 font-mono text-14 text-ink sm:whitespace-nowrap">
+          <span aria-hidden="true" class="text-accent">✓</span>
+          {item}
+        </li>
+      ))
+    }
+  </ul>
+</section>

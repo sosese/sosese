@@ -79,7 +79,15 @@ await app.register(fastifyStatic, {
   },
 });
 
+app.addHook("onRequest", async (req, reply) => {
+  const path = req.url.split("?")[0];
+  if (path === "/v2" || path.startsWith("/v2/")) reply.header("X-Robots-Tag", "noindex, nofollow");
+});
+
 app.setNotFoundHandler((req, reply) => {
+  const path = req.url.split("?")[0];
+  if (path.startsWith("/v2/api/")) return reply.code(404).send({ ok: false, erreur: "formulaire_desactive" });
+  if (path.startsWith("/v2/")) return reply.code(404).header("Cache-Control", "no-cache").sendFile("v2/404.html");
   if (req.url.startsWith("/api/")) return reply.code(404).send({ ok: false, erreur: "introuvable" });
   return reply.code(404).header("Cache-Control", "no-cache").sendFile("404.html");
 });
@@ -90,11 +98,12 @@ const L = regles.limites;
 const ligne = (max) => z.string().trim().min(1).max(max).regex(/^[^\r\n]*$/);
 const contactSchema = z.object({
   nom: ligne(L.nom),
-  societe: z.string().trim().max(L.societe).regex(/^[^\r\n]*$/).default(""),
+  societe: ligne(L.societe),
   email: z.string().trim().max(L.email).regex(new RegExp(regles.emailRegex)),
   telephone: z.string().trim().max(L.telephone).refine((v) => v === "" || new RegExp(regles.telephoneRegex).test(v)).default(""),
-  intention: z.enum(regles.intentions),
-  message: z.string().trim().min(1).max(L.message),
+  secteur: z.enum(regles.secteurs),
+  irritants: z.string().max(500).refine((v) => v === "" || v.split(", ").every((i) => regles.irritants.includes(i))).default(""),
+  message: z.string().trim().max(L.message).default(""),
   consentement: z.literal(true),
   [regles.champPiege]: z.string().max(500).default(""),
   dureeRemplissage: z.number().int().nonnegative(),
@@ -154,13 +163,14 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
       from: env.MAIL_FROM,
       to: env.MAIL_TO,
       replyTo: { name: d.nom, address: d.email },
-      subject: `Demande ${d.intention === "editeur" ? "éditeur" : "entreprise"} — ${d.societe || d.nom}`,
+      subject: `Demande de contact — ${d.societe}`,
       text: [
         `Nom : ${d.nom}`,
         `Société : ${d.societe}`,
         `Email : ${d.email}`,
         `Téléphone : ${d.telephone || "—"}`,
-        `Intention : ${d.intention}`,
+        `Secteur : ${d.secteur}`,
+        `Où ils perdent du temps : ${d.irritants || "—"}`,
         "",
         d.message || "(pas de message)",
       ].join("\n"),

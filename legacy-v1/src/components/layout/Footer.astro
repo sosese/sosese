@@ -1,0 +1,50 @@
+---
+import { cta, legalNav, mainNav, site } from "../../config/site";
+
+const year = new Date().getFullYear();
+const linkClass =
+  "text-14 text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:text-ink";
+---
+
+<footer class="border-t border-border bg-bg-subtle">
+  <div class="container-site grid gap-12 py-16 md:grid-cols-[2fr_1fr_1fr_1fr]">
+    <div class="flex flex-col gap-4">
+      <a href="/" class="text-21 font-semibold tracking-tight">
+        sosese<span class="text-accent">.</span>
+      </a>
+      <p class="max-w-xs text-14 text-ink-muted">
+        Vos tâches répétitives, automatisées. Sans changer vos outils.
+      </p>
+    </div>
+
+    <nav aria-labelledby="footer-nav">
+      <p id="footer-nav" class="eyebrow mb-4">Navigation</p>
+      <ul class="flex flex-col gap-2">
+        {mainNav.map((link) => <li><a href={link.href} class={linkClass}>{link.label}</a></li>)}
+        <li><a href={cta.href} class={linkClass}>Contact</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="footer-legal">
+      <p id="footer-legal" class="eyebrow mb-4">Légal</p>
+      <ul class="flex flex-col gap-2">
+        {legalNav.map((link) => <li><a href={link.href} class={linkClass}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div>
+      <p class="eyebrow mb-4">Contact</p>
+      <ul class="flex flex-col gap-2">
+        <li><a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a></li>
+        {site.linkedin && <li><a href={site.linkedin} class={linkClass} rel="me">LinkedIn</a></li>}
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-border">
+    <div class="container-site flex flex-col gap-2 pt-6 pb-(--fab-clearance) font-mono md:pb-6 text-12 text-ink-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {site.name}</p>
+      <p>conçu et hébergé en France</p>
+    </div>
+  </div>
+</footer>

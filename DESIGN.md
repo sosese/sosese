@@ -1184,3 +1184,9 @@ Tolérées, à ne pas étendre sans raison :
 - Tests Node : parcours HTTP et vrai dialogue SMTP simulé sur loopback ; disponibilité, refus, validation, limitation, routes/liens/métadonnées/CSP. Scripts des illustrations exécutés avec préférence de mouvement réduit simulée : aucun timer ne démarre.
 
 - Recette 320 px : suppression du double cadre autour de la démonstration client et retour à la ligne des valeurs longues. Aucun débordement horizontal de page ; seule la planche technique dispose de son propre défilement.
+
+## Cohabitation V1 + V2 validée
+- V1 publique du tag v0.8 figée dans legacy-v1, compilée à la racine ; sources V2 sous src, base /v2 et sortie dist/v2. Un serveur et un conteneur, aucun DNS supplémentaire.
+- V2 sans formulaire, contact email. API /api/contact conservée au contrat V1 ; aucun endpoint V2. Corrections anti-spam et refus SMTP maintenues.
+- V2 noindex dans HTML et en-tête HTTP ; aucun sitemap V2. Erreurs V2 rendent une 404 propre à la V2. Liens, scripts, images et fontes préfixés /v2/.
+- La publication de l’image et la commande VPS sont des étapes suivantes ; compose.yml continue à désigner v0.8 jusque-là.

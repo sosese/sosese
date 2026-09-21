@@ -1,43 +1,45 @@
-# V2 locale — 21 septembre 2026
+# Livraison V1 + V2 dans le même conteneur
 
-Branche : `codex/site-v2`.
+Architecture validée : `/` sert la V1 du tag v0.8 ; `/v2/` sert la V2. Aucun changement DNS, TLS ou Traefik. Le formulaire V2 est remplacé par un lien email ; celui de la V1 conserve son contrat API. La V2 porte noindex dans le HTML et les en-têtes HTTP et ne publie pas de sitemap.
+
 Dossier : `/home/joris/.codex/worktrees/sosese-v2/sosese`.
-Aperçu : http://127.0.0.1:4322/
+Branche : `codex/site-v2`.
 
-## Livraison
+## Sources et commandes
 
-Six pages commerciales : accueil, accompagnement, réalisation Atelier des Sols & Fils, éditeurs, à propos et contact. Direction visuelle conservée, composants du labo adaptés, preuve remontée sur l’accueil, proximité Metz + environ 80 km, parcours entreprise/éditeur distincts. Illustrations fictives signalées. Métadonnées sociales textuelles, sitemap et URL canoniques cohérentes.
+- `legacy-v1/` : snapshot public du tag v0.8, origine exacte dans ORIGIN.md. Aucun secret copié. Le seul ajustement de configuration est le dossier de sortie.
+- `src/` : V2, chemins sous `/v2/`.
+- `npm run build` : compile V1 puis V2 dans un même `dist`.
+- `npm test` : six tests couvrant contrat V1 et SMTP simulé local, erreurs, cohabitation, liens V2, non-indexation, absence de formulaire V2 et mouvement réduit.
+- `docker build -t sosese:v2-local .` : image unique.
+- Prévisualisation Docker locale : `docker run -d --name sosese-v2-preview --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true --memory 256m -p 127.0.0.1:4323:3000 sosese:v2-local`.
+- Aperçu : http://127.0.0.1:4323/v2/ ; V1 : http://127.0.0.1:4323/.
+- Arrêt de cet aperçu uniquement : `docker stop sosese-v2-preview`.
 
-La V1 et ses modifications locales restent dans `/home/joris/dev/sosese`. Aucun push ni déploiement. Aucun fichier .env consulté ou copié. Les prototypes complets copiés sont conservés hors du build dans `references/`, ignoré par Git ; leurs adaptations utilisées sont versionnées.
+## Publication proposée, non effectuée
 
-## Vérification
+Tag proposé : `v0.9-v2-preview.1`. Après autorisation explicite de publication : pousser la branche et ce tag. Le workflow construit et teste l’image avant de publier `ghcr.io/sosese/sosese:v0.9-v2-preview.1`. Les tags de préversion ne remplacent plus `latest`.
 
-- Compilation Astro réussie.
-- Six tests Node réussis : contrats entreprise/éditeur, erreurs de validation, anti-spam temporel explicite, limitation de débit, indisponibilité, refus SMTP, routes/liens/CSP/canonical/sitemap et mouvement réduit des deux illustrations.
-- Les tests SMTP utilisent exclusivement un serveur simulé local, sans email externe.
-- Vérification TypeScript et git diff --check réussies.
-- Contrôles navigateur : thèmes clair/sombre, menu mobile et retour du focus avec Échap, validation du formulaire, conservation des champs en cas de 503, changement d’intention.
-- Six pages examinées à 320, 768, 1024 et 1440 px. Débordement détecté à 320 px dans la démonstration client corrigé par retour à la ligne et suppression du double cadre.
+## Sur le VPS, après disponibilité de l’image
 
-## Relancer
+À exécuter par le porteur dans `/srv/sosese`, en conservant le fichier d’environnement existant :
 
-Depuis ce dossier :
+1. Vérifier que le Compose actuellement déployé utilise bien `ghcr.io/sosese/sosese:v0.8`. Si différent, conserver son tag réel pour le rollback et vérifier la V1 embarquée avant de poursuivre.
+2. Sauvegarder compose.yml sous un nouveau nom daté sans écraser de sauvegarde existante.
+3. Remplacer uniquement la valeur `image:` par `ghcr.io/sosese/sosese:v0.9-v2-preview.1`.
+4. Exécuter `docker compose pull web`, puis `docker compose up -d --no-deps web`.
+5. Vérifier `docker compose ps`, la racine publique, `/v2/`, `/v2/contact`, `/api/health` et l’en-tête `X-Robots-Tag` sur `/v2/`. Le formulaire de la V1 nécessite un test réel par le porteur ; la V2 ne doit afficher aucun formulaire.
+6. Retour arrière : rétablir le tag précédemment relevé dans compose.yml et exécuter `docker compose up -d --no-deps web`.
 
-```sh
-npm run build
-npm test
-env -u SMTP_HOST -u SMTP_PORT -u SMTP_USER -u SMTP_PASS -u MAIL_TO -u MAIL_FROM HOST=127.0.0.1 PORT=4322 NODE_ENV=development node server/index.mjs
-```
+Le serveur web sera brièvement redémarré ; aucune promesse de déploiement sans interruption. Ne modifier ni les réseaux ni les autres services. Aucun accès VPS, push ou tag effectué lors de cette préparation.
 
-Le formulaire de cet aperçu répond volontairement 503 : aucune messagerie réelle n’est configurée. La page fournit une alternative email. Pour modifier avec rechargement automatique : `npm run dev` ; son proxy API existant vise le port 3000.
+## Limites connues
 
-## Points à compléter avec le porteur
+- Parcours LinkedIn détaillé en attente d’accès ; faits connus seulement sur À propos.
+- Pages légales laissées au chantier séparé demandé. La V2 est une préversion publique non indexable, pas une page privée.
+- Le build npm signale des vulnérabilités dans les dépendances existantes (dont deux de sévérité élevée pour l’exécution). Aucun changement automatique de dépendances n’a été appliqué ; revue à prévoir avant publication.
+- Les tests de compréhension, le suivi des leads, les conditions commerciales détaillées et la qualification des chiffres clients restent décrits dans le rapport d’audit initial.
 
-- Parcours détaillé de Joris : LinkedIn exige une connexion. La page utilise uniquement les faits connus et un lien vers le profil fourni.
-- Prix et conditions d’un éventuel diagnostic autonome ; aucune gratuité ni durée de livraison inventée.
-- Méthodologie des durées client, rôle exact de Jason et sens précis du libellé « rapports d’analyse annuels » ; aucun résultat extrapolé.
-- Image de partage dédiée : métadonnées textuelles présentes, sans image OG spécifique.
-- Travail juridique séparé conformément à la demande. Avant publication, aligner notamment les champs de la politique de confidentialité avec le nouveau formulaire.
-- Tests de compréhension avec prospects, suivi manuel des leads et acquisition : étapes commerciales à mener après revue de cette V2. Aucun traçage ajouté.
+## Recette de cette préparation
 
-Les anciennes sections V1 non utilisées restent dans les sources pour référence ; les pages rendues emploient les nouveaux composants de `src/components/v2`. Les décisions techniques sont consignées dans DESIGN.md.
+Build local, six tests et TypeScript réussis. Image Docker construite avec les dépendances verrouillées. Conteneur lancé en lecture seule, utilisateur node, 256 Mo, aucun secret SMTP fourni. Contact V2 et menu mobile vérifiés dans le navigateur, sans erreur console.

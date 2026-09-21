@@ -4,12 +4,12 @@ import ThemeToggle from "../islands/ThemeToggle";
 import MobileNav from "../islands/MobileNav";
 import { cta, mainNav } from "../../config/site";
 
-const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const path = Astro.url.pathname.replace(/\/$/, "") || "/v2/";
 ---
 
 <header class="sticky top-0 z-40 border-b border-border bg-bg">
   <div class="container-site flex h-(--header-h) items-center justify-between gap-6">
-    <a href="/" class="text-21 font-semibold tracking-tight" aria-label="sosese, accueil">
+    <a href="/v2/" class="text-21 font-semibold tracking-tight" aria-label="sosese, accueil">
       sosese<span class="text-accent">.</span>
     </a>
 

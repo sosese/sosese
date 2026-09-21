@@ -1,0 +1,997 @@
+---
+// Le passage du hero : ce qui vous arrive en vrac, lu, recoupé dans vos outils, rendu en actions
+// prêtes à valider. Mis au point au labo (T6a → T6i), posé ici le 2026-09-19 à la place de
+// `RotationEcrans`, descendu dans « L'offre ».
+//
+// Trois temps, trois intertitres : « Il analyse ce qui arrive », « Il va chercher pour vous »,
+// « Il fait, vous validez ». Les entrées sont des post-it et une note vocale — pas des icônes de
+// fichiers : ce qui encombre une journée, ce sont des choses notées à la main, pas des documents
+// bien rangés.
+//
+// Règles de la scène, à ne pas défaire (voir DESIGN.md, « Le passage du hero ») :
+//  — un seul aplat de couleur dans toute la scène, le bouton « Valider », et il arrive en dernier ;
+//  — les outils et les actions partagent la même case de la grille : ils ne coexistent jamais, donc
+//    la scène n'a pas à réserver la place des deux ;
+//  — tout est en cqw sauf le padding de la scène (un élément ne peut pas interroger son propre
+//    conteneur) ;
+//  — le délai de bascule de chaque entrée se calcule sur sa position horizontale, jamais sur un
+//    numéro d'ordre : c'est ce qui garde le scan synchronisé avec des post-it posés de travers.
+
+// La bande met 2,6 s à traverser. Un élément passe en « lu » quand le fil vif atteint son centre.
+// 0,833 = part de la course qui traverse réellement le bloc (90 cqw de large sur 108 parcourus).
+const lu = (centre: number) => `${Math.round(60 + 2600 * 0.833 * centre)}ms`;
+
+// Position et largeur en % du bloc, décalage vertical en cqw, angle en degrés. Valeurs posées
+// à la main : une formule donnerait un désordre régulier, c'est-à-dire pas du désordre.
+const postits = [
+  { texte: "Devis sol du magasin", note: "urgent", g: 0, l: 33, h: 0, a: -2.2, etat: "" },
+  { texte: "Rappeler M. Bonnet", note: "??", g: 37, l: 32, h: 2.6, a: 1.6, etat: "" },
+  { texte: "Pointer les heures", note: "", g: 64, l: 34, h: 16.5, a: -1.8, etat: "barre" },
+];
+
+const bulle = { g: 0, l: 60, h: 15 };
+
+const micro =
+  "M 0 -8 a 2.6 2.6 0 0 1 2.6 2.6 v 4.4 a 2.6 2.6 0 0 1 -5.2 0 v -4.4 a 2.6 2.6 0 0 1 2.6 -2.6 z M -5 -1.6 a 5 5 0 0 0 10 0 M 0 3.4 v 3.4";
+
+// Chaque nom se retrouve dans l'action rendue : l'agenda donne le 6 octobre, les tarifs
+// donnent les 1 240 €, les fiches clients donnent le magasin.
+const sorties = [
+  { titre: "Devis — sol du magasin", detail: "3 postes, pose le 6 octobre", valeur: "1 240 €" },
+  { titre: "Rendez-vous — M. Bonnet", detail: "jeudi 25, 9 h", valeur: "" },
+];
+
+const outils = [
+  { nom: "Agenda", d: "M -7 -6 h 14 v 13 h -14 z M -7 -2 h 14 M -3.5 -8 v 4 M 3.5 -8 v 4" },
+  { nom: "Tarifs", d: "M -7 1 l 8 -8 h 6 v 6 l -8 8 z M 3.4 -3.4 m -1.3 0 a 1.3 1.3 0 1 0 2.6 0 a 1.3 1.3 0 1 0 -2.6 0" },
+  { nom: "Clients", d: "M 0 -3 m -3.4 0 a 3.4 3.4 0 1 0 6.8 0 a 3.4 3.4 0 1 0 -6.8 0 M -6.5 7.5 a 6.5 6.5 0 0 1 13 0" },
+];
+---
+
+<figure data-vrac class="flex w-full max-w-[31rem] flex-col gap-3 justify-self-center lg:justify-self-end">
+  {/* Le même mot que la phrase mise en avant dans la colonne de texte : la maquette n'illustre pas
+      « l'offre » en général, elle illustre cette phrase-là, à trente centimètres d'elle. */}
+  <p class="eyebrow">l'outil qui s'en occupe</p>
+  <figcaption class="sr-only">
+    Les tâches du matin arrivent en vrac : trois post-it jetés de travers — un devis urgent, un
+    client à rappeler, des heures à pointer déjà barrées — et une note vocale de quatorze secondes,
+    dessinée comme une bulle de bande dessinée : « Passe voir Bonnet jeudi matin ». Une bande de
+    lecture traverse l'ensemble de gauche à droite et tout passe en lu sur son passage. Le
+    connecteur annonce qu'il lit ce qui arrive, absorbe le tout, puis se branche sur les outils de
+    l'entreprise et les interroge l'un après l'autre — l'agenda, les tarifs, les fiches clients —
+    chacun se cochant une fois consulté. Il rend deux actions prêtes : un devis pour le sol du
+    magasin, trois postes, pose le 6 octobre, 1 240 euros, et le rendez-vous demandé dans la note
+    vocale, avec M. Bonnet le jeudi 25 à 9 h. Chacune a son bouton de validation.
+  </figcaption>
+
+  <div class="scene" data-scene data-etape="5">
+    {/* Bouton pause obligatoire : la scène boucle et dure bien plus de 5 s (WCAG 2.2.2).
+        Dans le cadre, en haut à droite — posé sous la scène il faisait une ligne de plus sous un
+        visuel qui n'en demandait pas. `aria-pressed` porte l'état, pas une classe. Masqué sous
+        mouvement réduit : là, rien ne tourne, il n'y a rien à mettre en pause. */}
+    <button
+      type="button"
+      data-pause
+      aria-pressed="false"
+      aria-label="Mettre l'animation en pause"
+      title="Mettre l'animation en pause"
+      class="commande inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
+    >
+      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-2.5" fill="currentColor">
+        <path data-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
+        <path data-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
+      </svg>
+    </button>
+
+    <div class="visuel" aria-hidden="true">
+      <p class="titre">
+      <span class="titre-1">Tout ce qui vous arrive</span>
+      <span class="titre-2">Recoupé dans vos outils</span>
+      <span class="titre-3">Fait. Vous validez.</span>
+    </p>
+
+      <div class="plateau">
+        <div class="colonne">
+          <div class="lecture">
+            <div class="vrac">
+              {
+                postits.map(({ texte, note, g, l, h, a, etat }, n) => (
+                  <span
+                    class:list={["postit", etat]}
+                    style={`--g:${g}%;--l:${l}%;--h:${h}cqw;--a:${a}deg;--o:${n};--d:${lu((g + l / 2) / 100)}`}
+                  >
+                    <b>{texte}</b>
+                    {note && <i>{note}</i>}
+                  </span>
+                ))
+              }
+
+              <span
+                class="bulle"
+                style={`--g:${bulle.g}%;--l:${bulle.l}%;--h:${bulle.h}cqw;--o:3;--d:${lu((bulle.g + bulle.l / 2) / 100)}`}
+              >
+                <span class="bulle-tete">
+                  <svg viewBox="-9 -9 18 18" fill="none">
+                    <path d={micro} stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+                  </svg>
+                  Message vocal · 0:14
+                </span>
+                <em>« Passe voir Bonnet jeudi matin »</em>
+                <svg class="queue" viewBox="0 0 18 16" fill="none">
+                  <path d="M 0.8 0 L 17.2 0 L 3.6 15.2 Z" fill="var(--surface)" />
+                  <path d="M 0.8 0 L 3.6 15.2 L 17.2 0" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </div>
+
+            <span class="balai" />
+          </div>
+
+          <div class="boitier">
+            <span class="entete">
+              <span class="marque">sosese</span>
+              <span class="pouls"><i /><i /><i /></span>
+            </span>
+            <span class="dit">
+              <span class="dit-0">En attente</span>
+              <span class="dit-1">Je lis ce qui arrive…</span>
+              <span class="dit-2">Je consulte vos outils…</span>
+              <span class="dit-3">2 actions prêtes</span>
+            </span>
+          </div>
+
+          <!-- Les outils et l'action partagent la même case : ils ne coexistent jamais, donc la
+               scène n'a pas à réserver la place des deux. -->
+          <div class="apres">
+            <div class="outils">
+              {
+                outils.map(({ nom, d }, n) => (
+                  <span class="outil" style={`--i:${n}`}>
+                    <i class="tige"><b /><s /></i>
+                    <span class="plaque">
+                      <svg viewBox="-9 -9 18 18" fill="none">
+                        <path d={d} stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+                      </svg>
+                      <svg class="coche" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" fill="var(--accent)" />
+                        <path d="m5 8.2 2.2 2.2L11 6.6" stroke="var(--on-accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                    <em>{nom}</em>
+                  </span>
+                ))
+              }
+            </div>
+
+            <div class="bas">
+              {
+                sorties.map(({ titre, detail, valeur }, n) => (
+                  <div class="sortie" style={`--i:${n}`}>
+                    <svg class="fait" viewBox="0 0 16 16" fill="none">
+                      <path d="m3 8.4 3.4 3.4L13 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div>
+                      <b>{titre}</b>
+                      <i>{detail}</i>
+                    </div>
+                    {valeur && <span class="valeur">{valeur}</span>}
+                    <span class="valider">Valider</span>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</figure>
+
+
+<style>
+  /* `container-type` : toute la scène est dimensionnée en cqw, donc elle tient à n'importe quelle
+     largeur sans media query. Seul le padding reste en % — un élément ne peut pas interroger sa
+     propre taille de conteneur.
+     7/5 : posé à côté de la colonne de titre, un carré écrase le h1. */
+  .scene {
+    container-type: inline-size;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 7 / 5;
+    padding: 5%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-sans);
+    color: var(--ink);
+    line-height: 1.35;
+    overflow: hidden;
+  }
+
+  /* Le contenu occupe tout le cadre ; la commande se pose par-dessus, dans le coin.
+     `top`/`right` en cqw tombent pile sur le padding de la scène, qui vaut 5 % de sa largeur. */
+  .visuel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .commande {
+    position: absolute;
+    top: 5cqw;
+    right: 5cqw;
+    z-index: 1;
+  }
+
+  .titre {
+    position: relative;
+    margin: 0 0 3cqw;
+    font-size: 3cqw;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* Pause réelle : le minuteur s'arrête côté script, et les animations CSS se figent ici. Sans ça,
+     la bande de lecture et le pouls continuaient de tourner et rien n'avait l'air arrêté. */
+  [data-fige] .scene *,
+  [data-fige] .scene {
+    animation-play-state: paused !important;
+  }
+
+
+  /* Trois intertitres pour les trois temps. Aucun pronom pour la machine : les trois se lisent
+     bout à bout comme une seule phrase — « Tout ce qui vous arrive, recoupé dans vos outils. Fait,
+     vous validez. » Le seul sujet nommé de la scène est vous. Les deux derniers
+     sont posés à la même place que le premier — sans le « left », le second se poserait après
+     l'espace que le premier occupe encore et le titre paraîtrait centré. Seul le troisième passe
+     en accent : c'est le seul des trois qui annonce un résultat. */
+  .titre-1,
+  .titre-2,
+  .titre-3 {
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .titre-2,
+  .titre-3 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+  }
+  .titre-3 {
+    color: var(--accent);
+  }
+  .scene:is([data-etape="4"], [data-etape="5"], [data-etape="6"]) .titre-1 {
+    opacity: 0;
+  }
+  .scene[data-etape="4"] .titre-2 {
+    opacity: 1;
+  }
+  .scene:is([data-etape="5"], [data-etape="6"]) .titre-3 {
+    opacity: 1;
+  }
+
+  .plateau {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  /* Une colonne unique qu'on fait coulisser, et deux positions seulement : l'entrée, puis
+     le connecteur au travail. Les outils et l'action se relaient sans la déplacer. */
+  .colonne {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: grid;
+    gap: 4cqw;
+    transform: translateY(11cqw);
+    transition: transform 760ms var(--ease-out);
+  }
+  /* Le glissement attend la fin de l'absorption : sinon le vrac remonterait au lieu de
+     descendre dans le boîtier. */
+  .scene[data-etape="3"] .colonne {
+    transform: translateY(-18cqw);
+    transition-delay: 700ms;
+  }
+  .scene[data-etape="4"] .colonne {
+    transform: translateY(-18cqw);
+  }
+  /* Un dernier cran au moment où les deux actions arrivent : pendant la consultation il n'y a
+     rien à montrer dessous, le connecteur n'a donc pas à laisser la place vide. */
+  .scene:is([data-etape="5"], [data-etape="6"]) .colonne {
+    transform: translateY(-21.5cqw);
+  }
+
+  /* — L'entrée : trois post-it et une note vocale — */
+  .lecture {
+    position: relative;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .scene:is([data-etape="1"], [data-etape="2"], [data-etape="3"]) .lecture {
+    opacity: 1;
+  }
+  /* Hauteur fixe : les post-it sont posés, pas empilés. La boîte réserve sa place elle-même,
+     sinon la colonne se décale à chaque changement d'angle. */
+  .vrac {
+    position: relative;
+    height: 27cqw;
+  }
+  .postit,
+  .bulle {
+    position: absolute;
+    left: var(--g);
+    top: var(--h);
+    width: var(--l);
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    box-shadow: var(--shadow-sm);
+  }
+  .postit {
+    display: grid;
+    gap: 0.5cqw;
+    padding: 2.2cqw 2.4cqw;
+    border-radius: var(--radius-sm);
+    rotate: var(--a);
+  }
+  .postit b {
+    font-size: 2.8cqw;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .postit i {
+    font-size: 2.5cqw;
+    font-style: normal;
+    line-height: 1.25;
+    color: var(--ink-muted);
+  }
+  /* Une ligne déjà barrée : c'est ce qui fait « vrai bureau » plutôt que « maquette ». */
+  .barre b {
+    color: var(--ink-muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--border-strong);
+  }
+
+  /* La note vocale : une bulle de BD, queue comprise. Le remplissage de la queue recouvre la
+     bordure basse de la bulle, donc les deux ne font qu'un seul contour. */
+  .bulle {
+    display: grid;
+    gap: 0.8cqw;
+    padding: 2.4cqw 2.8cqw;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    rotate: -1deg;
+  }
+  .queue {
+    position: absolute;
+    left: 5cqw;
+    top: calc(100% - 1.5px);
+    width: 5.4cqw;
+    height: 4.8cqw;
+    color: var(--border);
+    transition: color 380ms var(--ease-out) var(--d);
+  }
+  .bulle-tete {
+    display: flex;
+    align-items: center;
+    gap: 1.4cqw;
+    font-size: 2.4cqw;
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: color 380ms var(--ease-out) var(--d);
+  }
+  .bulle-tete svg {
+    width: 3.6cqw;
+    height: 3.6cqw;
+  }
+  .bulle em {
+    font-size: 3cqw;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  /* Lu : l'état se pose d'un bloc au passage de la bande et ne repart plus. Les transitions ne
+     sont déclarées que dans cet état — au retour à zéro, tout reprend sa place sans traîner.
+     Le délai, c'est --d : il vient de la position horizontale de l'élément. */
+  .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="6"]) :is(.postit, .bulle) {
+    border-color: var(--accent);
+    transition: border-color 380ms var(--ease-out) var(--d);
+  }
+  .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="6"]) :is(.queue, .bulle-tete) {
+    color: var(--accent);
+  }
+
+  /* La bande de lecture : une teinte qui monte vers la droite et se termine par un fil vif.
+     Un seul passage, de gauche à droite. */
+  .balai {
+    position: absolute;
+    top: -1.6cqw;
+    bottom: -1.6cqw;
+    left: -18cqw;
+    width: 18cqw;
+    opacity: 0;
+    background: linear-gradient(to right, transparent, var(--accent-soft));
+  }
+  .balai::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1.5px;
+    border-radius: var(--radius-full);
+    background: var(--accent-bright);
+    opacity: 0.55;
+  }
+
+  /* — Le connecteur — */
+  .boitier {
+    display: grid;
+    gap: 1.2cqw;
+    padding: 2.8cqw 3.4cqw;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    /* `--shadow-md` et non `sm` : tout le reste de la scène est en `sm`, c'est ce décalage qui met
+       le connecteur au premier plan sans lui ajouter la moindre couleur. */
+    box-shadow: var(--shadow-md);
+    transition:
+      border-color var(--duration-slow) var(--ease-out),
+      box-shadow var(--duration-slow) var(--ease-out);
+  }
+  .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="6"]) .boitier {
+    border-color: var(--accent);
+    box-shadow:
+      var(--shadow-md),
+      0 0 0 0.6cqw var(--accent-soft);
+  }
+  .entete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3cqw;
+  }
+  .marque {
+    font-size: 2.4cqw;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    transition: color var(--duration-slow) var(--ease-out);
+  }
+  .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="6"]) .marque {
+    color: var(--ink);
+  }
+  /* Le pouls ne bat que pendant le travail : au repos comme à l'arrivée, il n'a rien à dire. */
+  .pouls {
+    display: flex;
+    gap: 1.1cqw;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"]) .pouls {
+    opacity: 1;
+  }
+  .pouls i {
+    width: 1.7cqw;
+    height: 1.7cqw;
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    opacity: 0.25;
+  }
+  .dit {
+    position: relative;
+    display: block;
+    height: 5.2cqw;
+  }
+  .dit span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    translate: 0 -50%;
+    font-size: 4cqw;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .dit-0 {
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+  .scene:is([data-etape="0"], [data-etape="1"]) .dit-0,
+  .scene:is([data-etape="2"], [data-etape="3"]) .dit-1,
+  .scene[data-etape="4"] .dit-2,
+  .scene:is([data-etape="5"], [data-etape="6"]) .dit-3 {
+    opacity: 1;
+  }
+  .scene:is([data-etape="5"], [data-etape="6"]) .dit-3 {
+    color: var(--accent);
+  }
+
+  /* — Les outils et l'action, dans la même case — */
+  .apres {
+    display: grid;
+  }
+  .apres > * {
+    grid-area: 1 / 1;
+    align-self: start;
+  }
+
+  .outils {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3cqw;
+    padding-inline: 3cqw;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  /* Ils apparaissent une fois la colonne remontée, et s'effacent quand l'action prend
+     leur place : les deux ne sont jamais à l'écran ensemble. */
+  .scene[data-etape="3"] .outils {
+    opacity: 1;
+    transition-delay: 1100ms;
+  }
+  .scene[data-etape="4"] .outils {
+    opacity: 1;
+  }
+  .outil {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 1.2cqw;
+  }
+  .plaque {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 9.5cqw;
+    height: 9.5cqw;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink-muted);
+    transition:
+      border-color var(--duration-slow) var(--ease-out),
+      color var(--duration-slow) var(--ease-out);
+  }
+  .plaque > svg {
+    width: 4.4cqw;
+    height: 4.4cqw;
+  }
+  .outil em {
+    font-style: normal;
+    font-size: 2.4cqw;
+    font-weight: 600;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    transition: color var(--duration-slow) var(--ease-out);
+  }
+  /* Le trait part du bas du boîtier : il doit donc couvrir l'écart de la colonne (4 cqw)
+     en plus de sa propre longueur. */
+  .tige {
+    position: absolute;
+    top: -7cqw;
+    left: 50%;
+    translate: -50%;
+    width: 1.5px;
+    height: 7cqw;
+    background: var(--border);
+  }
+  .tige b {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  .tige s {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50%;
+    width: 1.9cqw;
+    height: 1.9cqw;
+    border-radius: var(--radius-full);
+    background: var(--accent-bright);
+    opacity: 0;
+  }
+  .coche {
+    position: absolute;
+    top: -1.6cqw;
+    right: -1.6cqw;
+    width: 4cqw;
+    height: 4cqw;
+    opacity: 0;
+  }
+
+  /* — La sortie : une seule action, grande, et une ligne pour le volume — */
+  .bas {
+    display: grid;
+    gap: 2cqw;
+    justify-items: start;
+  }
+  .sortie {
+    display: flex;
+    align-items: center;
+    gap: 2.6cqw;
+    width: 100%;
+    padding: 2.2cqw 3.4cqw;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .sortie > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .fait {
+    flex: none;
+    width: 4.2cqw;
+    height: 4.2cqw;
+    color: var(--accent);
+  }
+  .sortie b {
+    display: block;
+    font-size: 3.4cqw;
+    font-weight: 600;
+  }
+  .sortie i {
+    display: block;
+    font-size: 2.9cqw;
+    font-style: normal;
+    color: var(--ink-muted);
+  }
+  .valeur {
+    flex: none;
+    font-size: 3.3cqw;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Le seul aplat de couleur de toute la scène, et il arrive en dernier : c'est la décision. */
+  .valider {
+    flex: none;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--ink-muted);
+    padding: 1.3cqw 3cqw;
+    font-size: 2.9cqw;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      background var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  /* — Déroulé — */
+  /* Absorption : le vrac descend d'un cran vers le boîtier et s'efface. */
+  .scene[data-etape="3"] .lecture {
+    opacity: 0;
+    transform: translateY(9cqw) scale(0.97);
+    transition:
+      opacity 460ms var(--ease-out) 160ms,
+      transform 620ms var(--ease-out) 160ms;
+  }
+  .scene:is([data-etape="4"], [data-etape="5"]) .tige b {
+    transform: scaleY(1);
+  }
+  .scene:is([data-etape="4"], [data-etape="5"]) .plaque {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .scene:is([data-etape="4"], [data-etape="5"]) .outil em {
+    color: var(--accent);
+  }
+  .scene:is([data-etape="4"], [data-etape="5"]) .coche {
+    opacity: 1;
+  }
+  .scene:is([data-etape="5"], [data-etape="6"]) .sortie {
+    opacity: 1;
+  }
+  .scene[data-etape="5"] .valider {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    box-shadow: 0 0 0 0.7cqw var(--accent-soft);
+    transition-delay: calc(var(--i) * 390ms + 2000ms);
+  }
+  .scene[data-etape="6"] .sortie {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* 1 · le vrac est jeté sur la table */
+    .scene[data-etape="1"] :is(.postit, .bulle) {
+      animation: ti-jette 600ms var(--ease-out) calc(var(--o) * 220ms) both;
+    }
+    /* 2 · la bande traverse, en linéaire : c'est ce qui la tient synchronisée avec la bascule
+       des éléments, calée sur le centre de chacun. */
+    .scene[data-etape="2"] .balai {
+      animation: ti-balai 2600ms linear 60ms both;
+    }
+    .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"]) .pouls i {
+      animation: ti-pouls 1000ms ease-in-out infinite;
+    }
+    .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"]) .pouls i:nth-child(2) {
+      animation-delay: 160ms;
+    }
+    .scene:is([data-etape="2"], [data-etape="3"], [data-etape="4"]) .pouls i:nth-child(3) {
+      animation-delay: 320ms;
+    }
+    /* 4 · un outil toutes les 0,7 s : la question descend, la réponse remonte, la plaque
+       s'allume. Plus serré que dans les versions longues — un hero ne peut pas s'offrir
+       trois secondes de tuyauterie. */
+    .scene[data-etape="4"] .tige b {
+      animation: ti-question 420ms var(--ease-out) calc(var(--i) * 700ms + 300ms) both;
+    }
+    .scene[data-etape="4"] .tige s {
+      animation: ti-reponse 460ms var(--ease-out) calc(var(--i) * 700ms + 720ms) both;
+    }
+    .scene[data-etape="4"] .plaque {
+      animation: ti-branche 320ms var(--ease-out) calc(var(--i) * 700ms + 780ms) both;
+    }
+    .scene[data-etape="4"] .outil em {
+      animation: ti-nomme 320ms var(--ease-out) calc(var(--i) * 700ms + 780ms) both;
+    }
+    .scene[data-etape="4"] .coche {
+      animation: ti-coche 300ms var(--ease-out) calc(var(--i) * 700ms + 900ms) both;
+    }
+    /* 5 · l'action se pose */
+    .scene[data-etape="5"] .sortie {
+      animation: ti-sort 680ms var(--ease-out) calc(var(--i) * 390ms + 210ms) both;
+    }
+  }
+
+  /* Un papier qu'on pose n'arrive pas à plat : il tombe de biais et se redresse. */
+  @keyframes ti-jette {
+    from {
+      opacity: 0;
+      transform: translateY(-2.6cqw) scale(0.94) rotate(-3deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes ti-balai {
+    0% {
+      opacity: 0;
+      transform: translateX(0);
+    }
+    5% {
+      opacity: 1;
+    }
+    84% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(108cqw);
+    }
+  }
+  @keyframes ti-question {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes ti-reponse {
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    15% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-7cqw);
+    }
+  }
+  @keyframes ti-branche {
+    from {
+      border-color: var(--border);
+      color: var(--ink-muted);
+    }
+    to {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  }
+  @keyframes ti-nomme {
+    from {
+      color: var(--ink-muted);
+    }
+    to {
+      color: var(--accent);
+    }
+  }
+  @keyframes ti-coche {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    60%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes ti-pouls {
+    0%,
+    100% {
+      opacity: 0.2;
+    }
+    45% {
+      opacity: 1;
+    }
+  }
+  @keyframes ti-sort {
+    from {
+      opacity: 0;
+      transform: translateY(-2.6cqw);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var racine = document.querySelector("[data-vrac]");
+    if (!racine) return;
+    var scene = racine.querySelector("[data-scene]");
+    if (!scene) return;
+    var bouton = racine.querySelector("[data-pause]");
+    var iconePause = racine.querySelector("[data-icone-pause]");
+    var iconeLecture = racine.querySelector("[data-icone-lecture]");
+
+    var reduit = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // 1 le vrac arrive · 2 la bande le lit · 3 il l'absorbe et descend vers les outils ·
+    // 4 il les interroge · 5 les actions prêtes · 6 effacement.
+    // L'entrée (1-2) et la sortie (5) sont les deux moments qu'on regarde vraiment : ils durent un
+    // tiers de plus que la réflexion, qui ne gagne rien à être allongée.
+    var ETAPES = [["1", 2200], ["2", 2900], ["3", 1600], ["4", 2600], ["5", 4700], ["6", 700]];
+    var REPOS = "5"; // l'état lisible : les actions prêtes, boutons allumés
+    var ATTENTE = 1600; // l'état rendu par le serveur reste lisible avant que la boucle ne parte
+    var REPRISE = 60; // une image entre la remise à zéro et le premier pas : sinon rien ne rejoue
+
+    var gele = false; // arrêté par le bouton — distinct d'une sortie d'écran
+    var dansLaVue = true;
+
+    // Un seul minuteur, et on retient ce qu'il RESTAIT à attendre : reprendre n'attend que le
+    // reliquat au lieu de rejouer l'étape depuis le début. Même mécanique que `RotationEcrans`.
+    var minuteur = null, suite = null, reste = 0, depart = 0;
+
+    function attends(ms, fn) {
+      suite = fn;
+      reste = ms;
+      depart = Date.now();
+      minuteur = window.setTimeout(function () {
+        suite = null;
+        fn();
+      }, ms);
+    }
+
+    function suspend() {
+      window.clearTimeout(minuteur);
+      if (suite) reste = Math.max(0, reste - (Date.now() - depart));
+      racine.setAttribute("data-fige", "");
+    }
+
+    function relance() {
+      racine.removeAttribute("data-fige");
+      if (!suite) return false;
+      var fn = suite;
+      attends(reste, fn);
+      return true;
+    }
+
+    function majBouton() {
+      if (!bouton) return;
+      var tourne = !gele && suite !== null;
+      var libelle = tourne ? "Mettre l'animation en pause" : "Relancer l'animation";
+      bouton.setAttribute("aria-label", libelle);
+      bouton.setAttribute("title", libelle);
+      bouton.setAttribute("aria-pressed", String(!tourne));
+      if (iconePause) iconePause.classList.toggle("hidden", !tourne);
+      if (iconeLecture) iconeLecture.classList.toggle("hidden", tourne);
+    }
+
+    function joue(pas) {
+      if (pas >= ETAPES.length) {
+        scene.setAttribute("data-etape", "0");
+        attends(REPRISE, function () {
+          joue(0);
+        });
+        return;
+      }
+      scene.setAttribute("data-etape", ETAPES[pas][0]);
+      attends(ETAPES[pas][1], function () {
+        joue(pas + 1);
+      });
+    }
+
+    function demarre(delai) {
+      window.clearTimeout(minuteur);
+      suite = null;
+      gele = false;
+      racine.removeAttribute("data-fige");
+      scene.setAttribute("data-etape", REPOS);
+      // Mouvement réduit : la scène reste sur son résultat, rien ne bouge et rien ne boucle.
+      if (reduit.matches) {
+        majBouton();
+        return;
+      }
+      attends(delai, function () {
+        joue(0);
+      });
+      majBouton();
+    }
+
+    if (bouton) {
+      bouton.addEventListener("click", function () {
+        if (!gele && suite !== null) {
+          gele = true;
+          suspend();
+        } else {
+          gele = false;
+          // Plus rien en attente (la boucle a été coupée hors écran) : on repart du début.
+          if (!relance()) {
+            scene.setAttribute("data-etape", "0");
+            attends(REPRISE, function () {
+              joue(0);
+            });
+          }
+        }
+        majBouton();
+      });
+    }
+
+    if (reduit.addEventListener) {
+      reduit.addEventListener("change", function () {
+        demarre(ATTENTE);
+      });
+    }
+
+    // Hors de l'écran, rien ne tourne : ni minuteur, ni animation. Au retour on reprend là où on
+    // s'était arrêté — sauf si la pause vient du bouton, qui, lui, décide.
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(
+        function (entrees) {
+          var vu = entrees[0].isIntersecting;
+          if (vu === dansLaVue) return;
+          dansLaVue = vu;
+          if (gele) return;
+          if (vu) relance();
+          else suspend();
+        },
+        { threshold: 0.2 },
+      ).observe(racine);
+    }
+
+    demarre(ATTENTE);
+  })();
+</script>

@@ -57,7 +57,7 @@ const logo = fichierLogo && existsSync(fichierLogo) ? casClient.logo : null;
 // Hauteur de rendu fixée ; la largeur est déduite du `viewBox` du SVG pour réserver la place (CLS 0).
 const HAUTEUR_LOGO = 40;
 const viewBox = logo?.endsWith(".svg")
-  ? readFileSync(fichierLogo!, "utf8").match(/viewBox="[\d.\s-]*?([\d.]+)\s+([\d.]+)"/)
+  ? readFileSync(fichierLogo!, "utf8").match(/viewBox="[\d.\s-]*?([\d.]+)\s+([\d.]+)"/v2/)
   : null;
 const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / Number(viewBox[2])) : undefined;
 ---

@@ -1,0 +1,85 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import ACompleter from "../components/ui/ACompleter.astro";
+import { legal, site } from "../config/site";
+
+const manquants = Object.entries({
+  "raison sociale": legal.raisonSociale,
+  "forme juridique": legal.formeJuridique,
+  capital: legal.capital,
+  adresse: legal.adresse,
+  SIRET: legal.siret,
+  RCS: legal.rcs,
+  "TVA intracommunautaire": legal.tvaIntracom,
+  "directeur de la publication": legal.directeurPublication,
+  "hébergeur — nom": legal.hebergeur.nom,
+  "hébergeur — adresse": legal.hebergeur.adresse,
+  "hébergeur — téléphone": legal.hebergeur.telephone,
+})
+  .filter(([, valeur]) => !valeur)
+  .map(([cle]) => cle);
+
+if (!import.meta.env.DEV && manquants.length) {
+  console.warn(`[mentions-legales] ${manquants.length} champ(s) à compléter avant mise en ligne : ${manquants.join(", ")}`);
+}
+---
+
+<Base title="Mentions légales | sosese" description="Mentions légales du site sosese.tech : éditeur, hébergement, propriété intellectuelle.">
+  <PageHeader eyebrow="Informations légales" title="Mentions légales" />
+
+  <div class="container-site py-(--section-y)">
+    <div class="prose-site">
+      <h2>Éditeur du site</h2>
+      <dl>
+        <dt>Raison sociale</dt>
+        <dd>{legal.raisonSociale ?? <ACompleter label="raison sociale" />}</dd>
+        <dt>Forme juridique</dt>
+        <dd>{legal.formeJuridique ?? <ACompleter label="forme juridique" />}{legal.capital && `, capital de ${legal.capital}`}</dd>
+        <dt>Siège</dt>
+        <dd>{legal.adresse ?? <ACompleter label="adresse du siège" />}</dd>
+        <dt>SIRET</dt>
+        <dd>{legal.siret ?? <ACompleter label="SIRET" />}</dd>
+        <dt>RCS</dt>
+        <dd>{legal.rcs ?? <ACompleter label="RCS (ou mention d'exonération)" />}</dd>
+        <dt>TVA intracommunautaire</dt>
+        <dd>{legal.tvaIntracom ?? <ACompleter label="numéro de TVA" />}</dd>
+        <dt>Directeur de la publication</dt>
+        <dd>{legal.directeurPublication ?? <ACompleter label="directeur de la publication" />}</dd>
+        <dt>Contact</dt>
+        <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+      </dl>
+
+      <h2>Hébergement</h2>
+      <dl>
+        <dt>Hébergeur</dt>
+        <dd>{legal.hebergeur.nom ?? <ACompleter label="nom de l'hébergeur" />}</dd>
+        <dt>Adresse</dt>
+        <dd>{legal.hebergeur.adresse ?? <ACompleter label="adresse de l'hébergeur" />}</dd>
+        <dt>Téléphone</dt>
+        <dd>{legal.hebergeur.telephone ?? <ACompleter label="téléphone de l'hébergeur" />}</dd>
+      </dl>
+
+      <h2>Propriété intellectuelle</h2>
+      <p>
+        L'ensemble des contenus de ce site (textes, visuels, code) est la propriété de {site.name}, sauf mention
+        contraire. Toute reproduction sans autorisation préalable est interdite.
+      </p>
+      <p>
+        Polices : <strong>Inter</strong> et <strong>JetBrains Mono</strong>, distribuées sous licence SIL Open Font License
+        1.1 et hébergées sur ce site.
+      </p>
+
+      <h2>Données personnelles</h2>
+      <p>
+        Le traitement des informations transmises via le formulaire de contact est décrit dans la
+        <a href="/confidentialite">politique de confidentialité</a>.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        Ce site ne dépose aucun cookie et ne charge aucun script tiers. Aucune mesure d'audience n'est réalisée.
+      </p>
+    </div>
+  </div>
+</Base>

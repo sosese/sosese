@@ -1,0 +1,147 @@
+---
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import Badge from "../ui/Badge.astro";
+import Card from "../ui/Card.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+import CompareBars from "../ui/diagrams/CompareBars.astro";
+import Figure from "../ui/diagrams/Figure.astro";
+import EnchainementClient from "../ui/diagrams/EnchainementClient.astro";
+import { casClient } from "../../config/site";
+
+// Chiffres mesurés du cas réel (DESIGN.md, « Cas client »). Ne pas les modifier sans l'accord du client.
+//
+// Compteurs de production, fournis par le client le 2026-09-19 : ce que la solution a fait passer dans
+// son logiciel de gestion depuis la mise en service. Jamais lus dans un outil connecté, jamais estimés.
+// Le « + » est dans la valeur affichée : ce sont des planchers, pas des totaux arrêtés.
+const production = [
+  { valeur: "+50", label: "devis créés" },
+  { valeur: "+30", label: "rendez-vous posés" },
+  { valeur: "+40", label: "fiches clients créées" },
+  { valeur: "3", label: "rapports d'analyse annuels" },
+];
+// Deux mesures de même forme, chacune à son échelle : `CompareBars` cale la longueur des barres
+// sur le maximum de SON tableau. Mises à la même échelle, les 5 min de la fiche client
+// disparaîtraient à côté des 40 min du devis.
+const tempsDevis = [
+  {
+    label: "Avant — ressaisi au bureau",
+    value: 40,
+    display: "40 min",
+    tone: "muted" as const,
+  },
+  {
+    label: "Après — dicté sur le chantier",
+    value: 2,
+    display: "2 min",    
+    tone: "accent" as const,
+  },
+];
+
+// Pas de `note` ici : le client a donné les deux durées, rien de plus. Une phrase d'explication
+// serait inventée — et sur un cas réel, on ne comble pas les trous (DESIGN.md, « Cas client »).
+const tempsFiche = [
+  { label: "Avant — saisie à la main", value: 5, display: "5 min", tone: "muted" as const },
+  { label: "Après — dictée sur place", value: 0.5, display: "30 s", tone: "accent" as const },
+];
+
+// Le logo du client est un fichier fourni par lui, déposé dans `public/` — exception assumée à la règle
+// « schémas SVG, pas d'images » : l'identité d'un tiers ne se redessine pas (DESIGN.md, « Cas client »).
+// Tant que le fichier n'est pas là, la section n'affiche que le nom : pas d'image cassée, jamais de
+// logo reconstitué.
+// `process.cwd()` et non `import.meta.url` : au build, ce module est un chunk, son URL ne pointe
+// plus sur les sources. Astro se lance toujours depuis la racine du projet.
+const fichierLogo = casClient.logo ? join(process.cwd(), "public", casClient.logo) : null;
+const logo = fichierLogo && existsSync(fichierLogo) ? casClient.logo : null;
+
+// Hauteur de rendu fixée ; la largeur est déduite du `viewBox` du SVG pour réserver la place (CLS 0).
+const HAUTEUR_LOGO = 40;
+const viewBox = logo?.endsWith(".svg")
+  ? readFileSync(fichierLogo!, "utf8").match(/viewBox="[\d.\s-]*?([\d.]+)\s+([\d.]+)"/)
+  : null;
+const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / Number(viewBox[2])) : undefined;
+---
+
+<section id="cas-client" aria-labelledby="cas-client-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
+  <div class="container-site flex flex-col gap-8">
+    {/* L'intro et les compteurs sur une rangée : sans ça, la moitié droite de la section restait
+        vide sur toute la hauteur du titre, du logo et du paragraphe. La comparaison passe pleine
+        largeur en dessous — ses libellés et ses notes tiennent alors sur une seule ligne. */}
+    <div class="grid gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12">
+      <div class="flex flex-col gap-5">
+        <SectionHeading id="cas-client-titre" eyebrow="Clients" title="Ils nous ont fait confiance">
+          Connecteur IA sur mesure pour le logiciel commercial.
+        </SectionHeading>
+
+        {/* Nom, logo et lien publiés avec l'accord du client. Un seul lien pour les deux : le logo est
+            décoratif (`alt` vide), le nom porte la destination.
+            Le logo du client est un lettrage blanc sur fond transparent : il disparaîtrait sur le fond
+            clair. Il est posé sur une plaque `section-invert` — sombre dans les deux thèmes, comme le
+            terminal — plutôt que retouché. */}
+        <div class="flex flex-wrap items-center gap-4">
+          {
+            logo && (
+              <span class="section-invert inline-flex items-center rounded-md px-4 py-3">
+                <img src={logo} alt="" height={HAUTEUR_LOGO} width={largeurLogo} loading="lazy" decoding="async" class="h-10 w-auto" />
+              </span>
+            )
+          }
+          <Badge variant="accent" dot={!logo} href={casClient.site}>
+            {casClient.nom} — {casClient.metier} <span aria-hidden="true">↗</span>
+          </Badge>
+        </div>
+
+        {/* Le titre du cas descend en h3 : la section parle des clients, le devis sur le chantier n'en
+            est qu'un exemple. Hiérarchie : h2 de section, h3 du cas. */}
+        <h3 class="max-w-(--measure) text-21 font-semibold tracking-tight md:text-28">
+          Le devis part du chantier, pas du bureau
+        </h3>
+        <p class="max-w-(--measure) text-18 text-ink-muted">
+          Chez {casClient.nom}, {casClient.prenom}, commercial, chiffre maintenant sur place.{" "}
+          {casClient.logiciel && (
+            <Fragment>
+              La solution lit leur catalogue et leurs tarifs dans {casClient.logiciel}, et y crée devis,
+              rendez-vous et fiches clients — une fois qu'ils ont dit oui.
+            </Fragment>
+          )}
+        </p>
+      </div>
+
+      <Card>
+        <Figure label="Depuis la mise en service" caption="Statistiques mesurées au bout de 6 semaines d'utilisation.">
+          <ul class="grid grid-cols-2 gap-5">
+            {
+              production.map((chiffre) => (
+                <li class="flex flex-col gap-1">
+                  <p class="font-mono text-28 text-accent">{chiffre.valeur}</p>
+                  <p class="text-14 text-ink-muted">{chiffre.label}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </Figure>
+      </Card>
+    </div>
+
+    {/* Les deux mesures côte à côte et non l'une sous l'autre : même format, même lecture, et la
+        rangée est pleine au lieu d'ajouter 300 px à une section déjà longue.
+        `items-start` : la fiche client n'a pas de note sous ses barres (le client a donné les
+        durées, rien de plus), sa carte est donc plus courte. Étirée, elle se terminait par 90 px
+        de blanc ; à sa hauteur, elle se termine là où elle a fini de parler. */}
+    <div class="grid items-start gap-8 lg:grid-cols-2">
+      <Card>
+        <Figure label="Le temps d'un devis" caption={`Mesuré chez ${casClient.nom}, sur leurs propres devis.`}>
+          <CompareBars bars={tempsDevis} reveal />
+        </Figure>
+      </Card>
+
+      <Card>
+        <Figure label="Le temps d'une fiche client" caption={`Mesuré chez ${casClient.nom}.`}>
+          <CompareBars bars={tempsFiche} reveal />
+        </Figure>
+      </Card>
+    </div>
+
+    <EnchainementClient />
+  </div>
+</section>

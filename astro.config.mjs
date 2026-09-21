@@ -5,6 +5,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://sosese.tech",
   output: "static",
+  base: "/v2",
+  outDir: "./dist/v2",
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],

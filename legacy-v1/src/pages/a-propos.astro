@@ -1,0 +1,109 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import SectionHeading from "../components/ui/SectionHeading.astro";
+import Card from "../components/ui/Card.astro";
+import Button from "../components/ui/Button.astro";
+import ACompleter from "../components/ui/ACompleter.astro";
+import CtaFinal from "../components/sections/CtaFinal.astro";
+import { personne } from "../config/site";
+
+const principes = [
+  {
+    titre: "Le résultat avant la technologie",
+    texte: "On part du temps perdu par vos équipes, pas d'un outil à placer. Si un tableur bien construit suffit, on vous le dit.",
+  },
+  {
+    titre: "Des chiffres avant de construire",
+    texte: "Chaque piste est chiffrée — temps gagné, coût, faisabilité — pour que vous décidiez en connaissance de cause.",
+  },
+  {
+    titre: "Vous restez propriétaire",
+    texte: "Code, accès et documentation vous sont remis. Vous pouvez continuer avec nous, ou sans nous.",
+  },
+  {
+    titre: "Des mots simples",
+    texte: "On parle de devis, de factures et de relances. Le vocabulaire technique reste chez nous.",
+  },
+];
+---
+
+<Base
+  title="À propos du studio sosese"
+  description="sosese accompagne les PME de bout en bout : identifier les tâches à automatiser, les prioriser, puis construire des solutions intégrées à leurs outils."
+>
+  <PageHeader eyebrow="À propos" title="Un studio IA pour les PME qui veulent du concret">
+    sosese accompagne les entreprises de 15 à 150 personnes, de l'identification des tâches à automatiser jusqu'à la
+    solution en service.
+  </PageHeader>
+
+  <section aria-labelledby="studio-titre" class="py-(--section-y)">
+    <div class="container-site grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
+      <SectionHeading id="studio-titre" eyebrow="Le studio" title="Identifier, prioriser, construire" />
+      <div class="flex flex-col gap-4 text-18 text-ink-muted">
+        <p>
+          L'intelligence artificielle est souvent vendue comme une solution à la recherche d'un problème. Nous faisons
+          l'inverse : partir des tâches répétitives qui pèsent sur vos équipes, mesurer ce qu'elles coûtent, puis
+          choisir avec vous celles qui méritent d'être automatisées.
+        </p>
+        <p>
+          Ce qui est construit se branche sur vos logiciels actuels et vous appartient entièrement.
+        </p>
+        <div class="pt-2">
+          <Button href="/#methode" variant="secondary">Voir la méthode</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="posture-titre" class="border-y border-border bg-bg-subtle py-(--section-y)">
+    <div class="container-site flex flex-col gap-12">
+      <SectionHeading id="posture-titre" eyebrow="La posture" title="Quatre principes qui guident chaque mission" />
+      <ul class="grid gap-4 md:grid-cols-2">
+        {
+          principes.map((p, i) => (
+            <li class="flex">
+              <Card interactive class="flex w-full flex-col gap-3">
+                <span class="font-mono text-12 text-accent">0{i + 1}</span>
+                <h3 class="text-21 font-semibold">{p.titre}</h3>
+                <p class="text-16 text-ink-muted">{p.texte}</p>
+              </Card>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {
+    personne ? (
+      <section aria-labelledby="personne-titre" class="py-(--section-y)">
+        <div class="container-site grid items-start gap-12 md:grid-cols-[1fr_2fr]">
+          <img src={personne.photo} alt={`Portrait de ${personne.nom}`} width="480" height="600" class="aspect-4/5 w-full rounded-lg border border-border object-cover" />
+          <div class="flex flex-col gap-4">
+            <p class="eyebrow">La personne</p>
+            <h2 id="personne-titre" class="text-28 font-semibold tracking-tight md:text-36">{personne.nom}</h2>
+            <p class="font-mono text-14 text-ink-muted">{personne.role}</p>
+            <div class="flex max-w-(--measure) flex-col gap-4 text-18 text-ink-muted">
+              {personne.bio.map((paragraphe) => <p>{paragraphe}</p>)}
+            </div>
+          </div>
+        </div>
+      </section>
+    ) : (
+      import.meta.env.DEV && (
+        <section aria-labelledby="personne-titre" class="py-(--section-y)">
+          <div class="container-site flex flex-col gap-4">
+            <p class="eyebrow">La personne</p>
+            <h2 id="personne-titre" class="text-28 font-semibold">Section masquée en production</h2>
+            <p class="text-16 text-ink-muted">
+              <ACompleter label="photo, nom, rôle et bio (§9) dans src/config/site.ts → personne" />
+            </p>
+          </div>
+        </section>
+      )
+    )
+  }
+
+  <CtaFinal />
+</Base>

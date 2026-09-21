@@ -1,0 +1,84 @@
+---
+import Card from "../ui/Card.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+// `couts` : ce que le problème coûte vraiment, en deux mots, au bas de chaque carte. Le titre et le
+// texte racontent la scène ; ces étiquettes la traduisent en risque, et c'est ce que le visiteur
+// retient en survolant la section.
+//
+// Les deux étiquettes d'une carte tiennent sur UNE SEULE LIGNE (demande du 2026-09-19), à la plus
+// grande taille possible (demande du même jour). Tout est commandé par la largeur d'une carte :
+// 176 px de contenu à 768 px, 254 px à 1024 px, 302 px à partir de 1152 px — et 302 px est un
+// plafond, le conteneur étant plafonné à 72 rem. D'où **trois colonnes seulement à partir de `xl`** ;
+// en dessous, une colonne et des cartes larges.
+//
+// Mesuré dans la carte réelle, sur la paire la plus longue (carte 3), contre ces 302 px :
+//   text-12 → 264 px · text-14 → 288 px · text-15 → 318 px · text-16 → 336 px.
+// `text-14` est donc la plus grande taille de l'échelle qui tienne, avec 14 px de marge. En mono
+// (police des Badge), la même paire demande 320 px : impossible à toute largeur.
+// Conséquence directe : **19 caractères par étiquette au plus**. « opportunités manquées » (21)
+// débordait ; « occasions perdues » (17) passe. Toute étiquette plus longue casse la ligne, et
+// `text-16` la casse quelle que soit la longueur.
+const problemes = [
+  {
+    titre: "La même information, tapée trois fois",
+    texte:
+      "Une commande saisie dans le devis, puis dans la facture, puis dans le tableau de suivi.",
+    couts: ["perte de temps", "risque d'erreur"],
+  },
+  {
+    // Remplace « la peur de l'erreur » (2026-09-19) : l'erreur est déjà traitée par la FAQ et le cas
+    // client, et le constat doit annoncer la moitié « données » de la promesse, sinon l'offre arrive
+    // sans préparation.
+    titre: "L'information existe, personne n'a le temps de la chercher",
+    texte:
+      "Vos tarifs, vos chantiers, vos projets, l'historique client : tout est là, éparpillé entre quatre outils.",
+    couts: ["opportunités perdues", "perte de contrôle"],
+  },
+  {
+    titre: "Quand la bonne personne est absente, le dossier attend",
+    texte:
+      "Ce qu'elle sait faire n'est écrit nulle part. Ça repart avec elle le vendredi soir.",
+    couts: ["délais supplémentaires", "dépendances"],
+  },
+];
+---
+
+<section aria-labelledby="probleme-titre" class="py-(--section-y)">
+  <div class="container-site flex flex-col gap-12">
+    <SectionHeading id="probleme-titre" eyebrow="Le constat" title="Le temps que personne n'a décidé de perdre">
+      Ces tâches ne sont écrites dans aucune fiche de poste. Elles remplissent quand même les journées.
+    </SectionHeading>
+
+    <ul class="grid gap-4 xl:grid-cols-3">
+      {
+        problemes.map((p, i) => (
+          <li class="flex">
+            <Card interactive class="flex w-full flex-col gap-4">
+              <span class="font-mono text-12 text-accent">0{i + 1}</span>
+              <h3 class="text-21 font-semibold">{p.titre}</h3>
+              <p class="text-16 text-ink-muted">{p.texte}</p>
+              {/* `mt-auto` : les étiquettes s'alignent d'une carte à l'autre, quelle que soit la
+                  longueur du texte au-dessus. */}
+              {/* Un Badge `variant="accent"` compact : même pastille `--accent-bright`, même fond
+                  `--accent-soft`, même texte `--ink` (l'accent sur ce fond tombe à 4,28:1 en clair).
+                  Pas le composant lui-même : ses `h-6`, `px-2`, `gap-2` et sa police mono le rendent
+                  trop large — deux Badge de série demandent 277 px pour 254 disponibles à 1024 px.
+                  `flex-wrap` est un filet de sécurité : au pire deux lignes, jamais de débordement. */}
+              <ul class="mt-auto flex flex-wrap items-center gap-1.5 border-t border-border pt-4">
+                {p.couts.map((cout) => (
+                  <li class="flex">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-accent-soft px-1.5 py-1 text-14 whitespace-nowrap text-ink">
+                      <span aria-hidden="true" class="size-1 shrink-0 rounded-full bg-accent-bright" />
+                      {cout}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

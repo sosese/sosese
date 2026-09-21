@@ -1,0 +1,47 @@
+---
+import Button from "../ui/Button.astro";
+import ThemeToggle from "../islands/ThemeToggle";
+import MobileNav from "../islands/MobileNav";
+import { cta, mainNav } from "../../config/site";
+
+const path = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-40 border-b border-border bg-bg">
+  <div class="container-site flex h-(--header-h) items-center justify-between gap-6">
+    <a href="/" class="text-21 font-semibold tracking-tight" aria-label="sosese, accueil">
+      sosese<span class="text-accent">.</span>
+    </a>
+
+    <nav aria-label="Navigation principale" class="hidden md:block">
+      <ul class="flex items-center gap-1">
+        {
+          mainNav.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                aria-current={path === link.href ? "page" : undefined}
+                class="rounded-md px-3 py-2 text-14 text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:bg-bg-subtle hover:text-ink aria-[current=page]:text-ink"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <ThemeToggle client:idle />
+      <div class="hidden md:block">
+        <Button href={cta.href} size="md">
+          {cta.label}
+          <span aria-hidden="true" class="font-mono transition-transform duration-(--duration-fast) ease-out motion-safe:group-hover/button:translate-x-0.5">→</span>
+        </Button>
+      </div>
+      <div class="md:hidden">
+        <MobileNav client:idle links={mainNav} cta={cta} />
+      </div>
+    </div>
+  </div>
+</header>

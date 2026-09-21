@@ -8,7 +8,7 @@ import ValidationGate from "../components/v2/ValidationGate.astro";
 import {etapes} from "../config/editorial";
 ---
 <Base title="Automatiser une tâche avec vos outils | sosese, Metz" description="Un accompagnement pour indépendants, TPE et PME : comprendre le besoin, vérifier la faisabilité, construire et tester une automatisation délimitée.">
- <PageHeader action={{href:"/contact",label:"Parlons de votre besoin"}} eyebrow="Accompagnement · indépendants, TPE et PME" title="Une tâche précise. Un projet que vous pouvez évaluer.">L’objectif est de simplifier votre travail quotidien. Nous partons de vos outils et de vos contraintes, puis nous choisissons ce qui mérite réellement d’être automatisé.</PageHeader>
+ <PageHeader action={{href:"/v2/contact",label:"Parlons de votre besoin"}} eyebrow="Accompagnement · indépendants, TPE et PME" title="Une tâche précise. Un projet que vous pouvez évaluer.">L’objectif est de simplifier votre travail quotidien. Nous partons de vos outils et de vos contraintes, puis nous choisissons ce qui mérite réellement d’être automatisé.</PageHeader>
  <Section id="besoins" title="Où commencer ?"><Needs /></Section>
  <Section id="deroulement" tone="subtle" eyebrow="Du premier échange à la mise en service" title="À chaque étape, une décision claire.">
   <ol class="grid gap-6 md:grid-cols-2">{etapes.map((e,i)=><li class="rounded-lg border border-border bg-surface p-6 md:p-8"><p class="eyebrow mb-4">Étape 0{i+1}</p><h3 class="text-21 font-semibold">{e.titre}</h3><p class="mt-4 text-16 text-ink-muted">{e.texte}</p><p class="mt-5 border-t border-border pt-4 text-14"><strong>Ce que vous obtenez : </strong>{e.livrable}</p></li>)}</ol>
