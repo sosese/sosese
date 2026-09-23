@@ -16,3 +16,5 @@ Dockerfile
 references
 legacy-v1/dist
 legacy-v1/.astro
+legacy-v2/dist
+legacy-v2/.astro

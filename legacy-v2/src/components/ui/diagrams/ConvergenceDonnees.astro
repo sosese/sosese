@@ -1,0 +1,296 @@
+---
+// Schéma du hero (registre R1, schéma de flux). Remplace le mockup DicteeMobile, descendu dans
+// « L'offre » le 2026-09-17.
+//
+// Ce que la scène doit dire, dans cet ordre :
+// 1. vos données existent déjà, mais elles sont éparpillées — les sources sont posées de travers,
+//    jamais alignées, et la ligne « et tous vos autres outils » dit qu'il y en a bien plus ;
+// 2. elles alimentent un seul endroit ;
+// 3. ce qui en ressort n'est PAS une liste de choses à faire, mais du travail déjà préparé, qu'il
+//    suffit d'accepter. Moins de tâches, pas plus. C'est tout l'argument ;
+// 4. rien ne s'écrit sans le « oui » (même doctrine que la section Confiance).
+//
+// Un seul axe vertical : sources → hub → actions. La version en L (hub à droite, propositions en
+// dessous) ne laissait pas voir le lien entre les deux (constat de l'humain, 2026-09-17).
+//
+// Règles dures, identiques au reste du site :
+// - contenus INVENTÉS, dits tels dans la transcription sr-only. Aucun nom de client, aucun montant,
+//   aucune pièce réelle (DESIGN.md, piège 17) ;
+// - les sources sont des CATÉGORIES (« vos devis », « votre agenda »), jamais une marque ;
+// - tout est toujours dans le DOM, seule l'opacité bouge : la hauteur ne change jamais (CLS 0) ;
+// - l'état rendu par le serveur est l'état FINAL : lisible sans JS, sans flash ;
+// - sous prefers-reduced-motion, rien ne bouge et l'état final reste affiché ;
+// - bloc en aria-hidden, transcription complète en sr-only.
+
+// Trois sources seulement (2026-09-17) : au-delà, le schéma se lit comme un inventaire. Le nombre
+// exact n'est pas le message, c'est `autres` qui le porte. `decalage` est la mise en désordre, en pas
+// d'espacement : les pastilles ne sont jamais alignées.
+const sources = [
+  { label: "vos devis", decalage: "ml-0" },
+  { label: "votre agenda", decalage: "ml-8" },
+  { label: "vos factures", decalage: "ml-3" },
+];
+
+const autres = "… et tous les autres";
+
+// Les liaisons, dans un viewBox 100 × 100 étiré sur toute la zone (`preserveAspectRatio="none"`).
+// Tracé ORTHOGONAL, pas des courbes : un départ à gauche, un tronc vertical, une arrivée dans le
+// hub. Les courbes essayées le 2026-09-17 passaient derrière les pastilles du bas et se lisaient
+// comme des fragments détachés. Des segments droits ne se déforment pas quand la zone s'étire, et
+// `vector-effect` garde l'épaisseur du trait constante.
+// - le tronc est à x = 62, à droite de TOUT ce que porte la colonne de gauche : la pastille la plus
+//   large (35 % au pire) et la ligne « et tous les autres » (49 % à 360 px, la largeur où ça casse en
+//   premier). À 50 %, mesuré le 2026-09-17, le tronc traversait cette ligne à 360 px. Rallonger ce
+//   libellé ou décaler une pastille impose de revérifier à 360 px ;
+// - les y de départ (9.5, 34, 58) sont les centres des trois premières lignes : quatre blocs h-7
+//   séparés par gap-2 font 136 px, et le SVG déborde de 12 px en bas (`-bottom-3`) pour venir
+//   toucher le hub, soit 148 px ; les centres tombent à 9,5 / 33,8 / 58,1 %.
+// Changer la hauteur des lignes, leur nombre ou leur espacement impose de recalculer ces y.
+const liaisons = ["M4,9.5 H62", "M8,34 H62", "M6,58 H62", "M62,9.5 V100"];
+
+// Ce que le hub propose. Une proposition = un travail déjà fait, pas une tâche à faire. Une ligne
+// chacune : au-delà, le schéma redevient un écran d'application.
+const propositions = [
+  { texte: "3 devis sans réponse", fait: "relances envoyées" },
+  { texte: "Chantier de jeudi sans équipe", fait: "rendez-vous posé" },
+];
+---
+
+<figure data-cv class="flex w-full max-w-md flex-col gap-3 justify-self-center">
+  <p aria-hidden="true" class="eyebrow">vos données, là où elles sont déjà</p>
+
+  {/* Les sources et l'entonnoir. Hauteur fixée par les lignes, jamais par la largeur.
+      `pb-3 -mb-3` : la zone de dessin déborde de 12 px dans le gap de la figure, et la marge négative
+      reprend ces 12 px, si bien que le bas du tronc tombe exactement sur le haut du hub.
+      Ne PAS écrire cela avec `-bottom-3` sur le SVG : un SVG est un élément remplacé, `top` + `bottom`
+      ne l'étirent pas, il reprend le ratio de son viewBox (mesuré : 448 px de haut au lieu de 148). */}
+  <div class="relative pb-3 -mb-3">
+    <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" class="absolute inset-0 size-full">
+      {
+        liaisons.map((d, i) => (
+          <path
+            data-cv-liaison={i}
+            d={d}
+            class="stroke-accent opacity-100 transition-opacity duration-(--duration-base) ease-out"
+            stroke-width="2"
+            stroke-linecap="round"
+            vector-effect="non-scaling-stroke"
+          />
+        ))
+      }
+    </svg>
+
+    <ul aria-hidden="true" class="relative flex flex-col items-start gap-2">
+      {
+        sources.map((source, i) => (
+          <li
+            data-cv-source={i}
+            class:list={[
+              "flex h-7 items-center gap-2 rounded-full border border-border-strong bg-surface px-3 font-mono text-12 whitespace-nowrap text-ink opacity-100 transition-opacity duration-(--duration-base) ease-out",
+              source.decalage,
+            ]}
+          >
+            <span aria-hidden="true" class="size-1.5 shrink-0 rounded-full bg-accent" />
+            {source.label}
+          </li>
+        ))
+      }
+      {/* Quatrième ligne, sans pastille ni liaison : elle dit qu'il y en a bien d'autres. Même
+          hauteur que les autres (h-7), sinon les y des liaisons ne tombent plus juste. */}
+      <li
+        data-cv-autres
+        class="flex h-7 items-center pl-3 font-mono text-12 whitespace-nowrap text-ink-muted opacity-100 transition-opacity duration-(--duration-base) ease-out"
+      >
+        {autres}
+      </li>
+    </ul>
+  </div>
+
+  <p
+    aria-hidden="true"
+    data-cv-hub
+    class="flex h-12 items-center justify-center rounded-md border border-accent bg-surface font-mono text-16 text-ink opacity-100 transition-opacity duration-(--duration-base) ease-out"
+  >
+    sosese<span class="text-accent">.</span>
+  </p>
+
+  <svg
+    aria-hidden="true"
+    data-cv-fleche
+    viewBox="0 0 16 24"
+    fill="none"
+    class="h-6 w-4 self-center opacity-100 transition-opacity duration-(--duration-base) ease-out"
+  >
+    <path d="M8,0 L8,15" class="stroke-accent" stroke-width="2" stroke-linecap="round"></path>
+    <path d="M8,24 L2,14 L14,14 Z" class="fill-accent"></path>
+  </svg>
+
+  <p aria-hidden="true" data-cv-titre class="eyebrow opacity-100 transition-opacity duration-(--duration-base) ease-out">
+    ce qu'on vous propose
+  </p>
+
+  <ul aria-hidden="true" class="flex flex-col gap-2">
+    {
+      propositions.map((proposition, i) => (
+        <li
+          data-cv-carte={i}
+          class="flex items-center justify-between gap-3 rounded-md border border-border bg-surface p-3 opacity-100 transition-opacity duration-(--duration-base) ease-out"
+        >
+          <span class="text-14 text-ink">{proposition.texte}</span>
+          {/* Les deux états occupent la même cellule : passer de la porte au « fait » ne décale rien,
+              et la cellule garde la largeur du plus large des deux. */}
+          <span class="grid shrink-0">
+            <span data-cv-porte class="col-start-1 row-start-1 justify-self-end rounded-full bg-accent px-3 py-1 font-mono text-12 text-on-accent opacity-0 transition-opacity duration-(--duration-base) ease-out">
+              oui
+            </span>
+            <span data-cv-fait class="col-start-1 row-start-1 flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-3 py-1 font-mono text-12 whitespace-nowrap text-ink opacity-100 transition-opacity duration-(--duration-base) ease-out">
+              <span aria-hidden="true" class="flex size-4 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">✓</span>
+              {proposition.fait}
+            </span>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p
+    aria-hidden="true"
+    data-cv-bilan
+    class="w-fit rounded-md font-mono text-12 text-ink-muted opacity-100 transition-opacity duration-(--duration-base) ease-out"
+  >
+    deux «&#8239;oui&#8239;», et votre liste a raccourci
+  </p>
+
+  <p class="sr-only">
+    Schéma : vos données sont déjà là, éparpillées dans vos outils — {sources.map((s) => s.label).join(", ")},
+    et tous les autres outils que vous utilisez. Elles alimentent toutes le même endroit, qui ne vous rend pas une liste de choses
+    à faire, mais du travail déjà préparé : {propositions.map((p) => p.texte).join(" ; ")}. Rien n'est
+    envoyé ni enregistré sans votre accord : chaque proposition attend votre « oui ». Ensuite :
+    {propositions.map((p) => p.fait).join(", ")}. Exemple type, aucune donnée réelle.
+  </p>
+</figure>
+
+<script>
+  (function () {
+    var figure = document.querySelector("[data-cv]");
+    if (!figure) return;
+    // Sous mouvement réduit, l'état final est déjà rendu par le serveur : on n'y touche pas.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var sources = Array.prototype.slice.call(document.querySelectorAll("[data-cv-source]"));
+    var liaisons = Array.prototype.slice.call(document.querySelectorAll("[data-cv-liaison]"));
+    var autres = document.querySelector("[data-cv-autres]");
+    var titre = document.querySelector("[data-cv-titre]");
+    var hub = document.querySelector("[data-cv-hub]");
+    var fleche = document.querySelector("[data-cv-fleche]");
+    var cartes = Array.prototype.slice.call(document.querySelectorAll("[data-cv-carte]"));
+    var bilan = document.querySelector("[data-cv-bilan]");
+
+    // UNE SEULE PASSE (2026-09-17, demande explicite) : le schéma se trace, puis il reste. Pas de
+    // boucle, donc pas de bouton pause : le mouvement dure moins de 5 s et ne repart jamais, WCAG
+    // 2.2.2 ne s'applique pas. Remettre une boucle = remettre le bouton, sans discussion.
+    var PAS = 260; // une source et sa liaison
+    var PORTE = 650; // temps laissé pour voir le « oui » avant qu'il devienne « fait »
+    var TENUE = 1400; // l'état final rendu par le serveur, le temps d'être vu et le LCP d'être pris
+
+    function montrer(el) {
+      if (!el) return;
+      el.classList.remove("opacity-0");
+      el.classList.add("opacity-100");
+    }
+
+    function cacher(el) {
+      if (!el) return;
+      el.classList.add("opacity-0");
+      el.classList.remove("opacity-100");
+    }
+
+    function porte(carte) {
+      return carte.querySelector("[data-cv-porte]");
+    }
+
+    function fait(carte) {
+      return carte.querySelector("[data-cv-fait]");
+    }
+
+    function masquer() {
+      sources.concat([autres, hub, fleche, titre, bilan]).forEach(cacher);
+      liaisons.forEach(cacher);
+      cartes.forEach(function (carte) {
+        cacher(carte);
+        cacher(porte(carte));
+        cacher(fait(carte));
+      });
+      bilan.classList.remove("action-eclat");
+    }
+
+    // Liste d'événements datés, jouée une fois. Rien à suspendre : rien ne recommence.
+    var etapes = [];
+    var t = 0;
+    var at = function (fn) {
+      etapes.push({ t: t, fn: fn });
+    };
+
+    sources.forEach(function (source, i) {
+      t += PAS;
+      at(function () {
+        montrer(source);
+        montrer(liaisons[i]);
+      });
+    });
+
+    t += 300;
+    at(function () {
+      montrer(autres);
+      montrer(liaisons[liaisons.length - 1]); // le tronc, une fois les trois départs posés
+    });
+
+    t += 260;
+    at(function () {
+      montrer(hub);
+    });
+
+    t += 220;
+    at(function () {
+      montrer(fleche);
+    });
+
+    t += 180;
+    at(function () {
+      montrer(titre);
+    });
+
+    cartes.forEach(function (carte) {
+      t += 260;
+      at(function () {
+        montrer(carte);
+        montrer(porte(carte));
+      });
+      t += PORTE;
+      at(function () {
+        cacher(porte(carte));
+        montrer(fait(carte));
+      });
+    });
+
+    t += 350;
+    at(function () {
+      montrer(bilan);
+      // Relance l'animation CSS : retirer la classe, forcer un recalcul, la remettre.
+      bilan.classList.remove("action-eclat");
+      void bilan.offsetWidth;
+      bilan.classList.add("action-eclat");
+    });
+
+    function lancer() {
+      masquer();
+      etapes.forEach(function (etape) {
+        window.setTimeout(etape.fn, etape.t);
+      });
+    }
+
+    // Le schéma est dans le hero, donc visible au chargement : on tient l'état final le temps qu'il
+    // soit vu et que le LCP soit mesuré, puis on rembobine et on trace, une fois.
+    window.setTimeout(lancer, TENUE);
+  })();
+</script>

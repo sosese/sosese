@@ -1,0 +1,9 @@
+---
+// Marqueur visible d'un contenu non fourni (§9). Ne jamais le remplacer par une valeur inventée.
+type Props = { label: string };
+const { label } = Astro.props;
+---
+
+<mark class="rounded-sm border border-dashed border-accent bg-transparent px-1 font-mono text-14 text-accent">
+  à compléter : {label}
+</mark>

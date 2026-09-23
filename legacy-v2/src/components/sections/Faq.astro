@@ -1,0 +1,37 @@
+---
+import { getCollection, render } from "astro:content";
+import Accordion from "../ui/Accordion.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+
+const entries = (await getCollection("faq")).sort((a, b) => a.data.ordre - b.data.ordre);
+const questions = await Promise.all(
+  entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: entries.map((entry) => ({
+    "@type": "Question",
+    name: entry.data.question,
+    acceptedAnswer: { "@type": "Answer", text: (entry.body ?? "").trim().replace(/\n{2,}/g, " ") },
+  })),
+};
+---
+
+<section id="faq" aria-labelledby="faq-titre" class="border-y border-border bg-bg-subtle py-(--section-y)">
+  <div class="container-site grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
+    <SectionHeading id="faq-titre" eyebrow="Questions fréquentes" title="Les questions qu'on nous pose avant de commencer" />
+
+    <div class="border-t border-border">
+      {
+        questions.map(({ entry, Content }) => (
+          <Accordion title={entry.data.question}>
+            <Content />
+          </Accordion>
+        ))
+      }
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, "\\u003c")} />
+</section>

@@ -1,0 +1,847 @@
+---
+// Mockup animé de « L'offre » depuis le 2026-09-19 (visuel du hero le même jour, remplacé par
+// VracEnActions). Posé en face des arguments, il y prouve « pas un logiciel de plus ».
+// Le travail préparé arrive là où la personne se trouve déjà : le même
+// enchaînement — une demande arrive, la solution consulte les outils de l'entreprise un par un en
+// montrant ce qu'elle y trouve, une action prête à valider en sort — joué dans quatre décors et huit
+// exemples : devis, nouveau client, rendez-vous, dépannage sous garantie, question de gestion,
+// recherche dans l'historique, relances, analyse de ventes.
+// Voir DESIGN.md, « Rotation d'écrans ».
+//
+// Contrat, identique aux autres mockups (terminal, DicteeMobile, cas client) :
+// - l'état rendu par le serveur est l'état FINAL du premier écran : lisible sans JS, aucun flash ;
+// - les quatre écrans sont empilés dans une même cellule de grille et toujours présents :
+//   hauteur constante, CLS 0 au changement d'écran ;
+// - bloc animé en aria-hidden, transcription complète en sr-only ;
+// - la rotation tourne en boucle et dure plus de 5 s : bouton pause obligatoire (WCAG 2.2.2),
+//   rendu hors mouvement réduit. Ne jamais le retirer. La pause est une VRAIE pause : elle gèle les
+//   animations CSS (`data-fige`) et garde le reliquat du minuteur, donc la lecture repart à
+//   l'instant exact où elle s'est arrêtée — jamais au début de l'exemple.
+// - sous prefers-reduced-motion : aucune rotation automatique, aucune séquence ; les boutons
+//   changent d'écran et l'écran arrive directement dans son état final.
+//
+// Données inventées (DESIGN.md, piège 17) : noms, dates et montants sont des exemples. Les outils
+// consultés restent des catégories — « votre catalogue », « votre planning », « vos fiches
+// clients », « votre comptabilité » — jamais une marque de logiciel.
+// Quatre décors, deux exemples chacun : huit écrans au total, joués dans l'ordre du tableau
+// `scenes` (un décor n'apparaît jamais deux fois de suite). Un clic sur un libellé va au premier
+// exemple de ce décor, un deuxième clic passe à l'autre.
+//
+// Libellés courts : les quatre, plus le bouton de lecture, tiennent sur une seule ligne sous la
+// maquette, y compris à 360 px (mono 12 : ~7,2 px par caractère, 24 rem de large). Un libellé plus
+// long les fait passer à deux lignes. Le `titre` dit la phrase entière, en survol et pour les
+// lecteurs d'écran.
+const ecrans = [
+  { label: "Messagerie", titre: "la messagerie de l'équipe", scenes: [0, 4] },
+  { label: "Boîte mail", titre: "la boîte mail", scenes: [1, 5] },
+  { label: "Téléphone", titre: "une notification sur le téléphone", scenes: [2, 6] },
+  { label: "Gestion", titre: "l'application de gestion", scenes: [3, 7] },
+];
+---
+
+<figure data-rotation class="rotation flex w-full max-w-lg flex-col gap-3 justify-self-center lg:justify-self-end">
+  <div class="cv-piste" aria-hidden="true">
+    <!-- L'assistant dans la messagerie de l'équipe : une cliente demande un chiffrage. -->
+    <div class="cv-scene conv" data-ecran="0" data-etape="4" data-actif><header class="barre"><span class="cv-avatar">S</span><div><b>Votre assistant</b><i>en ligne</i></div><span class="menu">•••</span></header><div class="cv-corps"><div class="cv-vue fil" data-c="0"><div class="recu"><span class="cv-avatar">R</span><div class="bulle"><b>Mme Rivière</b><p>Pouvez-vous me chiffrer le remplacement du sol du magasin ?</p><span class="heure">09:12</span></div></div><div class="repondu"><p class="cherche">Je me connecte à vos outils…</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre catalogue</b><i>3 postes trouvés, prix à jour</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre planning</b><i>libre à partir du 6 octobre</i></div></div></div><p class="dit">J'ai regardé votre catalogue et votre planning.</p><div class="carte"><b>Devis prêt à envoyer</b><i>3 postes chiffrés · intervention possible le 6 octobre</i><span class="cv-bouton">Envoyer le devis</span></div></div></div></div><footer class="saisie"><span class="champ">Écrivez un message…</span><span class="envoi"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3 4 7M8 3l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></footer></div>
+
+    <!-- La boîte mail : un client rappelle, la réponse est préparée dans une fenêtre de rédaction. -->
+    <div class="cv-scene mail" data-ecran="1" data-etape="4"><header class="barre"><span class="burger"><i></i><i></i><i></i></span><span class="recherche"><svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.4" stroke="currentColor" stroke-width="1.5"></circle><path d="m10.4 10.4 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>Rechercher dans les messages</span><span class="cv-avatar">J</span></header><div class="cv-corps"><div class="cv-vue vue" data-c="1"><div class="ligne neuve"><span class="pastille vive"></span><div><b>M. Bonnet</b><i>Appel de ce matin</i><em>Il rappelle pour avancer la pose d&#x27;une semaine si c&#x27;est possible.</em></div><span class="heure">08:40</span></div><div class="statut"><p class="titre">Je prépare la réponse</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Vos fiches clients</b><i>chantier en cours depuis mars</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre planning</b><i>jeudi 25 à 9 h, créneau libre</i></div></div></div></div><div class="ligne pale"><span class="pastille"></span><div><b>Fournisseur Delmas</b><i>Confirmation de commande</i></div><span class="heure">08:05</span></div><div class="ligne pale"><span class="pastille"></span><div><b>Assurance Pro</b><i>Votre échéance annuelle</i></div><span class="heure">hier</span></div><div class="ligne pale"><span class="pastille"></span><div><b>Salon du bâtiment</b><i>Invitation — 12 novembre</i></div><span class="heure">mardi</span></div><div class="fenetre"><div class="entete">Nouveau message<span class="croix">✕</span></div><div class="champs"><span class="champ">À : M. Bonnet</span><span class="champ">Objet : Rendez-vous à confirmer</span><p class="corps">jeudi 25, 9 h · le créneau est libre</p></div><div class="pied"><span class="cv-bouton">Confirmer</span><span class="jetable">Modifier avant envoi</span></div></div></div></div></div>
+
+    <!-- Le téléphone : une question de gestion posée par un salarié, la réponse arrive en notification. -->
+    <div class="cv-scene tel" data-ecran="2" data-etape="4"><div class="etat"><span>9:41</span><span class="voyants"><svg viewBox="0 0 24 10" fill="none"><rect x="0" y="6" width="2.4" height="4" rx="1" fill="currentColor"></rect><rect x="3.6" y="4" width="2.4" height="6" rx="1" fill="currentColor"></rect><rect x="7.2" y="2" width="2.4" height="8" rx="1" fill="currentColor"></rect><rect x="10.8" y="0" width="2.4" height="10" rx="1" fill="currentColor"></rect><rect x="16" y="1.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.2"></rect></svg></span></div><div class="cv-corps"><div class="cv-vue vue" data-c="2"><div class="banniere"><span class="tuile">S</span><div><b>Louis, atelier<span class="quand">maintenant</span></b><p>On est sur un bon trimestre, ou pas ?</p></div></div><div class="feuille"><span class="poignee"></span><div class="encours"><p class="titre">Je me connecte à vos outils…</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre comptabilité</b><i>chiffre du trimestre relevé</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre planning</b><i>14 chantiers livrés</i></div></div></div></div><div class="resultat"><b>Synthèse du trimestre</b><i>chiffres et chantiers comparés au trimestre passé</i><div class="reglages"><span>Demande de<em>Louis, atelier</em></span><span>Préparé avec<em>Votre comptabilité · Votre planning</em></span></div><span class="cv-bouton plein">Ouvrir</span><span class="secondaire">Plus tard</span></div></div></div></div><span class="accueil"></span></div>
+
+    <!-- L'application de gestion : une consigne de la direction déclenche sept relances. -->
+    <div class="cv-scene mat" data-ecran="3" data-etape="4" data-deroule="confirme"><header class="appbar"><span class="fleche"><svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></span><b>Aujourd'hui</b><span class="cv-avatar">J</span></header><div class="jauge"><span></span></div><div class="cv-corps"><div class="cv-vue vue" data-c="3"><div class="carte entree"><span class="cv-avatar">D</span><div><b>Direction<span class="quand">lundi</span></b><p>Relance tous les devis restés sans réponse depuis huit jours.</p></div></div><div class="travail"><p class="titre">Je consulte vos outils</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Vos fiches clients</b><i>7 devis sans réponse</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre comptabilité</b><i>montants et dates repris</i></div></div></div></div><div class="carte sortie"><span class="vignette"><svg viewBox="-9 -9 18 18" fill="none"><path d="M -6 -8 h 12 v 16 h -12 z M -3 -3 h 6 M -3 1 h 6 M -3 5 h 3" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span><div><b>7 relances rédigées</b><p>une par client, montant et date de devis rappelés</p><div class="actions"><span class="texte">Plus tard</span><span class="cv-bouton">Envoyer</span></div></div></div><div class="bandeau">7 relances envoyées<span class="annuler">Annuler</span></div></div></div><span class="flottant"><svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span></div>
+
+
+    <!-- Messagerie · un commercial dicte un nouveau client : la fiche est prête à créer. -->
+    <div class="cv-scene conv" data-ecran="4" data-etape="4"><header class="barre"><span class="cv-avatar">S</span><div><b>Votre assistant</b><i>en ligne</i></div><span class="menu">•••</span></header><div class="cv-corps"><div class="cv-vue fil" data-c="0"><div class="recu"><span class="cv-avatar">T</span><div class="bulle"><b>Thomas, commercial</b><p>Nouveau client : Menuiserie Leroy, 14 rue des Peupliers. Contact : Claire Leroy.</p><span class="heure">11:05</span></div></div><div class="repondu"><p class="cherche">Je me connecte à vos outils…</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Vos fiches clients</b><i>aucun doublon à ce nom</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre gestion</b><i>numéro client disponible</i></div></div></div><p class="dit">C'est bien un nouveau client, pas un doublon.</p><div class="carte"><b>Fiche client à créer</b><i>adresse et contact repris du message, rien de saisi deux fois</i><span class="cv-bouton">Créer la fiche</span></div></div></div></div><footer class="saisie"><span class="champ">Écrivez un message…</span><span class="envoi"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13V3M8 3 4 7M8 3l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></footer></div>
+
+    <!-- Boîte mail · une cliente signale une panne : la réponse sous garantie est prête. -->
+    <div class="cv-scene mail" data-ecran="5" data-etape="4"><header class="barre"><span class="burger"><i></i><i></i><i></i></span><span class="recherche"><svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.4" stroke="currentColor" stroke-width="1.5"></circle><path d="m10.4 10.4 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>Rechercher dans les messages</span><span class="cv-avatar">J</span></header><div class="cv-corps"><div class="cv-vue vue" data-c="1"><div class="ligne neuve"><span class="pastille vive"></span><div><b>Mme Fabre</b><i>Le volet ne remonte plus</i><em>Depuis hier soir, plus rien ne bouge. Est-ce que c&#x27;est couvert ?</em></div><span class="heure">07:52</span></div><div class="statut"><p class="titre">Je cherche dans vos dossiers</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Vos fiches clients</b><i>posé en mai, encore sous garantie</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre planning</b><i>un passage possible jeudi matin</i></div></div></div></div><div class="ligne pale"><span class="pastille"></span><div><b>Fournisseur Delmas</b><i>Confirmation de commande</i></div><span class="heure">08:05</span></div><div class="ligne pale"><span class="pastille"></span><div><b>Assurance Pro</b><i>Votre échéance annuelle</i></div><span class="heure">hier</span></div><div class="ligne pale"><span class="pastille"></span><div><b>Salon du bâtiment</b><i>Invitation — 12 novembre</i></div><span class="heure">mardi</span></div><div class="fenetre"><div class="entete">Nouveau message<span class="croix">✕</span></div><div class="champs"><span class="champ">À : Mme Fabre</span><span class="champ">Objet : Dépannage sous garantie</span><p class="corps">passage jeudi 9 h · pris en charge, rien à payer</p></div><div class="pied"><span class="cv-bouton">Confirmer</span><span class="jetable">Modifier avant envoi</span></div></div></div></div></div>
+
+    <!-- Téléphone · « on a vu M. Michel quand ? » : la solution retrouve le rendez-vous. -->
+    <div class="cv-scene tel" data-ecran="6" data-etape="4"><div class="etat"><span>9:41</span><span class="voyants"><svg viewBox="0 0 24 10" fill="none"><rect x="0" y="6" width="2.4" height="4" rx="1" fill="currentColor"></rect><rect x="3.6" y="4" width="2.4" height="6" rx="1" fill="currentColor"></rect><rect x="7.2" y="2" width="2.4" height="8" rx="1" fill="currentColor"></rect><rect x="10.8" y="0" width="2.4" height="10" rx="1" fill="currentColor"></rect><rect x="16" y="1.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.2"></rect></svg></span></div><div class="cv-corps"><div class="cv-vue vue" data-c="2"><div class="banniere"><span class="tuile">S</span><div><b>Claire, atelier<span class="quand">maintenant</span></b><p>On a vu M. Michel quand, la dernière fois ?</p></div></div><div class="feuille"><span class="poignee"></span><div class="encours"><p class="titre">Je me connecte à vos outils…</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre planning</b><i>rendez-vous retrouvé</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Vos fiches clients</b><i>compte rendu rattaché</i></div></div></div></div><div class="resultat"><b>Mardi 7 octobre, 14 h</b><i>chez M. Michel, avec Claire — relevé avant devis</i><div class="reglages"><span>Suite donnée<em>devis envoyé le 9</em></span><span>Retrouvé dans<em>Votre planning · Vos fiches clients</em></span></div><span class="cv-bouton plein">Ouvrir le compte rendu</span><span class="secondaire">Plus tard</span></div></div></div></div><span class="accueil"></span></div>
+
+    <!-- Gestion · « nos meilleures ventes du mois dernier » : l'analyse est prête à ouvrir. -->
+    <div class="cv-scene mat" data-ecran="7" data-etape="4"><header class="appbar"><span class="fleche"><svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></span><b>Aujourd'hui</b><span class="cv-avatar">J</span></header><div class="jauge"><span></span></div><div class="cv-corps"><div class="cv-vue vue" data-c="3"><div class="carte entree"><span class="cv-avatar">D</span><div><b>Direction<span class="quand">ce matin</span></b><p>Donne-moi nos meilleures ventes du mois dernier.</p></div></div><div class="travail"><p class="titre">Je consulte vos outils</p><div class="cv-reflexion"><div class="cv-pas" style="--i:0"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre gestion</b><i>142 lignes de vente relevées</i></div></div><div class="cv-pas" style="--i:1"><span class="cv-etat"><span class="rond"></span><svg class="coche" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--accent-soft)"></circle><path d="m5 8.2 2.2 2.2L11 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><div><b>Votre catalogue</b><i>regroupées par famille</i></div></div></div></div><div class="carte sortie"><span class="vignette"><svg viewBox="-9 -9 18 18" fill="none"><path d="M -6 -8 h 12 v 16 h -12 z M -3 -3 h 6 M -3 1 h 6 M -3 5 h 3" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span><div><b>Les cinq meilleures ventes</b><p>montants, marges et écart avec le mois précédent</p><div class="actions"><span class="texte">Plus tard</span><span class="cv-bouton">Ouvrir</span></div></div></div></div></div><span class="flottant"><svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span></div>
+  </div>
+
+  {/* Une seule barre de commande : le bouton de lecture d'abord, en pastille bordée pour qu'il se
+      lise comme une commande et non comme un glyphe posé après du texte, puis les quatre décors.
+      Un clic sur un décor prend la main (plus d'enchaînement automatique) et va à son exemple
+      suivant ; le bouton de lecture repart de l'endroit exact où la pause a été prise.
+      `aria-pressed` porte les deux états : pas de classe « active » à synchroniser. */}
+  <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+    <button
+      type="button"
+      data-pause
+      aria-pressed="false"
+      aria-label="Mettre l'animation en pause"
+      title="Mettre l'animation en pause"
+      class="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
+    >
+      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-2.5" fill="currentColor">
+        <path data-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
+        <path data-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
+      </svg>
+    </button>
+    {
+      ecrans.map((ecran, i) => (
+        <button
+          type="button"
+          data-jalon={ecran.scenes.join(",")}
+          aria-pressed={i === 0}
+          title={`Voir ${ecran.titre} — deux exemples`}
+          class="rounded-sm py-1 font-mono text-12 text-ink-muted underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-ink aria-pressed:text-ink aria-pressed:underline aria-pressed:decoration-accent aria-pressed:decoration-2"
+        >
+          {ecran.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <figcaption class="sr-only">
+    Démonstration : la même solution, dans quatre endroits différents, sur huit exemples. Dans la
+    messagerie de l'équipe, une cliente demande le chiffrage du remplacement d'un sol — la solution
+    consulte votre catalogue puis votre planning et prépare un devis à envoyer ; un commercial dicte
+    les coordonnées d'un nouveau client — la solution vérifie qu'il n'existe pas déjà et prépare la
+    fiche à créer. Dans la boîte mail, un client demande à avancer une pose — la solution lit vos
+    fiches clients et votre planning et propose un créneau libre, à confirmer ; une cliente signale
+    une panne — la solution retrouve la date de pose, voit que c'est encore sous garantie, trouve un
+    passage possible et prépare la réponse. Sur le téléphone, un salarié demande si le trimestre est
+    bon — la solution relève les chiffres dans votre comptabilité et les chantiers livrés dans votre
+    planning et prépare une synthèse ; un autre demande quand a eu lieu le dernier rendez-vous avec
+    un client — la solution retrouve la date dans votre planning et le compte rendu dans vos fiches.
+    Dans l'application de gestion, la direction demande de relancer les devis sans réponse — la
+    solution en retrouve sept et prépare sept relances, qui ne partent qu'après validation ; elle
+    demande les meilleures ventes du mois dernier — la solution relève les ventes dans votre gestion,
+    les regroupe par famille et prépare le classement. Exemples inventés : aucun nom, aucune date,
+    aucun montant ne vient d'un document réel.
+  </figcaption>
+</figure>
+
+<style>
+    /* Durées propres à la rotation. Les deux valeurs en dur se répondent avec celles du script
+       (ENTREE, SORTIE) : les changer ici oblige à les changer là-bas. `--duration-slow` est déjà
+       ramenée à 0 sous mouvement réduit par tokens.css ; les deux autres le sont juste en dessous. */
+    .rotation {
+      --rot-sortie: var(--duration-slow);
+      --rot-entree: 420ms;
+      --rot-attente: 260ms;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rotation {
+        --rot-entree: 0ms;
+        --rot-attente: 0ms;
+      }
+    }
+
+  /* Pause réelle : le minuteur seul ne suffit pas, les animations de l'étape 3 (l'anneau qui tourne,
+     la barre de progression) bouclent en CSS et continuaient de tourner « en pause ». */
+  .rotation[data-fige] .cv-piste *,
+  .rotation[data-fige] .cv-piste *::before,
+  .rotation[data-fige] .cv-piste *::after {
+    animation-play-state: paused !important;
+  }
+
+  /* ——— Le faux écran, commun aux quatre variantes ———
+     Seules les FORMES sont empruntées à ces interfaces : les couleurs restent celles de sosese.
+     Tailles en cqw : la maquette se redimensionne d'un bloc, comme une capture d'écran. */
+  .cv-scene {
+    container-type: inline-size;
+    position: relative; display: flex; flex-direction: column;
+    width: 100%; aspect-ratio: 4 / 5; overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    font-family: var(--font-sans); color: var(--ink); line-height: 1.35;
+  }
+  .cv-corps { position: relative; flex: 1; min-height: 0; }
+  .cv-vue { position: absolute; inset: 0; }
+
+  .cv-avatar {
+    flex: none; display: grid; place-items: center;
+    width: 8.5cqw; height: 8.5cqw; border-radius: var(--radius-full);
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 3.6cqw; font-weight: 600;
+  }
+  .cv-bouton {
+    display: inline-block; border-radius: var(--radius-full);
+    border: 1px solid var(--border-strong); background: transparent; color: var(--ink-muted);
+    padding: 1.6cqw 4cqw; font-size: 3.4cqw; font-weight: 600; white-space: nowrap;
+    transition: background var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+  .cv-scene[data-etape="4"] .cv-bouton {
+    border-color: var(--accent); background: var(--accent); color: var(--on-accent);
+    box-shadow: 0 0 0 1.2cqw var(--accent-soft); transition-delay: 260ms;
+  }
+  /* — La phase de réflexion : l'assistant se connecte aux outils du client, un par un. —
+     Chaque ligne apparaît, l'anneau tourne le temps de la consultation, puis la coche tombe et
+     la ligne dit ce qu'elle a trouvé. C'est le moment qui prouve que le service va vraiment
+     chercher dans les données de la personne.
+
+     Minutage : une consultation toutes les 1,875 s, résolue au bout d'une seconde et demie,
+     chacune calée sur son propre --i. Tout ce qui est caché avant son tour l'est par l'état de repos, jamais par
+     le remplissage arrière d'une animation : c'est ce qui rend la cascade fiable. */
+  .cv-reflexion {
+    display: grid;
+    gap: 2.6cqw;
+  }
+
+  .cv-pas {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.8cqw;
+    opacity: 0;
+  }
+
+  .cv-etat {
+    position: relative;
+    flex: none;
+    width: 5.4cqw;
+    height: 5.4cqw;
+    margin-top: 0.4cqw;
+  }
+
+  /* L'anneau qui tourne : le signe le plus universel d'une connexion en cours. */
+  .cv-etat .rond {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    border: 1.1cqw solid var(--accent-soft);
+    border-top-color: var(--accent);
+    opacity: 0;
+  }
+
+  .cv-etat .coche {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--accent);
+    opacity: 0;
+  }
+
+  .cv-pas b {
+    display: block;
+    font-size: 3.4cqw;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .cv-pas i {
+    display: block;
+    margin-top: 0.4cqw;
+    font-size: 3.1cqw;
+    font-style: normal;
+    color: var(--ink-muted);
+    line-height: 1.3;
+    opacity: 0;
+  }
+
+  /* Sans mouvement, il n'y a pas de cascade : les consultations sont montrées abouties. */
+  @media (prefers-reduced-motion: reduce) {
+    .cv-scene[data-etape="3"] .cv-pas,
+    .cv-scene[data-etape="3"] .cv-etat .coche,
+    .cv-scene[data-etape="3"] .cv-pas i {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cv-scene[data-etape="3"] .cv-pas {
+      animation: cv-pas-entre 400ms var(--ease-out) calc(var(--i) * 1875ms) forwards;
+    }
+    /* Deux animations qui ne se marchent pas dessus : l'une fait tourner l'anneau (transform),
+       l'autre l'allume puis l'éteint (opacity) sur toute la durée de la consultation. */
+    .cv-scene[data-etape="3"] .cv-etat .rond {
+      animation:
+        cv-tourne 760ms linear calc(var(--i) * 1875ms) infinite,
+        cv-sonde 1725ms linear calc(var(--i) * 1875ms) forwards;
+    }
+    /* La coche et la ligne « trouvé » partagent le même départ que la ligne : elles restent
+       invisibles les trois premiers quarts de l'animation, le temps de la consultation. */
+    .cv-scene[data-etape="3"] .cv-etat .coche {
+      animation: cv-coche 1950ms var(--ease-out) calc(var(--i) * 1875ms) forwards;
+    }
+    .cv-scene[data-etape="3"] .cv-pas i {
+      animation: cv-trouve 1950ms var(--ease-out) calc(var(--i) * 1875ms) forwards;
+    }
+  }
+
+  @keyframes cv-pas-entre {
+    from {
+      opacity: 0;
+      transform: translateY(1.6cqw);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes cv-tourne {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes cv-sonde {
+    0% { opacity: 0; }
+    12% { opacity: 1; }
+    74% { opacity: 1; }
+    82%, 100% { opacity: 0; }
+  }
+
+  @keyframes cv-coche {
+    0%, 77% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    92%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes cv-trouve {
+    0%, 77% {
+      opacity: 0;
+      transform: translateY(1.2cqw);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* — La rotation : un scénario, un style. À chaque nouvel exemple, l'écran change de famille. —
+     Les quatre maquettes sont empilées dans la même case de grille.
+
+     Le passage est SÉQUENTIEL, pas un fondu croisé : l'écran sortant s'efface entièrement (300 ms)
+     avant que l'entrant n'arrive (420 ms, après 260 ms d'attente). Deux chromes superposés à
+     mi-fondu donnaient une bouillie — les coins arrondis du téléphone sur le carré blanc de la
+     messagerie — et c'est ce qui se voyait le plus. Passer par le fond de page une fraction de
+     seconde se lit comme un changement d'appareil, pas comme un défaut. */
+  .cv-piste {
+    display: grid;
+  }
+
+  .cv-piste > * {
+    grid-area: 1 / 1;
+  }
+
+  /* Sortie : l'écran s'éloigne et s'efface. */
+  .cv-piste .cv-scene {
+    opacity: 0;
+    transform: scale(0.96) translateY(1.5%);
+    transition:
+      opacity var(--rot-sortie) var(--ease-out),
+      transform var(--rot-sortie) var(--ease-out);
+  }
+
+  /* Entrée : elle attend que la précédente ait disparu, puis prend son temps.
+     L'écran visible porte `data-actif`, posé par le script — et par le serveur pour le premier. */
+  .cv-piste .cv-scene[data-actif] {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--rot-entree);
+    transition-delay: var(--rot-attente);
+  }
+
+  /* Un flou d'arrière-plan sous une opacité qui s'anime se recompose à chaque image : c'est la
+     seule source de saccade de la rotation. La bannière est déjà presque opaque, on s'en passe. */
+  .cv-piste .banniere {
+    backdrop-filter: none;
+    background: var(--surface);
+  }
+
+  /* ——— E · la conversation ——— */
+  .conv .barre { display: flex; align-items: center; gap: 2.6cqw; padding: 3.4cqw 4cqw; border-bottom: 1px solid var(--border); }
+  .conv .barre b { display: block; font-size: 3.8cqw; font-weight: 600; }
+  .conv .barre i { display: block; font-size: 3cqw; font-style: normal; color: var(--accent); }
+  .conv .menu { margin-left: auto; color: var(--ink-muted); font-size: 3.6cqw; letter-spacing: 0.1em; }
+  .conv .fil { display: flex; flex-direction: column; justify-content: flex-end; gap: 3cqw; padding: 4cqw; }
+  .conv .recu { display: flex; align-items: flex-end; gap: 2.2cqw; align-self: flex-start; max-width: 86%; }
+  .conv .bulle {
+    background: var(--bg-subtle); border-radius: var(--radius-lg);
+    border-bottom-left-radius: var(--radius-sm); padding: 2.6cqw 3.4cqw;
+  }
+  .conv .bulle b { font-size: 3.1cqw; font-weight: 600; color: var(--ink-muted); }
+  .conv .bulle p { margin: 0.6cqw 0 0; font-size: 3.7cqw; }
+  .conv .heure { display: block; margin-top: 1cqw; font-size: 2.8cqw; color: var(--ink-muted); }
+  .conv .repondu {
+    align-self: flex-end; max-width: 92%; background: var(--accent-soft);
+    border-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-sm); padding: 3cqw 3.4cqw;
+  }
+  .conv .cherche { margin: 0 0 3cqw; font-size: 3.6cqw; color: var(--ink-muted); }
+  .conv .dit { margin: 0; font-size: 3.6cqw; }
+  .conv .carte {
+    margin-top: 2.6cqw; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 3cqw; box-shadow: var(--shadow-sm);
+  }
+  .conv .carte b { display: block; font-size: 3.9cqw; font-weight: 600; }
+  .conv .carte i { display: block; margin-top: 0.8cqw; font-size: 3.2cqw; font-style: normal; color: var(--ink-muted); }
+  .conv .carte .cv-bouton { margin-top: 2.6cqw; }
+  .conv .saisie { display: flex; align-items: center; gap: 2.4cqw; padding: 3.4cqw 4cqw; border-top: 1px solid var(--border); }
+  .conv .champ {
+    flex: 1; border: 1px solid var(--border); border-radius: var(--radius-full);
+    background: var(--bg-subtle); color: var(--ink-muted); padding: 2.2cqw 3.6cqw; font-size: 3.4cqw;
+  }
+  .conv .envoi {
+    flex: none; display: grid; place-items: center; width: 8.4cqw; height: 8.4cqw;
+    border-radius: var(--radius-full); background: var(--accent); color: var(--on-accent);
+  }
+  .conv .envoi svg { width: 5cqw; height: 5cqw; }
+  .conv .recu, .conv .repondu { opacity: 0; }
+  .conv .cherche, .conv .cv-reflexion, .conv .dit, .conv .carte { display: none; }
+  .conv:is([data-etape="1"],[data-etape="2"],[data-etape="3"],[data-etape="4"]) .recu { opacity: 1; }
+  .conv:is([data-etape="3"],[data-etape="4"]) .repondu { opacity: 1; }
+  .conv[data-etape="3"] .cherche { display: block; }
+  .conv[data-etape="3"] .cv-reflexion { display: grid; }
+  .conv:is([data-etape="4"],[data-etape="5"]) .dit { display: block; }
+  .conv:is([data-etape="4"],[data-etape="5"]) .carte { display: block; }
+  .conv[data-etape="5"] .recu, .conv[data-etape="5"] .repondu {
+    opacity: 0; transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .conv[data-etape="1"] .recu { animation: cv-monte 380ms var(--ease-out) both; }
+    .conv[data-etape="3"] .repondu { animation: cv-monte 320ms var(--ease-out) both; }
+    .conv[data-etape="4"] .carte { animation: cv-monte 400ms var(--ease-out) 120ms both; }
+    .conv[data-etape="4"] .dit { animation: cv-apparait 260ms var(--ease-out) both; }
+  }
+  @keyframes cv-monte { from { opacity: 0; transform: translateY(3cqw) scale(0.97); } }
+  @keyframes cv-apparait { from { opacity: 0; } }
+
+  /* ——— F · la boîte de réception ——— */
+  .mail .barre { display: flex; align-items: center; gap: 2.6cqw; padding: 3.2cqw 3.6cqw; border-bottom: 1px solid var(--border); }
+  .mail .burger { flex: none; display: grid; gap: 1.1cqw; }
+  .mail .burger i { display: block; width: 4.4cqw; height: 0.9cqw; border-radius: var(--radius-full); background: var(--ink-muted); }
+  .mail .recherche {
+    flex: 1; display: flex; align-items: center; gap: 2cqw;
+    border-radius: var(--radius-full); background: var(--bg-subtle); color: var(--ink-muted);
+    padding: 2.2cqw 3.4cqw; font-size: 3.2cqw; white-space: nowrap; overflow: hidden;
+  }
+  .mail .recherche svg { flex: none; width: 4cqw; height: 4cqw; }
+  .mail .ligne {
+    display: flex; align-items: flex-start; gap: 2.6cqw; padding: 3cqw 3.6cqw;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .mail .ligne b { display: block; font-size: 3.6cqw; font-weight: 600; }
+  .mail .ligne i { display: block; font-size: 3.3cqw; font-style: normal; color: var(--ink); }
+  .mail .ligne em { display: block; margin-top: 0.6cqw; font-size: 3.1cqw; font-style: normal; color: var(--ink-muted); }
+  .mail .ligne div { flex: 1; min-width: 0; }
+  .mail .heure { flex: none; font-size: 2.9cqw; color: var(--ink-muted); }
+  .mail .pale b, .mail .pale i { color: var(--ink-muted); font-weight: 400; }
+  .mail .pastille {
+    flex: none; width: 2.4cqw; height: 2.4cqw; margin-top: 1.4cqw;
+    border-radius: var(--radius-full); background: var(--border-strong);
+  }
+  .mail .vive { background: var(--accent); }
+  /* Le surlignage est un calque : la ligne reste opaque et masque la liste qu'elle recouvre. */
+  .mail .neuve { background-image: linear-gradient(var(--accent-soft), var(--accent-soft)); }
+  /* Le panneau d'attente : ce que l'assistant va chercher, outil par outil. */
+  .mail .statut {
+    padding: 3.2cqw 3.6cqw; background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .mail .statut .titre { margin: 0 0 3cqw; font-size: 3.3cqw; color: var(--ink-muted); }
+  .mail .fenetre {
+    position: absolute; left: 3cqw; right: 3cqw; bottom: 3cqw;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: var(--surface); box-shadow: var(--shadow-md); overflow: hidden;
+  }
+  .mail .entete {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-subtle); padding: 2.4cqw 3.2cqw; font-size: 3.3cqw; font-weight: 600;
+  }
+  .mail .croix { color: var(--ink-muted); }
+  .mail .champs { padding: 2.6cqw 3.2cqw; }
+  .mail .champ {
+    display: block; padding-bottom: 1.8cqw; margin-bottom: 1.8cqw;
+    border-bottom: 1px solid var(--border); font-size: 3.3cqw; color: var(--ink);
+  }
+  .mail .corps { margin: 0; font-size: 3.2cqw; color: var(--ink-muted); }
+  .mail .pied { display: flex; align-items: center; gap: 3cqw; padding: 2.6cqw 3.2cqw 3.2cqw; }
+  .mail .jetable { font-size: 3cqw; color: var(--ink-muted); }
+  .mail .neuve, .mail .fenetre { opacity: 0; }
+  .mail .statut { display: none; }
+  .mail:is([data-etape="1"],[data-etape="2"],[data-etape="3"],[data-etape="4"]) .neuve { opacity: 1; }
+  .mail[data-etape="3"] .statut { display: block; }
+  .mail:is([data-etape="4"],[data-etape="5"]) .fenetre { opacity: 1; }
+  .mail[data-etape="5"] .neuve { opacity: 0; transition: opacity var(--duration-slow) var(--ease-out); }
+  @media (prefers-reduced-motion: no-preference) {
+    .mail[data-etape="1"] .neuve { animation: cv-descend 400ms var(--ease-out) both; }
+    .mail[data-etape="3"] .statut { animation: cv-apparait-m 260ms var(--ease-out) both; }
+    .mail[data-etape="4"] .fenetre { animation: cv-remonte 460ms var(--ease-out) both; }
+    .mail[data-etape="5"] .fenetre { animation: cv-redescend 340ms var(--ease-out) both; }
+  }
+  @keyframes cv-descend { from { opacity: 0; transform: translateY(-6cqw); } }
+  @keyframes cv-apparait-m { from { opacity: 0; } }
+  @keyframes cv-remonte { from { opacity: 0; transform: translateY(14cqw); } }
+  @keyframes cv-redescend { to { opacity: 0; transform: translateY(10cqw); } }
+
+  /* ——— G · le téléphone ——— */
+  .tel {
+    border-radius: calc(var(--radius-lg) * 2);
+    background: linear-gradient(165deg, var(--accent-soft), var(--bg-subtle) 60%);
+  }
+  .tel .etat {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 3.4cqw 6cqw 1.5cqw; font-size: 3.4cqw; font-weight: 600;
+  }
+  .tel .voyants svg { width: 9cqw; height: 3.8cqw; }
+  .tel .banniere {
+    position: absolute; top: 2cqw; left: 3cqw; right: 3cqw;
+    display: flex; gap: 2.6cqw; padding: 3cqw; border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(8px); box-shadow: var(--shadow-md);
+  }
+  .tel .tuile {
+    flex: none; display: grid; place-items: center; width: 8.4cqw; height: 8.4cqw;
+    border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent);
+    font-size: 3.8cqw; font-weight: 700;
+  }
+  .tel .banniere b {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 2cqw;
+    font-size: 3.5cqw; font-weight: 600;
+  }
+  .tel .quand { font-weight: 400; font-size: 3cqw; color: var(--ink-muted); }
+  .tel .banniere p { margin: 0.7cqw 0 0; font-size: 3.3cqw; }
+  .tel .feuille {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 2cqw 4.5cqw 7cqw;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--surface); border-top: 1px solid var(--border); box-shadow: var(--shadow-md);
+  }
+  .tel .poignee {
+    display: block; width: 12cqw; height: 1.2cqw; margin: 0 auto 3.5cqw;
+    border-radius: var(--radius-full); background: var(--border-strong);
+  }
+  .tel .encours { padding: 1cqw 0 5cqw; }
+  .tel .encours .titre { margin: 0 0 3.4cqw; text-align: center; font-size: 3.6cqw; color: var(--ink-muted); }
+  /* Les consultations tiennent dans un bloc gris, comme une liste de réglages. */
+  .tel .encours .cv-reflexion { gap: 0; border-radius: var(--radius-md); background: var(--bg-subtle); overflow: hidden; }
+  .tel .encours .cv-pas { align-items: center; padding: 3cqw 3.4cqw; }
+  .tel .encours .cv-pas + .cv-pas { border-top: 1px solid var(--border); }
+  .tel .resultat b { display: block; font-size: 4.6cqw; font-weight: 600; }
+  .tel .resultat i { display: block; margin-top: 1cqw; font-size: 3.3cqw; font-style: normal; color: var(--ink-muted); }
+  .tel .reglages { margin: 3.4cqw 0; border-radius: var(--radius-md); background: var(--bg-subtle); overflow: hidden; }
+  .tel .reglages span {
+    display: flex; align-items: center; justify-content: space-between; gap: 3cqw;
+    padding: 2.6cqw 3.4cqw; font-size: 3.3cqw; color: var(--ink-muted);
+  }
+  .tel .reglages span + span { border-top: 1px solid var(--border); }
+  .tel .reglages em { font-style: normal; font-weight: 600; color: var(--ink); text-align: right; }
+  .tel .plein { display: block; width: 100%; text-align: center; padding: 3.2cqw; border-radius: var(--radius-md); font-size: 3.8cqw; }
+  .tel .secondaire { display: block; margin-top: 2.6cqw; text-align: center; font-size: 3.4cqw; color: var(--ink-muted); }
+  .tel .accueil {
+    position: absolute; z-index: 1; left: 50%; translate: -50%; bottom: 2.2cqw;
+    width: 32%; height: 1.1cqw; border-radius: var(--radius-full); background: var(--ink); opacity: 0.35;
+  }
+  .tel .banniere, .tel .feuille { opacity: 0; }
+  .tel .encours, .tel .resultat { display: none; }
+  .tel:is([data-etape="1"],[data-etape="2"],[data-etape="3"],[data-etape="4"]) .banniere { opacity: 1; }
+  .tel:is([data-etape="3"],[data-etape="4"]) .feuille { opacity: 1; }
+  .tel[data-etape="3"] .encours { display: block; }
+  .tel:is([data-etape="4"],[data-etape="5"]) .resultat { display: block; }
+  .tel[data-etape="5"] .banniere { opacity: 0; transition: opacity var(--duration-slow) var(--ease-out); }
+  @media (prefers-reduced-motion: no-preference) {
+    .tel[data-etape="1"] .banniere { animation: cv-tombe 420ms var(--ease-out) both; }
+    .tel[data-etape="3"] .feuille { animation: cv-monte-feuille 440ms var(--ease-out) both; }
+    .tel[data-etape="5"] .feuille { animation: cv-descend-feuille 340ms var(--ease-out) both; }
+  }
+  @keyframes cv-tombe { from { opacity: 0; transform: translateY(-9cqw); } }
+  @keyframes cv-monte-feuille { from { opacity: 0; transform: translateY(18cqw); } }
+  @keyframes cv-descend-feuille { to { opacity: 0; transform: translateY(16cqw); } }
+
+  /* ——— H · l'application ——— */
+  .mat { background: var(--bg-subtle); }
+  .mat .appbar { display: flex; align-items: center; gap: 3cqw; padding: 3.6cqw 4cqw; background: var(--surface); }
+  .mat .appbar b { flex: 1; font-size: 4.2cqw; font-weight: 600; }
+  .mat .fleche svg { display: block; width: 5cqw; height: 5cqw; color: var(--ink); }
+  .mat .jauge { height: 0.9cqw; background: var(--accent-soft); overflow: hidden; opacity: 0; }
+  .mat .jauge span { display: block; width: 40%; height: 100%; background: var(--accent); }
+  .mat .vue { padding: 4cqw; }
+  .mat .carte {
+    display: flex; gap: 3cqw; background: var(--surface); border-radius: var(--radius-lg);
+    padding: 3.4cqw; box-shadow: var(--shadow-sm);
+  }
+  .mat .carte > div { flex: 1; min-width: 0; }
+  .mat .carte b {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 2cqw;
+    font-size: 3.7cqw; font-weight: 600;
+  }
+  .mat .quand { font-weight: 400; font-size: 3cqw; color: var(--ink-muted); }
+  .mat .carte p { margin: 1cqw 0 0; font-size: 3.3cqw; color: var(--ink-muted); }
+  .mat .sortie { margin-top: 4cqw; }
+  .mat .sortie b { display: block; font-size: 4.1cqw; }
+  .mat .vignette {
+    flex: none; display: grid; place-items: center; width: 9cqw; height: 9cqw;
+    border-radius: var(--radius-full); background: var(--accent-soft); color: var(--accent);
+  }
+  .mat .vignette svg { width: 4.6cqw; height: 4.6cqw; }
+  .mat .actions { display: flex; align-items: center; justify-content: flex-end; gap: 4cqw; margin-top: 3.4cqw; }
+  .mat .texte { font-size: 3.4cqw; font-weight: 600; color: var(--ink-muted); }
+  /* Carte de travail : la barre de progression dit « ça tourne », les lignes disent dans quoi. */
+  .mat .travail {
+    margin-top: 4cqw; background: var(--surface); border-radius: var(--radius-lg);
+    padding: 3.4cqw; box-shadow: var(--shadow-sm);
+  }
+  .mat .travail .titre { margin: 0 0 3cqw; font-size: 3.4cqw; color: var(--ink-muted); }
+  .mat .bandeau {
+    position: absolute; left: 4cqw; right: 18cqw; bottom: 4cqw;
+    display: flex; align-items: center; justify-content: space-between; gap: 3cqw;
+    padding: 3cqw 4cqw; border-radius: var(--radius-md);
+    background: var(--ink); color: var(--bg); font-size: 3.4cqw; box-shadow: var(--shadow-md);
+  }
+  .mat .annuler { font-weight: 700; color: var(--accent-bright); text-transform: uppercase; font-size: 3.1cqw; letter-spacing: 0.04em; }
+  .mat .flottant {
+    position: absolute; right: 4cqw; bottom: 4cqw; display: grid; place-items: center;
+    width: 12cqw; height: 12cqw; border-radius: var(--radius-lg);
+    background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow-md);
+  }
+  .mat .flottant svg { width: 5.4cqw; height: 5.4cqw; }
+  .mat .entree, .mat .sortie, .mat .bandeau { opacity: 0; }
+  /* La carte de travail disparaît vraiment : à opacité nulle elle gardait sa place et
+     poussait la carte de résultat sous le bouton flottant. */
+  .mat .travail { display: none; }
+  .mat:is([data-etape="1"],[data-etape="2"],[data-etape="3"],[data-etape="4"]) .entree { opacity: 1; }
+  .mat[data-etape="3"] .jauge { opacity: 1; }
+  .mat[data-etape="3"] .travail { display: block; }
+  .mat:is([data-etape="4"],[data-etape="5"]) .sortie { opacity: 1; }
+  .mat[data-etape="5"] .entree, .mat[data-etape="5"] .sortie {
+    opacity: 0.35; transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .mat[data-etape="5"] .bandeau { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .mat[data-etape="1"] .entree { animation: cv-arrive 400ms var(--ease-out) both; }
+    .mat[data-etape="3"] .travail { animation: cv-arrive 260ms var(--ease-out) both; }
+    .mat[data-etape="3"] .jauge span { animation: cv-jauge 1100ms var(--ease-out) infinite; }
+    .mat[data-etape="4"] .sortie { animation: cv-arrive 420ms var(--ease-out) both; }
+    .mat[data-etape="5"] .bandeau { animation: cv-arrive 300ms var(--ease-out) both; }
+  }
+  @keyframes cv-arrive { from { opacity: 0; transform: translateY(4cqw); } }
+  @keyframes cv-jauge { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+</style>
+
+<script>
+  (function () {
+    var racine = document.querySelector("[data-rotation]");
+    if (!racine) return;
+    var ecrans = Array.prototype.slice.call(racine.querySelectorAll("[data-ecran]"));
+    var jalons = Array.prototype.slice.call(racine.querySelectorAll("[data-jalon]"));
+    if (ecrans.length < 2) return;
+    var bouton = racine.querySelector("[data-pause]");
+    var iconePause = racine.querySelector("[data-icone-pause]");
+    var iconeLecture = racine.querySelector("[data-icone-lecture]");
+
+    var reduit = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Se répondent avec les durées de la CSS ci-dessus : l'écran sortant s'efface entièrement avant
+    // que l'entrant n'arrive. Deux chromes superposés à mi-fondu donnaient une bouillie.
+    var ENTREE = 260; // délai d'entrée du CSS : l'écran qui arrive joue son premier pas à cet instant
+    var SORTIE = 420; // fondu de sortie : le contenu du sortant n'est remis à zéro qu'après
+    var ATTENTE = 1600; // l'état rendu par le serveur reste lisible avant que la rotation ne parte
+
+    // Le déroulé : 1 la demande arrive · 2 on la lit · 3 la solution consulte les outils, un par un ·
+    // 4 l'action prête, le temps de tout lire · 5 la confirmation, pour les écrans qui en ont une.
+    var TOUR = [["1", 600], ["2", 1500], ["3", 4950], ["4", 5200]];
+    var TOUR_CONFIRME = [["1", 600], ["2", 1500], ["3", 4950], ["4", 4400], ["5", 1500]];
+    var deroules = ecrans.map(function (ecran) {
+      return ecran.getAttribute("data-deroule") === "confirme" ? TOUR_CONFIRME : TOUR;
+    });
+    // Les écrans que chaque libellé dessert, dans l'ordre : un clic passe au suivant du même décor.
+    var groupes = jalons.map(function (jalon) {
+      return jalon.getAttribute("data-jalon").split(",").map(Number);
+    });
+
+    var index = 0;
+    var auto = false; // enchaîne les écrans les uns après les autres
+    var gele = false; // arrêté par le bouton — distinct d'une sortie d'écran
+    var dansLaVue = true;
+
+    // Un seul minuteur à la fois, et on retient ce qu'il RESTAIT à attendre. C'est ce qui fait une
+    // vraie pause : reprendre n'attend que le reste, au lieu de rejouer l'écran depuis le début.
+    var minuteur = null, suite = null, reste = 0, depart = 0;
+    var nettoyage = null, aNettoyer = null;
+
+    function attends(ms, fn) {
+      suite = fn;
+      reste = ms;
+      depart = Date.now();
+      minuteur = window.setTimeout(function () {
+        suite = null;
+        fn();
+      }, ms);
+    }
+
+    // Gèle tout : le minuteur en cours (dont on garde le reliquat) et les animations CSS, qui
+    // tournent en boucle pendant l'étape 3 — sans `data-fige`, l'anneau continuait de tourner et
+    // rien n'avait l'air arrêté.
+    function suspend() {
+      window.clearTimeout(minuteur);
+      if (suite) reste = Math.max(0, reste - (Date.now() - depart));
+      if (aNettoyer) {
+        window.clearTimeout(nettoyage);
+        aNettoyer();
+        aNettoyer = null;
+      }
+      racine.setAttribute("data-fige", "");
+    }
+
+    function relance() {
+      racine.removeAttribute("data-fige");
+      if (!suite) return false;
+      var fn = suite;
+      attends(reste, fn);
+      return true;
+    }
+
+    function montre(i) {
+      index = i;
+      ecrans.forEach(function (ecran, j) {
+        if (j === i) ecran.setAttribute("data-actif", "");
+        else ecran.removeAttribute("data-actif");
+      });
+      jalons.forEach(function (jalon, j) {
+        jalon.setAttribute("aria-pressed", String(groupes[j].indexOf(i) !== -1));
+      });
+    }
+
+    function majBouton() {
+      if (!bouton) return;
+      var tourne = !gele && (auto || suite !== null);
+      var libelle = tourne ? "Mettre l'animation en pause" : "Relancer l'animation";
+      bouton.setAttribute("aria-label", libelle);
+      bouton.setAttribute("title", libelle);
+      bouton.setAttribute("aria-pressed", String(!tourne));
+      if (iconePause) iconePause.classList.toggle("hidden", !tourne);
+      if (iconeLecture) iconeLecture.classList.toggle("hidden", tourne);
+    }
+
+    function joue(pas) {
+      var etapes = deroules[index] || TOUR;
+      if (pas >= etapes.length) {
+        if (!auto) {
+          majBouton(); // écran choisi à la main : il reste là, joué une fois
+          return;
+        }
+        var sortant = index;
+        var suivant = (index + 1) % ecrans.length;
+        ecrans[suivant].setAttribute("data-etape", "0");
+        montre(suivant);
+        aNettoyer = function () {
+          ecrans[sortant].setAttribute("data-etape", "0");
+        };
+        nettoyage = window.setTimeout(function () {
+          if (aNettoyer) aNettoyer();
+          aNettoyer = null;
+        }, SORTIE);
+        attends(ENTREE, function () {
+          joue(0);
+        });
+        return;
+      }
+      ecrans[index].setAttribute("data-etape", etapes[pas][0]);
+      attends(etapes[pas][1], function () {
+        joue(pas + 1);
+      });
+    }
+
+    // L'état lisible : celui que rend le serveur, et celui où tout revient au repos.
+    function repos() {
+      ecrans.forEach(function (ecran) {
+        ecran.setAttribute("data-etape", "4");
+      });
+    }
+
+    function demarre(delai) {
+      window.clearTimeout(minuteur);
+      window.clearTimeout(nettoyage);
+      suite = null;
+      aNettoyer = null;
+      gele = false;
+      racine.removeAttribute("data-fige");
+      auto = !reduit.matches;
+      majBouton();
+      if (!auto) return; // mouvement réduit : le premier écran, abouti, et rien d'autre
+      attends(delai, function () {
+        joue(0);
+      });
+    }
+
+    jalons.forEach(function (jalon, j) {
+      jalon.addEventListener("click", function () {
+        var groupe = groupes[j];
+        var place = groupe.indexOf(index);
+        var cible = groupe[(place + 1) % groupe.length]; // même décor : l'exemple suivant
+        window.clearTimeout(minuteur);
+        window.clearTimeout(nettoyage);
+        suite = null;
+        aNettoyer = null;
+        auto = false; // on prend la main : plus d'enchaînement
+        gele = false;
+        racine.removeAttribute("data-fige");
+        repos();
+        montre(cible);
+        if (!reduit.matches) {
+          ecrans[cible].setAttribute("data-etape", "0");
+          attends(ENTREE, function () {
+            joue(0);
+          });
+        }
+        majBouton();
+      });
+    });
+
+    if (bouton) {
+      bouton.addEventListener("click", function () {
+        if (!gele && (auto || suite !== null)) {
+          gele = true;
+          suspend();
+        } else {
+          gele = false;
+          if (!relance()) {
+            // Plus rien en attente : on repart de l'écran affiché, et l'enchaînement reprend.
+            auto = true;
+            ecrans[index].setAttribute("data-etape", "0");
+            attends(ENTREE, function () {
+              joue(0);
+            });
+          }
+        }
+        majBouton();
+      });
+    }
+
+    if (reduit.addEventListener) {
+      reduit.addEventListener("change", function () {
+        repos();
+        montre(index);
+        demarre(ATTENTE);
+      });
+    }
+
+    // Hors de l'écran, rien ne tourne : ni minuteur, ni animation. Au retour, on reprend là où on
+    // s'était arrêté — sauf si la pause vient du bouton, qui, lui, décide.
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(
+        function (entrees) {
+          var vu = entrees[0].isIntersecting;
+          if (vu === dansLaVue) return;
+          dansLaVue = vu;
+          if (gele) return;
+          if (vu) relance();
+          else suspend();
+        },
+        { threshold: 0.2 },
+      ).observe(racine);
+    }
+
+    demarre(ATTENTE);
+  })();
+</script>

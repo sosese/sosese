@@ -1,0 +1,33 @@
+---
+type Props = {
+  variant?: "neutral" | "accent";
+  dot?: boolean;
+  // Rendu en lien quand une destination est donnée (cas client : le nom mène au site du client).
+  href?: string;
+  class?: string;
+};
+
+const { variant = "neutral", dot = false, href, class: className } = Astro.props;
+
+const variants = {
+  neutral: "border-border bg-bg-subtle text-ink-muted",
+  // text-ink et non text-accent : --accent sur --accent-soft = 4,28:1 en thème clair (< AA).
+  accent: "border-transparent bg-accent-soft text-ink",
+};
+
+const Tag = href ? "a" : "span";
+---
+
+<Tag
+  href={href}
+  rel={href ? "noopener" : undefined}
+  class:list={[
+    "inline-flex h-6 w-fit items-center gap-2 rounded-full border px-2 font-mono text-12 whitespace-nowrap",
+    variants[variant],
+    href && "underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:underline",
+    className,
+  ]}
+>
+  {dot && <span aria-hidden="true" class="size-1.5 rounded-full bg-accent-bright"></span>}
+  <slot />
+</Tag>

@@ -1,0 +1,30 @@
+---
+type Props = {
+  steps: string[];
+  label: string;
+};
+
+const { steps, label } = Astro.props;
+const delayStep = 600;
+---
+
+<ol class="flex flex-col xl:flex-row xl:items-center" aria-label={label}>
+  {
+    steps.map((step, i) => (
+      <>
+        <li class="flex h-12 items-center gap-3 rounded-md border border-border bg-bg px-4 font-mono text-12 whitespace-nowrap text-ink xl:flex-1 xl:justify-center xl:px-3">
+          <span class="text-accent">{String(i + 1).padStart(2, "0")}</span>
+          {step}
+        </li>
+        {i < steps.length - 1 && (
+          <li aria-hidden="true" class="relative ml-6 h-6 w-px shrink-0 bg-border-strong xl:ml-0 xl:h-px xl:w-6">
+            <span
+              class="flow-pulse absolute size-1.5 -translate-1/2 rounded-full bg-accent-bright opacity-0 motion-reduce:hidden max-xl:left-1/2 xl:top-1/2"
+              style={`--flow-delay: ${i * delayStep}ms`}
+            />
+          </li>
+        )}
+      </>
+    ))
+  }
+</ol>

@@ -1,0 +1,25 @@
+---
+type Props = {
+  title: string;
+  name?: string;
+};
+
+const { title, name } = Astro.props;
+---
+
+<details name={name} class="group border-b border-border">
+  <summary
+    class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-18 font-medium text-ink transition-colors duration-(--duration-fast) ease-out hover:text-accent-hover [&::-webkit-details-marker]:hidden"
+  >
+    <span>{title}</span>
+    <span
+      aria-hidden="true"
+      class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border font-mono text-16 text-ink-muted transition-transform duration-(--duration-base) ease-out group-open:rotate-45"
+    >
+      +
+    </span>
+  </summary>
+  <div class="max-w-(--measure) pb-6 text-16 text-ink-muted [&_p+p]:mt-4">
+    <slot />
+  </div>
+</details>

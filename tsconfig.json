@@ -7,7 +7,8 @@
   "exclude": [
     "dist",
     "references",
-    "legacy-v1"
+    "legacy-v1",
+    "legacy-v2"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

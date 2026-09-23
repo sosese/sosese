@@ -1,0 +1,17 @@
+---
+// Conteneur commun à tous les schémas (DESIGN.md, « Schémas »). Un schéma remplace du texte :
+// le libellé et la légende sont courts, et l'information reste lisible sans CSS ni JS.
+type Props = {
+  label?: string;
+  caption?: string;
+  class?: string;
+};
+
+const { label, caption, class: className } = Astro.props;
+---
+
+<figure class:list={["flex flex-col gap-4", className]}>
+  {label && <p class="eyebrow">{label}</p>}
+  <slot />
+  {caption && <figcaption class="font-mono text-12 text-ink-muted">{caption}</figcaption>}
+</figure>

@@ -1,0 +1,109 @@
+---
+import ACompleter from "../ui/ACompleter.astro";
+import DotPattern from "../ui/DotPattern.astro";
+import SectionHeading from "../ui/SectionHeading.astro";
+import TerminalDemo from "../islands/TerminalDemo";
+
+// À VALIDER : remplacer par la stack réellement utilisée (seul endroit où le jargon est autorisé, §2.1).
+const technos = [
+  { domaine: "Modèles", items: ["LLM via API, région UE", "modèles open-weight auto-hébergés", "OCR / extraction de documents"] },
+  { domaine: "Intégration", items: ["API REST, webhooks", "connecteurs ERP / CRM", "IMAP / SMTP, SFTP"] },
+  { domaine: "Données", items: ["RAG sur vos documents", "base vectorielle", "PostgreSQL"] },
+  { domaine: "Orchestration", items: ["files de tâches, retries", "journalisation structurée", "alertes sur erreur"] },
+  { domaine: "Infrastructure", items: ["conteneurs Docker", "hébergement UE", "secrets chiffrés"] },
+  { domaine: "Contrôle", items: ["validation humaine configurable", "traçabilité des traitements", "tests de non-régression"] },
+];
+
+const blocs = [
+  { titre: "Votre SI existant", items: ["ERP / gestion commerciale", "CRM", "messagerie", "fichiers partagés"] },
+  { titre: "Couche d'intégration", items: ["connecteurs, API, webhooks", "file de tâches", "journal des traitements"], accent: true },
+  { titre: "Traitements IA", items: ["lecture de documents", "génération de brouillons", "recherche dans vos documents"], ue: true },
+];
+
+// Porte de validation sur la liaison qui écrit dans le SI. La promesse elle-même est argumentée une
+// seule fois, dans la section Confiance (B8) : ici, on montre seulement où elle se situe.
+const liaisons = ["écriture : votre accord", null];
+---
+
+<section aria-labelledby="capot-titre" class="section-invert relative overflow-hidden border-y border-border py-(--section-y)">
+  <DotPattern />
+  <div class="container-site relative flex flex-col gap-12">
+    <SectionHeading id="capot-titre" eyebrow="Pour qui s'occupe de votre informatique" title="Sous le capot">
+      Ça s'ajoute à ce que vous avez, ça ne le remplace pas. Et tout est documenté pour que vous puissiez reprendre la main, ou la confier à quelqu'un d'autre.
+    </SectionHeading>
+
+    <div class="flex flex-col gap-4">
+      <p class="eyebrow">Comment ça se branche chez vous</p>
+      <ol class="grid items-stretch gap-2 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
+        {
+          blocs.map((bloc, i) => (
+            <>
+              <li class:list={["flex flex-col gap-3 rounded-lg border bg-surface p-6", bloc.accent ? "border-accent" : "border-border-strong"]}>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <p class="font-mono text-14 text-ink">{bloc.titre}</p>
+                  {bloc.ue && <span class="rounded-full border border-dashed border-accent px-2 py-1 font-mono text-12 text-ink">UE</span>}
+                </div>
+                <ul class="flex flex-col gap-1 font-mono text-12 text-ink-muted">
+                  {bloc.items.map((item) => <li>{item}</li>)}
+                </ul>
+              </li>
+              {i < blocs.length - 1 && (
+                <li aria-hidden="true" class="flex items-center justify-center gap-2 py-1 font-mono text-16 text-accent lg:flex-col lg:px-2 lg:py-0">
+                  <span class="lg:hidden">↕</span>
+                  <span class="hidden lg:inline">⇄</span>
+                  {liaisons[i] && (
+                    <span class="rounded-full border border-border-strong px-2 py-1 font-mono text-12 whitespace-nowrap text-ink-muted lg:whitespace-normal lg:text-center">
+                      {liaisons[i]}
+                    </span>
+                  )}
+                </li>
+              )}
+            </>
+          ))
+        }
+      </ol>
+      <p class="font-mono text-12 text-ink-muted">
+        Les traitements tournent dans l'Union européenne. Rien n'est écrit chez vous sans votre accord.
+      </p>
+    </div>
+
+    {/* Écran partagé : le terminal à gauche, un second visuel à droite, à venir. La moitié droite
+        porte le marqueur `ACompleter` et non un vide — un trou silencieux se met en production
+        sans qu'on le voie (§9). Avant lg, les deux passent l'une sous l'autre. */}
+    <div class="grid gap-8 lg:grid-cols-2 lg:gap-6">
+      <div class="flex flex-col gap-4">
+        <p class="eyebrow">Une mission, vue de la ligne de commande</p>
+        <TerminalDemo client:idle />
+      </div>
+      <div class="flex min-h-56 flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border-strong p-6">
+        <ACompleter label="second visuel de « Sous le capot »" />
+      </div>
+    </div>
+
+    <details class="group">
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between gap-6 border-b border-border py-6 text-18 font-medium text-ink transition-colors duration-(--duration-fast) ease-out hover:text-accent [&::-webkit-details-marker]:hidden"
+      >
+        <span>La pile technique en détail</span>
+        <span
+          aria-hidden="true"
+          class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border font-mono text-16 text-ink-muted transition-transform duration-(--duration-base) ease-out group-open:rotate-45"
+        >
+          +
+        </span>
+      </summary>
+      <ul class="mt-6 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        {
+          technos.map((t) => (
+            <li class="flex flex-col gap-3 bg-bg p-6 transition-colors duration-(--duration-fast) ease-out hover:bg-bg-subtle">
+              <p class="eyebrow">{t.domaine}</p>
+              <ul class="flex flex-col gap-1 font-mono text-14 text-ink">
+                {t.items.map((item) => <li>{item}</li>)}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </details>
+  </div>
+</section>

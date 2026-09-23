@@ -1,0 +1,1098 @@
+---
+// S3 · Le protocole, de bout en bout — le mécanisme générique, sans exemple.
+// S1 montre ce qu'il y a dans le serveur, S2 montrait un cas concret. Celle-ci ne montre aucun
+// cas : elle décompose le PROCESS. Aucun nom, aucun montant, aucun contenu de requête — seulement
+// la nature de l'objet qui circule et ce que chaque étage lui fait.
+//
+// Les trois conteneurs sont le propos, et ils sont dessinés comme tels — trois boîtes nommées par
+// leur lieu d'exécution, pas par leur rôle : ce qui tourne CHEZ LE CLIENT, ce qui tourne SUR LE
+// SERVEUR, ce qui tourne CHEZ L'ÉDITEUR DU LOGICIEL. C'est la première question qu'on nous pose
+// (« où vont mes données ? »), elle doit se lire avant tout le reste.
+//
+// Ce que la planche corrige par rapport à S2 :
+//   · le SKILL est chez le client, dans le contexte du LLM — jamais dans le serveur MCP ;
+//   · il intervient TROIS fois : il décompose, il évalue chaque retour, il synthétise. Les trois
+//     lignes du panneau s'allument à trois moments différents, c'est ce qui le montre ;
+//   · le serveur porte le jeton d'authentification : il signe l'aller et vérifie le retour, et le
+//     LLM ne le voit à aucun moment ;
+//   · un outil n'est pas une route. Un outil = une intention métier, servie par plusieurs routes
+//     de l'API — d'où l'éventail vers les trois routes et le retour qui les refusionne ;
+//   · une demande simple s'arrête au premier retour ; une demande complexe rouvre la boucle pour
+//     le sous-objectif suivant, avec un autre outil. La boucle est jouée, pas racontée.
+//
+// L'objet qui circule change de FORME à chaque traversée : rond quand il est en langage naturel,
+// scindé quand il est un plan, carré quand il est structuré, dense quand il est brut, net quand
+// il est normalisé. Il porte son nom court, et le bandeau du bas donne les dix natures dans
+// l'ordre, celle du moment allumée. Il ne stationne jamais sur un panneau : il stationne dans les
+// gouttières, et c'est la TRAVERSÉE d'un panneau qui le transforme — la transformation se voit
+// donc au moment même où elle a lieu.
+//
+// Règles tenues (DESIGN.md) : aucun libellé dans le SVG (piège 20) ; aucune couleur ni rayon en
+// dur ; un seul aplat de couleur, et il arrive en dernier ; aucun texte --accent sur --bg-subtle
+// ni sur --accent-soft ; aucune marque, aucun domaine, aucun chiffre inventé.
+//
+// Géométrie — repère = le haut du plan, tout en cqw. ATTENTION : 1 cqw = 1 % de la BOÎTE DE
+// CONTENU de la scène. Le plan fait 100 de large et 94,4 de haut.
+//   Colonnes : C1 0→36 · voie 36→42 · C2 42→73 · voie 73→79 · C3 79→100.
+//   Rangées C1 : en-tête →6,4 · p1 8→22 · [25,5] · p2 29→62 · [65,5] · p3 69→77,4.
+//   Rangées C2 : q1 8→21 · [24] · q2 27→40 · [43] · q3 46→61 · [64,5] · q4 68→77,4.
+//   Rangées C3 : titre 8→14 · r1 18→30 · r2 34→46 · r3 50→62 · note 66→77,4.
+//   Axes : descente C1 x=18 · descente C2 x=57,5 · canal du protocole x=39 · éventail x=76.
+//   Les dix arrêts de l'objet sont sur ces axes, dans les gouttières, jamais sur un panneau.
+
+// Les trois rôles du skill. Chacun s'allume à son tour — c'est la seule façon de montrer qu'un
+// skill n'est pas un prompt système : il repasse sur chaque retour.
+const roles = [
+  { n: "1", texte: "décompose la demande en sous-objectifs" },
+  { n: "2", texte: "évalue chaque retour : suffisant ou à refaire" },
+  { n: "3", texte: "enchaîne, puis synthétise l'ensemble" },
+];
+
+// Les routes de l'API. Génériques : ce qui compte est qu'il y en ait plusieurs pour un seul
+// outil, pas ce qu'elles font. Aucun verbe HTTP, aucun chemin — on reste au niveau du process.
+const routes = [
+  { n: "a", texte: "lecture" },
+  { n: "b", texte: "détail" },
+  { n: "c", texte: "écriture" },
+];
+
+// Les dix natures successives de l'objet. Le bandeau les donne dans l'ordre ; l'objet lui-même
+// porte le nom court. `f` = nombre de fragments, `forme` = leur dessin.
+const natures = [
+  { court: "intention", long: "intention", f: 1, forme: "rond" },
+  { court: "plan", long: "plan", f: 3, forme: "rond" },
+  { court: "appel", long: "appel d'outil", f: 1, forme: "bloc" },
+  { court: "message", long: "message MCP", f: 2, forme: "bloc" },
+  { court: "signé", long: "requête signée", f: 2, forme: "scelle" },
+  { court: "n appels", long: "appels HTTP", f: 3, forme: "eclat" },
+  { court: "brut", long: "données brutes", f: 8, forme: "dense" },
+  { court: "normalisé", long: "résultat normalisé", f: 3, forme: "net" },
+  { court: "synthèse", long: "synthèse", f: 2, forme: "net" },
+  { court: "réponse", long: "réponse", f: 1, forme: "rond" },
+];
+
+const cadenas = "M -4.4 -0.4 h 8.8 v 6.6 h -8.8 z M -2.7 -0.4 v -2.5 a 2.7 2.7 0 0 1 5.4 0 v 2.5";
+const coche = "m3 8.4 3.4 3.4L13 5";
+---
+
+<p class="sr-only">
+  Schéma générique du protocole, en treize temps, sans exemple. Trois conteneurs : ce qui tourne
+  chez le client, ce qui tourne sur le serveur MCP, ce qui tourne chez l'éditeur du logiciel. Chez
+  le client : la demande en langage naturel, puis le modèle de langage avec son skill chargé dans
+  son contexte, puis le client MCP. Le skill intervient trois fois : il décompose la demande en
+  sous-objectifs, il évalue chaque retour pour décider s'il est suffisant ou s'il faut refaire, et
+  il enchaîne puis synthétise. Sur le serveur : la résolution de l'outil dans le registre des
+  outils exposés, l'authentification qui signe l'appel avec un jeton que le modèle ne voit jamais,
+  l'adaptateur qui traduit un outil en plusieurs routes de l'API, et la normalisation qui remet le
+  résultat au format du protocole. Chez l'éditeur : l'API du logiciel et ses routes, chacune
+  vérifiant le jeton. L'objet qui circule change de nature à chaque traversée : intention, plan,
+  appel d'outil, message MCP, requête signée, appels HTTP, données brutes, résultat normalisé,
+  synthèse, réponse. Une demande simple s'arrête au premier retour ; une demande complexe rouvre
+  la boucle pour le sous-objectif suivant, avec un autre outil, avant la synthèse finale.
+</p>
+
+<div class="th-scene flux" data-etape="13" aria-hidden="true">
+  <p class="th-titre">
+    <span class="t">Une demande entre en langage naturel</span>
+    <span class="t">Le skill la décompose en sous-objectifs</span>
+    <span class="t">Le moteur choisit l'outil du premier objectif</span>
+    <span class="t">Le client MCP sérialise l'appel</span>
+    <span class="t">Le serveur résout l'outil dans son registre</span>
+    <span class="t">Il signe l'appel avec son jeton</span>
+    <span class="t">Un outil, plusieurs routes de l'API</span>
+    <span class="t">Les routes répondent, en vrac</span>
+    <span class="t">Le serveur normalise le retour</span>
+    <span class="t">Le skill évalue ce retour</span>
+    <span class="t">Objectif suivant : un autre outil</span>
+    <span class="t">Le skill synthétise l'ensemble</span>
+    <span class="t t--vif">La réponse repart en langage naturel</span>
+  </p>
+
+  <div class="plan">
+    <!-- ———————————————— C1 · chez le client ———————————————— -->
+    <section class="boite boite--client">
+      <span class="tete">
+        <b>Chez le client</b>
+        <i>son poste, son réseau</i>
+      </span>
+
+      <div class="bloc bloc--demande">
+        <span class="rubrique">Demande<b class="jauge jauge--simple">1 outil suffit</b></span>
+        <span class="face face--avant">une intention, en langage naturel</span>
+        <span class="face face--apres">
+          <svg class="coche" viewBox="0 0 16 16" fill="none">
+            <path d={coche} stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>réponse consolidée, prête à valider</span>
+          <span class="valider">Valider</span>
+        </span>
+      </div>
+
+      <div class="bloc bloc--llm">
+        <span class="rubrique">Modèle de langage<b class="jauge">hôte</b></span>
+        <div class="skill">
+          <span class="skill-tete">
+            Skill
+            <b class="compteur"><em class="c1">objectif 1 / n</em><em class="c2">objectif 2 / n</em></b>
+          </span>
+          <i class="skill-sous">chargé dans le contexte du LLM, jamais sur le serveur</i>
+          {
+            roles.map(({ n, texte }) => (
+              <span class:list={["role", `role--${n}`]}>
+                <em>{n}</em>
+                {texte}
+              </span>
+            ))
+          }
+          <span class="verdict">
+            <i class="verdict--ok">suffisant → objectif suivant</i>
+            <i class="verdict--ko">insuffisant → on refait autrement</i>
+          </span>
+        </div>
+      </div>
+
+      <div class="bloc bloc--client">
+        <span class="rubrique">Client MCP<b class="jauge">sérialise</b></span>
+      </div>
+    </section>
+
+    <!-- ———————————————— C2 · sur le serveur ———————————————— -->
+    <section class="boite boite--serveur">
+      <span class="tete">
+        <b>Sur le serveur MCP</b>
+        <i>hébergé et supervisé</i>
+      </span>
+
+      <div class="bloc bloc--resout">
+        <span class="rubrique">Résolution<b class="jauge">registre</b></span>
+        <span class="ligne">un outil = une intention métier exposée</span>
+      </div>
+
+      <div class="bloc bloc--auth">
+        <span class="rubrique">
+          Authentification
+          <b class="jauge jauge--cle">
+            <svg viewBox="-9 -9 18 18" fill="none">
+              <path d={cadenas} stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+            </svg>
+            jeton
+          </b>
+        </span>
+        <span class="ligne">signe l'aller, vérifie le retour</span>
+        <span class="ligne ligne--sec">le jeton ne quitte jamais le serveur</span>
+      </div>
+
+      <div class="bloc bloc--adapte">
+        <span class="rubrique">Adaptateur<b class="jauge">n routes</b></span>
+        <span class="ligne">traduit l'outil en appels natifs de l'API</span>
+        <span class="ligne ligne--sec">enchaîne, réessaie, agrège</span>
+      </div>
+
+      <div class="bloc bloc--norme">
+        <span class="rubrique">Normalisation<b class="jauge">format standard</b></span>
+        <span class="ligne">ne remonte que ce que l'outil promet</span>
+      </div>
+    </section>
+
+    <!-- ———————————————— C3 · chez l'éditeur ———————————————— -->
+    <section class="boite boite--editeur">
+      <span class="tete">
+        <b>Chez l'éditeur</b>
+        <i>l'API du logiciel</i>
+      </span>
+
+      <span class="api">API du logiciel</span>
+
+      {
+        routes.map(({ n, texte }) => (
+          <div class:list={["bloc", "bloc--route", `route--${n}`]}>
+            <span class="rubrique">route<b class="jauge">{texte}</b></span>
+          </div>
+        ))
+      }
+
+      <span class="note">chaque appel porte le jeton · rien n'entre sans lui</span>
+    </section>
+
+    <!-- ———————————————— le circuit ———————————————— -->
+    <i class="fil f-p1"></i>
+    <i class="fil f-p2"></i>
+    <i class="fil f-sortie"></i>
+    <i class="fil f-canal"></i>
+    <i class="fil f-entree"></i>
+    <i class="fil f-q1"></i>
+    <i class="fil f-q2"></i>
+    <i class="fil f-retour"></i>
+    <i class="fil f-rentre"></i>
+
+    <i class="fil f-ev0"></i>
+    <i class="fil f-eh-a"></i>
+    <i class="fil f-eh-b"></i>
+    <i class="fil f-eh-c"></i>
+    <i class="fil f-rh-a"></i>
+    <i class="fil f-rh-b"></i>
+    <i class="fil f-rh-c"></i>
+    <i class="fil f-rq"></i>
+    <i class="fil f-ev-a"></i>
+    <i class="fil f-ev-b"></i>
+    <i class="fil f-ev-c"></i>
+    <i class="fil f-er-a"></i>
+    <i class="fil f-er-b"></i>
+    <i class="fil f-er-c"></i>
+
+    <!-- L'objet. Huit fragments dans le DOM ; sa nature décide combien on en montre, leur forme
+         et leur écart. Le nom court est posé sous lui, dans la gouttière. -->
+    <i class="objet">
+      <span class="frags"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="sceau">
+        <svg viewBox="-9 -9 18 18" fill="none">
+          <path d={cadenas} stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </svg>
+      </span>
+      <span class="nom">{natures.map(({ court }) => <b>{court}</b>)}</span>
+    </i>
+
+    <!-- L'éclat : l'objet se scinde en autant de morceaux qu'il y a de routes. -->
+    <i class="eclat eclat--a" style="--ry:24cqw"></i>
+    <i class="eclat eclat--b" style="--ry:40cqw"></i>
+    <i class="eclat eclat--c" style="--ry:56cqw"></i>
+
+    <!-- ———————————————— le bandeau des natures ———————————————— -->
+    <div class="bandeau">
+      {
+        natures.map(({ long, f, forme }, i) => (
+          <span class:list={["nature", `n${i}`, `forme--${forme}`]}>
+            <i class="vignette">
+              {Array.from({ length: Math.min(f, 5) }).map(() => <s />)}
+            </i>
+            <em>{long}</em>
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+.th-scene {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 6%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+  color: var(--ink);
+  line-height: 1.35;
+  overflow: hidden;
+}
+
+.th-titre {
+  position: relative;
+  margin: 0 0 3cqw;
+  font-size: 3cqw;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  transition: color var(--duration-slow) var(--ease-out);
+}
+
+
+.flux *, .flux *::before, .flux *::after { animation: none !important; transition: none !important; }
+
+  /* Carrée, comme S1 : trois conteneurs côte à côte et une pile de quatre étages dans chacun.
+     Padding en % — un élément ne peut pas interroger sa propre taille de conteneur. */
+  .flux {
+    aspect-ratio: 1 / 1;
+    padding: 4%;
+  }
+
+  .th-titre {
+    height: 3.4cqw;
+    margin: 0 0 2.2cqw;
+    font-size: 2.2cqw;
+  }
+  .t {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .t--vif {
+    color: var(--accent);
+  }
+  .flux[data-etape="1"] .t:nth-child(1),
+  .flux[data-etape="2"] .t:nth-child(2),
+  .flux[data-etape="3"] .t:nth-child(3),
+  .flux[data-etape="4"] .t:nth-child(4),
+  .flux[data-etape="5"] .t:nth-child(5),
+  .flux[data-etape="6"] .t:nth-child(6),
+  .flux[data-etape="7"] .t:nth-child(7),
+  .flux[data-etape="8"] .t:nth-child(8),
+  .flux[data-etape="9"] .t:nth-child(9),
+  .flux[data-etape="10"] .t:nth-child(10),
+  .flux[data-etape="11"] .t:nth-child(11),
+  .flux[data-etape="12"] .t:nth-child(12),
+  .flux[data-etape="13"] .t:nth-child(13) {
+    opacity: 1;
+  }
+
+  /* Colonnes et rangées posées à la main : ce sont elles qui fixent les coordonnées du circuit. */
+  .plan {
+    position: relative;
+    display: grid;
+    grid-template-columns: 36cqw 6cqw 31cqw 6cqw 21cqw;
+    grid-template-rows: 79cqw 3cqw 12.4cqw;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* — Les trois conteneurs — */
+  /* Ce sont eux qu'on doit voir en premier : un filet plus épais que tout le reste, un fond
+     distinct, et un en-tête qui nomme le LIEU d'exécution avant le rôle. */
+  .boite {
+    position: relative;
+    display: grid;
+    grid-row: 1;
+    padding: 0 1.6cqw 1.6cqw;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-subtle);
+    overflow: hidden;
+  }
+  .boite--client {
+    grid-column: 1;
+    grid-template-rows: 6.4cqw 1.6cqw 14cqw 7cqw 33cqw 7cqw 8.4cqw;
+  }
+  .boite--serveur {
+    grid-column: 3;
+    grid-template-rows: 6.4cqw 1.6cqw 13cqw 6cqw 13cqw 6cqw 15cqw 7cqw 9.4cqw;
+  }
+  .boite--editeur {
+    grid-column: 5;
+    grid-template-rows: 6.4cqw 1.6cqw 6cqw 4cqw 12cqw 4cqw 12cqw 4cqw 12cqw 4cqw 11.4cqw;
+  }
+  .tete {
+    display: grid;
+    gap: 0.2cqw;
+    align-self: center;
+  }
+  .tete b {
+    font-size: 1.6cqw;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tete i {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 1.2cqw;
+    color: var(--ink-muted);
+  }
+
+  /* — Les étages — */
+  .bloc {
+    min-width: 0;
+    display: grid;
+    align-content: center;
+    gap: 0.9cqw;
+    padding: 1cqw 1.4cqw;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    transition:
+      border-color var(--duration-slow) var(--ease-out),
+      box-shadow var(--duration-slow) var(--ease-out);
+  }
+  .bloc--demande { grid-row: 3; }
+  .bloc--llm { grid-row: 5; }
+  .bloc--client { grid-row: 7; }
+  .bloc--resout { grid-row: 3; }
+  .bloc--auth { grid-row: 5; }
+  .bloc--adapte { grid-row: 7; }
+  .bloc--norme { grid-row: 9; }
+  .route--a { grid-row: 5; }
+  .route--b { grid-row: 7; }
+  .route--c { grid-row: 9; }
+
+  .rubrique {
+    display: flex;
+    align-items: center;
+    gap: 1cqw;
+    font-size: 1.4cqw;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    transition: color var(--duration-slow) var(--ease-out);
+  }
+  .jauge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6cqw;
+    margin-left: auto;
+    padding: 0.3cqw 1cqw;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-family: var(--font-mono);
+    font-size: 1.05cqw;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-muted);
+  }
+  .jauge svg {
+    width: 1.4cqw;
+    height: 1.4cqw;
+  }
+  .ligne {
+    font-size: 1.35cqw;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .ligne--sec {
+    font-size: 1.2cqw;
+    color: var(--ink-muted);
+  }
+
+  /* — L'étage du haut : la demande, puis la réponse à sa place — */
+  .bloc--demande {
+    grid-template-rows: auto 1fr;
+    align-content: start;
+  }
+  .face--avant,
+  .face--apres {
+    grid-area: 2 / 1;
+    align-self: center;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .face--avant {
+    font-size: 1.5cqw;
+    font-weight: 600;
+  }
+  .face--apres {
+    display: flex;
+    align-items: center;
+    gap: 1.2cqw;
+    font-size: 1.4cqw;
+    font-weight: 600;
+    opacity: 0;
+  }
+  .coche {
+    flex: none;
+    width: 2.2cqw;
+    height: 2.2cqw;
+    color: var(--accent);
+  }
+  .face--apres > span:not(.valider) {
+    flex: 1;
+    min-width: 0;
+  }
+  /* Le seul aplat de couleur de toute la planche, et il arrive au dernier temps. */
+  .valider {
+    flex: none;
+    padding: 0.7cqw 1.6cqw;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    font-size: 1.25cqw;
+    font-weight: 600;
+    color: var(--on-accent);
+    white-space: nowrap;
+  }
+  .flux[data-etape="13"] .face--avant {
+    opacity: 0;
+  }
+  .flux[data-etape="13"] .face--apres {
+    opacity: 1;
+  }
+  /* La demande simple ne fait qu'un tour : on le dit là où on l'attend, sur la demande. */
+  .jauge--simple {
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .flux:is([data-etape="11"], [data-etape="12"], [data-etape="13"]) .jauge--simple {
+    opacity: 0;
+  }
+
+  /* — Le skill : chez le client, dans le contexte du LLM. Jamais dans le serveur. — */
+  .skill {
+    display: grid;
+    gap: 0.7cqw;
+    margin-top: 0.4cqw;
+    padding: 1cqw 1.2cqw;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+    transition: border-color var(--duration-slow) var(--ease-out);
+  }
+  .skill-tete {
+    display: flex;
+    align-items: center;
+    gap: 1cqw;
+    font-size: 1.35cqw;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .skill-sous {
+    margin-top: -0.3cqw;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 1.1cqw;
+    color: var(--ink-muted);
+  }
+  /* Le compteur d'objectifs : deux états empilés dans une grille d'une seule case (piège 28). */
+  .compteur {
+    display: inline-grid;
+    margin-left: auto;
+    padding: 0.3cqw 1cqw;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-family: var(--font-mono);
+    font-size: 1.1cqw;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-muted);
+  }
+  .compteur em {
+    grid-area: 1 / 1;
+    font-style: normal;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+  .c2 {
+    opacity: 0;
+  }
+  .flux:is([data-etape="11"], [data-etape="12"], [data-etape="13"]) .c1 {
+    opacity: 0;
+  }
+  .flux:is([data-etape="11"], [data-etape="12"], [data-etape="13"]) .c2 {
+    opacity: 1;
+  }
+
+  .role {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9cqw;
+    font-size: 1.3cqw;
+    line-height: 1.3;
+    color: var(--ink-muted);
+    transition: color var(--duration-slow) var(--ease-out);
+  }
+  .role em {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2cqw;
+    height: 2cqw;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    font-style: normal;
+    font-size: 1.1cqw;
+    transition:
+      border-color var(--duration-slow) var(--ease-out),
+      color var(--duration-slow) var(--ease-out);
+  }
+  /* Chaque rôle s'allume à son moment, et le reste : c'est ce qui montre que le skill repasse. */
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="14"]) .role--1,
+  .flux:is([data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .role--2,
+  .flux:is([data-etape="12"], [data-etape="13"]) .role--3 {
+    color: var(--ink);
+  }
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="14"]) .role--1 em,
+  .flux:is([data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .role--2 em,
+  .flux:is([data-etape="12"], [data-etape="13"]) .role--3 em {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Le verdict n'apparaît qu'au moment de l'évaluation : les deux issues, l'une retenue. */
+  .verdict {
+    display: grid;
+    gap: 0.4cqw;
+    margin-top: 0.2cqw;
+    padding-left: 2.9cqw;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .flux:is([data-etape="10"], [data-etape="11"]) .verdict {
+    opacity: 1;
+  }
+  .verdict i {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 1.1cqw;
+    color: var(--ink-muted);
+  }
+  .flux:is([data-etape="10"], [data-etape="11"]) .verdict--ok {
+    color: var(--accent);
+  }
+
+  /* — Chez l'éditeur — */
+  .api {
+    grid-row: 3;
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 1.3cqw;
+    color: var(--ink-muted);
+  }
+  .bloc--route {
+    align-content: center;
+  }
+  .note {
+    grid-row: 11;
+    align-self: start;
+    font-size: 1.15cqw;
+    line-height: 1.35;
+    color: var(--ink-muted);
+  }
+
+  /* — Le circuit — */
+  /* Des filets orthogonaux, jamais de diagonale : dans une zone étirée, une diagonale se lit
+     comme un raccourci et non comme un chemin (piège 21). Chaque filet a sa progression vive. */
+  .fil {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w, 1.5px);
+    height: var(--h, 1.5px);
+    background: var(--border);
+  }
+  .fil::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scale(0);
+    transform-origin: var(--sens, top left);
+    transition: transform 420ms var(--ease-out);
+  }
+
+  /* descente chez le client */
+  .f-p1 { --x: 18cqw; --y: 22cqw; --h: 7cqw; }
+  .f-p2 { --x: 18cqw; --y: 62cqw; --h: 7cqw; }
+  /* sortie du client MCP vers le canal, puis remontée du canal, puis entrée dans le serveur */
+  .f-sortie { --x: 34.3cqw; --y: 73.2cqw; --w: 4.7cqw; --h: 1.5px; }
+  .f-canal { --x: 39cqw; --y: 14.7cqw; --h: 58.5cqw; --sens: bottom left; }
+  .f-entree { --x: 39cqw; --y: 14.7cqw; --w: 4.8cqw; }
+  /* descente dans le serveur */
+  .f-q1 { --x: 57.7cqw; --y: 21.2cqw; --h: 6cqw; }
+  .f-q2 { --x: 57.7cqw; --y: 40.2cqw; --h: 6cqw; }
+  /* retour : la normalisation vers le canal, puis le canal vers le client MCP */
+  .f-retour { --x: 39cqw; --y: 72.7cqw; --w: 4.8cqw; --sens: top right; }
+  .f-rentre { --x: 34.3cqw; --y: 72.7cqw; --w: 4.7cqw; --sens: top right; }
+
+  /* l'éventail : un outil, trois routes. Aller en haut du couloir, retour en bas. */
+  .f-ev-a, .f-ev-b, .f-ev-c,
+  .f-er-a, .f-er-b, .f-er-c {
+    --w: 1.5px;
+  }
+  .f-er-a { --y: 24.8cqw; }
+  .f-er-b { --y: 40.8cqw; }
+  .f-er-c { --y: 56.8cqw; }
+  .f-ev0 { --x: 71.6cqw; --y: 53.5cqw; --w: 2.9cqw; }
+  .f-eh-a { --x: 74.5cqw; --y: 24cqw; --w: 6.3cqw; }
+  .f-eh-b { --x: 74.5cqw; --y: 40cqw; --w: 6.3cqw; }
+  .f-eh-c { --x: 74.5cqw; --y: 56cqw; --w: 6.3cqw; }
+  .f-rh-a { --x: 77cqw; --y: 24.8cqw; --w: 3.8cqw; --sens: top right; }
+  .f-rh-b { --x: 77cqw; --y: 40.8cqw; --w: 3.8cqw; --sens: top right; }
+  .f-rh-c { --x: 77cqw; --y: 56.8cqw; --w: 3.8cqw; --sens: top right; }
+  .f-rq { --x: 71.6cqw; --y: 72.7cqw; --w: 5.4cqw; --sens: top right; }
+  .f-ev-a { --x: 74.5cqw; --y: 24cqw; --h: 29.5cqw; --sens: bottom left; }
+  .f-ev-b { --x: 74.5cqw; --y: 40cqw; --h: 13.5cqw; --sens: bottom left; }
+  .f-ev-c { --x: 74.5cqw; --y: 53.5cqw; --h: 2.5cqw; }
+  .f-er-a { --x: 77cqw; --y: 24cqw; --h: 48.7cqw; }
+  .f-er-b { --x: 77cqw; --y: 40cqw; --h: 32.7cqw; }
+  .f-er-c { --x: 77cqw; --y: 56cqw; --h: 16.7cqw; }
+
+  /* Éclairage cumulatif : ce qui est parcouru le reste. À l'avant-dernier temps le circuit est
+     complet, ce qui en fait l'état par défaut sous mouvement réduit. */
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="14"]) .f-p1::after,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="14"]) .f-p2::after,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="14"]) :is(.f-sortie, .f-canal)::after,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="14"]) :is(.f-entree, .f-q1)::after,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="14"]) .f-q2::after,
+  .flux:is([data-etape="8"], [data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) :is(.f-rh-a, .f-rh-b, .f-rh-c, .f-er-a, .f-er-b, .f-er-c, .f-rq)::after,
+  .flux:is([data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .f-retour::after,
+  .flux:is([data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .f-rentre::after {
+    transform: scale(1);
+  }
+  .flux:is([data-etape="7"], [data-etape="8"], [data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) :is(.f-ev0, .f-ev-a, .f-ev-b, .f-ev-c, .f-eh-a, .f-eh-b, .f-eh-c)::after {
+    transform: scale(1);
+  }
+
+  /* — L'objet — */
+  /* Il ne stationne jamais sur un panneau : ses arrêts sont dans les gouttières et dans le canal.
+     C'est la traversée d'un panneau qui le transforme, donc la transformation se voit au moment
+     où elle a lieu, et non après coup. */
+  .objet {
+    position: absolute;
+    left: var(--ox, 18cqw);
+    top: var(--oy, 25.5cqw);
+    z-index: 3;
+    display: grid;
+    justify-items: center;
+    gap: 0.5cqw;
+    width: 8cqw;
+    translate: -50% -50%;
+    opacity: 0;
+    transition:
+      left 620ms var(--ease-out),
+      top 620ms var(--ease-out),
+      opacity var(--duration-base) var(--ease-out);
+  }
+  .flux:not([data-etape="13"], [data-etape="7"], [data-etape="14"]) .objet {
+    opacity: 1;
+  }
+  .frags {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: var(--fg, 0.4cqw);
+    width: 100%;
+    height: var(--frh, 2.6cqw);
+    overflow: hidden;
+    padding: 0.7cqw 0.8cqw;
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: 0 0 0 0.45cqw var(--accent-soft);
+    transition:
+      gap var(--duration-base) var(--ease-out),
+      height var(--duration-base) var(--ease-out),
+      border-radius var(--duration-base) var(--ease-out);
+  }
+  .frags i {
+    width: var(--fw, 100%);
+    height: var(--fh, 1cqw);
+    border-radius: var(--fr, var(--radius-full));
+    background: var(--accent);
+    opacity: 0;
+    transition:
+      height var(--duration-base) var(--ease-out),
+      opacity var(--duration-base) var(--ease-out);
+  }
+  .frags i:nth-child(2n) {
+    width: var(--fw2, 72%);
+  }
+  .sceau {
+    position: absolute;
+    right: -1.4cqw;
+    top: -1.4cqw;
+    display: grid;
+    place-items: center;
+    width: 3cqw;
+    height: 3cqw;
+    border-radius: var(--radius-full);
+    background: var(--surface);
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+  .sceau svg {
+    width: 1.8cqw;
+    height: 1.8cqw;
+  }
+  /* Le nom est posé sous l'objet, dans la gouttière : c'est la seule place qui ne recouvre rien. */
+  .nom {
+    display: inline-grid;
+    font-family: var(--font-mono);
+    font-size: 1.15cqw;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+  .nom b {
+    grid-area: 1 / 1;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+
+  /* Les dix arrêts, et la forme prise à chacun. Ce bloc est la planche. */
+  .flux[data-etape="1"] { --ox: 18cqw; --oy: 25.5cqw; --fh: 1.2cqw; --fr: var(--radius-full);  --frh: 2.6cqw; }
+  .flux[data-etape="2"] { --ox: 18cqw; --oy: 25.5cqw; --fh: 0.9cqw; --fr: var(--radius-full); --fg: 0.5cqw;  --frh: 5.1cqw; }
+  .flux[data-etape="3"] { --ox: 18cqw; --oy: 65.5cqw; --fh: 1.5cqw; --fr: 2px;  --frh: 2.9cqw; }
+  .flux[data-etape="4"] { --ox: 39cqw; --oy: 45cqw; --fh: 1.1cqw; --fr: 2px;  --frh: 4.0cqw; }
+  .flux[data-etape="5"] { --ox: 57.5cqw; --oy: 24cqw; --fh: 1.1cqw; --fr: 2px;  --frh: 4.0cqw; }
+  .flux[data-etape="6"] { --ox: 57.5cqw; --oy: 43cqw; --fh: 1.1cqw; --fr: 2px;  --frh: 4.0cqw; }
+  .flux[data-etape="7"] { --ox: 57.5cqw; --oy: 43cqw;  --frh: 4.0cqw; }
+  .flux[data-etape="8"] { --ox: 76cqw; --oy: 66cqw; --fh: 0.34cqw; --fr: 2px; --fg: 0.3cqw;  --frh: 6.2cqw; }
+  .flux[data-etape="9"] { --ox: 39cqw; --oy: 72.7cqw; --fh: 0.9cqw; --fr: 2px; --fg: 0.45cqw;  --frh: 5.0cqw; }
+  .flux[data-etape="10"] { --ox: 18cqw; --oy: 65.5cqw; --fh: 0.9cqw; --fr: 2px; --fg: 0.45cqw;  --frh: 5.0cqw; }
+  .flux[data-etape="11"] { --ox: 18cqw; --oy: 65.5cqw; --fh: 1.5cqw; --fr: 2px;  --frh: 2.9cqw; }
+  .flux[data-etape="12"] { --ox: 18cqw; --oy: 25.5cqw; --fh: 0.9cqw; --fr: 2px; --fg: 0.45cqw;  --frh: 3.65cqw; }
+  .flux[data-etape="13"] { --ox: 18cqw; --oy: 25.5cqw; --fh: 1.2cqw; --fr: var(--radius-full);  --frh: 2.6cqw; }
+
+  .flux[data-etape="1"] .frags i:nth-child(-n + 1),
+  .flux[data-etape="2"] .frags i:nth-child(-n + 3),
+  .flux[data-etape="3"] .frags i:nth-child(-n + 1),
+  .flux[data-etape="4"] .frags i:nth-child(-n + 2),
+  .flux[data-etape="5"] .frags i:nth-child(-n + 2),
+  .flux[data-etape="6"] .frags i:nth-child(-n + 2),
+  .flux[data-etape="8"] .frags i:nth-child(-n + 8),
+  .flux[data-etape="9"] .frags i:nth-child(-n + 3),
+  .flux[data-etape="10"] .frags i:nth-child(-n + 3),
+  .flux[data-etape="11"] .frags i:nth-child(-n + 1),
+  .flux[data-etape="12"] .frags i:nth-child(-n + 2),
+  .flux[data-etape="13"] .frags i:nth-child(-n + 1) {
+    opacity: 1;
+  }
+  .flux:is([data-etape="6"], [data-etape="7"]) .sceau {
+    opacity: 1;
+  }
+
+  .flux[data-etape="1"] .nom b:nth-child(1),
+  .flux[data-etape="2"] .nom b:nth-child(2),
+  .flux[data-etape="3"] .nom b:nth-child(3),
+  .flux[data-etape="4"] .nom b:nth-child(4),
+  .flux[data-etape="5"] .nom b:nth-child(4),
+  .flux[data-etape="6"] .nom b:nth-child(5),
+  .flux[data-etape="8"] .nom b:nth-child(7),
+  .flux[data-etape="9"] .nom b:nth-child(8),
+  .flux[data-etape="10"] .nom b:nth-child(8),
+  .flux[data-etape="11"] .nom b:nth-child(3),
+  .flux[data-etape="12"] .nom b:nth-child(9),
+  .flux[data-etape="13"] .nom b:nth-child(10) {
+    opacity: 1;
+  }
+
+  /* — L'éclat : autant de morceaux que de routes — */
+  .eclat {
+    position: absolute;
+    left: 74.5cqw;
+    top: var(--ry);
+    z-index: 3;
+    width: 2.4cqw;
+    height: 2.4cqw;
+    translate: -50% -50%;
+    border: 1.5px solid var(--accent);
+    border-radius: 2px;
+    background: var(--surface);
+    opacity: 0;
+  }
+
+  /* — Les étages s'allument au passage, et le restent — */
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="14"]) .bloc--llm,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="14"]) .bloc--client,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="14"]) .bloc--resout,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="14"]) .bloc--auth,
+  .flux:is([data-etape="7"], [data-etape="8"], [data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .bloc--adapte,
+  .flux:is([data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .bloc--norme {
+    border-color: var(--accent);
+  }
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="14"]) .bloc--llm .rubrique,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="14"]) .bloc--client .rubrique,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="14"]) .bloc--resout .rubrique,
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="2"], [data-etape="3"], [data-etape="4"], [data-etape="5"], [data-etape="14"]) .bloc--auth .rubrique,
+  .flux:is([data-etape="7"], [data-etape="8"], [data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .bloc--adapte .rubrique,
+  .flux:is([data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .bloc--norme .rubrique {
+    color: var(--ink);
+  }
+  .flux:not([data-etape="13"], [data-etape="1"], [data-etape="14"]) .skill {
+    border-color: var(--accent);
+  }
+  .flux:is([data-etape="7"], [data-etape="8"], [data-etape="9"], [data-etape="10"], [data-etape="11"], [data-etape="12"], [data-etape="13"]) .bloc--route {
+    border-color: var(--accent);
+  }
+
+  /* — Le bandeau des natures : la suite des états, celui du moment allumé — */
+  .bandeau {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    align-items: end;
+    gap: 0.6cqw;
+    padding-top: 1.4cqw;
+    border-top: 1px solid var(--border);
+  }
+  .nature {
+    display: grid;
+    justify-items: center;
+    gap: 0.8cqw;
+    opacity: 0.45;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .vignette {
+    display: grid;
+    justify-items: center;
+    gap: 0.3cqw;
+    width: 4.6cqw;
+    padding: 0.5cqw 0.6cqw;
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    transition: border-color var(--duration-slow) var(--ease-out);
+  }
+  .vignette s {
+    width: 100%;
+    height: 0.5cqw;
+    border-radius: var(--radius-full);
+    background: var(--ink-muted);
+    transition: background var(--duration-slow) var(--ease-out);
+  }
+  .forme--rond .vignette {
+    border-radius: var(--radius-full);
+  }
+  .forme--dense .vignette s {
+    height: 0.28cqw;
+  }
+  .forme--eclat .vignette {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35cqw;
+  }
+  .forme--eclat .vignette s {
+    height: 1.1cqw;
+  }
+  .nature em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 1.05cqw;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--ink-muted);
+    transition: color var(--duration-slow) var(--ease-out);
+  }
+  .flux[data-etape="1"] .n0,
+  .flux[data-etape="2"] .n1,
+  .flux[data-etape="3"] .n2,
+  .flux[data-etape="11"] .n2,
+  .flux:is([data-etape="4"], [data-etape="5"]) .n3,
+  .flux[data-etape="6"] .n4,
+  .flux[data-etape="7"] .n5,
+  .flux[data-etape="8"] .n6,
+  .flux:is([data-etape="9"], [data-etape="10"]) .n7,
+  .flux[data-etape="12"] .n8,
+  .flux[data-etape="13"] .n9 {
+    opacity: 1;
+  }
+  .flux[data-etape="1"] .n0 .vignette,
+  .flux[data-etape="2"] .n1 .vignette,
+  .flux[data-etape="3"] .n2 .vignette,
+  .flux[data-etape="11"] .n2 .vignette,
+  .flux:is([data-etape="4"], [data-etape="5"]) .n3 .vignette,
+  .flux[data-etape="6"] .n4 .vignette,
+  .flux[data-etape="7"] .n5 .vignette,
+  .flux[data-etape="8"] .n6 .vignette,
+  .flux:is([data-etape="9"], [data-etape="10"]) .n7 .vignette,
+  .flux[data-etape="12"] .n8 .vignette,
+  .flux[data-etape="13"] .n9 .vignette {
+    border-color: var(--accent);
+  }
+  .flux[data-etape="1"] .n0 s,
+  .flux[data-etape="2"] .n1 s,
+  .flux[data-etape="3"] .n2 s,
+  .flux[data-etape="11"] .n2 s,
+  .flux:is([data-etape="4"], [data-etape="5"]) .n3 s,
+  .flux[data-etape="6"] .n4 s,
+  .flux[data-etape="7"] .n5 s,
+  .flux[data-etape="8"] .n6 s,
+  .flux:is([data-etape="9"], [data-etape="10"]) .n7 s,
+  .flux[data-etape="12"] .n8 s,
+  .flux[data-etape="13"] .n9 s {
+    background: var(--accent);
+  }
+  .flux[data-etape="1"] .n0 em,
+  .flux[data-etape="2"] .n1 em,
+  .flux[data-etape="3"] .n2 em,
+  .flux[data-etape="11"] .n2 em,
+  .flux:is([data-etape="4"], [data-etape="5"]) .n3 em,
+  .flux[data-etape="6"] .n4 em,
+  .flux[data-etape="7"] .n5 em,
+  .flux[data-etape="8"] .n6 em,
+  .flux:is([data-etape="9"], [data-etape="10"]) .n7 em,
+  .flux[data-etape="12"] .n8 em,
+  .flux[data-etape="13"] .n9 em {
+    color: var(--ink);
+  }
+
+  /* — Déroulé — */
+  @media (prefers-reduced-motion: no-preference) {
+    /* La sortie du client : l'objet descend, longe le canal et remonte jusqu'au serveur. Trois
+       segments orthogonaux, et le temps de les parcourir — c'est ce trajet qui dit que le
+       protocole est une frontière et pas un simple trait. */
+    .flux[data-etape="4"] .objet {
+      animation: flux-sortie 1100ms var(--ease-out) both;
+    }
+    .flux[data-etape="5"] .objet {
+      animation: flux-entree 900ms var(--ease-out) both;
+    }
+    /* L'éclat : un morceau par route, décalés, et la réponse qui revient les refusionner. */
+    .flux[data-etape="7"] .eclat {
+      animation: flux-eclat-aller 1500ms var(--ease-out) both;
+    }
+    .flux[data-etape="8"] .eclat {
+      animation: flux-eclat-retour 1300ms var(--ease-out) both;
+    }
+    .flux[data-etape="7"] .eclat--b,
+    .flux[data-etape="8"] .eclat--b {
+      animation-delay: 180ms;
+    }
+    .flux[data-etape="7"] .eclat--c,
+    .flux[data-etape="8"] .eclat--c {
+      animation-delay: 360ms;
+    }
+    /* Le retour de la normalisation vers le client, puis la boucle complète du second objectif. */
+    .flux[data-etape="10"] .objet {
+      animation: flux-rentre 900ms var(--ease-out) both;
+    }
+    .flux[data-etape="11"] .objet {
+      animation: flux-boucle 3600ms var(--ease-out) both;
+    }
+  }
+
+  @keyframes flux-sortie {
+    0% { left: 18cqw; top: 65.5cqw; }
+    28% { left: 18cqw; top: 73.2cqw; }
+    62% { left: 39cqw; top: 73.2cqw; }
+    100% { left: 39cqw; top: 45cqw; }
+  }
+  @keyframes flux-entree {
+    0% { left: 39cqw; top: 45cqw; }
+    42% { left: 39cqw; top: 14.5cqw; }
+    78% { left: 57.5cqw; top: 14.5cqw; }
+    100% { left: 57.5cqw; top: 24cqw; }
+  }
+  @keyframes flux-eclat-aller {
+    0% { left: 71.4cqw; top: 53.5cqw; opacity: 0; }
+    12% { opacity: 1; }
+    45% { left: 74.5cqw; top: 53.5cqw; }
+    70% { left: 74.5cqw; top: var(--ry); }
+    100% { left: 80cqw; top: var(--ry); opacity: 1; }
+  }
+  @keyframes flux-eclat-retour {
+    0% { left: 80cqw; top: var(--ry); opacity: 1; }
+    40% { left: 77cqw; top: calc(var(--ry) + 0.8cqw); }
+    88% { left: 77cqw; top: 72.7cqw; opacity: 1; }
+    100% { left: 76cqw; top: 66cqw; opacity: 0; }
+  }
+  @keyframes flux-rentre {
+    0% { left: 39cqw; top: 72.7cqw; }
+    58% { left: 18cqw; top: 72.7cqw; }
+    100% { left: 18cqw; top: 65.5cqw; }
+  }
+  /* Le second objectif : le circuit entier rejoué, sans commentaire. C'est la démonstration que
+     « complexe » ne veut pas dire « plus gros », mais « plusieurs fois ». */
+  @keyframes flux-boucle {
+    0% { left: 18cqw; top: 65.5cqw; }
+    8% { left: 18cqw; top: 73.2cqw; }
+    16% { left: 39cqw; top: 73.2cqw; }
+    30% { left: 39cqw; top: 14.5cqw; }
+    38% { left: 57.5cqw; top: 14.5cqw; }
+    50% { left: 57.5cqw; top: 43cqw; }
+    58% { left: 76cqw; top: 43cqw; }
+    68% { left: 76cqw; top: 56cqw; }
+    78% { left: 76cqw; top: 72.7cqw; }
+    88% { left: 39cqw; top: 72.7cqw; }
+    96% { left: 18cqw; top: 72.7cqw; }
+    100% { left: 18cqw; top: 65.5cqw; }
+  }
+</style>

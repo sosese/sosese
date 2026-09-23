@@ -1,0 +1,25 @@
+---
+import Button from "./Button.astro";
+type Props = {
+  eyebrow: string;
+  title: string;
+  action?: {href: string; label: string};
+};
+
+const { eyebrow, title, action } = Astro.props;
+---
+
+<header class="border-b border-border">
+  <div class="container-site flex flex-col gap-4 py-(--section-y)">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1 class="max-w-(--measure) text-36 font-semibold tracking-tight md:text-48">{title}</h1>
+    {
+      Astro.slots.has("default") && (
+        <div class="max-w-(--measure) text-18 text-ink-muted">
+          <slot />
+        </div>
+      )
+    }
+    {action && <div class="mt-4"><Button href={action.href} size="lg">{action.label}<span aria-hidden="true">→</span></Button></div>}
+  </div>
+</header>
