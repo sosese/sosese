@@ -1,0 +1,158 @@
+---
+// V5 — Offre produit, verticale bâtiment. Option C du rapport (§3.3 de l'audit du 21/09, §3.4.1) poussée plus loin :
+// on ne vend plus « de l'automatisation » mais UN résultat déjà en service — l'assistant de devis dicté — à ceux
+// qui lui ressemblent le plus (entreprises du bâtiment, utilisateurs d'Extrabat en premier). Les autres
+// logiciels : vérification au premier échange, jamais de compatibilité annoncée sans preuve.
+// Tout ce que la page dit de l'assistant est vrai du cas livré (devis, fiches, rendez-vous, analyses en lecture).
+import LayoutVariante from "../../commun/LayoutVariante.astro";
+import Fin from "../../commun/Fin.astro";
+import TerrainBureau from "../../commun/scenes/TerrainBureau.astro";
+import Button from "../../../src/components/ui/Button.astro";
+import Section from "../../../src/components/blocs/Section.astro";
+import QuiDecide from "../../../src/components/blocs/QuiDecide.astro";
+import Citation from "../../../src/components/blocs/Citation.astro";
+import Interlocuteur from "../../../src/components/blocs/Interlocuteur.astro";
+import Faq from "../../../src/components/blocs/Faq.astro";
+import AFournir from "../../../src/components/ui/AFournir.astro";
+import CompareBars from "../../../src/components/ui/diagrams/CompareBars.astro";
+import EnchainementClient from "../../../src/components/ui/diagrams/EnchainementClient.astro";
+import { casClient, ctaRassurance, delaiReponse, prix } from "../../../src/config/site";
+import { preuve } from "../../../src/config/editorial";
+import { faqCout, faqJsonLd, type Question } from "../../../src/config/faq";
+import { mailEditeur, mailto } from "../../commun/mail";
+
+const mailDevis = mailto("Mes devis de chantier", [
+  "Bonjour,",
+  "",
+  "Mon métier :",
+  "",
+  "Le logiciel de gestion où je fais mes devis (Extrabat ou autre) :",
+  "",
+  "Combien de devis par semaine, à peu près :",
+  "",
+  "Comment je les prépare aujourd’hui :",
+  "",
+  "Le meilleur moyen de me joindre :",
+  "",
+]);
+const cta = { label: "Parler de mes devis", href: mailDevis };
+
+const fait = [
+  { titre: "La fiche client", texte: "Nouveau client sur place : vous dictez nom, commune et besoin. La fiche est créée après votre « oui »." },
+  { titre: "Le devis", texte: "Vous dictez les postes. Les articles et les prix viennent de votre catalogue, jamais de l’IA." },
+  { titre: "Le rendez-vous", texte: "Devis signé : vous dictez la date et l’équipe, l’intervention est posée à l’agenda." },
+  { titre: "L’analyse", texte: "« Qu’est-ce qui fait signer nos devis ? » Réponse tirée de vos données, en lecture seule." },
+];
+
+const inclus = [
+  "Une demi-journée sur le terrain avec vous, pour voir comment vous chiffrez",
+  "Le branchement sur votre logiciel et votre catalogue",
+  "Des essais sur vos vrais devis avant la mise en service",
+  "La mise en main, et un mode d’emploi écrit",
+  "Le code, les comptes et les accès à votre nom",
+];
+
+const faq: Question[] = [
+  {
+    q: "Je ne suis pas sur Extrabat. C’est possible quand même ?",
+    a: [
+      "Peut-être. Tout dépend de ce que votre logiciel laisse faire depuis l’extérieur. C’est la première chose que je vérifie, lors du premier échange et avant tout engagement.",
+      "Si votre logiciel ne le permet pas, je vous le dis. Je ne promets pas une compatibilité que je n’ai pas vérifiée.",
+    ],
+  },
+  {
+    q: "Et si l’IA invente un prix ?",
+    a: ["Elle ne calcule jamais un prix de son côté : elle lit vos articles et vos tarifs dans votre logiciel. Le montant vous est montré avant d’être écrit, et rien n’est créé sans votre « oui »."],
+  },
+  faqCout,
+  {
+    q: "Combien de temps pour être opérationnel ?",
+    a: ["L’atelier a lieu sous 15 jours. Une fois la feuille de route validée, l’assistant est livré en 4 semaines, avec des essais sur vos propres devis."],
+  },
+  {
+    q: "Et si j’arrête de travailler avec vous ?",
+    a: ["Le code, les comptes et les accès sont à votre nom, avec le mode d’emploi. Vous, ou un autre prestataire, pouvez reprendre la main."],
+  },
+];
+---
+<LayoutVariante
+  variante="V5 · l’assistant de devis, pour le bâtiment"
+  title="Vos devis dictés sur le chantier, prêts dans Extrabat | sosese, Metz"
+  description="L’assistant de devis vocal déjà en service chez L’Atelier des Sols & Fils : vous dictez sur le chantier, le devis est prêt dans votre logiciel, aux prix de votre catalogue. Metz et 80 km."
+  image="/og/v5.png"
+  nav={[{ label: "Ce qu’il fait", href: "#fait" }, { label: "Sur un chantier", href: "#demo" }, { label: "La mise en place", href: "#offre" }, { label: "Questions", href: "#questions" }]}
+  cta={cta}
+  signature="L’assistant de devis dicté pour les entreprises du bâtiment, autour de Metz. Conçu et installé par Joris Chamvoux."
+  jsonld={[faqJsonLd(faq)]}
+>
+  <section class="section-invert bg-bg py-(--section-y)">
+    <div class="container-site grid items-center gap-10 lg:grid-cols-[6fr_5fr] lg:gap-12">
+      <div>
+        <p class="eyebrow mb-5">Artisans et entreprises du bâtiment · Metz et 80 km</p>
+        <h1 class="text-36 font-semibold md:text-48">Dictez le devis sur le chantier. Il est dans Extrabat avant votre retour.</h1>
+        <p class="mt-6 max-w-(--measure) text-18 text-ink-muted">
+          L’assistant que j’ai construit pour L’Atelier des Sols & Fils : vous parlez, il prend les articles et les prix dans votre catalogue, et crée le devis quand vous dites oui.
+          <strong class="font-medium text-ink">Un devis : 40 minutes au bureau avant, 2 minutes sur place maintenant.</strong>
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button href={cta.href} size="lg">{cta.label} <span aria-hidden="true">→</span></Button>
+          <a class="lien-texte text-16" href="#demo">Voir une visite de chantier</a>
+        </div>
+        <p class="mt-5 text-14 text-ink-muted">Pas sur Extrabat ? Je vérifie si votre logiciel peut être relié. {ctaRassurance}{delaiReponse && ` Réponse ${delaiReponse}.`}</p>
+      </div>
+      <div class="min-w-0"><TerrainBureau /></div>
+    </div>
+  </section>
+
+  <section aria-label="Les chiffres du cas client" class="border-b border-border py-10">
+    <dl class="container-site grid grid-cols-2 gap-6 md:grid-cols-4">
+      <div><dd class="font-mono text-36 text-accent">2 min</dd><dt class="mt-1 text-14 text-ink-muted">pour un devis, contre 40</dt></div>
+      {preuve.production.map((p) => <div><dd class="font-mono text-36">{p.valeur}</dd><dt class="mt-1 text-14 text-ink-muted">{p.label} en six semaines</dt></div>)}
+    </dl>
+    <p class="container-site mt-4 text-12 text-ink-muted">L’Atelier des Sols & Fils, pose de sols. Chiffres communiqués par l’entreprise. Votre gain dépendra de vos devis.</p>
+  </section>
+
+  <Section id="fait" eyebrow="Ce que fait l’assistant" title="Quatre gestes du chantier, sans ressaisie.">
+    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {fait.map((f, i) => <li class="rounded-lg border border-border bg-surface p-6"><p class="mb-6 font-mono text-14 text-ink-muted">0{i + 1}</p><h3 class="text-21 font-semibold">{f.titre}</h3><p class="mt-3 text-16 text-ink-muted">{f.texte}</p></li>)}
+    </ul>
+    <div class="mt-10"><QuiDecide /></div>
+  </Section>
+
+  <Section id="demo" tone="subtle" eyebrow="Sur un chantier" title="Une visite, trois actions, chacune validée à l’oral." intro="Démonstration avec un client fictif. Les noms et montants ne viennent pas des dossiers de l’entreprise.">
+    <EnchainementClient />
+  </Section>
+
+  <Section id="offre" eyebrow="La mise en place" title="Ce qui est compris.">
+    <div class="grid gap-8 lg:grid-cols-[3fr_2fr]">
+      <ul class="flex flex-col gap-4">
+        {inclus.map((l) => <li class="flex gap-3 border-b border-border pb-4 text-18"><span aria-hidden="true" class="font-mono text-accent">✓</span><span>{l}</span></li>)}
+      </ul>
+      <aside class="flex flex-col gap-5 rounded-lg border border-border bg-bg-subtle p-6 md:p-8">
+        <div><p class="eyebrow">Délais</p><p class="mt-2 text-18">Atelier sous 15 jours, assistant livré en 4 semaines.</p></div>
+        <div><p class="eyebrow">Votre temps</p><p class="mt-2 text-18">Une demi-journée pour l’atelier, puis 1 heure par semaine.</p></div>
+        <div>
+          <p class="eyebrow">Prix</p>
+          <AFournir valeur={prix.premiereAutomatisation} label="fourchette de la mise en place">
+            <p class="mt-2 text-21 font-semibold">{prix.premiereAutomatisation}</p>
+            {prix.fraisUsage && <p class="mt-1 text-14 text-ink-muted">+ frais d’usage : {prix.fraisUsage}</p>}
+          </AFournir>
+          {!prix.premiereAutomatisation && <p class="mt-2 text-16 text-ink-muted">Devis ferme après l’atelier, avant toute construction. Pas d’abonnement caché : les frais d’usage sont chiffrés à part.</p>}
+        </div>
+        <Button href={cta.href} size="lg">{cta.label}</Button>
+      </aside>
+    </div>
+    <div class="mt-10 max-w-3xl"><Citation /></div>
+    <p class="mt-8 max-w-(--measure) text-14 text-ink-muted">Citer {casClient.logiciel} décrit le logiciel connecté chez ce client : ce n’est pas un partenariat avec son éditeur. Chaque entreprise a son catalogue : l’atelier vérifie d’abord que le vôtre s’y prête.</p>
+  </Section>
+
+  <section id="interlocuteur" aria-labelledby="interlocuteur-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
+    <div class="container-site"><Interlocuteur titre="Qui l’installe chez vous." /></div>
+  </section>
+
+  <Section id="questions" title="Les questions des artisans.">
+    <Faq questions={faq} />
+  </Section>
+
+  <Fin titre="Combien de devis refaites-vous au bureau chaque semaine ?" texte="Dites-moi votre métier et votre logiciel. Je vous dis franchement si l’assistant peut tourner chez vous." bouton={cta.label} href={cta.href} secondaire={{ label: "Vous éditez un logiciel du bâtiment ? Parlons intégration", href: mailEditeur }} />
+</LayoutVariante>

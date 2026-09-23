@@ -1,0 +1,144 @@
+---
+// Layout des variantes d'exploration. Même socle que src/layouts/Base.astro (tokens, thème, Open Graph,
+// JSON-LD), mais navigation en ancres et contact par email : chaque variante est une seule page.
+// `leger` : aucun îlot React (ni menu mobile, ni bouton de thème) et une barre d'action fixe sur mobile.
+import "../../src/styles/global.css";
+import "./scenes/scenes.css";
+import Button from "../../src/components/ui/Button.astro";
+import ThemeToggle from "../../src/components/islands/ThemeToggle";
+import MobileNav from "../../src/components/islands/MobileNav";
+import { lien, personne, site, telephone } from "../../src/config/site";
+
+type Lien = { label: string; href: string };
+type Props = {
+  variante: string; // « V4 · … » : rappelé en pied de page, pour comparer les préversions
+  title: string;
+  description: string;
+  image?: string;
+  nav?: Lien[];
+  cta: Lien;
+  signature: string;
+  leger?: boolean;
+  jsonld?: Record<string, unknown>[];
+};
+const { variante, title, description, image = "/og/accueil.png", nav = [], cta, signature, leger = false, jsonld = [] } = Astro.props;
+const accueil = new URL(lien("/"), Astro.site);
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || lien("/"), Astro.site);
+const ogImage = new URL(lien(image), Astro.site);
+const organisation = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": `${accueil}#organisation`,
+  name: site.name,
+  url: accueil.href,
+  description,
+  email: site.email,
+  ...(telephone ? { telephone } : {}),
+  image: ogImage.href,
+  areaServed: { "@type": "GeoCircle", geoMidpoint: { "@type": "GeoCoordinates", latitude: 49.1196, longitude: 6.1757, name: "Metz" }, geoRadius: "80000" },
+  founder: { "@type": "Person", name: personne.nom, ...(site.linkedin ? { sameAs: [site.linkedin] } : {}) },
+};
+const donnees = [organisation, ...jsonld.map((d) => ({ "@context": "https://schema.org", ...d }))];
+const linkClass = "text-14 text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:text-ink";
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem("theme");
+        } catch (e) {}
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={lien("/favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={lien("/fonts/inter-var.woff2")} as="font" type="font/woff2" crossorigin />
+    <script type="application/ld+json" set:html={JSON.stringify(donnees.length === 1 ? donnees[0] : donnees)} />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a href="#contenu" class="sr-only rounded-md bg-surface px-4 py-2 text-14 shadow-md focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50">Aller au contenu</a>
+
+    <header class="sticky top-0 z-40 border-b border-border bg-bg">
+      <div class="container-site flex h-(--header-h) items-center justify-between gap-6">
+        <a href={lien("/")} class="text-21 font-semibold tracking-tight" aria-label="sosese, haut de page">sosese<span class="text-accent">.</span></a>
+        {nav.length > 0 && (
+          <nav aria-label="Navigation principale" class="hidden lg:block">
+            <ul class="flex items-center gap-1">
+              {nav.map((l) => <li><a href={l.href} class="rounded-md px-3 py-2 text-14 text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:bg-bg-subtle hover:text-ink">{l.label}</a></li>)}
+            </ul>
+          </nav>
+        )}
+        <div class="flex items-center gap-2">
+          {!leger && <ThemeToggle client:idle />}
+          <div class:list={[leger ? "hidden md:block" : nav.length > 0 && "hidden lg:block"]}>
+            <Button href={cta.href} size="md">{cta.label}<span aria-hidden="true" class="font-mono">→</span></Button>
+          </div>
+          {!leger && nav.length > 0 && <div class="lg:hidden"><MobileNav client:idle links={nav} cta={cta} /></div>}
+        </div>
+      </div>
+    </header>
+
+    <main id="contenu" tabindex="-1" class:list={["flex-1 focus:outline-none", leger && "pb-(--fab-clearance) md:pb-0"]}>
+      <slot />
+    </main>
+
+    <footer class="border-t border-border bg-bg-subtle">
+      <div class="container-site grid gap-10 py-12 md:grid-cols-[2fr_1fr_1fr]">
+        <div class="flex flex-col gap-3">
+          <a href={lien("/")} class="text-21 font-semibold tracking-tight">sosese<span class="text-accent">.</span></a>
+          <p class="max-w-xs text-14 text-ink-muted">{signature}</p>
+        </div>
+        <div>
+          <p class="eyebrow mb-4">Contact</p>
+          <ul class="flex flex-col gap-2">
+            <li><a href={`mailto:${site.email}`} class={linkClass}>{site.email}</a></li>
+            {telephone && <li><a href={`tel:${telephone.replace(/[^\d+]/g, "")}`} class={linkClass}>{telephone}</a></li>}
+            {site.linkedin && <li><a href={site.linkedin} rel="me" class={linkClass}>LinkedIn</a></li>}
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow mb-4">Légal</p>
+          <ul class="flex flex-col gap-2">
+            <li><a href="/mentions-legales" class={linkClass}>Mentions légales</a></li>
+            <li><a href="/confidentialite" class={linkClass}>Confidentialité</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-border">
+        <div class="container-site flex flex-col gap-2 py-6 font-mono text-12 text-ink-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} {site.name} · Metz · environ 80 km autour</p>
+          <p>Préversion d’exploration · {variante}</p>
+        </div>
+      </div>
+    </footer>
+
+    {leger && (
+      <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg p-3 md:hidden" style="padding-bottom: calc(var(--space-unit) * 3 + env(safe-area-inset-bottom, 0px))">
+        <Button href={cta.href} size="lg" class="w-full">{cta.label}</Button>
+      </div>
+    )}
+    <script>import "./scenes/scenes.ts";</script>
+  </body>
+</html>

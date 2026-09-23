@@ -1232,3 +1232,31 @@ Source : `RAPPORT-COPYWRITING-V1-V2-2026-09-23.md` (analyse V1/V2, §3.3 emprunt
 - 30 — Un test « aucun marqueur » qui cherche la chaîne « à compléter » attrape aussi la prose (« un message prêt à compléter : … »). Chercher le marqueur exact `à compléter :` et éviter cette tournure dans le texte.
 - 31 — Ne jamais attribuer de pronom genré à une personne citée (Jason) : tourner la phrase au passif ou avec le prénom.
 - 32 — Pages légales : toujours 11 champs « à compléter » (chantier séparé). La politique de confidentialité décrit encore un formulaire que la V3 n'a pas ; à aligner lors de la session juridique, avant de basculer la V3 à la racine.
+
+## Variantes d'exploration V4, V5, V6 (23 septembre 2026)
+
+Trois pistes de positionnement à comparer avec la V3, une page chacune, sous `/v4`, `/v5`, `/v6`. Hypothèses et
+protocole de comparaison : `VARIANTES.md`.
+
+### Architecture
+- `variantes/config.mjs` : fabrique de configuration ; `astro.v4.config.mjs` (etc.) ne fait qu'appeler `configVariante("v4")`.
+  Même racine de projet que la V3 (mêmes dépendances, même `public/`, même scan Tailwind), seul `srcDir` change :
+  `variantes/vN`. `npm run build` compile V1, V2, V3 puis les trois variantes.
+- Les variantes **importent** les composants et la configuration de la V3 (`src/`) : aucune copie. Changer une valeur
+  dans `src/config/site.ts` (prix, photo, citation…) la fait apparaître partout.
+- `variantes/commun/LayoutVariante.astro` : navigation en ancres, contact par `mailto:` pré-rempli
+  (`variantes/commun/mail.ts`), pied de page qui rappelle la variante, liens légaux vers les pages de la racine
+  (seules sorties autorisées par les tests). Option `leger` : aucun îlot React, barre d'action fixe sur mobile,
+  bouton d'en-tête masqué sur mobile.
+- Serveur : `/v4` à `/v6` ajoutés à `PREVERSIONS` (noindex, 404 dédiée).
+
+### Planches du labo adaptées (`variantes/commun/scenes/`)
+- A2 « Du chaos au Oui » → `ChaosAuOui`, A4 « Une règle, une action » → `RegleAction`, A6 « Avant / après » →
+  `AvantApres` (longueurs = 40 min / 2 min du cas), A8 « Terrain ↔ bureau » → `TerrainBureau`.
+- `scenes.css` reprend `labo.css` en tokens uniquement (durées dérivées de `--duration-*`, tailles en `clamp()`
+  sur `cqw` pour rester lisibles de 320 à 1280 px). `scenes.ts` lance chaque planche quand elle entre à l'écran ;
+  en attente, elle est figée sur sa première image. Sans JS ou sous mouvement réduit : état final, rien ne bouge.
+- Piège 33 — Une planche 4/3 pose ses libellés en `%` avec `translate: -50%` : un libellé long près d'un bord
+  est rogné à 360 px (vu sur A8 « au bureau, dans le logiciel » et la source sous A6). Libellés courts près des
+  bords, et toute mention longue en légende HTML sous la planche.
+- Le labo (`src/labo` sur `main`) reste hors git : seules ces adaptations sont versionnées.

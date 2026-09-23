@@ -1,0 +1,17 @@
+---
+import LayoutVariante from "./LayoutVariante.astro";
+import Button from "../../src/components/ui/Button.astro";
+import { lien } from "../../src/config/site";
+import { mailTache } from "./mail";
+type Props = { variante: string };
+const { variante } = Astro.props;
+---
+<LayoutVariante variante={variante} title="Page introuvable | sosese" description="Cette page n’existe pas." cta={{ label: "M’écrire", href: mailTache }} signature="Automatisations branchées sur vos outils, autour de Metz.">
+  <section class="py-(--section-y)">
+    <div class="container-site flex flex-col items-start gap-6">
+      <p class="eyebrow">Erreur 404 · Page introuvable</p>
+      <h1 class="text-36 font-semibold md:text-48">Cette page n’existe pas.</h1>
+      <Button href={lien("/")} size="lg">Retour à l’accueil</Button>
+    </div>
+  </section>
+</LayoutVariante>

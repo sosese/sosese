@@ -1,0 +1,33 @@
+---
+// A2 du labo — Du chaos au « Oui » : des outils emmêlés, un point de remise en ordre, trois actions prêtes.
+// Contenus inventés (piège 17). Libellés en HTML, SVG réservé aux liaisons.
+type Props = { legende?: string };
+const { legende = "vos outils, aujourd’hui" } = Astro.props;
+const noeuds = [
+  "M 24 60 C 70 30, 60 120, 110 96 S 150 50, 96 44",
+  "M 20 140 C 78 110, 46 208, 120 176 S 158 118, 74 128",
+  "M 40 230 C 96 250, 62 158, 128 208 S 88 268, 36 248",
+  "M 62 96 C 112 132, 30 176, 104 232",
+  "M 30 186 C 92 200, 108 84, 150 140",
+];
+---
+<figure class="flex flex-col gap-3">
+  <figcaption class="sr-only">Illustration avec données fictives : à gauche, des informations emmêlées entre plusieurs outils ; au centre, un point de remise en ordre ; à droite, trois actions prêtes, dont une se valide d’un seul « Oui ».</figcaption>
+  <div class="sc" aria-hidden="true">
+    <svg class="sc-svg" viewBox="0 0 400 300" fill="none">
+      <g class="a-in" style="--d:0s">{noeuds.map((d) => <path d={d} stroke="var(--ink-muted)" stroke-width="1.5" opacity="0.4" />)}</g>
+      <path class="a-draw" style="--d:.35s" pathLength="100" d="M 150 110 C 176 128, 176 140, 196 150" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="100" />
+      <path class="a-draw" style="--d:.45s" pathLength="100" d="M 148 176 C 176 168, 176 158, 196 150" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="100" />
+      <circle class="a-glow" style="--d:.7s" cx="212" cy="150" r="30" fill="var(--accent-soft)" />
+      <circle class="a-pop" style="--d:.6s" cx="212" cy="150" r="16" fill="var(--accent)" />
+      <path class="a-draw" style="--d:.9s" pathLength="100" d="M 228 150 L 252 82" stroke="var(--accent)" stroke-width="2" stroke-dasharray="100" />
+      <path class="a-draw" style="--d:.95s" pathLength="100" d="M 228 150 L 252 150" stroke="var(--accent)" stroke-width="2" stroke-dasharray="100" />
+      <path class="a-draw" style="--d:1s" pathLength="100" d="M 228 150 L 252 220" stroke="var(--accent)" stroke-width="2" stroke-dasharray="100" />
+    </svg>
+    <span class="sc-pos sc-note a-in" style="left:22%;top:92%;--d:.1s">{legende}</span>
+    <div class="sc-pos sc-card a-in" style="left:80%;top:27%;--d:1.1s"><b>Devis à envoyer</b><i>3 lignes chiffrées</i></div>
+    <div class="sc-pos sc-card sc-card--accent a-in" style="left:80%;top:52%;--d:1.25s"><b>Fiche client créée</b><i>depuis l’appel</i><span class="sc-oui a-pop" style="--d:1.6s">Oui</span></div>
+    <div class="sc-pos sc-card a-in" style="left:80%;top:78%;--d:1.4s"><b>Rendez-vous placé</b><i>jeudi 9 h</i></div>
+  </div>
+  <p class="text-center text-12 text-ink-muted">Illustration · données fictives</p>
+</figure>

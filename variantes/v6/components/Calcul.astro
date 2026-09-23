@@ -1,0 +1,39 @@
+---
+// « Faites le calcul » : le visiteur entre SES chiffres ; le bloc ne promet aucun gain et n'extrapole pas le cas
+// client (rapport §9.5 de l'audit du 21/09). Script natif en fichier externe (jamais is:inline, CLAUDE.md).
+// Sans JS, le résultat affiché correspond aux valeurs par défaut des champs, et la phrase reste juste.
+const fois = 5;
+const minutes = 30;
+const heuresAn = Math.round((fois * minutes * 47) / 60); // 47 semaines travaillées, dit dans le texte
+---
+<div data-calcul class="rounded-lg border border-border bg-surface p-6 md:p-8">
+  <p class="eyebrow mb-5">Faites le calcul, avec vos chiffres</p>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <label class="flex flex-col gap-2 text-16">
+      Combien de fois par semaine refaites-vous cette tâche ?
+      <input data-fois type="number" inputmode="numeric" min="1" max="200" value={fois} class="w-full rounded-md border border-border-strong bg-bg px-4 py-3 font-mono text-18 text-ink" />
+    </label>
+    <label class="flex flex-col gap-2 text-16">
+      Combien de minutes à chaque fois ?
+      <input data-minutes type="number" inputmode="numeric" min="1" max="600" value={minutes} class="w-full rounded-md border border-border-strong bg-bg px-4 py-3 font-mono text-18 text-ink" />
+    </label>
+  </div>
+  <p class="mt-6 text-18" aria-live="polite">
+    Sur une année de 47 semaines, cette tâche vous prend environ <strong data-resultat class="font-mono text-28 text-accent">{heuresAn} h</strong>.
+  </p>
+  <p class="mt-2 text-14 text-ink-muted">Ce n’est pas une promesse de gain : c’est le temps que la tâche vous coûte aujourd’hui. Combien on peut en rendre, on le regarde ensemble.</p>
+</div>
+<script>
+  for (const bloc of document.querySelectorAll<HTMLElement>("[data-calcul]")) {
+    const fois = bloc.querySelector<HTMLInputElement>("[data-fois]")!;
+    const minutes = bloc.querySelector<HTMLInputElement>("[data-minutes]")!;
+    const resultat = bloc.querySelector<HTMLElement>("[data-resultat]")!;
+    const maj = () => {
+      const f = Math.max(0, Number(fois.value) || 0);
+      const m = Math.max(0, Number(minutes.value) || 0);
+      resultat.textContent = `${Math.round((f * m * 47) / 60)} h`;
+    };
+    fois.addEventListener("input", maj);
+    minutes.addEventListener("input", maj);
+  }
+</script>

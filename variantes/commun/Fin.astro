@@ -1,0 +1,22 @@
+---
+// Bloc de fin commun aux variantes : la question, la réponse franche, le lien email.
+import Button from "../../src/components/ui/Button.astro";
+import { ctaRassurance, delaiReponse, telephone } from "../../src/config/site";
+type Props = { titre: string; texte: string; bouton: string; href: string; secondaire?: { label: string; href: string } };
+const { titre, texte, bouton, href, secondaire } = Astro.props;
+---
+<section id="contact" aria-labelledby="contact-titre" class="section-invert border-t border-border bg-bg py-(--section-y)">
+  <div class="container-site grid items-center gap-8 lg:grid-cols-[3fr_2fr]">
+    <div>
+      <p class="eyebrow mb-3">La prochaine étape</p>
+      <h2 id="contact-titre" class="text-28 font-semibold md:text-36">{titre}</h2>
+      <p class="mt-4 max-w-(--measure) text-18 text-ink-muted">{texte}</p>
+    </div>
+    <div class="flex flex-col items-start gap-3 lg:items-end">
+      <Button href={href} size="lg">{bouton}<span aria-hidden="true">→</span></Button>
+      <p class="text-14 text-ink-muted lg:text-right">{ctaRassurance}{delaiReponse && ` Réponse ${delaiReponse}.`}</p>
+      {telephone && <a class="lien-texte text-16" href={`tel:${telephone.replace(/[^\d+]/g, "")}`}>Ou appelez : {telephone}</a>}
+      {secondaire && <a class="lien-texte text-14" href={secondaire.href}>{secondaire.label}</a>}
+    </div>
+  </div>
+</section>

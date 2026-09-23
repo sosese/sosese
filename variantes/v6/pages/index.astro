@@ -1,0 +1,97 @@
+---
+// V6 — La lettre. Piste la plus éloignée du rapport : une seule page de texte, signée, écrite comme une lettre
+// d'une personne à un dirigeant (inspiration Basecamp, §3.5 du rapport, poussée jusqu'au bout).
+// Répond aussi à la question « version mobile légère » : aucun îlot React, une seule planche sans JS (A6),
+// un calculateur natif de quelques lignes, une barre d'action fixe sur mobile. Même page sur tous les écrans.
+import LayoutVariante from "../../commun/LayoutVariante.astro";
+import AvantApres from "../../commun/scenes/AvantApres.astro";
+import Calcul from "../components/Calcul.astro";
+import Citation from "../../../src/components/blocs/Citation.astro";
+import AFournir from "../../../src/components/ui/AFournir.astro";
+import { casClient, delaiReponse, personne, prix, site, telephone } from "../../../src/config/site";
+import { mailEditeur, mailTache } from "../../commun/mail";
+import { lien } from "../../../src/config/site";
+
+const cta = { label: "Écrire à Joris", href: mailTache };
+const promets = [
+  "Vous direz « oui » avant chaque écriture dans votre logiciel. Rien ne part sans vous.",
+  "Le code, les comptes et les accès seront à votre nom, avec un mode d’emploi.",
+  "Un avis franc dès le premier échange, même si la réponse est « ça n’en vaut pas la peine ».",
+];
+const promets_pas = [
+  "Le même gain que chez L’Atelier des Sols & Fils : il dépend de vos devis, pas des leurs.",
+  "Que tout s’automatise : certains logiciels ne se laissent pas relier, je vous le dirai.",
+  "Une révolution : une tâche en moins, bien faite, c’est déjà beaucoup.",
+];
+---
+<LayoutVariante
+  variante="V6 · la lettre"
+  title="Une lettre de Joris Chamvoux, sosese, Metz"
+  description="Je m’appelle Joris Chamvoux. J’aide les entreprises autour de Metz à ne plus taper deux fois la même chose. Un devis de 40 minutes au bureau se dicte maintenant en 2 minutes sur le chantier."
+  image="/og/v6.png"
+  cta={cta}
+  signature="Joris Chamvoux. Des automatisations branchées sur vos logiciels, autour de Metz."
+  leger
+>
+  <article class="container-site py-(--section-y)">
+    <div class="mx-auto flex max-w-(--measure) flex-col gap-6 text-18 leading-(--leading-body) text-ink">
+      <p class="eyebrow">Metz et 80 km autour · {new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</p>
+      <h1 class="text-36 font-semibold md:text-48">Bonjour. Vous tapez sans doute deux fois les mêmes choses.</h1>
+
+      <AFournir valeur={personne.photo} label="portrait réel de Joris">
+        <img src={lien(personne.photo ?? "")} alt={`Portrait de ${personne.nom}`} width={personne.photoLargeur} height={personne.photoHauteur} class="w-32 rounded-full border border-border object-cover" />
+      </AFournir>
+
+      <p>Je m’appelle {personne.nom}. <AFournir valeur={personne.parcours} label="une phrase de parcours">{personne.parcours} </AFournir>J’aide les entreprises autour de Metz à ne plus taper deux fois la même chose : le devis noté sur le chantier puis refait au bureau, la fiche client recopiée depuis un email, l’information qu’on sait avoir quelque part mais qu’on ne retrouve pas.</p>
+
+      <p>Je ne vends pas de logiciel. Je relie ceux que vous avez déjà, pour que le travail soit <strong>préparé</strong> quand vous arrivez. Vous n’avez plus qu’à dire oui.</p>
+
+      <h2 class="mt-6 text-28 font-semibold">Ce que ça donne, chez un poseur de sols.</h2>
+      <p>Chez {casClient.nom}, le devis se préparait au bureau, à partir des notes du chantier. Maintenant, {casClient.prenom} le dicte sur place : l’assistant prend les articles et les prix dans leur logiciel, {casClient.logiciel}, et crée le devis quand on lui dit oui.</p>
+      <AvantApres />
+      <p>En six semaines : plus de 50 devis, 30 rendez-vous et 40 fiches clients passés par l’assistant. Ce sont leurs chiffres, communiqués par l’entreprise.</p>
+      <Citation />
+
+      <h2 class="mt-6 text-28 font-semibold">Et chez vous ?</h2>
+      <p>Prenez la tâche qui revient le plus souvent. Pas la plus pénible : la plus fréquente.</p>
+      <Calcul />
+
+      <h2 class="mt-6 text-28 font-semibold">Comment je travaille.</h2>
+      <ol class="flex list-decimal flex-col gap-3 pl-6 marker:font-mono marker:text-accent">
+        <li><strong>On se parle.</strong> Vous me décrivez la tâche et vos logiciels. Je vous dis si ça vaut la peine. Sans engagement.</li>
+        <li><strong>Je viens voir.</strong> Une demi-journée avec vous et la personne qui fait la tâche. Sous 15 jours.</li>
+        <li><strong>Je chiffre.</strong> En une semaine : ce qui mérite d’être fait, le temps gagné, le coût. Vous choisissez, ou vous arrêtez là.</li>
+        <li><strong>Je construis.</strong> En 4 semaines, branché sur vos outils, avec un point d’une heure par semaine. Puis je vous le mets en main.</li>
+      </ol>
+      <AFournir valeur={prix.diagnostic} label="prix de l’atelier et de la feuille de route">
+        <p>L’atelier et la feuille de route coûtent {prix.diagnostic}{prix.diagnosticDeduit ? ", déduits si le projet se fait" : ""}.{prix.premiereAutomatisation && ` Une première automatisation : ${prix.premiereAutomatisation}.`}</p>
+      </AFournir>
+      {!prix.diagnostic && <p>Chaque étape a son devis ferme, avant de commencer. Pas de régie, pas d’abonnement caché.</p>}
+
+      <div class="mt-6 grid gap-6 sm:grid-cols-2">
+        <div class="rounded-lg border border-accent p-6">
+          <h2 class="text-21 font-semibold">Ce que je vous promets</h2>
+          <ul class="mt-4 flex flex-col gap-3 text-16">{promets.map((l) => <li>{l}</li>)}</ul>
+        </div>
+        <div class="rounded-lg border border-dashed border-border-strong p-6">
+          <h2 class="text-21 font-semibold">Ce que je ne vous promets pas</h2>
+          <ul class="mt-4 flex flex-col gap-3 text-16 text-ink-muted">{promets_pas.map((l) => <li>{l}</li>)}</ul>
+        </div>
+      </div>
+
+      <h2 id="ecrire" class="mt-6 text-28 font-semibold">Si ça vous parle, écrivez-moi.</h2>
+      <p>Quelques lignes suffisent : la tâche, votre logiciel, et comment vous joindre. Le bouton ouvre un message déjà préparé. {delaiReponse ? `Je réponds ${delaiReponse}.` : "Je vous réponds franchement, même si c’est pour vous dire non."}</p>
+      <p class="flex flex-wrap items-center gap-4">
+        <a href={cta.href} class="inline-flex h-12 items-center rounded-md bg-accent px-6 text-16 font-medium text-on-accent hover:bg-accent-hover">{cta.label}</a>
+        <a class="lien-texte text-16" href={`mailto:${site.email}`}>{site.email}</a>
+        {telephone && <a class="lien-texte text-16" href={`tel:${telephone.replace(/[^\d+]/g, "")}`}>{telephone}</a>}
+      </p>
+
+      <p class="mt-6">À bientôt,</p>
+      <p class="text-28 font-semibold">Joris</p>
+      <p class="text-14 text-ink-muted">{personne.nom} · sosese · Metz et environ 80 km autour, à distance selon le projet{site.linkedin && " · "}{site.linkedin && <a class="lien-texte" href={site.linkedin} rel="me">LinkedIn</a>}</p>
+
+      <p class="mt-8 border-t border-border pt-6 text-16 text-ink-muted"><strong class="text-ink">P.-S.</strong> Vous éditez un logiciel métier ? Ce premier assistant tourne dans {casClient.logiciel}. <a class="lien-texte" href={mailEditeur}>Parlons de ce que vos utilisateurs pourraient dicter</a>.</p>
+    </div>
+  </article>
+</LayoutVariante>

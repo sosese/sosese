@@ -1,0 +1,85 @@
+/* Planches du labo (src/labo sur main, hors git) adaptées aux variantes : A2 Du chaos au « Oui »,
+   A4 Une règle une action, A6 Avant / après, A8 Terrain ↔ bureau.
+   Convention du labo : la scène fait 4/3 et le viewBox 400 × 300, donc x/4 % et y/3 % tombent sur la même
+   grille (positions HTML en % = géométrie, pas des valeurs de design).
+   Mouvement : une seule passe, déclenchée quand la scène entre à l'écran (scenes.ts). Sans JS ou sous
+   mouvement réduit, aucune animation ne s'applique : le DOM par défaut EST l'état final. */
+
+.sc {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.sc-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sc-pos { position: absolute; translate: -50% -50%; }
+
+.sc-chip {
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: clamp(calc(var(--text-12) * 0.85), 2.6cqw, var(--text-14));
+  line-height: 1;
+  color: var(--ink-muted);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+}
+
+.sc-card {
+  white-space: nowrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2.25);
+  box-shadow: var(--shadow-sm);
+}
+.sc-card--accent { border-color: var(--accent); }
+.sc-card b { display: block; font-size: clamp(calc(var(--text-12) * 0.9), 2.9cqw, var(--text-16)); font-weight: 600; line-height: 1.2; color: var(--ink); }
+.sc-card i { display: block; margin-top: var(--space-unit); font-family: var(--font-mono); font-size: clamp(calc(var(--text-12) * 0.8), 2.4cqw, var(--text-14)); font-style: normal; color: var(--ink-muted); }
+.sc-card--accent i { color: var(--ink); }
+
+.sc-oui {
+  display: inline-block;
+  margin-top: calc(var(--space-unit) * 1.5);
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-full);
+  padding: calc(var(--space-unit) * 0.75) calc(var(--space-unit) * 2.5);
+  font-size: clamp(calc(var(--text-12) * 0.85), 2.6cqw, var(--text-14));
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sc-note {
+  font-family: var(--font-mono);
+  font-size: clamp(calc(var(--text-12) * 0.8), 2.4cqw, var(--text-14));
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.sc-note--accent { color: var(--ink); font-weight: 600; }
+
+/* Le halo n'existe que pendant l'animation : sans mouvement, le schéma est net. */
+.a-glow { opacity: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .sc[data-scene] .a-in { animation: sc-in calc(var(--duration-slow) * 1.7) var(--ease-out) var(--d, 0s) both; }
+  .sc[data-scene] .a-pop { animation: sc-pop calc(var(--duration-slow) * 1.5) var(--ease-out) var(--d, 0s) both; }
+  .sc[data-scene] .a-draw { stroke-dasharray: 100; animation: sc-draw calc(var(--duration-slow) * 2.3) var(--ease-out) var(--d, 0s) both; }
+  .sc[data-scene] .a-glow { animation: sc-glow var(--duration-blink) ease-in-out var(--d, 0s) both; }
+  .sc[data-scene] .a-growx { transform-origin: left center; transform-box: fill-box; animation: sc-growx calc(var(--duration-slow) * 2.7) var(--ease-out) var(--d, 0s) both; }
+  /* En attente d'entrer à l'écran : figée sur la première image (masquée), jamais un flash de l'état final. */
+  .sc[data-scene="attend"] * { animation-play-state: paused !important; }
+}
+
+@keyframes sc-in { from { opacity: 0; transform: translateY(calc(var(--space-unit) * 2)); } }
+@keyframes sc-pop { from { opacity: 0; transform: scale(0.72); } }
+@keyframes sc-draw { from { stroke-dashoffset: 100; } }
+@keyframes sc-glow { from, to { opacity: 0; } 45% { opacity: 0.55; } }
+@keyframes sc-growx { from { transform: scaleX(0); } }

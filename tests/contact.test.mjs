@@ -123,3 +123,31 @@ test('cohabitation : V3 isolée, contact par email, partage et données structur
   assert.equal((await fetch(app.base+'/v3/sitemap.xml')).status,404);
  } finally {await app.stop();}
 });
+test('cohabitation : variantes V4 à V6, une page chacune, email et non-indexation',async()=>{
+ const app=await start();
+ try {
+  for(const v of ['v4','v5','v6']) {
+   for(const path of [`/${v}`,`/${v}/`]) {
+    const res=await fetch(app.base+path);assert.equal(res.status,200,path);
+    assert.match(res.headers.get('x-robots-tag'),/noindex/);
+    const html=await res.text();
+    assert.match(html,/<meta name="robots" content="noindex"/);
+    assert.equal((html.match(/<h1(?:\s|>)/g)||[]).length,1,path+' : un seul h1');
+    assert.ok(!html.includes('<form'),path+' : pas de formulaire');
+    assert.ok(!/à compléter :/.test(html),path+' : aucun marqueur hors dev');
+    assert.match(html,/href="mailto:contact@sosese\.tech\?subject=/);
+    const og=html.match(/<meta property="og:image" content="https:\/\/sosese\.tech(\/v\d\/og\/[^"]+)"/);
+    assert.ok(og,path+' : og:image');assert.equal((await fetch(app.base+og[1])).status,200,og[1]);
+    for(const [,json] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) JSON.parse(json);
+    for(const [,target] of html.matchAll(/(?:href|src)="(\/[^"#?]*)(?:[^\"]*)"/g)) {
+     // Seules sorties permises : les pages légales communes de la racine.
+     assert.ok(target.startsWith(`/${v}/`)||['/mentions-legales','/confidentialite'].includes(target),`${v} path escaped: ${target}`);
+     assert.equal((await fetch(app.base+target)).status,200,target);
+    }
+   }
+   const missing=await fetch(app.base+`/${v}/nope`);assert.equal(missing.status,404);assert.ok((await missing.text()).includes(`href="/${v}/"`));
+  }
+  // La lettre (V6) ne charge aucun îlot React.
+  assert.ok(!(await (await fetch(app.base+'/v6/')).text()).includes('astro-island'));
+ } finally {await app.stop();}
+});

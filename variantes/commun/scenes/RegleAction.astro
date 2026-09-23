@@ -1,0 +1,21 @@
+---
+// A4 du labo — Une règle, une action : une condition métier prépare une action, qui reste à valider.
+type Props = { gauche?: [string, string]; regle?: string; action?: [string, string] };
+const { gauche = ["devis envoyé", "7 jours sans réponse"], regle = "votre règle", action = ["Relance rédigée", "à valider"] } = Astro.props;
+---
+<figure>
+  <figcaption class="sr-only">Illustration : {gauche.join(" et ")} ; {regle} ; il en sort « {action[0]} », {action[1]}.</figcaption>
+  <div class="sc" aria-hidden="true">
+    <svg class="sc-svg" viewBox="0 0 400 300" fill="none">
+      <path class="a-draw" style="--d:.3s" pathLength="100" d="M 132 90 L 168 132" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="100" />
+      <path class="a-draw" style="--d:.4s" pathLength="100" d="M 132 210 L 168 168" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="100" />
+      <rect class="a-pop" style="--d:.55s" x="160" y="126" width="80" height="48" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2" />
+      <circle class="a-glow" style="--d:.8s" cx="200" cy="150" r="46" fill="var(--accent-soft)" />
+      <path class="a-draw" style="--d:.95s" pathLength="100" d="M 240 150 L 268 150" stroke="var(--accent)" stroke-width="2" stroke-dasharray="100" />
+    </svg>
+    <span class="sc-pos sc-chip a-in" style="left:18%;top:30%;--d:.1s">{gauche[0]}</span>
+    <span class="sc-pos sc-chip a-in" style="left:18%;top:70%;--d:.2s">{gauche[1]}</span>
+    <span class="sc-pos sc-note sc-note--accent a-in" style="left:50%;top:50%;--d:.65s">{regle}</span>
+    <div class="sc-pos sc-card sc-card--accent a-in" style="left:82%;top:50%;--d:1.1s"><b>{action[0]}</b><i>{action[1]}</i></div>
+  </div>
+</figure>

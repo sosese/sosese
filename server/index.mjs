@@ -80,7 +80,7 @@ await app.register(fastifyStatic, {
 });
 
 // Préversions servies à côté de la V1 : jamais indexées, chacune avec sa propre page 404.
-const PREVERSIONS = ["/v2", "/v3"];
+const PREVERSIONS = ["/v2", "/v3", "/v4", "/v5", "/v6"];
 const preversion = (path) => PREVERSIONS.find((p) => path === p || path.startsWith(`${p}/`));
 
 app.addHook("onRequest", async (req, reply) => {

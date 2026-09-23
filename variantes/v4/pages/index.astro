@@ -1,0 +1,170 @@
+---
+// V4 — « Vos logiciels ne se parlent pas. » Option B du rapport (§3.4.1) : cible large (indépendants, TPE, PME
+// de tous métiers), structure problème → agitation → solution, voix du client en titre.
+// Deux pistes que la V3 n'a pas : un filtre « pour vous / pas pour vous » (§1.3, V1-S-W5) et les alternatives
+// réelles, dites honnêtement, y compris quand elles sont le meilleur choix (April Dunford, §3.4.1).
+import LayoutVariante from "../../commun/LayoutVariante.astro";
+import Fin from "../../commun/Fin.astro";
+import ChaosAuOui from "../../commun/scenes/ChaosAuOui.astro";
+import RegleAction from "../../commun/scenes/RegleAction.astro";
+import Button from "../../../src/components/ui/Button.astro";
+import Badge from "../../../src/components/ui/Badge.astro";
+import Section from "../../../src/components/blocs/Section.astro";
+import Etapes from "../../../src/components/blocs/Etapes.astro";
+import Interlocuteur from "../../../src/components/blocs/Interlocuteur.astro";
+import Faq from "../../../src/components/blocs/Faq.astro";
+import CompareBars from "../../../src/components/ui/diagrams/CompareBars.astro";
+import { casClient, ctaRassurance, delaiReponse } from "../../../src/config/site";
+import { preuve } from "../../../src/config/editorial";
+import { faqAccueil, faqJsonLd } from "../../../src/config/faq";
+import { mailEditeur, mailTache } from "../../commun/mail";
+
+const cta = { label: "Décrire ma tâche", href: mailTache };
+
+const pourVous = [
+  "Vous recopiez une information d’un logiciel à l’autre, ou d’un email vers votre logiciel.",
+  "Vous refaites au bureau ce que vous avez noté dans la journée.",
+  "Vous cherchez une information que vous savez avoir quelque part.",
+  "Votre logiciel de gestion vous convient, mais il ne fait pas tout.",
+];
+const pasPourVous = [
+  "Vous cherchez un nouveau logiciel tout-en-un pour remplacer les vôtres.",
+  "La tâche revient une fois par mois : l’automatiser coûterait plus qu’elle ne vous prend.",
+  "Vous voulez une IA qui décide et envoie sans vous demander.",
+];
+
+// Là où l'information arrive. Seul le terrain est déjà en service ; les deux autres sont des pistes.
+const entrees = [
+  { lieu: "Sur le terrain", statut: "en-service", avant: "Les notes du chantier attendent le retour au bureau pour devenir un devis.", apres: "Le devis est dicté sur place et créé dans le logiciel après votre « oui »." },
+  { lieu: "Par email", statut: "a-etudier", avant: "Une demande arrive par email : vous recopiez nom, adresse et besoin dans votre logiciel.", apres: "La fiche client est préparée à partir du message, prête à valider." },
+  { lieu: "Au téléphone", statut: "a-etudier", avant: "Un client rappelle : vous ouvrez trois logiciels pour retrouver son dossier.", apres: "Son historique, retrouvé en une question pendant l’appel." },
+];
+
+// Les alternatives réelles. Chaque ligne dit quand l'alternative est le bon choix : c'est ce qui rend la
+// dernière ligne crédible.
+const alternatives = [
+  { option: "Attendre que votre éditeur ajoute la fonction", quand: "Le bon choix si elle est annoncée pour bientôt : demandez-lui d’abord.", limite: "Sinon, vous attendez sans date, et la fonction ne suivra pas vos habitudes." },
+  { option: "Un assistant IA grand public", quand: "Parfait pour rédiger un email ou résumer un document.", limite: "Il ne connaît ni vos tarifs ni votre logiciel : vous recopiez son résultat à la main." },
+  { option: "Un outil d’automatisation à configurer vous-même", quand: "Efficace si vous aimez ça et avez le temps de l’apprendre et de l’entretenir.", limite: "Quand un logiciel change, c’est à vous de réparer." },
+  { option: "Une agence spécialisée en IA", quand: "Adaptée aux gros projets, avec plusieurs services concernés.", limite: "Vérifiez qui viendra chez vous, et ce qui vous appartiendra à la fin." },
+];
+---
+<LayoutVariante
+  variante="V4 · vos logiciels ne se parlent pas"
+  title="Vos logiciels ne se parlent pas ? Je les relie | sosese, Metz"
+  description="Ce que vous tapez deux fois (devis, fiches clients, rendez-vous) est préparé à partir de vos messages et de vos outils actuels. Indépendants, TPE et PME, Metz et 80 km."
+  image="/og/v4.png"
+  nav={[{ label: "Pour qui", href: "#pour-qui" }, { label: "Un exemple réel", href: "#preuve" }, { label: "Plutôt que…", href: "#alternatives" }, { label: "Étapes", href: "#methode" }]}
+  cta={cta}
+  signature="Je relie les logiciels des petites entreprises autour de Metz, pour qu’on n’y tape plus deux fois la même chose."
+  jsonld={[faqJsonLd(faqAccueil)]}
+>
+  <section class="py-(--hero-y)">
+    <div class="container-site grid items-center gap-10 lg:grid-cols-[6fr_5fr] lg:gap-12">
+      <div>
+        <p class="eyebrow mb-5">Indépendants, TPE et PME · Metz et 80 km autour</p>
+        <h1 class="text-36 font-semibold md:text-48">Vos logiciels ne se parlent pas. <span class="text-ink-muted">Je les relie.</span></h1>
+        <p class="mt-6 max-w-(--measure) text-18 text-ink-muted">
+          Ce que vous tapez deux fois (devis, fiches clients, rendez-vous) est préparé à partir de vos messages, de vos notes et des outils que vous avez déjà. <strong class="font-medium text-ink">Vous validez, c’est enregistré.</strong>
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button href={cta.href} size="lg">{cta.label} <span aria-hidden="true">→</span></Button>
+          <a class="lien-texte text-16" href="#pour-qui">Est-ce pour moi ?</a>
+        </div>
+        <p class="mt-5 text-14 text-ink-muted">{ctaRassurance}{delaiReponse && ` Réponse ${delaiReponse}.`}</p>
+      </div>
+      <div class="min-w-0"><ChaosAuOui /></div>
+    </div>
+  </section>
+
+  <Section id="pour-qui" tone="subtle" eyebrow="Avant d’aller plus loin" title="C’est pour vous si vous vous reconnaissez ici.">
+    <div class="grid gap-6 md:grid-cols-[3fr_2fr]">
+      <ul class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6 md:p-8">
+        {pourVous.map((l) => <li class="flex gap-3 text-18 text-ink"><span aria-hidden="true" class="font-mono text-accent">✓</span><span>{l}</span></li>)}
+      </ul>
+      <div class="rounded-lg border border-dashed border-border-strong p-6 md:p-8">
+        <p class="eyebrow mb-4">Ce n’est pas pour vous si</p>
+        <ul class="flex flex-col gap-3 text-16 text-ink-muted">{pasPourVous.map((l) => <li>{l}</li>)}</ul>
+        <p class="mt-5 text-14 text-ink">Dans ces cas-là, je vous le dis dès le premier échange.</p>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="entrees" eyebrow="Le problème" title="L’information arrive par trois portes. Elle finit toujours retapée." intro="Le temps que personne n’a décidé de perdre : il n’est écrit dans aucune fiche de poste, mais il remplit les journées.">
+    <ul class="grid gap-6 md:grid-cols-3">
+      {entrees.map((e) => (
+        <li class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-21 font-semibold">{e.lieu}</h3>
+            <Badge variant={e.statut === "en-service" ? "accent" : "neutral"} dot={e.statut === "en-service"}>{e.statut === "en-service" ? "en service" : "à étudier"}</Badge>
+          </div>
+          <p class="text-16 text-ink-muted"><span class="eyebrow mr-2">Avant</span>{e.avant}</p>
+          <p class="mt-auto border-t border-border pt-4 text-16 text-ink"><span class="eyebrow mr-2">Après</span>{e.apres}</p>
+        </li>
+      ))}
+    </ul>
+    <div class="mt-10 grid items-center gap-8 lg:grid-cols-[2fr_3fr]">
+      <RegleAction />
+      <div class="prose-site">
+        <h3>Le principe, sans jargon</h3>
+        <p>Vos règles existent déjà : vos tarifs, vos délais de relance, votre façon de remplir une fiche. Je les branche sur ce qui arrive, pour que le travail soit <strong>préparé</strong> avant que vous ne le voyiez.</p>
+        <p>Préparer n’est pas exécuter : rien n’est envoyé ni écrit dans votre logiciel sans votre « oui ».</p>
+      </div>
+    </div>
+  </Section>
+
+  <section id="preuve" aria-labelledby="preuve-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
+    <div class="container-site grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div class="flex flex-col gap-5">
+        <p class="eyebrow">Un exemple réel · pose de sols</p>
+        <h2 id="preuve-titre" class="text-28 font-semibold md:text-36">Chez L’Atelier des Sols & Fils, le terrain et le logiciel se parlent.</h2>
+        <p class="text-18 text-ink-muted">La demande est dictée sur le chantier. L’assistant prend les articles et les prix dans {casClient.logiciel}, prépare le devis, et le crée après validation. Même chose pour les fiches clients et les rendez-vous.</p>
+        <p class="text-14 text-ink-muted">Votre logiciel n’est pas {casClient.logiciel} ? C’est la première chose que je vérifie. Citer {casClient.logiciel} décrit le logiciel connecté : ce n’est pas un partenariat.</p>
+      </div>
+      <div class="rounded-lg border border-border bg-surface p-6 md:p-8">
+        <h3 class="mb-6 text-21 font-semibold">Le temps d’un devis</h3>
+        <CompareBars bars={[...preuve.devis]} />
+        <dl class="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-5">{preuve.production.map((p) => <div><dd class="font-mono text-28">{p.valeur}</dd><dt class="mt-1 text-14 text-ink-muted">{p.label}</dt></div>)}</dl>
+        <p class="mt-5 text-14 text-ink-muted">En six semaines d’utilisation. Chiffres communiqués par l’entreprise. Votre gain dépendra de vos devis.</p>
+      </div>
+    </div>
+  </section>
+
+  <Section id="alternatives" eyebrow="Plutôt que…" title="Ce que vous pouvez faire d’autre. Et quand c’est le meilleur choix." intro="Je préfère que vous choisissiez en connaissance de cause. Parfois, la bonne réponse n’est pas moi.">
+    <div class="overflow-hidden rounded-lg border border-border">
+      <table class="w-full border-collapse text-left text-16">
+        <thead class="bg-bg-subtle text-14 text-ink-muted">
+          <tr><th scope="col" class="p-4 font-medium">L’option</th><th scope="col" class="hidden p-4 font-medium md:table-cell">Le bon choix si…</th><th scope="col" class="hidden p-4 font-medium md:table-cell">La limite</th></tr>
+        </thead>
+        <tbody>
+          {alternatives.map((a) => (
+            <tr class="border-t border-border align-top">
+              <th scope="row" class="p-4 font-semibold text-ink">{a.option}<p class="mt-2 text-14 font-normal text-ink-muted md:hidden">{a.quand} {a.limite}</p></th>
+              <td class="hidden p-4 text-ink-muted md:table-cell">{a.quand}</td>
+              <td class="hidden p-4 text-ink-muted md:table-cell">{a.limite}</td>
+            </tr>
+          ))}
+          <tr class="border-t-2 border-accent bg-accent-soft align-top">
+            <th scope="row" class="p-4 font-semibold text-ink">sosese<p class="mt-2 text-14 font-normal text-ink md:hidden">Une tâche revient chaque semaine, dans des logiciels que vous voulez garder. Une personne, sur place autour de Metz, qui vous remet tout. Limite : une seule personne, donc je vous dis quand je peux commencer.</p></th>
+            <td class="hidden p-4 text-ink md:table-cell">Une tâche revient chaque semaine, dans des logiciels que vous voulez garder.</td>
+            <td class="hidden p-4 text-ink md:table-cell">Une seule personne : je vous dis dès le départ quand je peux commencer. En contrepartie, tout vous est remis (code, accès, mode d’emploi) pour ne pas dépendre de moi.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section id="methode" tone="subtle" eyebrow="Comment on travaille" title="Vérifier l’utilité avant de construire." intro="Vous décidez à la fin de chaque étape, et vous pouvez vous arrêter là.">
+    <Etapes compact />
+  </Section>
+
+  <section id="interlocuteur" aria-labelledby="interlocuteur-titre" class="border-t border-border py-(--section-y)">
+    <div class="container-site"><Interlocuteur /></div>
+  </section>
+
+  <Section id="questions" tone="subtle" title="Les questions qu’on me pose avant de commencer.">
+    <Faq questions={faqAccueil} />
+  </Section>
+
+  <Fin titre="Quelle tâche tapez-vous deux fois ?" texte="Dites-le moi en quelques lignes. Je vous réponds franchement : ce qui mérite d’être relié chez vous, et ce qui n’en vaut pas la peine." bouton={cta.label} href={cta.href} secondaire={{ label: "Vous éditez un logiciel ? Écrire au sujet d’une intégration", href: mailEditeur }} />
+</LayoutVariante>
