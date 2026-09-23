@@ -1,63 +1,99 @@
 ---
+// Contact V3 : un lien email, pas de formulaire (décision du 23/09/2026). Le lien pré-remplit un objet et
+// un modèle de message qui posent les trois questions utiles (tâche, logiciel, origine du contact) :
+// la qualification du formulaire V1, sans rien côté serveur.
 import Base from "../layouts/Base.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
-import Card from "../components/ui/Card.astro";
-import ACompleter from "../components/ui/ACompleter.astro";
+import Button from "../components/ui/Button.astro";
+import { ctaRassurance, delaiReponse, lien, site, telephone, zoneIntervention } from "../config/site";
 
-import { site, zoneIntervention } from "../config/site";
+const mailto = (sujet: string, lignes: string[]) =>
+  `mailto:${site.email}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(lignes.join("\n"))}`;
+
+const mailEntreprise = mailto("Une tâche à simplifier", [
+  "Bonjour,",
+  "",
+  "La tâche qui me prend le plus de temps :",
+  "",
+  "",
+  "Le logiciel de gestion que j’utilise :",
+  "",
+  "Mon entreprise et mon métier :",
+  "",
+  "Comment j’ai connu sosese :",
+  "",
+  "Le meilleur moyen de me joindre (email ou téléphone) :",
+  "",
+]);
+const mailEditeur = mailto("Intégration à un logiciel métier", [
+  "Bonjour,",
+  "",
+  "Notre logiciel :",
+  "",
+  "L’usage de nos clients que nous aimerions explorer :",
+  "",
+  "Les accès disponibles (API, documentation, environnement de test) :",
+  "",
+]);
 
 const etapes = [
-  "On lit votre message et on revient vers vous par email.",
-  "Un premier échange pour comprendre vos processus et vos contraintes.",
-  "Si le projet a du sens, nous proposons un périmètre de travail adapté. Sinon, nous vous le disons.",
+  "Je lis votre message et je reviens vers vous, par email ou par téléphone.",
+  "On échange sur la tâche, vos outils et vos contraintes. Sans engagement.",
+  "Si une automatisation a du sens, je vous propose un atelier sur le terrain. Sinon, je vous le dis.",
 ];
 ---
 
 <Base
-  title="Parlons de vos tâches répétitives | sosese"
-  description="Décrivez où votre équipe perd du temps : on vous dit franchement ce qui vaut la peine d'être automatisé."
+  title="Contact : qu’est-ce qui vous prend le plus de temps ? | sosese"
+  description="Décrivez la tâche qui vous prend du temps et le logiciel que vous utilisez : je vous dis franchement si elle vaut la peine d’être automatisée."
 >
-  <PageHeader eyebrow="Contact" title="Parlons de votre besoin">
-    Quelques informations suffisent. On vous répond franchement, y compris si l'automatisation n'est pas la bonne réponse.
+  <PageHeader eyebrow="Contact" title="Qu’est-ce qui vous prend le plus de temps ?">
+    Quelques lignes suffisent. Je vous réponds franchement, y compris si l’automatisation n’est pas la bonne réponse.
   </PageHeader>
 
   <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
-    <Card padding="lg">
-      <h2 class="text-28 font-semibold">Échangeons par email</h2>
-      <p class="mt-4 text-16 text-ink-muted">Décrivez votre activité, les outils utilisés et ce que vous aimeriez simplifier. Pour une intégration à votre logiciel, indiquez l’usage envisagé.</p>
-      <a class="v2-link mt-6 inline-block text-18" href={`mailto:${site.email}`}>{site.email}</a>
-      <p class="mt-4 text-14 text-ink-muted">Le formulaire est désactivé sur cette préversion.</p>
-    </Card>
+    <div class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-8">
+      <h2 class="text-28 font-semibold">Écrivez-moi</h2>
+      <p class="text-16 text-ink-muted">
+        Le bouton ouvre votre messagerie avec un message déjà préparé. Il vous reste à y écrire la tâche, votre logiciel et comment vous joindre. N’y mettez pas de données clients confidentielles.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <Button href={mailEntreprise} size="lg">Écrire mon message <span aria-hidden="true">→</span></Button>
+        {telephone && <a class="lien-texte text-18" href={`tel:${telephone.replace(/[^\d+]/g, "")}`}>Ou appelez : {telephone}</a>}
+      </div>
+      <p class="text-14 text-ink-muted">{ctaRassurance}{delaiReponse && ` Réponse ${delaiReponse}.`}</p>
+      <div class="border-t border-border pt-6">
+        <p class="text-16 text-ink-muted">
+          Le bouton n’ouvre rien ? Écrivez à <a class="lien-texte font-medium text-ink" href={`mailto:${site.email}`}>{site.email}</a> depuis votre messagerie habituelle.
+        </p>
+        <p class="mt-3 text-16 text-ink-muted">
+          Vous éditez un logiciel métier ? <a class="lien-texte" href={mailEditeur}>Écrire au sujet d’une intégration</a> · <a class="lien-texte" href={lien("/editeurs")}>la page éditeurs</a>
+        </p>
+      </div>
+    </div>
 
     <aside class="flex flex-col gap-8" aria-label="Coordonnées et suite de la démarche">
       <div class="flex flex-col gap-2">
-        <p class="eyebrow">Écrire directement</p>
-        <a href={`mailto:${site.email}`} class="text-18 font-medium text-ink underline decoration-border-strong underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-accent hover:decoration-accent">
-          {site.email}
-        </a>
+        <p class="eyebrow">Directement</p>
+        <a href={`mailto:${site.email}`} class="text-18 font-medium text-ink underline decoration-border-strong underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-accent hover:decoration-accent">{site.email}</a>
+        {telephone && <a href={`tel:${telephone.replace(/[^\d+]/g, "")}`} class="text-16 text-ink">{telephone}</a>}
         {site.linkedin && <a href={site.linkedin} rel="me" class="text-16 text-ink-muted hover:text-ink">LinkedIn</a>}
       </div>
 
-      {
-        (zoneIntervention || import.meta.env.DEV) && (
-          <div class="flex flex-col gap-2">
-            <p class="eyebrow">Zone d'intervention</p>
-            <p class="text-16 text-ink">{zoneIntervention ?? <ACompleter label="zone d'intervention" />}</p>
-          </div>
-        )
-      }
+      <div class="flex flex-col gap-2">
+        <p class="eyebrow">Zone d’intervention</p>
+        <p class="text-16 text-ink">{zoneIntervention}</p>
+      </div>
 
       <div class="flex flex-col gap-4">
         <p class="eyebrow">Ce qui se passe ensuite</p>
         <ol class="flex flex-col gap-4">
-          {
-            etapes.map((etape, i) => (
-              <li class="flex gap-3 text-16 text-ink-muted">
-                <span class="font-mono text-14 text-accent">0{i + 1}</span>
-                <span>{etape}</span>
-              </li>
-            ))
-          }
+          {etapes.map((etape, i) => (
+            <li class="flex gap-3 text-16 text-ink-muted">
+              <span class="font-mono text-14 text-accent">0{i + 1}</span>
+              <span>{etape}</span>
+            </li>
+          ))}
         </ol>
       </div>
     </aside>

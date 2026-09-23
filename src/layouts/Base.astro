@@ -3,16 +3,44 @@ import "../styles/global.css";
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 
-import { site } from "../config/site";
+import { lien, personne, site, telephone } from "../config/site";
 
 type Props = {
   title?: string;
   description?: string;
+  // Préversion : noindex tant que la V3 n'a pas remplacé la racine (en-tête HTTP posé aussi par le serveur).
   noindex?: boolean;
+  // Image de partage (public/og/*.png, 1200 × 630). Le lien envoyé par WhatsApp ou LinkedIn en dépend.
+  image?: string;
+  // Données structurées propres à la page (FAQPage…), ajoutées à celles de l'organisation.
+  jsonld?: Record<string, unknown>[];
 };
 
-const { title = site.title, description = site.description, noindex = true } = Astro.props;
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/v2/", Astro.site);
+const { title = site.title, description = site.description, noindex = true, image = "/og/accueil.png", jsonld = [] } = Astro.props;
+const accueil = new URL(lien("/"), Astro.site);
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || lien("/"), Astro.site);
+const ogImage = new URL(lien(image), Astro.site);
+
+// Aucune donnée inventée : adresse postale, horaires et note sont omis tant qu'ils n'existent pas.
+const organisation = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": `${accueil}#organisation`,
+  name: site.name,
+  url: accueil.href,
+  description: site.description,
+  email: site.email,
+  ...(telephone ? { telephone } : {}),
+  image: ogImage.href,
+  areaServed: {
+    "@type": "GeoCircle",
+    geoMidpoint: { "@type": "GeoCoordinates", latitude: 49.1196, longitude: 6.1757, name: "Metz" },
+    geoRadius: "80000",
+  },
+  founder: { "@type": "Person", name: personne.nom, ...(site.linkedin ? { sameAs: [site.linkedin] } : {}) },
+  knowsAbout: ["automatisation de devis", "intégration de logiciel de gestion", "saisie vocale"],
+};
+const donnees = [organisation, ...jsonld.map((d) => ({ "@context": "https://schema.org", ...d }))];
 ---
 
 <!doctype html>
@@ -40,11 +68,17 @@ const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/v2/", Astro
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/v2/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/v2/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/v2/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href={lien("/favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={lien("/fonts/inter-var.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={lien("/fonts/jetbrains-mono-var.woff2")} as="font" type="font/woff2" crossorigin />
+    <script type="application/ld+json" set:html={JSON.stringify(donnees.length === 1 ? donnees[0] : donnees)} />
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
@@ -58,6 +92,5 @@ const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/v2/", Astro
       <slot />
     </main>
     <Footer />
-
   </body>
 </html>

@@ -1,3 +1,5 @@
+> **Avertissement (23/09/2026).** Les statistiques de ce guide (taux de conversion, « +22 % », « +17 % », « 45 à 90 minutes par jour »…) ne sont pas sourcées. **Ne jamais les citer ni les reprendre sur le site.** Les cadres (PAS, BAB, FAB, 4 Ps, niveaux de conscience) restent utiles. La recommandation d'« audit gratuit » ne s'applique pas : voir `RAPPORT-COPYWRITING-V1-V2-2026-09-23.md`, §3.6.
+
 # Guide Méthodologique de Copywriting Commercial et Spécifications de Prompting LLM pour Studio d'IA B2B
 
 ## Principes Fondamentaux et Psychologie de Conversion B2B pour TPE/PME

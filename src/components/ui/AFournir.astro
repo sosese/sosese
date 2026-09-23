@@ -1,0 +1,11 @@
+---
+// Contenu qui dépend d'une information du porteur (src/config/site.ts, valeurs null).
+// Fournie : le contenu est rendu. Absente : rien en production, un marqueur « à compléter » en dev.
+// Ne jamais contourner ce composant en écrivant une valeur de remplacement.
+import ACompleter from "./ACompleter.astro";
+type Props = { valeur: unknown; label: string; bloc?: boolean };
+const { valeur, label, bloc = false } = Astro.props;
+const fournie = valeur !== null && valeur !== undefined && valeur !== "";
+---
+
+{fournie ? <slot /> : import.meta.env.DEV && (bloc ? <p><ACompleter label={label} /></p> : <ACompleter label={label} />)}

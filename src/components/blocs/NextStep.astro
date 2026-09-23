@@ -1,0 +1,24 @@
+---
+import Button from "../ui/Button.astro";
+import { cta, ctaRassurance, delaiReponse, lien, telephone } from "../../config/site";
+type Props = { editeur?: boolean };
+const { editeur = false } = Astro.props;
+---
+<section class="section-invert border-t border-border bg-bg py-(--section-y)">
+  <div class="container-site grid items-center gap-8 lg:grid-cols-[3fr_2fr]">
+    <div>
+      <p class="eyebrow mb-3">La prochaine étape</p>
+      <h2 class="text-28 font-semibold md:text-36">{editeur ? "Parlons de votre logiciel et d’un usage de vos clients." : "Qu’est-ce qui vous prend le plus de temps ?"}</h2>
+      <p class="mt-4 max-w-(--measure) text-18 text-ink-muted">
+        {editeur
+          ? "Le nom du logiciel, un usage envisagé et les accès disponibles : je reviens vers vous avec les questions à trancher pour un premier prototype."
+          : "Dites-le moi en quelques lignes. Je vous réponds franchement : ce qui mérite d’être automatisé chez vous, et ce qui n’en vaut pas la peine."}
+      </p>
+    </div>
+    <div class="flex flex-col items-start gap-3 lg:items-end">
+      <Button href={editeur ? lien("/contact") : cta.href} size="lg">{editeur ? "Parler d’une intégration" : cta.label}<span aria-hidden="true">→</span></Button>
+      <p class="text-14 text-ink-muted lg:text-right">{ctaRassurance}{delaiReponse && ` Réponse ${delaiReponse}.`}</p>
+      {telephone && <a class="lien-texte text-16" href={`tel:${telephone.replace(/[^\d+]/g, "")}`}>Ou appelez : {telephone}</a>}
+    </div>
+  </div>
+</section>

@@ -1,26 +1,40 @@
 ---
 import Base from "../layouts/Base.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
-import Section from "../components/v2/Section.astro";
-import NextStep from "../components/v2/NextStep.astro";
-import ProtocoleIntegration from "../components/v2/ProtocoleIntegration.astro";
+import Section from "../components/blocs/Section.astro";
+import NextStep from "../components/blocs/NextStep.astro";
+import ProtocoleIntegration from "../components/blocs/ProtocoleIntegration.astro";
+import { lien } from "../config/site";
+
+const etapes = [
+  ["Choisir un usage", "Un geste que vos utilisateurs répètent, et un critère simple pour juger si l’assistant le fait mieux."],
+  ["Délimiter l’intégration", "Les fonctions de votre API à exposer, les données échangées, ce qui demande une validation, et qui maintient quoi."],
+  ["Évaluer un prototype", "Une démonstration sur ce périmètre, avec de vrais utilisateurs si possible. Puis une décision : on continue, on ajuste, ou on arrête."],
+];
 ---
-<Base title="Intégrations IA pour éditeurs de logiciels métier | sosese" description="Partir d’un usage terrain pour concevoir une intégration à votre logiciel : un cas concret, un périmètre technique et un prototype à évaluer.">
- <PageHeader action={{href:"/v2/contact?intention=editeur",label:"Discuter d’une intégration"}} eyebrow="Pour les éditeurs de logiciels métier" title="Relier votre logiciel aux nouveaux usages de vos clients.">Vos clients veulent décrire une action, retrouver une information ou préparer un document plus simplement. sosese propose d’explorer ces usages à partir de l’expérience du terrain.</PageHeader>
- <Section id="terrain" eyebrow="Une expérience concrète" title="Un premier connecteur, utilisé chez un client.">
-  <div class="grid gap-8 md:grid-cols-2"><p class="text-18 text-ink-muted">L’intégration réalisée pour L’Atelier des Sols & Fils relie une demande formulée sur chantier à des actions dans Extrabat. Ce projet donne un point de départ concret pour discuter des usages, des validations et des limites.</p><div class="rounded-lg border border-border bg-bg-subtle p-6"><h3 class="text-21 font-semibold">Ce que ce retour terrain permet d’examiner</h3><ul class="mt-4 list-disc space-y-2 pl-5 text-16 text-ink-muted"><li>Les gestes réellement utiles à l’utilisateur.</li><li>Les informations nécessaires à une action fiable.</li><li>Les moments où une validation humaine est attendue.</li></ul><a class="v2-link mt-6 inline-block" href="/v2/realisations/atelier-sols-fils">Voir la réalisation →</a></div></div>
- </Section>
- <Section id="collaboration" tone="subtle" title="Commencer par un usage et un prototype.">
-  <ol class="grid gap-6 md:grid-cols-3">{[
-   ["Choisir l’usage", "Un parcours utilisateur concret et des critères pour juger son intérêt."],
-   ["Délimiter l’intégration", "Les fonctions accessibles, les données échangées et les responsabilités de chacun."],
-   ["Évaluer un prototype", "Une démonstration sur un périmètre convenu, puis une décision sur la suite."],
-  ].map(([titre,texte],i)=><li class="rounded-lg border border-border bg-surface p-6"><p class="eyebrow mb-5">0{i+1}</p><h3 class="text-21 font-semibold">{titre}</h3><p class="mt-4 text-16 text-ink-muted">{texte}</p></li>)}</ol>
-  <p class="mt-6 max-w-(--measure) text-16 text-ink-muted">Ce parcours est une proposition de collaboration. Le modèle de partenariat, les engagements de support et les conditions de diffusion sont à définir ensemble.</p>
- </Section>
- <Section id="sous-le-capot" eyebrow="Sous le capot" title="Une interface entre l’usage et votre API." intro="Selon le projet, un serveur MCP peut exposer des actions métier à un assistant IA. Les accès, les contrôles et la gestion des erreurs doivent être conçus avec l’éditeur.">
-  <div class="grid gap-8 md:grid-cols-2"><div class="prose-site"><h3>Points à examiner</h3><ul><li>API disponible, documentation et environnement de test.</li><li>Authentification, permissions et séparation des clients.</li><li>Validation des écritures, doublons et reprise sur erreur.</li><li>Traçabilité, versionnement et responsabilités de maintenance.</li></ul></div><div class="prose-site"><h3>Ce que montre le schéma</h3><p>L’assistant décompose une demande. Un connecteur appelle les fonctions autorisées du logiciel, puis retourne un résultat exploitable.</p><p>La répartition des composants et la gestion des secrets présentées ci-dessous illustrent une architecture possible. Elles ne constituent pas une garantie applicable à toute intégration.</p></div></div>
-  <details class="mt-8 rounded-lg border border-border bg-surface p-5 md:p-8"><summary class="cursor-pointer text-18 font-medium">Explorer le schéma de principe</summary><p class="my-5 text-14 text-ink-muted">Planche issue du labo sosese, présentée ici sans animation. Sur petit écran, le schéma se fait défiler horizontalement.</p><div class="overflow-x-auto rounded-md" tabindex="0" role="region" aria-label="Schéma technique défilant"><div class="v2-protocol"><ProtocoleIntegration /></div></div></details>
- </Section>
- <NextStep editeur />
+<Base title="Éditeurs de logiciels métier : un assistant dicté branché sur votre API | sosese" description="Un connecteur dicté est déjà en service dans Extrabat chez une entreprise de pose de sols. Partons d’un usage de vos clients pour prototyper le vôtre.">
+  <PageHeader action={{ href: lien("/contact"), label: "Parler d’une intégration" }} eyebrow="Pour les éditeurs de logiciels métier" title="Vos utilisateurs dictent sur le terrain. Votre logiciel peut les suivre.">
+    Chez L’Atelier des Sols & Fils, un assistant crée devis, fiches clients et rendez-vous dans Extrabat à partir d’une demande dictée sur le chantier. Je propose aux éditeurs de partir de ce retour terrain pour prototyper le même type d’usage dans leur logiciel.
+  </PageHeader>
+
+  <Section id="terrain" eyebrow="Ce que le terrain a appris" title="Trois questions que ce premier connecteur a tranchées.">
+    <ul class="grid gap-6 md:grid-cols-3">
+      <li class="rounded-lg border border-border bg-surface p-6"><h3 class="text-18 font-semibold">Quels gestes valent la peine</h3><p class="mt-3 text-16 text-ink-muted">Ceux qui se font sur place et se ressaisissent ensuite : devis, fiche client, rendez-vous.</p></li>
+      <li class="rounded-lg border border-border bg-surface p-6"><h3 class="text-18 font-semibold">Ce qu’il faut pour une action fiable</h3><p class="mt-3 text-16 text-ink-muted">Le prix vient toujours du catalogue du logiciel, jamais du modèle d’IA.</p></li>
+      <li class="rounded-lg border border-border bg-surface p-6"><h3 class="text-18 font-semibold">Où placer la validation</h3><p class="mt-3 text-16 text-ink-muted">Avant chaque écriture dans le logiciel : l’utilisateur dit « oui », puis l’action part.</p></li>
+    </ul>
+    <a class="lien-texte mt-8 inline-block" href={lien("/realisations/atelier-sols-fils")}>Voir la réalisation →</a>
+  </Section>
+
+  <Section id="collaboration" tone="subtle" title="Commencer par un usage et un prototype.">
+    <ol class="grid gap-6 md:grid-cols-3">{etapes.map(([titre, texte], i) => <li class="rounded-lg border border-border bg-surface p-6"><p class="eyebrow mb-5">0{i + 1}</p><h3 class="text-21 font-semibold">{titre}</h3><p class="mt-4 text-16 text-ink-muted">{texte}</p></li>)}</ol>
+    <p class="mt-6 max-w-(--measure) text-16 text-ink-muted">Le cadre de la collaboration (prestation, partenariat, diffusion auprès de vos clients) se décide après le prototype, sur la base de ce qu’il a montré.</p>
+  </Section>
+
+  <Section id="sous-le-capot" eyebrow="Sous le capot" title="Un serveur MCP entre l’assistant et votre API." intro="Le connecteur expose des actions métier à un assistant IA. Dans l’architecture que je propose, votre API reste la seule porte d’entrée, le jeton d’accès ne quitte jamais le serveur, et chaque écriture attend une validation.">
+    <div class="prose-site"><h3>Ce qu’on examine ensemble</h3><ul><li>API disponible, documentation et environnement de test.</li><li>Authentification, permissions et séparation des clients.</li><li>Validation des écritures, doublons et reprise sur erreur.</li><li>Traçabilité, versions et maintenance.</li></ul></div>
+    <details class="mt-8 rounded-lg border border-border bg-surface p-5 md:p-8"><summary class="cursor-pointer text-18 font-medium">Voir le schéma de principe, en treize temps</summary><p class="my-5 text-14 text-ink-muted">Sur petit écran, le schéma se fait défiler horizontalement.</p><div class="overflow-x-auto rounded-md" tabindex="0" role="region" aria-label="Schéma technique défilant"><div class="protocole-large"><ProtocoleIntegration /></div></div></details>
+  </Section>
+
+  <NextStep editeur />
 </Base>

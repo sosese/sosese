@@ -1,0 +1,25 @@
+---
+// La personne derrière sosese. Portrait réel uniquement (site.ts, personne.photo), jamais généré.
+import AFournir from "../ui/AFournir.astro";
+import { lien, personne, site, zoneIntervention } from "../../config/site";
+type Props = { titre?: string; niveau?: "h1" | "h2"; id?: string };
+const { titre = "Qui va venir chez vous.", niveau = "h2", id = "interlocuteur-titre" } = Astro.props;
+const Titre = niveau;
+---
+<div class:list={["grid items-start gap-8", personne.photo ? "md:grid-cols-[1fr_2fr]" : "lg:grid-cols-[3fr_2fr]"]}>
+  <AFournir valeur={personne.photo} label="portrait réel de Joris (public/, 4:5)">
+    <img src={lien(personne.photo ?? "")} alt={`Portrait de ${personne.nom}`} width={personne.photoLargeur} height={personne.photoHauteur} loading="lazy" class="w-full max-w-xs rounded-lg border border-border object-cover" />
+  </AFournir>
+  <div class="flex flex-col gap-4">
+    <p class="eyebrow">Votre interlocuteur</p>
+    <Titre id={id} class:list={["font-semibold", niveau === "h1" ? "text-36 md:text-48" : "text-28 md:text-36"]}>{titre}</Titre>
+    <p class="max-w-(--measure) text-18 text-ink-muted">
+      Je suis {personne.nom}.{" "}
+      <AFournir valeur={personne.parcours} label="une phrase de parcours vérifiable">{personne.parcours} </AFournir>
+      J’ai conçu l’assistant de devis de L’Atelier des Sols & Fils, et je travaille autour de Metz. C’est moi que vous aurez au téléphone, et moi qui viendrai voir comment vous travaillez.
+    </p>
+    <p class="text-16 text-ink-muted">{zoneIntervention}</p>
+    <slot />
+    {site.linkedin && <a href={site.linkedin} rel="me" class="lien-texte w-fit text-16">Mon parcours sur LinkedIn ↗</a>}
+  </div>
+</div>

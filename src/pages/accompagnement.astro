@@ -1,24 +1,50 @@
 ---
 import Base from "../layouts/Base.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
-import Section from "../components/v2/Section.astro";
-import Needs from "../components/v2/Needs.astro";
-import NextStep from "../components/v2/NextStep.astro";
-import ValidationGate from "../components/v2/ValidationGate.astro";
-import {etapes} from "../config/editorial";
+import Section from "../components/blocs/Section.astro";
+import Etapes from "../components/blocs/Etapes.astro";
+import QuiDecide from "../components/blocs/QuiDecide.astro";
+import ValidationGate from "../components/blocs/ValidationGate.astro";
+import Faq from "../components/blocs/Faq.astro";
+import NextStep from "../components/blocs/NextStep.astro";
+import { cta } from "../config/site";
+import { faqAccompagnement, faqJsonLd } from "../config/faq";
+
+// Ce que la proposition écrite précise pour chaque projet (engagements V1 et V2, rien de nouveau).
+const donnees = [
+  ["Quelles données sont lues", "Pour chaque tâche, la liste des informations consultées. Le reste de vos dossiers n’est pas ouvert."],
+  ["Où, et par quel service", "Le service d’IA et l’hébergement utilisés, nommés, avec leur localisation."],
+  ["Ce qui est écrit, et après quel « oui »", "Chaque action qui modifie votre logiciel, et le moment où vous la validez."],
+  ["À qui sont les accès", "Comptes, clés et code à votre nom, avec le mode d’emploi pour reprendre la main."],
+  ["Ce qui se passe en cas d’imprévu", "Si une information manque ou si votre logiciel ne répond pas : le comportement prévu est décrit avant la mise en service."],
+];
 ---
-<Base title="Automatiser une tâche avec vos outils | sosese, Metz" description="Un accompagnement pour indépendants, TPE et PME : comprendre le besoin, vérifier la faisabilité, construire et tester une automatisation délimitée.">
- <PageHeader action={{href:"/v2/contact",label:"Parlons de votre besoin"}} eyebrow="Accompagnement · indépendants, TPE et PME" title="Une tâche précise. Un projet que vous pouvez évaluer.">L’objectif est de simplifier votre travail quotidien. Nous partons de vos outils et de vos contraintes, puis nous choisissons ce qui mérite réellement d’être automatisé.</PageHeader>
- <Section id="besoins" title="Où commencer ?"><Needs /></Section>
- <Section id="deroulement" tone="subtle" eyebrow="Du premier échange à la mise en service" title="À chaque étape, une décision claire.">
-  <ol class="grid gap-6 md:grid-cols-2">{etapes.map((e,i)=><li class="rounded-lg border border-border bg-surface p-6 md:p-8"><p class="eyebrow mb-4">Étape 0{i+1}</p><h3 class="text-21 font-semibold">{e.titre}</h3><p class="mt-4 text-16 text-ink-muted">{e.texte}</p><p class="mt-5 border-t border-border pt-4 text-14"><strong>Ce que vous obtenez : </strong>{e.livrable}</p></li>)}</ol>
- </Section>
- <Section id="controle" eyebrow="Garder la main" title="Préparer une action n’est pas l’exécuter.">
-  <div class="grid items-center gap-8 lg:grid-cols-2"><div class="prose-site"><p>Un devis peut être préparé automatiquement et attendre votre accord. Nous définissons ensemble où placer ces validations, selon les conséquences de chaque action.</p><p>Les données nécessaires, les services utilisés et les droits accordés sont explicités dans le périmètre. Une automatisation doit aussi prévoir ce qui se passe lorsqu’une information manque ou qu’un logiciel ne répond pas.</p><p>Les accès techniques et les limites de vos logiciels peuvent rendre certaines idées impossibles ou disproportionnées. C’est une conclusion utile du cadrage.</p></div><ValidationGate /></div>
- </Section>
- <Section id="budget" tone="subtle" title="Le budget et le suivi font partie du périmètre.">
-  <div class="grid gap-8 md:grid-cols-2"><div><h3 class="text-21 font-semibold">Avant de démarrer</h3><p class="mt-4 text-16 text-ink-muted">La proposition précise les livrables, les exclusions, le calendrier envisagé et le coût de réalisation. Les abonnements ou frais d’usage nécessaires sont identifiés séparément.</p></div><div><h3 class="text-21 font-semibold">Après la mise en service</h3><p class="mt-4 text-16 text-ink-muted">Documentation, assistance, maintenance et évolutions : les responsabilités et les conditions de suivi sont convenues avant la livraison. Elles dépendent du projet.</p></div></div>
-  <p class="mt-8 text-16">Pour préparer l’échange : le nom de vos outils, un exemple de tâche répétée et la fréquence à laquelle elle revient suffisent. N’envoyez pas de données clients confidentielles.</p>
- </Section>
- <NextStep />
+<Base title="Accompagnement, étapes et budget | sosese, Metz" description="Premier échange, atelier sur le terrain, feuille de route chiffrée, puis construction en 4 semaines. Votre temps, les durées et le prix de chaque étape." jsonld={[faqJsonLd(faqAccompagnement)]}>
+  <PageHeader action={{ href: cta.href, label: cta.label }} eyebrow="Accompagnement · indépendants, TPE et PME" title="Quatre étapes. Vous décidez à la fin de chacune.">
+    Je pars de vos outils et de la personne qui fait la tâche. On choisit ensemble ce qui mérite d’être automatisé, et on s’arrête là si rien ne le mérite.
+  </PageHeader>
+
+  <Section id="etapes" title="Ce que chaque étape vous demande, et ce qu’elle vous donne.">
+    <Etapes />
+  </Section>
+
+  <Section id="controle" tone="subtle" eyebrow="Garder la main" title="Préparer une action n’est pas l’exécuter.">
+    <div class="grid items-center gap-8 lg:grid-cols-[3fr_2fr]">
+      <QuiDecide />
+      <ValidationGate />
+    </div>
+  </Section>
+
+  <Section id="donnees" eyebrow="Pour vous, ou pour votre prestataire informatique" title="Vos données : ce qui est écrit noir sur blanc avant de commencer." intro="La feuille de route répond par écrit à ces cinq questions, pour chaque automatisation.">
+    <dl class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {donnees.map(([q, r]) => <div class="rounded-lg border border-border bg-surface p-6"><dt class="text-18 font-semibold">{q}</dt><dd class="mt-3 text-16 text-ink-muted">{r}</dd></div>)}
+    </dl>
+    <p class="mt-8 text-16">Pour préparer l’échange : le nom de vos outils, un exemple de tâche répétée et sa fréquence suffisent. N’envoyez pas de données clients confidentielles.</p>
+  </Section>
+
+  <Section id="questions" tone="subtle" title="Avant de vous engager.">
+    <Faq questions={faqAccompagnement} />
+  </Section>
+
+  <NextStep />
 </Base>

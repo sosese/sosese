@@ -1,0 +1,18 @@
+---
+import Badge from "../ui/Badge.astro";
+import { besoins } from "../../config/editorial";
+---
+<ul class="grid gap-6 md:grid-cols-3">
+  {
+    besoins.map((b) => (
+      <li class="flex flex-col rounded-lg border border-border bg-surface p-6">
+        <Badge variant={b.statut === "en-service" ? "accent" : "neutral"} dot={b.statut === "en-service"} class="mb-6">
+          {b.statut === "en-service" ? "Déjà en service" : "À étudier chez vous"}
+        </Badge>
+        <h3 class="text-21 font-semibold">{b.titre}</h3>
+        <p class="mt-4 text-16 text-ink-muted">{b.scene}</p>
+        <p class="mt-auto border-t border-border pt-4 text-14 text-ink">{b.detail}</p>
+      </li>
+    ))
+  }
+</ul>

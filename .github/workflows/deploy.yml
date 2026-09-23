@@ -51,6 +51,11 @@ jobs:
           test "$(statut /v2/contact)" = 200
           curl -fsSI http://localhost:3000/v2/ | grep -qi 'x-robots-tag: noindex'
           ! curl -fsS http://localhost:3000/v2/contact | grep -q '<form'
+          test "$(statut /v3/)" = 200
+          test "$(statut /v3/contact)" = 200
+          test "$(statut /v3/og/accueil.png)" = 200
+          curl -fsSI http://localhost:3000/v3/ | grep -qi 'x-robots-tag: noindex'
+          curl -fsS http://localhost:3000/v3/contact | grep -q 'href="mailto:'
           test "$(statut /page-inexistante)" = 404
           test "$(docker inspect -f '{{.Config.User}}' sosese-test)" = node
           for i in $(seq 1 20); do

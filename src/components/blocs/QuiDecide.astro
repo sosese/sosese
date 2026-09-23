@@ -1,0 +1,16 @@
+---
+// Qui décide quoi (V1, section Confiance) : ce que l'assistant fait seul, ce qui attend un « oui ».
+import { decide } from "../../config/editorial";
+---
+<figure class="grid gap-4 rounded-lg border border-border bg-surface p-6 md:grid-cols-[1fr_auto_1fr] md:items-center md:p-8">
+  <div>
+    <p class="eyebrow mb-4">L’assistant avance seul</p>
+    <ul class="flex flex-col gap-2 text-16 text-ink-muted">{decide.seul.map((l) => <li>{l}</li>)}</ul>
+  </div>
+  <p class="w-fit rounded-full border border-accent bg-accent-soft px-4 py-2 text-14 font-medium text-ink md:justify-self-center">votre « oui »</p>
+  <div>
+    <p class="eyebrow mb-4">Il s’arrête et attend</p>
+    <ul class="flex flex-col gap-2 text-16 text-ink">{decide.valide.map((l) => <li>{l}</li>)}</ul>
+  </div>
+  <figcaption class="text-14 text-ink-muted md:col-span-3">C’est la règle appliquée chez L’Atelier des Sols & Fils. Pour votre projet, on place ces « oui » ensemble, action par action.</figcaption>
+</figure>

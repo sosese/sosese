@@ -1,28 +1,74 @@
 ---
 import Base from "../../layouts/Base.astro";
 import PageHeader from "../../components/ui/PageHeader.astro";
-import Section from "../../components/v2/Section.astro";
-import NextStep from "../../components/v2/NextStep.astro";
+import AFournir from "../../components/ui/AFournir.astro";
+import Section from "../../components/blocs/Section.astro";
+import Citation from "../../components/blocs/Citation.astro";
+import QuiDecide from "../../components/blocs/QuiDecide.astro";
+import NextStep from "../../components/blocs/NextStep.astro";
 import CompareBars from "../../components/ui/diagrams/CompareBars.astro";
 import EnchainementClient from "../../components/ui/diagrams/EnchainementClient.astro";
-import {casClient} from "../../config/site";
-import {preuve} from "../../config/editorial";
+import { casClient, cta, lien, secondaryNav } from "../../config/site";
+import { preuve } from "../../config/editorial";
 ---
-<Base title="Devis dictés sur chantier dans Extrabat : le cas Atelier des Sols & Fils | sosese" description="Une première réalisation sosese : devis, rendez-vous et fiches clients dans Extrabat. Contexte, fonctionnement et résultats rapportés par le client.">
- <PageHeader action={{href:"/v2/contact",label:"Parlons de votre besoin"}} eyebrow="Réalisation · L’Atelier des Sols & Fils" title="Du chantier au devis, dans Extrabat.">Une intégration sur mesure pour une entreprise de pose de sols : préparer devis, rendez-vous et fiches clients à partir d’une demande formulée sur le terrain.</PageHeader>
- <Section id="contexte" title="Le travail commençait sur place. La saisie attendait le bureau.">
-  <div class="grid gap-8 lg:grid-cols-[3fr_2fr]"><div class="prose-site"><p>Chez {casClient.nom}, Jason devait reprendre au bureau les informations nécessaires au devis. La solution permet désormais de formuler une demande sur le chantier et de préparer le devis dans le logiciel de gestion déjà utilisé.</p><p>Le connecteur s’appuie sur le catalogue et les tarifs dans Extrabat. Il permet aussi de créer des fiches clients, de poser des rendez-vous et de produire des analyses, avec validation des actions prévues.</p><p>Il s’agit d’une intégration réalisée pour ce client. La mention d’Extrabat décrit le logiciel connecté et n’implique pas de partenariat avec son éditeur.</p></div><aside class="rounded-lg border border-border bg-bg-subtle p-6"><p class="eyebrow mb-4">Le projet</p><dl class="space-y-4 text-16"><div><dt class="text-ink-muted">Client</dt><dd class="font-medium">{casClient.nom}</dd></div><div><dt class="text-ink-muted">Métier</dt><dd>Pose de sols</dd></div><div><dt class="text-ink-muted">Logiciel connecté</dt><dd>Extrabat</dd></div></dl><a class="v2-link mt-6 inline-block" href={casClient.site}>Découvrir l’entreprise ↗</a></aside></div>
- </Section>
- <Section id="resultats" tone="subtle" eyebrow="Résultats rapportés" title="Des durées réduites sur deux tâches.">
-  <div class="grid gap-6 md:grid-cols-2"><article class="rounded-lg border border-border bg-surface p-6"><h3 class="mb-6 text-21 font-semibold">Préparer un devis</h3><CompareBars bars={[...preuve.devis]} /></article><article class="rounded-lg border border-border bg-surface p-6"><h3 class="mb-6 text-21 font-semibold">Créer une fiche client</h3><CompareBars bars={[...preuve.fiche]} /></article></div>
-  <p class="mt-6 max-w-(--measure) text-14 text-ink-muted">Durées rapportées pour ce cas. Le nombre de mesures et le protocole de chronométrage ne sont pas documentés ici. Ces résultats ne constituent ni une moyenne garantie, ni une prévision pour un autre projet.</p>
-  <h3 class="mt-10 text-21 font-semibold">{preuve.periode}</h3>
-  <dl class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{preuve.production.map(p=><div class="border-l border-border-strong pl-5"><dd class="font-mono text-36">{p.valeur}</dd><dt class="mt-2 text-16 text-ink-muted">{p.label}</dt></div>)}</dl>
-  <p class="mt-6 text-14 text-ink-muted">{preuve.date}. Les « + » indiquent des planchers.</p>
- </Section>
- <Section id="fonctionnement" title="Une demande, plusieurs actions reliées." intro="La démonstration ci-dessous illustre le fonctionnement. Les noms, montants et contenus affichés sont fictifs ; ils ne représentent pas les dossiers du client.">
-  <EnchainementClient />
- </Section>
- <Section id="transposition" eyebrow="Et dans votre entreprise ?" title="Un point de départ, pas une recette universelle." intro="Un même besoin peut demander une autre solution selon vos logiciels, vos données et vos règles métier. Le premier échange sert à identifier ce qui est transposable et ce qu’il faut vérifier."><a class="v2-link" href="/v2/accompagnement">Comprendre l’accompagnement →</a></Section>
- <NextStep />
+<Base
+  title="Devis dictés sur chantier dans Extrabat : le cas L’Atelier des Sols & Fils | sosese"
+  description="Un devis qui passait 40 minutes au bureau se prépare en 2 minutes sur le chantier, dans Extrabat. Contexte, fonctionnement et chiffres de L’Atelier des Sols & Fils."
+  image="/og/realisation.png"
+>
+  <PageHeader action={{ href: cta.href, label: "J’ai une tâche du même genre" }} eyebrow="Réalisation · L’Atelier des Sols & Fils · pose de sols" title="Du chantier au devis, dans Extrabat.">
+    Un devis qui prenait 40 minutes de ressaisie au bureau se prépare maintenant en 2 minutes, dicté sur place.
+    <AFournir valeur={casClient.miseEnService} label="mois de mise en service">En service depuis {casClient.miseEnService}.</AFournir>
+  </PageHeader>
+
+  <Section id="contexte" title="Le travail commençait sur place. La saisie attendait le bureau.">
+    <div class="grid gap-8 lg:grid-cols-[3fr_2fr]">
+      <div class="prose-site">
+        <p>Chez {casClient.nom}, {casClient.prenom}{casClient.role && `, ${casClient.role},`} recueillait les informations sur le chantier, puis devait les ressaisir au bureau dans {casClient.logiciel} pour faire le devis.</p>
+        <p>Aujourd’hui, la demande est dictée sur place. L’assistant va chercher les articles et les tarifs dans le catalogue {casClient.logiciel} de l’entreprise, prépare le devis, et le crée après validation à l’oral. Même principe pour les fiches clients et les rendez-vous.</p>
+        <p>Il s’agit d’une intégration faite pour ce client. Citer {casClient.logiciel} décrit le logiciel connecté : ce n’est pas un partenariat avec son éditeur.</p>
+      </div>
+      <aside class="rounded-lg border border-border bg-bg-subtle p-6">
+        <p class="eyebrow mb-4">Le projet</p>
+        <dl class="space-y-4 text-16">
+          <div><dt class="text-ink-muted">Client</dt><dd class="font-medium">{casClient.nom}</dd></div>
+          <div><dt class="text-ink-muted">Métier</dt><dd>Pose de sols</dd></div>
+          <div><dt class="text-ink-muted">Logiciel connecté</dt><dd>{casClient.logiciel}</dd></div>
+          <div><dt class="text-ink-muted">Ce qui est automatisé</dt><dd>devis, fiches clients, rendez-vous</dd></div>
+        </dl>
+        <a class="lien-texte mt-6 inline-block" href={casClient.site} rel="noopener">Découvrir l’entreprise ↗</a>
+      </aside>
+    </div>
+  </Section>
+
+  <Section id="resultats" tone="subtle" eyebrow="Résultats" title="Deux tâches, deux durées divisées.">
+    <div class="grid gap-6 md:grid-cols-2">
+      <article class="rounded-lg border border-border bg-surface p-6"><h3 class="mb-6 text-21 font-semibold">Préparer un devis</h3><CompareBars bars={[...preuve.devis]} /></article>
+      <article class="rounded-lg border border-border bg-surface p-6"><h3 class="mb-6 text-21 font-semibold">Créer une fiche client</h3><CompareBars bars={[...preuve.fiche]} /></article>
+    </div>
+    <p class="mt-6 max-w-(--measure) text-14 text-ink-muted">
+      Durées relevées par {casClient.nom} sur ses propres devis<AFournir valeur={casClient.protocole} label="protocole de mesure (nombre de devis, période)">, {casClient.protocole}</AFournir>. Votre gain dépendra de vos devis : on l’estime ensemble pendant l’atelier.
+    </p>
+    <h3 class="mt-10 text-21 font-semibold">{preuve.periode}</h3>
+    <dl class="mt-6 grid gap-6 sm:grid-cols-3">{preuve.production.map((p) => <div class="border-l border-border-strong pl-5"><dd class="font-mono text-36">{p.valeur}</dd><dt class="mt-2 text-16 text-ink-muted">{p.label}</dt></div>)}</dl>
+    <p class="mt-6 text-14 text-ink-muted">{preuve.date}.</p>
+    <div class="mt-10 max-w-3xl"><Citation /></div>
+  </Section>
+
+  <Section id="fonctionnement" title="Une visite, trois actions, chacune validée à l’oral." intro="Démonstration avec un client fictif : les noms et montants ne viennent pas des dossiers de l’entreprise.">
+    <EnchainementClient />
+  </Section>
+
+  <Section id="controle" tone="subtle" eyebrow="Garder la main" title="Ce que l’assistant fait seul, et ce qu’il attend.">
+    <QuiDecide />
+  </Section>
+
+  <Section id="transposition" eyebrow="Et chez vous ?" title="Votre logiciel n’est pas Extrabat ? C’est la première chose que je vérifie." intro="Un même besoin peut demander une autre solution selon vos logiciels et vos règles. Lors du premier échange, je vous dis ce qui est transposable chez vous, et ce qui ne l’est pas.">
+    <div class="flex flex-wrap gap-6">
+      <a class="lien-texte" href={lien("/accompagnement")}>Les étapes et le budget →</a>
+      {secondaryNav.map((l) => <a class="lien-texte" href={l.href}>{l.label} →</a>)}
+    </div>
+  </Section>
+
+  <NextStep />
 </Base>

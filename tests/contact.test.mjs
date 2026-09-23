@@ -94,3 +94,32 @@ test('cohabitation : V1, V2 isolée, contact désactivé, liens et non-indexatio
   assert.equal((await fetch(app.base+'/missing')).status,404);
  } finally {await app.stop();}
 });
+test('cohabitation : V3 isolée, contact par email, partage et données structurées',async()=>{
+ const app=await start();
+ try {
+  const pages=['/v3','/v3/','/v3/accompagnement','/v3/realisations/atelier-sols-fils','/v3/editeurs','/v3/a-propos','/v3/contact','/v3/mentions-legales','/v3/confidentialite'];
+  for(const path of pages) {
+   const res=await fetch(app.base+path);assert.equal(res.status,200,path);
+   assert.match(res.headers.get('x-robots-tag'),/noindex/);
+   const html=await res.text();assert.match(html,/<meta name="robots" content="noindex"/);
+   assert.equal((html.match(/<h1(?:\s|>)/g)||[]).length,1,path+' : un seul h1');
+   assert.ok(!html.includes('<form'),path+' : pas de formulaire en V3');
+   // Pages légales exclues : leur chantier est séparé (mentions « à compléter » assumées).
+   if(!/mentions-legales|confidentialite/.test(path)) assert.ok(!/à compléter :/.test(html),path+' : aucun marqueur « à compléter » hors dev');
+   const og=html.match(/<meta property="og:image" content="https:\/\/sosese\.tech(\/v3\/og\/[^"]+)"/);
+   assert.ok(og,path+' : og:image');assert.equal((await fetch(app.base+og[1])).status,200,og[1]);
+   for(const [,json] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) JSON.parse(json);
+   for(const [,target] of html.matchAll(/(?:href|src)="(\/[^"#?]*)(?:[^\"]*)"/g)) {
+    assert.ok(target.startsWith('/v3/'),`V3 path escaped: ${target}`);
+    assert.equal((await fetch(app.base+target)).status,200,target);
+   }
+  }
+  const contact=await (await fetch(app.base+'/v3/contact')).text();
+  assert.match(contact,/href="mailto:contact@sosese\.tech\?subject=/);
+  const home=await (await fetch(app.base+'/v3/')).text();
+  assert.match(home,/"@type":"FAQPage"/);assert.match(home,/"@type":"ProfessionalService"/);
+  const missing=await fetch(app.base+'/v3/missing');assert.equal(missing.status,404);assert.match(missing.headers.get('x-robots-tag'),/noindex/);assert.ok((await missing.text()).includes('href="/v3/"'));
+  assert.equal((await fetch(app.base+'/v3/api/contact',{method:'POST'})).status,404);
+  assert.equal((await fetch(app.base+'/v3/sitemap.xml')).status,404);
+ } finally {await app.stop();}
+});

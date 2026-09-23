@@ -2,7 +2,7 @@
 import Base from "../layouts/Base.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
 import ACompleter from "../components/ui/ACompleter.astro";
-import { legal, site } from "../config/site";
+import { legal, lien, site } from "../config/site";
 
 const manquants = Object.entries({
   "raison sociale": legal.raisonSociale,
@@ -73,7 +73,7 @@ if (!import.meta.env.DEV && manquants.length) {
       <h2>Données personnelles</h2>
       <p>
         Le traitement des informations transmises via le formulaire de contact est décrit dans la
-        <a href="/v2/confidentialite">politique de confidentialité</a>.
+        <a href={lien("/confidentialite")}>politique de confidentialité</a>.
       </p>
 
       <h2>Cookies</h2>

@@ -2,47 +2,67 @@
 import Base from "../layouts/Base.astro";
 import Button from "../components/ui/Button.astro";
 import VracEnActions from "../components/ui/diagrams/VracEnActions.astro";
-import Section from "../components/v2/Section.astro";
-import Proof from "../components/v2/Proof.astro";
-import Needs from "../components/v2/Needs.astro";
-import NextStep from "../components/v2/NextStep.astro";
-const faq=[
- {q:"Faut-il changer de logiciel ?",a:"Le point de départ est votre équipement actuel. La possibilité de le connecter dépend de ses accès et de ses fonctions. Cette vérification précède toute proposition de développement."},
- {q:"Combien coûte un projet ?",a:"Le prix dépend du périmètre, des outils à connecter et du suivi attendu. Le budget de réalisation et les éventuels frais récurrents sont précisés dans la proposition avant de démarrer."},
- {q:"L’IA agit-elle toute seule ?",a:"Nous définissons les actions autorisées et celles qui demandent votre validation. Les droits, les contrôles et la gestion des erreurs font partie du projet."},
-];
+import Section from "../components/blocs/Section.astro";
+import Proof from "../components/blocs/Proof.astro";
+import Needs from "../components/blocs/Needs.astro";
+import Etapes from "../components/blocs/Etapes.astro";
+import Interlocuteur from "../components/blocs/Interlocuteur.astro";
+import Faq from "../components/blocs/Faq.astro";
+import NextStep from "../components/blocs/NextStep.astro";
+import { cta, ctaRassurance, delaiReponse, lien, secondaryNav } from "../config/site";
+import { scenes } from "../config/editorial";
+import { faqAccueil, faqJsonLd } from "../config/faq";
 ---
-<Base>
- <section class="py-(--hero-y)">
-  <div class="container-site grid items-center gap-10 lg:grid-cols-[6fr_5fr] lg:gap-12">
-   <div>
-    <p class="eyebrow mb-5">Indépendants, TPE et PME · Metz et alentours</p>
-    <h1 class="text-36 font-semibold md:text-48">Moins de ressaisie.<br />Plus de temps pour<br class="hidden lg:block" /> votre métier.</h1>
-    <p class="mt-6 max-w-(--measure) text-18 text-ink-muted">Devis, fiches clients, recherche d’informations : sosese conçoit des automatisations sur mesure à partir de vos outils, avec de l’IA quand elle est utile.</p>
-    <div class="mt-8 flex flex-wrap items-center gap-4"><Button href="/v2/contact" size="lg">Parlons de votre besoin <span aria-hidden="true">→</span></Button><a class="v2-link text-16" href="/v2/realisations/atelier-sols-fils">Voir une réalisation</a></div>
-    <p class="mt-5 text-14 text-ink-muted">Sur place à Metz et dans un rayon d’environ 80 km.</p>
-   </div>
-   <div class="min-w-0"><VracEnActions /><p class="mt-3 text-center text-12 text-ink-muted">Illustration du fonctionnement · données fictives</p></div>
-  </div>
- </section>
- <Proof />
- <Section id="offre" eyebrow="Ce que nous pouvons travailler ensemble" title="Partir d’une tâche qui revient.">
-  <Needs />
-  <p class="mt-6 text-14 text-ink-muted">Chaque exemple est soumis à la faisabilité dans vos logiciels. Le cas Extrabat est une réalisation ; les autres sont des pistes à étudier.</p>
- </Section>
- <Section id="methode" tone="subtle" eyebrow="Un premier projet délimité" title="Vérifier l’utilité avant de construire." intro="Nous commençons par une tâche, vos contraintes et un résultat attendu. Vous disposez d’un périmètre et d’une proposition avant d’engager la réalisation.">
-  <ol class="grid gap-6 md:grid-cols-3">
-   <li><p class="eyebrow mb-3">01 · Comprendre</p><h3 class="text-21 font-semibold">Votre travail, vos outils</h3><p class="mt-3 text-16 text-ink-muted">Repérer la ressaisie ou la recherche qui vous coûte du temps.</p></li>
-   <li><p class="eyebrow mb-3">02 · Délimiter</p><h3 class="text-21 font-semibold">Un périmètre vérifiable</h3><p class="mt-3 text-16 text-ink-muted">Confirmer les accès, les limites et les critères de réussite.</p></li>
-   <li><p class="eyebrow mb-3">03 · Tester</p><h3 class="text-21 font-semibold">Une solution à prendre en main</h3><p class="mt-3 text-16 text-ink-muted">Tester les situations réelles et préparer l’usage au quotidien.</p></li>
-  </ol>
-  <a href="/v2/accompagnement" class="v2-link mt-8 inline-block">Découvrir l’accompagnement →</a>
- </Section>
- <Section id="interlocuteur" eyebrow="Un projet à taille humaine" title="Du terrain à la solution." intro="sosese est un projet porté par Joris Chamvoux, autour de Metz. Une première intégration livrée à L’Atelier des Sols & Fils sert de point d’appui à cette démarche : comprendre un métier, puis relier les outils à ses usages.">
-  <div class="flex flex-wrap gap-6"><a href="/v2/a-propos" class="v2-link">Faire connaissance →</a><a href="/v2/editeurs" class="v2-link">Vous éditez un logiciel ? →</a></div>
- </Section>
- <Section id="questions" tone="subtle" title="Avant d’en parler">
-  <div class="max-w-3xl divide-y divide-border border-y border-border">{faq.map(f=><details class="py-5"><summary class="cursor-pointer text-18 font-medium">{f.q}</summary><p class="mt-4 max-w-(--measure) text-16 text-ink-muted">{f.a}</p></details>)}</div>
- </Section>
- <NextStep />
+<Base jsonld={[faqJsonLd(faqAccueil)]}>
+  <section class="py-(--hero-y)">
+    <div class="container-site grid items-center gap-10 lg:grid-cols-[6fr_5fr] lg:gap-12">
+      <div>
+        <p class="eyebrow mb-5">Entreprises de terrain · Metz et 80 km autour</p>
+        <h1 class="text-36 font-semibold md:text-48">Dictez le devis sur le chantier. Retrouvez-le prêt dans votre logiciel.</h1>
+        <p class="mt-6 max-w-(--measure) text-18 text-ink-muted">
+          Je relie vos notes, vos messages et vos demandes au logiciel de gestion que vous utilisez déjà, pour préparer devis, fiches clients et rendez-vous. <strong class="font-medium text-ink">Vous validez : rien ne part sans vous.</strong>
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button href={cta.href} size="lg">{cta.label} <span aria-hidden="true">→</span></Button>
+          <a class="lien-texte text-16" href="#cas-client">Voir le cas d’un poseur de sols</a>
+        </div>
+        <p class="mt-5 text-14 text-ink-muted">{ctaRassurance}{delaiReponse && ` Réponse ${delaiReponse}.`}</p>
+      </div>
+      <div class="min-w-0"><VracEnActions /><p class="mt-3 text-center text-12 text-ink-muted">Illustration · données fictives</p></div>
+    </div>
+  </section>
+
+  <Proof />
+
+  <Section id="constat" eyebrow="Le constat" title="Le temps que personne n’a décidé de perdre.">
+    <ul class="grid gap-8 md:grid-cols-3">
+      {scenes.map((s) => <li class="border-l-2 border-border-strong pl-5"><h3 class="text-18 font-semibold">{s.titre}</h3><p class="mt-2 text-16 text-ink-muted">{s.texte}</p></li>)}
+    </ul>
+  </Section>
+
+  <Section id="offre" tone="subtle" eyebrow="Par où commencer" title="Trois tâches qui reviennent chaque semaine.">
+    <Needs />
+  </Section>
+
+  <Section id="methode" eyebrow="Comment on travaille" title="Vérifier l’utilité avant de construire." intro="Rien ne se construit avant que vous ayez vu ce que ça coûte et ce que ça rapporte. Vous décidez à la fin de chaque étape.">
+    <Etapes compact />
+    <a href={lien("/accompagnement")} class="lien-texte mt-8 inline-block">Le détail de chaque étape et le budget →</a>
+  </Section>
+
+  <section id="interlocuteur" aria-labelledby="interlocuteur-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
+    <div class="container-site">
+      <Interlocuteur>
+        <div class="flex flex-wrap gap-6">
+          <a href={lien("/a-propos")} class="lien-texte">Faire connaissance →</a>
+          {secondaryNav.map((l) => <a href={l.href} class="lien-texte">{l.label} →</a>)}
+        </div>
+      </Interlocuteur>
+    </div>
+  </section>
+
+  <Section id="questions" title="Les questions qu’on me pose avant de commencer.">
+    <Faq questions={faqAccueil} />
+  </Section>
+
+  <NextStep />
 </Base>

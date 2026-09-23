@@ -1194,3 +1194,41 @@ Tolérées, à ne pas étendre sans raison :
 ## Correctifs serveur avant publication V2
 
 Fastify Static 10.1.4 et Nodemailer 10.0.10 figés dans package.json/lock. Callback setHeaders adapté à reply.header. Audit runtime sans vulnérabilité signalée ; alertes du build évaluées dans SECURITE-V2.md.
+
+## V3 — construite le 23 septembre 2026 (branche `feat/site-v3`)
+
+Source : `RAPPORT-COPYWRITING-V1-V2-2026-09-23.md` (analyse V1/V2, §3.3 emprunts, §3.4 pistes, §3.7 plan).
+
+### Cohabitation V1 + V2 + V3
+- V1 figée dans `legacy-v1` (racine), V2 figée dans `legacy-v2` (`/v2`), V3 dans `src` (`/v3`). `npm run build` (`scripts/build-all.mjs`) compile les trois dans `dist`, dans cet ordre (la V1 vide `dist`).
+- Le serveur traite `/v2` et `/v3` de la même façon : `X-Robots-Tag: noindex, nofollow`, 404 propre à chaque préversion, `/vN/api/*` en 404. Aucun nouvel endpoint : le contrat `/api/contact` de la V1 est inchangé.
+- Tous les liens internes de la V3 passent par `lien()` (`src/config/site.ts`), dérivé de `import.meta.env.BASE_URL`. **Le jour où la V3 remplace la racine, seul `base` change dans `astro.config.mjs`** (puis retrait de `legacy-v1` du build, du `noindex` et ajout de `robots.txt`/`sitemap.xml`).
+- Les polices sont référencées en `/fonts/…` dans `global.css` : Vite préfixe la base au build. Ne pas réécrire `/v3/fonts`.
+
+### Décisions éditoriales
+- Positionnement « entreprises de terrain » (option A du rapport) : H1 « Dictez le devis sur le chantier. Retrouvez-le prêt dans votre logiciel. » Tester auprès de 5 dirigeants avant de le figer.
+- Voix « je » partout (activité solo). « nous » interdit hors citation.
+- Au plus trois réserves sur tout le site : non-partenariat Extrabat, données fictives des démos, « votre gain dépendra de vos devis ». Toute autre réserve est remplacée par une précision.
+- Durées, temps demandé, engagements (« atelier sous 15 jours », « 4 semaines », « le code et les accès sont à votre nom ») : **repris de la V1 publiée**, rien de nouveau n'est promis.
+- « 3 rapports d'analyse annuels » retiré (sens ambigu) tant que son sens exact n'est pas confirmé.
+- Démo du cas : commune fictive en Moselle (Montigny-lès-Metz) au lieu de Pessac. Le scénario reste inventé (piège 17).
+- « Éditeurs » sort du menu principal : pied de page, section interlocuteur, page Réalisation.
+- Contact : **email uniquement** (décision du 23/09/2026). `/contact` porte un `mailto:` avec objet et modèle de message (tâche, logiciel, entreprise, origine du contact, moyen de joindre). Pas de formulaire, pas d'îlot React de contact. Le composant `ContactForm` reste dans `legacy-v2` et dans l'historique pour une réactivation.
+
+### Valeurs à fournir (`src/config/site.ts`)
+- `personne.photo`, `personne.parcours`, `telephone`, `delaiReponse`, `prix.*`, `casClient.role`, `casClient.miseEnService`, `casClient.protocole`, `casClient.citation`.
+- Règle : `null` = non fourni. Le composant `AFournir` ne rend rien en production et un marqueur « à compléter » en dev. **Ne jamais écrire de valeur de remplacement.** Un texte de repli honnête existe pour chaque trou (ex. FAQ coût : le format du prix au lieu d'un montant).
+
+### Composants V3 (`src/components/blocs`)
+- `Proof` (preuve de l'accueil), `Citation` (voix du client, conditionnelle), `Needs` (badges « Déjà en service » / « À étudier chez vous »), `Etapes` (votre temps, durée, reçu, prix conditionnel ; `compact` sur l'accueil), `QuiDecide` (avance seul / s'arrête et attend), `Interlocuteur` (portrait conditionnel, h1 ou h2), `Faq` (+ `src/config/faq.ts`, JSON-LD `FAQPage`), `NextStep`, `Section`, `ValidationGate`, `ProtocoleIntegration`.
+- `src/components/ui/AFournir.astro` : garde des valeurs manquantes.
+- Classes : `.lien-texte` (ex-`.v2-link`), `.protocole-large` (ex-`.v2-protocol`).
+
+### Partage et données structurées
+- `og:image` sur toutes les pages : `public/og/accueil.png` et `public/og/realisation.png` (1200 × 630, < 60 ko), capturés depuis `scripts/og/*.html` qui lisent `tokens.css`. Régénérer après tout changement de H1 (`scripts/og/README.md`).
+- JSON-LD `ProfessionalService` sur chaque page (zone : cercle de 80 km autour de Metz, fondateur avec LinkedIn), `FAQPage` sur l'accueil et l'accompagnement. Pas d'adresse, de téléphone ni de note tant qu'ils n'existent pas.
+
+### Pièges
+- 30 — Un test « aucun marqueur » qui cherche la chaîne « à compléter » attrape aussi la prose (« un message prêt à compléter : … »). Chercher le marqueur exact `à compléter :` et éviter cette tournure dans le texte.
+- 31 — Ne jamais attribuer de pronom genré à une personne citée (Jason) : tourner la phrase au passif ou avec le prénom.
+- 32 — Pages légales : toujours 11 champs « à compléter » (chantier séparé). La politique de confidentialité décrit encore un formulaire que la V3 n'a pas ; à aligner lors de la session juridique, avant de basculer la V3 à la racine.

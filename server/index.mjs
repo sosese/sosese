@@ -79,15 +79,19 @@ await app.register(fastifyStatic, {
   },
 });
 
+// Préversions servies à côté de la V1 : jamais indexées, chacune avec sa propre page 404.
+const PREVERSIONS = ["/v2", "/v3"];
+const preversion = (path) => PREVERSIONS.find((p) => path === p || path.startsWith(`${p}/`));
+
 app.addHook("onRequest", async (req, reply) => {
-  const path = req.url.split("?")[0];
-  if (path === "/v2" || path.startsWith("/v2/")) reply.header("X-Robots-Tag", "noindex, nofollow");
+  if (preversion(req.url.split("?")[0])) reply.header("X-Robots-Tag", "noindex, nofollow");
 });
 
 app.setNotFoundHandler((req, reply) => {
   const path = req.url.split("?")[0];
-  if (path.startsWith("/v2/api/")) return reply.code(404).send({ ok: false, erreur: "formulaire_desactive" });
-  if (path.startsWith("/v2/")) return reply.code(404).header("Cache-Control", "no-cache").sendFile("v2/404.html");
+  const pre = preversion(path);
+  if (pre && path.startsWith(`${pre}/api/`)) return reply.code(404).send({ ok: false, erreur: "formulaire_desactive" });
+  if (pre) return reply.code(404).header("Cache-Control", "no-cache").sendFile(`${pre.slice(1)}/404.html`);
   if (req.url.startsWith("/api/")) return reply.code(404).send({ ok: false, erreur: "introuvable" });
   return reply.code(404).header("Cache-Control", "no-cache").sendFile("404.html");
 });

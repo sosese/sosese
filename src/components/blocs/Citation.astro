@@ -1,0 +1,13 @@
+---
+// Voix du client : rendue seulement si une citation réelle, autorisée par écrit, est fournie.
+import AFournir from "../ui/AFournir.astro";
+import { casClient } from "../../config/site";
+---
+<AFournir valeur={casClient.citation} label="citation de Jason (15 à 30 mots, accord écrit)" bloc>
+  <figure class="border-l-2 border-accent pl-5">
+    <blockquote class="text-21 font-medium text-ink">« {casClient.citation} »</blockquote>
+    <figcaption class="mt-3 text-14 text-ink-muted">
+      {casClient.prenom}{casClient.role && `, ${casClient.role}`} · {casClient.nom}
+    </figcaption>
+  </figure>
+</AFournir>

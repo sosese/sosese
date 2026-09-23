@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Button from "../components/ui/Button.astro";
-import { cta } from "../config/site";
+import { cta, lien } from "../config/site";
 ---
 
 <Base title="Page introuvable | sosese" description="Cette page n'existe pas ou a été déplacée." noindex>
@@ -15,7 +15,7 @@ import { cta } from "../config/site";
         Le lien est peut-être ancien, ou l'adresse contient une faute de frappe.
       </p>
       <div class="flex flex-wrap gap-3 pt-2">
-        <Button href="/v2/" size="lg">Retour à l'accueil</Button>
+        <Button href={lien("/")} size="lg">Retour à l'accueil</Button>
         <Button href={cta.href} variant="secondary" size="lg">{cta.label}</Button>
       </div>
     </div>

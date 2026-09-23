@@ -2,14 +2,14 @@
 import Button from "../ui/Button.astro";
 import ThemeToggle from "../islands/ThemeToggle";
 import MobileNav from "../islands/MobileNav";
-import { cta, mainNav } from "../../config/site";
+import { cta, lien, mainNav } from "../../config/site";
 
-const path = Astro.url.pathname.replace(/\/$/, "") || "/v2/";
+const path = Astro.url.pathname.replace(/\/$/, "") || lien("/");
 ---
 
 <header class="sticky top-0 z-40 border-b border-border bg-bg">
   <div class="container-site flex h-(--header-h) items-center justify-between gap-6">
-    <a href="/v2/" class="text-21 font-semibold tracking-tight" aria-label="sosese, accueil">
+    <a href={lien("/")} class="text-21 font-semibold tracking-tight" aria-label="sosese, accueil">
       sosese<span class="text-accent">.</span>
     </a>
 

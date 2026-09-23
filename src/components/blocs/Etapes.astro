@@ -1,0 +1,35 @@
+---
+// Parcours d'un projet : temps demandé au client en premier (DESIGN.md, Méthode), durée, ce qu'il reçoit,
+// et le prix de l'étape quand il est fourni (site.ts, `prix`). Sans prix, rien n'est affiché à sa place.
+import AFournir from "../ui/AFournir.astro";
+import { etapes } from "../../config/editorial";
+import { prix } from "../../config/site";
+type Props = { compact?: boolean };
+const { compact = false } = Astro.props;
+const prixEtape = (cle: (typeof etapes)[number]["prix"]) =>
+  cle === "sans-engagement" ? "sans engagement" : prix[cle];
+const libellePrix = { diagnostic: "prix de l’atelier et de la feuille de route", premiereAutomatisation: "fourchette de la première automatisation" } as const;
+---
+<ol class:list={["grid gap-6", compact ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2"]}>
+  {
+    etapes.map((e, i) => (
+      <li class="flex flex-col rounded-lg border border-border bg-surface p-6">
+        <p class="eyebrow mb-4">Étape {i + 1}</p>
+        <h3 class="text-21 font-semibold">{e.nom}</h3>
+        {!compact && <p class="mt-3 text-16 text-ink-muted">{e.texte}</p>}
+        <dl class:list={["mt-auto flex flex-col gap-3 border-t border-border pt-4 text-14", !compact && "mt-6"]}>
+          <div><dt class="text-ink-muted">Votre temps</dt><dd class="font-medium text-ink">{e.votreTemps}</dd></div>
+          {e.duree && <div><dt class="text-ink-muted">Durée</dt><dd class="text-ink">{e.duree}</dd></div>}
+          {!compact && <div><dt class="text-ink-muted">Vous recevez</dt><dd class="text-ink">{e.recu}</dd></div>}
+          {e.prix === "sans-engagement" ? (
+            <div><dt class="text-ink-muted">Prix</dt><dd class="text-ink">sans engagement</dd></div>
+          ) : (
+            <AFournir valeur={prixEtape(e.prix)} label={libellePrix[e.prix]}>
+              <div><dt class="text-ink-muted">Prix</dt><dd class="font-medium text-ink">{prixEtape(e.prix)}</dd></div>
+            </AFournir>
+          )}
+        </dl>
+      </li>
+    ))
+  }
+</ol>
