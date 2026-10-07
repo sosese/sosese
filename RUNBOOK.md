@@ -3,7 +3,8 @@
 Procédure de modification, de publication et de déploiement.
 
 **Règle fondatrice** : le développement se fait exclusivement en local. Claude Code n'a jamais d'accès au VPS
-(`ssh`, `scp` et `rsync` sont bloqués dans `.claude/settings.json`). Les sections 3 à 7 sont exécutées **par l'humain**.
+(`ssh`, `scp` et `rsync` sont bloqués dans `.claude/settings.json`). Les sections 2 à 7 sont exécutées **par l'humain**
+(`npm run release` pousse, merge et tague ; `deploy.sh` agit sur la production).
 Les décisions techniques et leurs raisons sont dans `DESIGN.md`.
 
 ---
@@ -12,10 +13,12 @@ Les décisions techniques et leurs raisons sont dans `DESIGN.md`.
 
 | Élément | Valeur |
 |---|---|
-| Site | https://sosese.tech (`www` redirige en 301 vers l'apex) |
+| Site | https://sosese.tech (`www` redirige en 301 vers l'apex ; 308 sur une requête HEAD) |
 | Dépôt | `github.com/sosese/sosese` (privé) |
 | Image | `ghcr.io/sosese/sosese:<tag>` (paquet privé) |
-| Version en production | le tag de `image:` dans `compose.yml` sur `main` |
+| Version en production | le tag de `image:` dans `compose.yml` sur `main` ; en cas d'écart, celui de `/srv/sosese/compose.yml` fait foi (§5, « Préversion ») |
+| Historique | `CHANGELOG.md` : versions publiées et déploiements |
+| Scripts | `scripts/release.sh` (`npm run release`, §2) ; `scripts/deploy-vps.sh`, copié en `/srv/sosese/deploy.sh` (§3) |
 | VPS | `186.241.17.83`, dossier `/srv/sosese` (`compose.yml` + `.env`) |
 | Réseau Traefik | `traefik-net` |
 | Certresolver | `letsencrypt` (challenge HTTP, renouvellement automatique par Traefik) |
@@ -135,215 +138,226 @@ git branch -d fix/formulaire-message-erreur
 
 ---
 
-## 2. Publier une version
+## 2. Publier une version — `npm run release`
 
-### 2.0 Voie normale : `npm run release`
-
-Une fois les PR de la version mergées, sur `main` à jour et identique à `origin/main` :
+**En bref**, une fois les PR de la version mergées :
 
 ```bash
-npm run release -- 0.9
+git checkout main && git pull
+npm run release -- 0.10          # local : version, PR, merge, tag, image publiée
+ssh root@186.241.17.83
+/srv/sosese/deploy.sh v0.10      # VPS : mise en production, rollback automatique si le site ne répond pas
 ```
 
-`scripts/release.sh` enchaîne les étapes 2.1 à 2.3 et s'arrête à la première anomalie :
+Ces commandes poussent, mergent, taguent et touchent la production : elles sont **lancées par l'humain**, jamais par
+une session Claude Code.
 
-1. contrôles : sur `main`, aucun fichier modifié, aucun commit non poussé, tag et branche `chore/v0.9` inexistants,
-   version supérieure à l'actuelle ;
-2. numéro de version dans `package.json`, `package-lock.json` et `compose.yml`, **sans `npm install`**, puis contrôle
-   bloquant du diff (3 fichiers, 4 lignes, uniquement des lignes `version` — piège 19) ;
-3. `npm ci && npm run build` (le lockfile ne doit pas bouger), puis, au choix, `npm start` pour parcourir les pages ;
-4. **confirmation**, puis commit, push et PR ; **confirmation**, puis merge et retour sur `main` ;
-5. résumé de la version, **confirmation**, puis tag annoté et push du tag ;
-6. suivi du build GitHub Actions jusqu'à la publication de l'image ;
-7. alerte si `compose.yml` a changé au-delà du tag (labels Traefik…) : il faut alors le copier sur le VPS (§5) avant
-   de déployer. Affiche enfin la commande de déploiement.
+### 2.1 Avant de commencer
 
-Refuser la première confirmation annule tout et revient sur `main`. Après le merge, un arrêt laisse `main` prêt :
-reprendre à la main à l'étape indiquée. Si la CI échoue, le tag est grillé : corriger, puis publier la version suivante.
+- Toutes les PR de la version sont mergées sur GitHub.
+- `main` local est **identique** à `origin/main` : aucun fichier modifié, aucun commit non poussé. Un travail commité
+  directement sur `main` doit d'abord passer par une branche et une PR (1.7). Les fichiers non suivis (rapports…)
+  ne gênent pas.
+- `gh auth status` est connecté ; `node` et `npm` sont installés.
+- Le numéro choisi est supérieur à la version actuelle (`package.json`) et le tag n'existe pas encore.
 
-Les sections 2.1 à 2.4 décrivent les mêmes étapes à la main (secours, ou pour comprendre ce que fait le script).
+### 2.2 Ce que fait `scripts/release.sh`
 
-Le tag déclenche GitHub Actions : build, **test de démarrage du conteneur**, puis publication sur GHCR.
-Rien ne part sur le VPS.
+1. **Contrôles** : ceux de 2.1. Le moindre écart arrête le script, rien n'est modifié.
+2. **Numéro de version**, dans une branche `chore/vX.Y` : `package.json`, `package-lock.json` et la ligne `image:` de
+   `compose.yml`, **sans `npm install`**. Contrôle bloquant du diff : 3 fichiers, 4 lignes, uniquement des numéros de
+   version (piège 19). Sinon, la branche est supprimée et rien n'est commité.
+3. **Build** : `npm ci && npm run build`, le lockfile ne doit pas bouger. Puis, au choix, `npm start` sur
+   http://localhost:3000 pour parcourir les pages (`Ctrl+C` pour continuer).
+4. **Confirmation**, puis commit `chore: version X.Y.0`, push et PR. Un refus ici annule tout et revient sur `main`.
+5. **Confirmation**, puis merge de la PR (branche distante supprimée) et retour sur `main` à jour.
+6. **Résumé de la version** (une ligne, il devient le message du tag), **confirmation**, puis tag annoté `vX.Y` poussé.
+7. **Suivi du build GitHub Actions** (~2 min) : build, test de démarrage du conteneur, publication sur GHCR.
+8. Alerte si `compose.yml` a changé au-delà du tag depuis la version précédente (labels Traefik…) : le copier sur le
+   VPS **avant** de déployer (§5). Enfin, affichage de la commande de déploiement.
 
-### 2.1 Préparer la version sur `main`
+### 2.3 Si le script s'arrête
 
-Dans une branche `chore/vX.Y`, puis PR et merge comme en 1.7 :
+| Arrêt | État | Suite |
+|---|---|---|
+| Contrôles | rien n'a changé | corriger ce qui est signalé, relancer |
+| Diff de version ou build | branche `chore/vX.Y` supprimée, retour sur `main` | corriger sur une branche à part, relancer |
+| Refus avant la PR | idem | relancer quand prêt |
+| Refus avant le merge | PR ouverte sur GitHub | la merger, puis taguer à la main (2.5) |
+| Refus avant le tag | `main` contient la version | taguer à la main (2.5) |
+| CI en échec | tag poussé, **aucune image publiée** | le tag est grillé : corriger, publier la version suivante |
+
+### 2.4 Règles de version
+
+- Tags `vX.Y`, correspondant à `version` = `X.Y.0` dans `package.json`. Passage en `v1.0` : à décider (par exemple une
+  fois les mentions légales complétées).
+- Ne jamais republier ni déplacer un tag existant.
+- Un commit de version ne touche que les numéros de version. **Jamais `npm install --package-lock-only`** : les tags
+  `v0.3` et `v0.6` ont échoué au test de démarrage parce que le commit de version montait aussi `astro` 5 → 7,
+  `@fastify/static` 8 → 10 et `nodemailer` 7 → 10 (`DESIGN.md`, piège 19). Les montées de dépendances se font dans
+  leur propre branche.
+- `compose.yml` sur `main` désigne la version en production. Une préversion déployée hors de `main` crée un écart à
+  résorber (§5, « Préversion »).
+
+### 2.5 À la main (secours)
+
+Mêmes étapes que le script, pour reprendre après un arrêt ou s'il est indisponible.
 
 ```bash
+git checkout -b chore/v0.10
 # Numéro de version seul, sans npm install : ne résout ni ne met à jour aucune dépendance.
 node -e '
 const fs=require("fs"), v=process.argv[1];
 for (const f of ["package.json","package-lock.json"]) {
   const j=JSON.parse(fs.readFileSync(f,"utf8")); j.version=v; if (j.packages) j.packages[""].version=v;
   fs.writeFileSync(f, JSON.stringify(j,null,2)+"\n");
-}' 0.8.0
-sed -i 's#sosese/sosese:v0.7#sosese/sosese:v0.8#' compose.yml
+}' 0.10.0
+sed -i 's#sosese/sosese:v0.9#sosese/sosese:v0.10#' compose.yml
 
-# Contrôle bloquant : exactement 3 fichiers, 4 lignes changées, rien d'autre.
+# Contrôle bloquant : exactement 3 fichiers, 4 lignes changées, uniquement des lignes "version".
 git diff --stat
-git diff package.json package-lock.json | grep '^[-+] '   # uniquement des lignes "version"
+git diff package.json package-lock.json | grep '^[-+] '
 
-npm ci && npm run build && npm start   # http://localhost:3000 : parcourir les pages avant de committer
-
+npm ci && npm run build && npm start   # http://localhost:3000 : parcourir les pages
 git add package.json package-lock.json compose.yml
-git commit -m "chore: version 0.8.0"
-```
+git commit -m "chore: version 0.10.0"
+# push, PR et merge comme en 1.7
 
-⚠ **Ne jamais utiliser `npm install --package-lock-only` pour une version.** Les tags `v0.3` et `v0.6` ont tous deux
-échoué au test de démarrage parce que le commit de version montait aussi `astro` 5 → 7, `@fastify/static` 8 → 10 et
-`nodemailer` 7 → 10 (`DESIGN.md`, piège 19). Si `git diff --stat` montre plus de 4 lignes sur les deux fichiers
-`package*.json` : `git checkout -- package.json package-lock.json` et recommencer. Les montées de dépendances se
-font dans leur propre branche, jamais dans une branche `chore/vX.Y`.
-
-`compose.yml` sur `main` est la source de vérité du VPS : il doit toujours désigner la version déployée.
-
-### 2.2 Taguer
-
-```bash
 git checkout main && git pull
-git tag -a v0.3 -m "v0.3 — <résumé>"
-git push origin v0.3
+git tag -a v0.10 -m "v0.10 — <résumé>"
+git push origin v0.10
+gh run watch                           # ou https://github.com/sosese/sosese/actions
 ```
 
-- Versionnage `vX.Y`, qui correspond à `version` = `X.Y.0` dans `package.json`.
-- Ne jamais republier ni déplacer un tag existant.
-- Passage en `v1.0` : à décider (par exemple une fois les mentions légales complétées).
-
-### 2.3 Suivre le build
-
-```bash
-gh run watch
-```
-ou https://github.com/sosese/sosese/actions — durée typique : 2 minutes.
-Si le test de démarrage échoue, rien n'est publié.
-
-### 2.4 Vérifier l'image en local
+Vérifier une image en local (facultatif) :
 
 ```bash
 docker login ghcr.io -u sosese            # une fois ; jeton GitHub read:packages
-docker run --rm -p 127.0.0.1:3000:3000 --read-only --tmpfs /tmp --env-file .env ghcr.io/sosese/sosese:v0.3
-curl -I http://localhost:3000
+docker run --rm -p 127.0.0.1:3000:3000 --read-only --tmpfs /tmp --env-file .env ghcr.io/sosese/sosese:v0.10
 curl http://localhost:3000/api/health     # {"ok":true}
 ```
 
-Une image qui ne démarre pas en local ne démarrera pas mieux en production.
-
 ---
 
-## 3. Déployer — sur le VPS, manuellement
+## 3. Déployer — `deploy.sh` sur le VPS
 
-### 3.0 Voie normale : `deploy.sh`
+### 3.1 Installer ou mettre à jour le script
 
-```bash
-ssh root@186.241.17.83
-/srv/sosese/deploy.sh v0.9
-```
-
-`scripts/deploy-vps.sh`, installé sous `/srv/sosese/deploy.sh`, enchaîne les étapes 3.1 à 3.4 :
-
-1. `docker pull` de l'image **avant** de toucher à quoi que ce soit (tag inexistant ou CI en échec = arrêt immédiat) ;
-2. tag remplacé dans `compose.yml` (copie de l'ancien dans `compose.yml.precedent`), `docker compose config --quiet`,
-   `docker compose up -d` ;
-3. attente de `healthy` sur la bonne image, puis `https://sosese.tech/api/health`, `/` et `/contact` via Traefik ;
-   **si l'une de ces vérifications échoue, retour automatique à la version précédente** ;
-4. vérifications non bloquantes (sans rollback, la cause étant extérieure à l'image) : ligne SMTP des journaux,
-   redirection `www`, Traefik en 401, Extrabat en 200 ;
-5. nettoyage des seules images `ghcr.io/sosese/sosese` : la version en ligne et les 3 plus récentes sont conservées.
-
-**Rollback** : la même commande avec l'ancien tag (`/srv/sosese/deploy.sh v0.8`), puis reporter ce tag dans
-`compose.yml` sur `main` (§4).
-
-Reste à faire à la main : envoyer le formulaire et vérifier la réception (§3.3), puis la synchronisation (§8).
-
-Le script ne modifie que la ligne `image:`. Si `release.sh` a signalé d'autres changements dans `compose.yml`, copier
-d'abord le fichier comme en 3.1.
-
-**Installation et mise à jour du script** (une fois, puis à chaque modification de `scripts/deploy-vps.sh` sur `main`) :
+Une fois, puis à chaque modification de `scripts/deploy-vps.sh` sur `main`, depuis le poste local :
 
 ```bash
 scp scripts/deploy-vps.sh root@186.241.17.83:/srv/sosese/deploy.sh
 ssh root@186.241.17.83 chmod 700 /srv/sosese/deploy.sh
 ```
 
-Les sections 3.1 à 3.4 décrivent les mêmes étapes à la main (secours).
-
-Snapshot Hostinger avant toute intervention sur l'infrastructure (Traefik, réseaux, volumes). Pas nécessaire pour un
-simple changement de tag.
-
-### 3.1 Mettre à jour `compose.yml`
-
-Depuis le poste local, sur `main` à jour (le fichier contient déjà le nouveau tag, cf. 2.1) :
-
-```bash
-scp compose.yml root@186.241.17.83:/srv/sosese/compose.yml
-```
-
-Puis sur le VPS :
-
-```bash
-ssh root@186.241.17.83
-cd /srv/sosese
-grep image: compose.yml          # vérifier le tag
-```
+La copie du VPS n'est pas versionnée : après une modification du script, ne pas oublier de la refaire.
 
 ### 3.2 Déployer
 
 ```bash
+ssh root@186.241.17.83
+/srv/sosese/deploy.sh v0.10
+```
+
+Le tag doit être publié (2.2, étape 7). Formes acceptées : `vX.Y` et les préversions `vX.Y-suffixe`
+(ex. `v0.9-v2-preview.1`). Durée : moins d'une minute.
+
+Snapshot Hostinger avant toute intervention sur l'infrastructure (Traefik, réseaux, volumes). Pas nécessaire pour un
+simple changement de tag.
+
+### 3.3 Ce que fait le script
+
+1. **Verrou** : un seul déploiement à la fois.
+2. **`docker pull` de l'image avant de toucher à quoi que ce soit** : tag inexistant, CI en échec ou `docker login`
+   manquant = arrêt immédiat, production intacte.
+3. Copie de `compose.yml` dans `compose.yml.precedent`, remplacement du tag sur la seule ligne `image:`,
+   `docker compose config --quiet` (jamais sans `--quiet` : la sortie afficherait le `.env`), `docker compose up -d`.
+4. **Vérifications bloquantes** : conteneur `sosese-web` `healthy` sur la bonne image, puis `/api/health`, `/` et
+   `/contact` via Traefik. **Un échec déclenche le retour automatique à la version précédente**, vérifié de la même façon.
+5. **Vérifications non bloquantes**, signalées en jaune sans rollback (la cause est extérieure à l'image) : ligne SMTP
+   des journaux, `www` en 301, Traefik en 401, Extrabat en 200.
+6. **Nettoyage** des seules images `ghcr.io/sosese/sosese` en `vX.Y` : la version en ligne et les 3 plus récentes sont
+   conservées. Les préversions ne sont jamais supprimées. Aucun `prune` global.
+7. Affichage de la version en ligne, de la précédente et de la commande de rollback.
+
+### 3.4 Après le déploiement
+
+- Dans le navigateur : le site, et le formulaire envoyé en réel avec vérification de la réception.
+- Synchronisation dépôt / production (§8) : une session Claude Code peut s'en charger, par requêtes HTTP publiques.
+- Consigner le déploiement dans `CHANGELOG.md` (date, tag, version précédente).
+
+### 3.5 Si le script s'arrête
+
+| Message | Production | Suite |
+|---|---|---|
+| `Usage : deploy.sh vX.Y` | intacte | tag mal formé |
+| `Ligne image: introuvable ou en double` | intacte | `grep -n image /srv/sosese/compose.yml \| cat -A` : forme inattendue de la ligne |
+| `Image … introuvable` | intacte | CI en échec (`gh run list`), tag mal tapé, ou `docker login ghcr.io` (§5) |
+| `compose.yml invalide` | intacte, fichier restauré | comparer avec `compose.yml` de `main` |
+| `Rollback réussi` | version précédente | `docker compose logs web --tail 100`, corriger, publier la version suivante |
+| `Le rollback lui-même ne répond pas` | **incertaine** | diagnostic manuel (§6) |
+| alerte jaune SMTP | en ligne | identifiants ou hébergeur SMTP (§6) |
+| alerte jaune voisins | en ligne | vérifier Traefik et Extrabat (§6) |
+
+### 3.6 À la main (secours)
+
+```bash
+# poste local, sur main à jour
+scp compose.yml root@186.241.17.83:/srv/sosese/compose.yml
+
+# VPS
+cd /srv/sosese
+grep image: compose.yml          # vérifier le tag
 docker compose config --quiet    # valide le fichier SANS l'afficher
 docker compose pull
 docker compose up -d
 docker compose ps                # attendre "healthy", ~30 s
 docker compose logs web          # « SMTP : connexion et authentification vérifiées »
-```
 
-⚠ Ne jamais lancer `docker compose config` sans `--quiet` : la sortie contient les valeurs du `.env`, mot de passe
-SMTP compris. Ne jamais la coller dans une session.
-
-### 3.3 Vérifier
-
-```bash
-curl -I https://sosese.tech                          # 200
-curl -I https://www.sosese.tech                      # 301 vers https://sosese.tech/
+curl -s -o /dev/null -w '%{http_code}\n' https://sosese.tech                  # 200
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' https://www.sosese.tech/   # 301 https://sosese.tech/
 curl https://sosese.tech/api/health                  # {"ok":true}
 curl -I https://traefik.sosese.tech/dashboard/       # 401 : les voisins répondent toujours
 curl https://mcp-extrabat.sosese.tech/health         # 200
 docker ps --format 'table {{.Names}}\t{{.Status}}'
 ```
 
-Puis, dans le navigateur : le site, et le formulaire envoyé en réel avec vérification de la réception.
+`curl -I` (requête HEAD) sur `www` renvoie **308** et non 301 : c'est Traefik, pas une erreur. Tester en GET comme
+ci-dessus.
 
-Une session Claude Code peut ensuite vérifier la synchronisation (section 8), par requêtes HTTP publiques uniquement.
-
-### 3.4 Nettoyer — uniquement si nécessaire
-
-```bash
-docker image prune -f            # images sans tag et sans conteneur
-```
-
-**Jamais** `docker system prune -a`, `docker volume prune`, ni `docker stop $(docker ps -q)` : ces commandes touchent
-tous les projets du VPS.
-
-Garder au moins les deux dernières images taguées : ce sont les cibles de rollback.
+Nettoyage, uniquement si nécessaire : `docker image rm ghcr.io/sosese/sosese:<ancien tag>`, ou `docker image prune -f`
+(images sans tag). **Jamais** `docker system prune -a`, `docker volume prune`, ni `docker stop $(docker ps -q)` : ces
+commandes touchent tous les projets du VPS. Garder au moins les deux dernières images : ce sont les cibles de rollback.
 
 ---
 
 ## 4. Rollback
 
 ```bash
-cd /srv/sosese
-sed -i 's#sosese/sosese:v0.3#sosese/sosese:v0.2#' compose.yml
-docker compose up -d
-curl -I https://sosese.tech
+/srv/sosese/deploy.sh v0.9       # sur le VPS : le tag précédent, affiché à la fin de chaque déploiement
 ```
 
-Quelques secondes : l'image précédente est en cache local, aucun build, aucune dépendance réseau.
+Quelques secondes : l'image précédente est en cache local (le nettoyage en garde 3), aucun build.
 
-Reporter ensuite le tag de rollback dans `compose.yml` sur `main`, corriger en local, publier une `v0.4`, redéployer.
+Puis, côté dépôt : `compose.yml` sur `main` désigne encore la version retirée. Corriger en local et publier la version
+suivante, qui remet `main` et la production d'accord. Consigner le rollback dans `CHANGELOG.md`.
+
+À la main : `sed -i 's#sosese/sosese:v0.10#sosese/sosese:v0.9#' compose.yml && docker compose up -d` dans
+`/srv/sosese`.
 
 ---
 
 ## 5. Cas particuliers
+
+### Préversion (tag hors de `main`)
+
+Une version de démonstration peut être publiée depuis une autre branche avec un tag `vX.Y-suffixe`
+(ex. `v0.9-v2-preview.1`, branche `codex/site-v2`), sans passer par `npm run release` : `git tag -a` puis
+`git push origin <tag>` depuis la branche. Le déploiement se fait avec `deploy.sh <tag>` comme d'habitude.
+
+`compose.yml` sur `main` ne désigne alors plus la production. Consigner l'écart dans `CHANGELOG.md` et le résorber au
+déploiement suivant d'une version de `main`. Précédent : du 2026-09-21 au 2026-10-07, la production a tourné sur
+`v0.9-v2-preview.1` alors que `main` indiquait `v0.8`, sans trace dans le dépôt ; découvert au premier `deploy.sh`.
 
 ### Modifier une variable d'environnement
 
@@ -361,7 +375,8 @@ Toute nouvelle clé : l'ajouter sans valeur dans `.env.example` côté dépôt.
 
 ### Modifier les labels Traefik
 
-Modifier `compose.yml` **dans le dépôt** (branche, PR, merge), puis le copier sur le VPS comme en 3.1.
+Modifier `compose.yml` **dans le dépôt** (branche, PR, merge), puis le copier sur le VPS comme en 3.6
+(`npm run release` le signale). `deploy.sh` ne modifie que la ligne `image:`.
 Ne jamais éditer seulement la copie du VPS : le prochain `scp` écraserait la modification.
 
 ```bash
@@ -369,7 +384,7 @@ docker compose up -d
 docker logs traefik --since 2m 2>&1 | grep -iE "sosese|error"
 ```
 
-Vérifier immédiatement les autres services (3.3) : Traefik recharge à chaud, et un nom de routeur ou de middleware
+Vérifier immédiatement les autres services (3.6) : Traefik recharge à chaud, et un nom de routeur ou de middleware
 en double écrase silencieusement un voisin. Tous les noms doivent commencer par `sosese`.
 
 ### Ajouter une question de FAQ

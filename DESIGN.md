@@ -192,7 +192,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau, slot nommé `actions` (rangée de boutons sous le chapeau) |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
-| Questionnaire | `islands/Questionnaire.tsx` | îlot React, `client:idle` — questionnaire prospects en sept étapes, voir « Questionnaire » |
+| Questionnaire | `islands/Questionnaire.tsx` | îlot React, `client:idle` — questionnaire prospects en six étapes, voir « Questionnaire » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — **non utilisé depuis le 2026-09-20** (hero jusqu'au 2026-09-17, « L'offre » jusqu'au 2026-09-19, « Sous le capot » une journée) ; conservé : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de la dictée » |
 | RotationEcrans | `ui/diagrams/RotationEcrans.astro` | statique + script natif — mockup animé de **« L'offre »** depuis le 2026-09-19, en 24 rem depuis le 2026-09-20 (hero le 2026-09-19, le temps d'une itération) : le même enchaînement joué dans quatre décors (messagerie, boîte mail, téléphone, application de gestion), quatre boutons pour aller à l'un d'eux, bouton pause. Voir « Rotation d'écrans » |
@@ -337,6 +337,8 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - Décision (2026-10-07) : **pas de déploiement depuis GitHub Actions**. Le déploiement reste un geste humain sur le
   VPS, en une commande ; aucune clé SSH ni aucun secret de déploiement côté GitHub, la CI ne touche toujours pas au
   VPS. Claude Code ne lance aucun des deux scripts (push, merge, tag et VPS sont réservés à l'humain).
+- Tags acceptés par `deploy.sh` : `vX.Y` et `vX.Y-suffixe` (préversions). `release.sh` ne produit que des `vX.Y`.
+- Le contrôle de `www` se fait en GET : Traefik répond 301 en GET mais **308 en HEAD** (`curl -I`).
 - `deploy.sh` ne modifie que la ligne `image:` de `compose.yml` ; tout autre changement (labels Traefik) se copie à
   la main, et `release.sh` le signale. Rollback automatique seulement sur ce que l'image peut casser (santé,
   `/api/health`, `/`, `/contact` via Traefik) ; SMTP et voisins = alertes sans rollback.
@@ -353,7 +355,8 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
     fait par empreinte (`git hash-object` avant / après), pas par `git status`.
 - Testés le 2026-10-07 avec des `docker`, `curl`, `gh` et `npm` simulés et un dépôt distant local : succès, rollback
   sur conteneur `unhealthy`, tag inexistant, tag déjà publié, diff de version pollué, refus aux confirmations. Le
-  premier passage réel (VPS, GitHub) reste à valider.
+  premier passage réel a eu lieu le 2026-10-07 avec la `v0.9` (`release.sh` complet, puis `deploy.sh` après le
+  correctif des préversions) ; build du tag identique à la production.
 
 ### Mise en production (`compose.yml`)
 - Utilisé **uniquement sur le VPS**, dans `/srv/sosese`, par l'humain. Jamais lancé depuis la session de code.
@@ -1153,7 +1156,7 @@ Tolérées, à ne pas étendre sans raison :
     **Récidive le 2026-09-17 sur `v0.6`**, avec les mêmes paquets (patchs plus récents : la montée a été
     re-résolue, pas recopiée d'une ancienne branche). Même symptôme, même blocage par la CI ; correctif en `v0.7`
     (dépendances et lockfile de la `v0.5` restaurés, build identique au build audité : mêmes empreintes `/_astro`).
-    La recette du RUNBOOK (§2.1) n'appelle plus `npm install` et impose un `git diff` de contrôle.
+    La recette du RUNBOOK (§2.4 et §2.5, et `scripts/release.sh` depuis la v0.9) n'appelle plus `npm install` et impose un `git diff` de contrôle.
     → Un commit de version ne touche que `version` (`git diff` de `package.json` : une ligne). Les montées de
     dépendances se font dans leur propre branche `chore/`, avec `npm ci && npm run build && npm start` et un
     parcours des pages avant la PR.
