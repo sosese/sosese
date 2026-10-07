@@ -196,7 +196,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — **non utilisé depuis le 2026-09-20** (hero jusqu'au 2026-09-17, « L'offre » jusqu'au 2026-09-19, « Sous le capot » une journée) ; conservé : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de la dictée » |
 | RotationEcrans | `ui/diagrams/RotationEcrans.astro` | statique + script natif — mockup animé de **« L'offre »** depuis le 2026-09-19, en 24 rem depuis le 2026-09-20 (hero le 2026-09-19, le temps d'une itération) : le même enchaînement joué dans quatre décors (messagerie, boîte mail, téléphone, application de gestion), quatre boutons pour aller à l'un d'eux, bouton pause. Voir « Rotation d'écrans » |
-| AgentEnAction | `ui/diagrams/AgentEnAction.astro` | statique + script natif — visuel du **hero** depuis le 2026-10-07 : une tâche, l'agent qui consulte trois outils, une proposition à valider puis exécutée. Voir « L'agent en action (hero) » |
+| AgentEnAction | `ui/diagrams/AgentEnAction.astro` | statique + script natif — **non utilisé** (hero le 2026-10-07, quelques heures), conservé ; prop `anime={false}` = scène figée sur « Valider », sans boucle ni pause. Contenu : une tâche, l'agent qui consulte trois outils, une proposition à valider puis exécutée. Voir « L'agent en action (hero) » |
 | VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — **non utilisé depuis le 2026-10-07** (remplacé par `AgentEnAction`, jugé trop chargé), conservé ; visuel du hero du 2026-09-19 au 2026-10-07 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
 | ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
@@ -465,7 +465,14 @@ du texte qu'elle supprime.
 - `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
   rester sur `transform` ou `opacity` pour cette raison.
 
-### L'agent en action (hero, AgentEnAction)
+### Hero en texte seul (2026-10-07)
+Demande explicite, après trois essais le même jour (photo, `AgentEnAction` animé, puis figé) : **le hero ne porte
+plus de visuel**. Une seule colonne : eyebrow, h1 en `text-64` à partir de `lg` (`max-w-4xl` pour garder trois
+lignes), chapeau à la mesure, deux boutons. La démonstration du service commence au cas client, juste en dessous.
+Effet de bord : plus aucun script ni animation au-dessus de la ligne de flottaison. **Remettre un visuel = revenir à
+la grille `lg:grid-cols-[1fr_1fr]` et au `text-48`**, sinon le titre écrase la colonne de droite.
+
+### L'agent en action (AgentEnAction) — non utilisé, conservé
 Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
 **Vos tâches sont prises en charge par l'agent avec les données de vos outils actuels ; vous validez, il exécute.**
 - Trois temps numérotés dans une carte : 01 la tâche (une bulle, la phrase du dirigeant), 02 « Il consulte vos
@@ -1026,6 +1033,7 @@ Tolérées, à ne pas étendre sans raison :
 - Anneau de focus : `2px` d'épaisseur et de décalage.
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
+- `max-w-4xl` sur le h1 du hero en texte seul (même échelle de largeurs).
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
 - Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1280px` pour FlowDiagram, aligné sur `xl:`).
 - Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
