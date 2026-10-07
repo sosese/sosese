@@ -16,6 +16,7 @@
 ## Documentation
 - `DESIGN.md` : tokens, composants, conventions, décisions, pièges connus. **À lire avant toute modification.**
 - `RUNBOOK.md` : modifier, publier, déployer, rollback, diagnostic, vérification de synchro.
+- `CHANGELOG.md` : versions publiées et journal des déploiements (une ligne par déploiement ou rollback).
 - `cahier-des-charges-sosese-v1.2.md` : référence initiale. Quand `DESIGN.md` documente un écart, `DESIGN.md` prime.
 
 ## Où modifier quoi
@@ -52,4 +53,4 @@
 - `npm run dev` : http://localhost:4321
 - `npm run build && npm start` : serveur Fastify de production sur http://localhost:3000 (requis pour tester le formulaire, y compris depuis `npm run dev`)
 - `docker compose -f compose.dev.yml up --build` : image locale + Mailpit (http://localhost:8025)
-- `npm run release -- X.Y` (local) puis `/srv/sosese/deploy.sh vX.Y` (VPS) : publication et déploiement, **lancés par l'humain uniquement** (voir `RUNBOOK.md` §2.0 et §3.0)
+- `npm run release -- X.Y` (local) puis `/srv/sosese/deploy.sh vX.Y` (VPS) : publication et déploiement, **lancés par l'humain uniquement** (voir `RUNBOOK.md` §2 et §3)

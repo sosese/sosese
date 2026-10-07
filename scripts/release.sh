@@ -45,7 +45,7 @@ tag_prec=$(sed -nE "s#^ *image: $IMAGE:(v[0-9]+\.[0-9]+) *\$#\1#p" compose.yml)
 [[ -n $tag_prec ]] || arreter "Ligne image: introuvable dans compose.yml."
 ok "main à jour, $actuel ($tag_prec) → $version ($tag)"
 
-# --- Numéro de version (RUNBOOK §2.1, piège 19 : jamais npm install) -------------------------------------
+# --- Numéro de version (RUNBOOK §2.4, piège 19 : jamais npm install) -------------------------------------
 
 etape "Numéro de version sur la branche $branche"
 git checkout --quiet -b "$branche"

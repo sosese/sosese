@@ -1,0 +1,58 @@
+# CHANGELOG — sosese.tech
+
+Versions publiées (tags `vX.Y`, image `ghcr.io/sosese/sosese:<tag>`) et déploiements en production.
+Le détail des décisions est dans `DESIGN.md`, les procédures dans `RUNBOOK.md`.
+
+## Journal des déploiements
+
+À compléter après chaque `deploy.sh` (RUNBOOK §3.4) ou rollback (§4).
+
+| Date | En ligne | Précédente | Remarque |
+|---|---|---|---|
+| 2026-10-07 | `v0.9` | `v0.9-v2-preview.1` | premier déploiement par `deploy.sh` ; build du tag identique à la production (`/_astro`, `/`, `/contact`, `/questionnaire`) ; fin de la préversion v2 |
+| 2026-09-21 ou après | `v0.9-v2-preview.1` | `v0.8` | préversion déployée à la main hors de `main`, non consignée à l'époque (constatée le 2026-10-07) |
+| 2026-09-15 | `v0.2` | — | première mise en production |
+
+Déploiements entre `v0.2` et `v0.8` : non consignés.
+
+## Non publié
+
+- `fix/deploy-tag-preversion` : `deploy.sh` accepte les tags de préversion (`vX.Y-suffixe`), en version en ligne
+  comme en cible de rollback. La copie du VPS est déjà à jour ; la branche reste à merger.
+- Documentation : `RUNBOOK.md` réorganisé autour des scripts (§2 publier, §3 déployer, §4 rollback, §5 préversion),
+  ce journal, contrôle de `www` en GET (Traefik répond 308 en HEAD).
+
+## v0.9 — 2026-10-07
+
+« Mise en place script déploiement, questionnaires prospect et simplification website ». PR #14, #15, #16.
+
+- **Questionnaire prospects** sur `/questionnaire` (`noindex`, hors navigation) : 6 étapes, ~6 minutes, règles dans
+  `shared/questionnaire.json` ; accessible depuis `/contact` par un bouton principal sous le chapeau ; envois plus
+  robustes. Test de démarrage de la CI étendu à `/questionnaire`.
+- **Accueil simplifié** : hero en texte seul, cas client remonté en 2e position, section « Constat » fondue dans
+  l'offre, hero et bandeau d'engagements reformulés. Les visuels retirés (`AgentEnAction`, `VracEnActions`) sont
+  conservés dans le code, non utilisés.
+- **Scripts de publication et de déploiement** : `npm run release -- X.Y` (`scripts/release.sh`) et
+  `scripts/deploy-vps.sh`, installé sur le VPS sous `/srv/sosese/deploy.sh`, avec rollback automatique.
+  Aucun déploiement depuis GitHub Actions.
+
+Remplace en production la préversion `v0.9-v2-preview.1`.
+
+## v0.9-v2-preview.1 — 2026-09-21 (préversion)
+
+Branche `codex/site-v2`, hors de `main`. « V1 plus V2 preview under /v2, form disabled, runtime security fixes ».
+Retirée de la production le 2026-10-07 ; branche et image conservées. Retour possible :
+`/srv/sosese/deploy.sh v0.9-v2-preview.1`.
+
+## Versions antérieures
+
+| Tag | Date | Contenu |
+|---|---|---|
+| `v0.8` | 2026-09-20 | nouveau visuel de hero, accueil resserré |
+| `v0.7` | 2026-09-17 | contenu de la `v0.6` avec les dépendances de la `v0.5` |
+| `v0.6` | 2026-09-17 | **jamais publiée** (test de démarrage en échec, piège 19) : hero sombre, méthode animée, cas client enchaîné, offre développée |
+| `v0.5` | 2026-09-15 | terminal du hero animé pour tous |
+| `v0.4` | 2026-09-15 | cas client, terminal du hero corrigé, dépendances de la `v0.2` rétablies |
+| `v0.3` | 2026-09-15 | **jamais publiée** (piège 19) : cas client L'Atelier des Sols, terminal du hero corrigé |
+| `v0.2` | 2026-09-15 | première mise en production : corrections des audits, politique de confidentialité |
+| `v0.1` | 2026-09-15 | première image : accueil, pages internes, serveur |
