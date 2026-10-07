@@ -7,7 +7,7 @@ import { legal, site } from "../config/site";
 
 <Base
   title="Politique de confidentialité | sosese"
-  description="Quelles données sosese collecte via le formulaire de contact, pourquoi, combien de temps, et comment exercer vos droits."
+  description="Quelles données sosese collecte via le formulaire de contact et le questionnaire, pourquoi, combien de temps, et comment exercer vos droits."
 >
   <PageHeader eyebrow="Informations légales" title="Politique de confidentialité">
     Ce que devient ce que vous nous écrivez, en clair.
@@ -17,8 +17,8 @@ import { legal, site } from "../config/site";
     <div class="prose-site">
       <h2>En résumé</h2>
       <ul>
-        <li>Les seules données collectées sont celles que vous saisissez dans le formulaire de contact.</li>
-        <li>Elles servent uniquement à vous répondre.</li>
+        <li>Les seules données collectées sont celles que vous saisissez dans le formulaire de contact ou dans le questionnaire.</li>
+        <li>Elles servent uniquement à vous répondre et, pour le questionnaire, à mieux comprendre les besoins des petites entreprises.</li>
         <li>Elles ne sont ni vendues, ni cédées, ni utilisées pour entraîner des modèles.</li>
         <li>Aucun cookie, aucun script tiers, aucune mesure d'audience.</li>
       </ul>
@@ -31,14 +31,19 @@ import { legal, site } from "../config/site";
       </p>
 
       <h2>Données collectées</h2>
-      <p>Via le formulaire de contact uniquement :</p>
+      <p>Via le formulaire de contact :</p>
       <ul>
         <li>nom, société, adresse email ;</li>
         <li>téléphone, si vous choisissez de l'indiquer ;</li>
         <li>secteur d'activité, sujets sélectionnés et message libre.</li>
       </ul>
       <p>
-        Pour limiter les envois abusifs, l'adresse IP à l'origine d'une demande de contact est utilisée temporairement,
+        Via le questionnaire, envoyé par lien direct : les réponses que vous choisissez de donner, toutes facultatives
+        (activité, organisation, outils, attentes, budget), et, si vous les indiquez, votre prénom, le nom de votre
+        entreprise, votre email et votre téléphone. Si vous indiquez un email, un accusé de réception vous est envoyé.
+      </p>
+      <p>
+        Pour limiter les envois abusifs, l'adresse IP à l'origine d'un envoi est utilisée temporairement,
         en mémoire du serveur applicatif, pour compter les envois. Elle n'y est pas enregistrée.
       </p>
 
@@ -55,8 +60,10 @@ import { legal, site } from "../config/site";
 
       <h2>Finalité et base légale</h2>
       <p>
-        Les données servent exclusivement à répondre à votre demande et, le cas échéant, à échanger sur un projet. Le
-        traitement repose sur votre <strong>consentement</strong>, recueilli par la case à cocher du formulaire
+        Les données servent exclusivement à répondre à votre demande et, le cas échéant, à échanger sur un projet. Les
+        réponses au questionnaire servent en plus à mieux comprendre les besoins des petites entreprises ; elles ne
+        sont jamais publiées sous une forme qui permette de vous reconnaître. Le traitement repose sur votre
+        <strong>consentement</strong>, recueilli par la case à cocher du formulaire ou du questionnaire
         (article 6.1.a du RGPD). Vous pouvez le retirer à tout moment.
       </p>
       <p>
@@ -66,7 +73,7 @@ import { legal, site } from "../config/site";
 
       <h2>Destinataires</h2>
       <p>
-        Les demandes ne sont pas stockées sur le serveur du site : elles sont transmises par email et conservées dans la
+        Les demandes et les réponses au questionnaire ne sont pas stockées sur le serveur du site : elles sont transmises par email et conservées dans la
         messagerie de {site.name}, seul destinataire.
       </p>
       <p>
@@ -81,7 +88,7 @@ import { legal, site } from "../config/site";
 
       <h2>Durée de conservation</h2>
       <ul>
-        <li>Échanges liés à une demande de contact : {legal.dureeConservation}.</li>
+        <li>Échanges liés à une demande de contact et réponses au questionnaire : {legal.dureeConservation}.</li>
         <li>
           Journal technique des connexions :
           {" "}{legal.dureeJournauxTechniques ?? <ACompleter label="durée de conservation des journaux" />}.
@@ -101,8 +108,10 @@ import { legal, site } from "../config/site";
 
       <h2>Cookies et stockage local</h2>
       <p>
-        Ce site ne dépose aucun cookie. Seul votre choix de thème clair ou sombre est mémorisé dans votre navigateur
-        (stockage local) : il n'est jamais transmis au serveur.
+        Ce site ne dépose aucun cookie. Deux informations seulement sont mémorisées dans votre navigateur (stockage
+        local) : votre choix de thème clair ou sombre, et vos réponses au questionnaire tant qu'il n'est pas envoyé,
+        pour que vous puissiez y revenir. Ce brouillon est effacé à l'envoi ; ni lui ni le thème ne sont transmis au
+        serveur sans votre clic sur « Envoyer ».
       </p>
 
       <p><em>Dernière mise à jour : {legal.miseAJour}.</em></p>

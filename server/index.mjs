@@ -11,6 +11,7 @@ import fastifyStatic from "@fastify/static";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 import regles from "../shared/contact.json" with { type: "json" };
+import { routeQuestionnaire } from "./questionnaire.mjs";
 
 const env = process.env;
 const PROD = env.NODE_ENV === "production";
@@ -111,9 +112,14 @@ const transport = smtpManquants.length
       secure: smtpPort === 465,
       requireTLS: smtpPort === 587,
       auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+      // Délais de nodemailer par défaut : 2 min de connexion, 10 min d'inactivité. Un SMTP figé laissait le
+      // visiteur sur « Envoi en cours… » ; ainsi il obtient l'erreur et l'email de repli en 20 s au plus.
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
     });
 if (!transport) {
-  app.log.warn(`SMTP non configuré (${smtpManquants.join(", ")}) : POST /api/contact répondra 503.`);
+  app.log.warn(`SMTP non configuré (${smtpManquants.join(", ")}) : POST /api/contact et /api/questionnaire répondront 503.`);
 } else {
   // Diagnostic au démarrage, sans jamais journaliser le mot de passe.
   const adresseSuspecte = (a) => !new RegExp(regles.emailRegex).test(a) || /\.$|\s/.test(a);
@@ -177,6 +183,8 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
     return reply.code(502).send({ ok: false, erreur: "envoi" });
   }
 });
+
+routeQuestionnaire(app, { transport, env });
 
 for (const signal of ["SIGTERM", "SIGINT"]) {
   process.once(signal, async () => {

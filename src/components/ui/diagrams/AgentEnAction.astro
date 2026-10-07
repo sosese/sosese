@@ -1,0 +1,164 @@
+---
+// Visuel du hero depuis le 2026-10-07 (remplace VracEnActions, conservé). Une seule idée, en trois temps :
+// une tâche arrive, l'agent la traite avec les données de vos outils actuels, vous validez, il exécute.
+// Contrat des schémas (DESIGN.md) : tout est toujours dans le DOM, seule l'opacité change, l'état rendu par le
+// serveur est l'état FINAL (rien ne bouge sans JS ni sous mouvement réduit), bloc en aria-hidden + transcription.
+// Pas de « elle » ici : le hero est au-dessus du chapeau de l'offre (DESIGN.md, « Copy ») — l'agent est « il ».
+// `anime={false}` : la scène reste sur son état final, sans boucle ni bouton pause.
+type Props = { anime?: boolean };
+const { anime = true } = Astro.props;
+
+const tache = "Relance les devis restés sans réponse.";
+const outils = [
+  { nom: "Logiciel de gestion", trouve: "3 devis en attente" },
+  { nom: "Boîte mail", trouve: "aucune réponse reçue" },
+  { nom: "Agenda", trouve: "relances faites il y a 10 jours" },
+];
+const proposition = "3 relances prêtes, rédigées à votre façon";
+---
+
+<figure data-agent data-statique={anime ? undefined : ""} class="flex w-full max-w-[31rem] flex-col gap-3 justify-self-center lg:justify-self-end">
+  <p class="eyebrow">Votre solution IA s'en occupe</p>
+  <figcaption class="sr-only">
+    Exemple : vous demandez de relancer les devis restés sans réponse. L'agent consulte votre logiciel de gestion
+    (3 devis en attente), votre boîte mail (aucune réponse reçue) et votre agenda (relances faites il y a 10 jours).
+    Il prépare 3 relances. Vous validez, il les envoie.
+  </figcaption>
+
+  <div class="relative">
+    <button
+      type="button"
+      data-agent-pause
+      hidden
+      aria-pressed="false"
+      class="absolute top-3 right-3 z-10 flex size-8 items-center justify-center rounded-full border border-border text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-accent hover:text-accent"
+      aria-label="Mettre l'animation en pause"
+      title="Mettre l'animation en pause"
+    >
+      <svg viewBox="0 0 16 16" class="size-3" fill="currentColor" data-icone="pause"><rect x="3" y="2" width="3.5" height="12" rx="1" /><rect x="9.5" y="2" width="3.5" height="12" rx="1" /></svg>
+      <svg viewBox="0 0 16 16" class="hidden size-3" fill="currentColor" data-icone="lecture"><path d="M4 2.5v11l9-5.5z" /></svg>
+    </button>
+
+  <div aria-hidden="true" class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5 shadow-sm">
+    {/* 1. La tâche */}
+    <div class="flex flex-col gap-2 pr-10">
+      <p data-pas class="font-mono text-12 text-ink-muted"><span class="text-accent">01</span> Votre tâche</p>
+      <p data-pas class="w-fit rounded-md rounded-bl-sm border border-border-strong bg-bg px-3 py-2 text-16 text-ink">« {tache} »</p>
+    </div>
+
+    {/* 2. L'agent consulte vos outils */}
+    <div class="flex flex-col gap-2 border-t border-border pt-4">
+      <p data-pas class="font-mono text-12 text-ink-muted"><span class="text-accent">02</span> Il consulte vos outils</p>
+      <ul class="flex flex-col gap-2">
+        {
+          outils.map((o) => (
+            <li data-pas class="flex flex-col gap-1 rounded-md border border-border px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+              <span class="flex items-center gap-2 text-14 text-ink">
+                <span class="font-mono text-accent">✓</span>
+                {o.nom}
+              </span>
+              <span class="pl-5 text-14 text-ink-muted sm:pl-0 sm:text-right">{o.trouve}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    {/* 3. Vous validez, il exécute. « Valider » et « Envoyées » occupent la même case (piège 28) :
+        le passage de l'un à l'autre ne décale rien. Seul aplat de couleur de la scène : le bouton. */}
+    <div class="flex flex-col gap-2 border-t border-border pt-4">
+      <p data-pas class="font-mono text-12 text-ink-muted"><span class="text-accent">03</span> Vous validez, il exécute</p>
+      <div data-pas class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-accent px-3 py-3">
+        <span class="text-14 font-medium text-ink">{proposition}</span>
+        <span class="inline-grid">
+          <span data-agent-valider class="agent-etat rounded-md bg-accent px-4 py-2 text-center text-14 font-medium text-on-accent opacity-0 [grid-area:1/1]">Valider</span>
+          <span data-agent-fait class="agent-etat flex items-center gap-2 px-4 py-2 text-14 font-medium text-ink [grid-area:1/1]">
+            <span class="font-mono text-accent">✓</span> Envoyées
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+  </div>
+</figure>
+
+<style>
+  /* Masquage posé par le script uniquement : sans JS ou sous mouvement réduit, l'état final reste affiché. */
+  [data-agent][data-joue] [data-pas],
+  [data-agent] .agent-etat {
+    transition:
+      opacity var(--duration-slow) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+  [data-agent][data-joue] [data-pas]:not(.vu) {
+    opacity: 0;
+  }
+  [data-agent][data-joue].attente [data-agent-valider] {
+    opacity: 1;
+  }
+  [data-agent][data-joue].attente [data-agent-fait] {
+    opacity: 0;
+  }
+  /* Version figée : on montre la décision (le bouton « Valider »), pas l'exécution. */
+  [data-agent][data-statique] [data-agent-valider] {
+    opacity: 1;
+  }
+  [data-agent][data-statique] [data-agent-fait] {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-agent].appui [data-agent-valider] {
+      transform: scale(0.94);
+    }
+  }
+</style>
+
+<script>
+  // Rythme en millisecondes, une boucle ≈ 11 s : la tâche, les trois outils un par un, la proposition,
+  // l'attente du « oui » (la plus longue, c'est le moment qui compte), l'appui, puis l'exécution tenue.
+  const PAS = [400, 1300, 2000, 2600, 3200, 3800, 5000, 5400];
+  const APPUI = 7400;
+  const FAIT = 7700;
+  const BOUCLE = 11000;
+
+  for (const scene of document.querySelectorAll<HTMLElement>("[data-agent]:not([data-statique])")) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) continue;
+    const pas = [...scene.querySelectorAll<HTMLElement>("[data-pas]")];
+    const bouton = scene.querySelector<HTMLButtonElement>("[data-agent-pause]")!;
+    let minuteurs: number[] = [];
+    let enPause = false;
+
+    const tour = () => {
+      scene.setAttribute("data-joue", "");
+      scene.classList.add("attente");
+      scene.classList.remove("appui");
+      pas.forEach((p) => p.classList.remove("vu"));
+      pas.forEach((p, i) => minuteurs.push(window.setTimeout(() => p.classList.add("vu"), PAS[i] ?? PAS.at(-1))));
+      minuteurs.push(window.setTimeout(() => scene.classList.add("appui"), APPUI));
+      minuteurs.push(window.setTimeout(() => scene.classList.remove("attente", "appui"), FAIT));
+      minuteurs.push(window.setTimeout(tour, BOUCLE));
+    };
+    const arreter = () => {
+      minuteurs.forEach(clearTimeout);
+      minuteurs = [];
+    };
+
+    // Boucle de plus de 5 s : bouton pause obligatoire (WCAG 2.2.2). En pause, la scène montre l'état final.
+    bouton.hidden = false;
+    bouton.addEventListener("click", () => {
+      enPause = !enPause;
+      const libelle = enPause ? "Relancer l'animation" : "Mettre l'animation en pause";
+      bouton.setAttribute("aria-label", libelle);
+      bouton.setAttribute("title", libelle);
+      bouton.setAttribute("aria-pressed", String(enPause));
+      bouton.querySelector("[data-icone=pause]")!.classList.toggle("hidden", enPause);
+      bouton.querySelector("[data-icone=lecture]")!.classList.toggle("hidden", !enPause);
+      arreter();
+      if (enPause) {
+        scene.removeAttribute("data-joue");
+        scene.classList.remove("attente", "appui");
+      } else tour();
+    });
+    tour();
+  }
+</script>

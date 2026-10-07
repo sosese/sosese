@@ -1,19 +1,20 @@
 ---
 import Button from "../ui/Button.astro";
-import VracEnActions from "../ui/diagrams/VracEnActions.astro";
 import { cta } from "../../config/site";
 ---
 
 <section aria-labelledby="hero-titre" class="border-b border-border">
-  <div class="container-site grid items-center gap-12 py-(--hero-y) lg:grid-cols-[1fr_1fr] lg:gap-16">
+  {/* Texte seul depuis le 2026-10-07 (demande explicite) : plus de visuel à droite. Le titre prend la place
+      libérée (text-64 ≥ lg) et le chapeau reste à la mesure de lecture. */}
+  <div class="container-site py-(--hero-y)">
     <div class="flex flex-col gap-6">
       <p class="eyebrow">IA sur-mesure pour PME</p>
-      <h1 id="hero-titre" class="text-36 font-semibold tracking-tight sm:text-48">
+      <h1 id="hero-titre" class="max-w-4xl text-36 font-semibold tracking-tight sm:text-48 lg:text-64">
         Vos tâches répétitives, automatisées. <span class="text-ink-muted">Sans changer vos outils.</span>
       </h1>
       <p class="max-w-(--measure) text-18 text-ink-muted">
-        On repère avec vous ce qui remplit les journées de vos équipes sans rien rapporter.{" "}
-        <strong class="font-medium text-ink">On construit l'outil qui s'en occupe à votre place</strong> —
+        On repère avec vous ce qui remplit les journées de vos équipes.{" "}
+        <strong class="font-medium text-ink">On conçoit la solution qui s'en occupe à votre place</strong> —
         branché sur les logiciels que vous utilisez déjà, intégré à vos manières de travailler.
       </p>
       <div class="flex flex-wrap items-center gap-3 pt-2">
@@ -24,7 +25,5 @@ import { cta } from "../../config/site";
         <Button href="#methode" variant="secondary" size="lg">Voir la méthode</Button>
       </div>
     </div>
-
-    <VracEnActions />
   </div>
 </section>

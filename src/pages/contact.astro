@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import PageHeader from "../components/ui/PageHeader.astro";
 import Card from "../components/ui/Card.astro";
 import ACompleter from "../components/ui/ACompleter.astro";
+import Button from "../components/ui/Button.astro";
 import ContactForm from "../components/islands/ContactForm";
 import { site, zoneIntervention } from "../config/site";
 
@@ -19,6 +20,13 @@ const etapes = [
 >
   <PageHeader eyebrow="Contact" title="Parlons de ce qui vous fait perdre du temps">
     Quelques informations suffisent. On vous répond franchement, y compris si l'automatisation n'est pas la bonne réponse.
+    {/* Pour qui n'a pas encore de demande précise : le questionnaire prospects (DESIGN.md, « Questionnaire »). */}
+    <Fragment slot="actions">
+      <Button href="/questionnaire" size="lg">
+        Répondre au questionnaire <span aria-hidden="true">→</span>
+      </Button>
+      <p class="text-14 text-ink-muted">Pas encore de demande précise ? 6 minutes, sans engagement.</p>
+    </Fragment>
   </PageHeader>
 
   <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">

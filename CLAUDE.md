@@ -23,6 +23,7 @@
 - FAQ et exemples : un fichier Markdown dans `src/content/faq/` ou `src/content/exemples/`.
 - Navigation, email, mentions légales, personne : `src/config/site.ts` (`null` = « à compléter », jamais de valeur inventée).
 - Règles du formulaire (client et serveur) : `shared/contact.json`.
+- Questions, options et accusé de réception du questionnaire prospects (`/questionnaire`) : `shared/questionnaire.json`.
 - Scénarios métier du mockup du hero : `src/config/demo-hero.ts` (inventés, règles génériques — voir `DESIGN.md`).
 - Démonstration du cas client (fiche → devis → intervention → analyse) : `src/components/ui/diagrams/EnchainementClient.astro` (données inventées).
 - Étapes de la méthode : `src/components/sections/Methode.astro` ; arguments de l'offre sur-mesure : `src/components/sections/BentoOffre.astro`.

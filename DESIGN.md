@@ -189,13 +189,15 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit. **Non utilisé depuis le 2026-09-17** (retiré de l'offre, doublon avec `DicteeMobile` placé juste à côté) ; conservé |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
-| PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
+| PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau, slot nommé `actions` (rangée de boutons sous le chapeau) |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
+| Questionnaire | `islands/Questionnaire.tsx` | îlot React, `client:idle` — questionnaire prospects en sept étapes, voir « Questionnaire » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — **non utilisé depuis le 2026-09-20** (hero jusqu'au 2026-09-17, « L'offre » jusqu'au 2026-09-19, « Sous le capot » une journée) ; conservé : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de la dictée » |
 | RotationEcrans | `ui/diagrams/RotationEcrans.astro` | statique + script natif — mockup animé de **« L'offre »** depuis le 2026-09-19, en 24 rem depuis le 2026-09-20 (hero le 2026-09-19, le temps d'une itération) : le même enchaînement joué dans quatre décors (messagerie, boîte mail, téléphone, application de gestion), quatre boutons pour aller à l'un d'eux, bouton pause. Voir « Rotation d'écrans » |
-| VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — visuel du **hero** depuis le 2026-09-19 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
+| AgentEnAction | `ui/diagrams/AgentEnAction.astro` | statique + script natif — **non utilisé** (hero le 2026-10-07, quelques heures), conservé ; prop `anime={false}` = scène figée sur « Valider », sans boucle ni pause. Contenu : une tâche, l'agent qui consulte trois outils, une proposition à valider puis exécutée. Voir « L'agent en action (hero) » |
+| VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — **non utilisé depuis le 2026-10-07** (remplacé par `AgentEnAction`, jugé trop chargé), conservé ; visuel du hero du 2026-09-19 au 2026-10-07 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
 | ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
@@ -216,15 +218,17 @@ flux, hero le 2026-09-17), conservé mais non utilisé. `DicteeMobile` avait ell
 « L'offre » le 2026-09-16, terminal descendu dans « Sous le capot », où les deux se répondent aujourd'hui — la même
 mission (un devis préparé depuis le catalogue) vue côté personne puis côté machine.
 
-Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
-Offre (`#offre`), Clients (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
-Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
+Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Clients (`#cas-client`),
+Methode (`#methode`), Offre (`#offre`), SousLeCapot (invert), Confiance (`#confiance`), Faq (`#faq`), CtaFinal
+(invert). Le 2026-10-07 (demande explicite) : la preuve d'abord — Clients monte juste sous le bandeau, sur fond
+`bg-bg` (entre le bandeau et la Méthode, tous deux `bg-bg-subtle`) ; la section Probleme (« Le constat ») est
+supprimée, ses trois scènes reprises dans les arguments de l'offre. Le menu suit l'ordre de la page. Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
 
 ### Pages internes
-`/a-propos`, `/contact`, `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
+`/a-propos`, `/contact`, `/questionnaire` (`noindex`, hors navigation), `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
 fallback Fastify du §6.4). Structure : `PageHeader` puis contenu dans `container-site` + `py-(--section-y)`.
 Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HTML simple dedans (`h2`, `h3`, `p`,
 `ul`, `dl`, `a`, `strong`) — pas de classes sur chaque balise.
@@ -255,6 +259,33 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - En dev, Vite relaie `/api` vers `http://127.0.0.1:3000` : lancer `npm run build && npm start` à côté de
   `npm run dev` pour tester l'envoi. Sans serveur, l'état `error` est le comportement attendu.
 
+### Questionnaire (`/questionnaire`)
+- Questionnaire de découverte envoyé **par lien direct** aux prospects (étude de marché, premiers rendez-vous),
+  et proposé sur `/contact` : bouton principal « Répondre au questionnaire » sous le chapeau (slot `actions` de
+  `PageHeader`), suivi de « Pas encore de demande précise ? 6 minutes, sans engagement. » (2026-10-07). Libellé du
+  bouton court : `Button` est en `whitespace-nowrap` (piège 12) :
+  `noindex`, absent de la navigation principale, bouton flottant `MobileCta` masqué (il couvrait les boutons de l'étape).
+  Un seul lien générique, sans paramètre de suivi (décision du 2026-10-07).
+- **Source unique : `shared/questionnaire.json`** — sections, questions, options, unités, aides, limites, durée
+  minimale, texte de l'accusé de réception. `src/lib/questionnaire.ts` l'expose au front, `server/questionnaire.mjs`
+  en construit le schéma zod. Email, téléphone et champ piège reprennent `shared/contact.json`. Ajouter, retirer ou
+  reformuler une question = modifier ce JSON seulement. Types : `texte`, `paragraphe`, `nombre`, `choix` (une
+  réponse, effaçable), `multi`, `email`, `tel`. `optionsDe: "secteurs" | "irritants"` reprend les listes de
+  `shared/contact.json` au lieu de les recopier (réponses croisables avec le formulaire de contact).
+- Version du 2026-10-07 : 6 étapes, ~6 minutes, texte libre limité à 4 champs ; identité regroupée à la dernière
+  étape, avec l'échéance, la proposition d'échange de 20 minutes et la provenance du lien (lien unique pour tous).
+- **Tout est facultatif**, sauf le consentement à la dernière étape. Validation par étape (nombres, email,
+  téléphone) avec les mêmes motifs que le formulaire de contact : `aria-invalid`, message relié, focus sur le
+  premier champ en erreur, erreurs en `--accent`.
+- Changement d'étape : le focus va sur le titre de l'étape (`h2`, `tabIndex=-1`), ce qui l'annonce et ramène la
+  page en haut du formulaire. Pas au premier rendu.
+- **Brouillon** en `localStorage` (clé `questionnaire-brouillon` : étape + réponses), relu après hydratation,
+  effacé après envoi réussi. Mentionné dans la politique de confidentialité, comme le thème.
+- Mise en page : l'encart « Avant de commencer » est **avant** la carte dans le HTML (lu d'abord sur mobile) et
+  passe à droite ≥ lg (`lg:col-start-2 lg:row-start-1`).
+- Copy : le questionnaire parle à la première personne (« je »), contrairement au reste du site (« nous ») — ton
+  conservé de la version d'origine, à revoir avec la pertinence des questions.
+
 ### Serveur (`server/index.mjs`)
 | Route / comportement | Détail |
 |---|---|
@@ -263,6 +294,9 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 | Compression | Brotli / gzip **dans Fastify** → **ne pas l'activer dans Traefik** (Lot 5) |
 | `GET /api/health` | `{ ok: true }` |
 | `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
+| `POST /api/questionnaire` | `server/questionnaire.mjs` · JSON, `bodyLimit` 64 ko (sept champs de 3 000 caractères) · objet `reponses` strict (clé inconnue = 400) · 5 requêtes / 10 min / IP · `200 {ok:true, accuse}` · mêmes codes d'erreur que le contact · anti-spam : remplissage < 8 s |
+| Email du questionnaire | texte brut question par question + **pièce jointe JSON** (`{ recu, reponses }`) pour regrouper les réponses dans un tableur ; `Reply-To` = l'email du prospect s'il est donné ; sujet « Questionnaire — {prénom} — {entreprise} » |
+| Accusé de réception | envoyé si un email est donné, **texte fixe** (`accuse` du JSON) : rien de saisi n'y est recopié, l'adresse n'étant pas vérifiée (sinon le formulaire servirait à envoyer un contenu choisi par un tiers depuis le domaine). Son échec est journalisé sans faire échouer la réponse (`accuse: false`) |
 | Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
 | Sécurité | helmet ; CSP `script-src 'self'` (scripts des composants en fichiers `/_astro`) + empreintes sha256 des scripts restés inline (anti-flash du thème), calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
 | Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |
@@ -272,6 +306,8 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   configuration. Un script externe (autre domaine) serait bloqué — c'est voulu (§11, aucune requête tierce).
 - Email : texte brut, `Reply-To` = le demandeur, sujet « Demande de contact — {société} ».
 - SMTP : port 465 → TLS implicite ; 587 → STARTTLS obligatoire ; autre port (ex. Mailpit 1025) → sans TLS.
+- SMTP : délais de 10 s (connexion, accueil) et 20 s (inactivité). Ceux de nodemailer par défaut (2 min, 10 min)
+  laissaient le visiteur bloqué sur « Envoi en cours… » si le SMTP se figeait (piège 30).
 
 ### Docker
 - `Dockerfile` multi-stage (§7.3) : Astro, React et Tailwind sont en `devDependencies`, l'image finale n'installe
@@ -449,7 +485,29 @@ du texte qu'elle supprime.
 - `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
   rester sur `transform` ou `opacity` pour cette raison.
 
-### Le passage du hero (VracEnActions)
+### Hero en texte seul (2026-10-07)
+Demande explicite, après trois essais le même jour (photo, `AgentEnAction` animé, puis figé) : **le hero ne porte
+plus de visuel**. Une seule colonne : eyebrow, h1 en `text-64` à partir de `lg` (`max-w-4xl` pour garder trois
+lignes), chapeau à la mesure, deux boutons. La démonstration du service commence au cas client, juste en dessous.
+Effet de bord : plus aucun script ni animation au-dessus de la ligne de flottaison. **Remettre un visuel = revenir à
+la grille `lg:grid-cols-[1fr_1fr]` et au `text-48`**, sinon le titre écrase la colonne de droite.
+
+### L'agent en action (AgentEnAction) — non utilisé, conservé
+Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
+**Vos tâches sont prises en charge par l'agent avec les données de vos outils actuels ; vous validez, il exécute.**
+- Trois temps numérotés dans une carte : 01 la tâche (une bulle, la phrase du dirigeant), 02 « Il consulte vos
+  outils » (logiciel de gestion, boîte mail, agenda, chacun avec ce qu'il y trouve), 03 « Vous validez, il
+  exécute » (la proposition, le bouton « Valider » qui devient « ✓ Envoyées » dans la même case — piège 28).
+- **Seul aplat de couleur : le bouton « Valider »**, comme dans la version précédente. La carte de la
+  proposition n'a qu'une bordure `--accent`.
+- « il » = l'agent : le hero est au-dessus du chapeau de l'offre, « elle » y est interdit (voir « Copy »).
+- Contrat des schémas : tout est dans le DOM, seule l'opacité change ; l'état rendu par le serveur est l'état
+  **final** (« ✓ Envoyées ») ; sans JS ou sous mouvement réduit, rien ne bouge et le bouton pause reste masqué.
+  Scène en `aria-hidden` + `figcaption` `sr-only` ; le bouton pause est **hors** de la zone `aria-hidden`.
+- Rythme dans le script (`PAS`, `APPUI`, `FAIT`, `BOUCLE` ≈ 11 s) ; l'attente du « oui » est le temps le plus long.
+- Lignes d'outils : nom et résultat empilés avant `sm`, côte à côte ensuite (à 360 px, la ligne coupait mal).
+
+### Le passage du hero (VracEnActions) — retiré du hero le 2026-10-07, conservé
 Visuel du hero depuis le 2026-09-19, mis au point au labo (neuf versions, T6a → T6i). Registre **R1 assoupli** : c'est
 un schéma, mais ses entrées sont des objets de bureau, pas des icônes de fichiers. Ce qu'il dit, en trois temps et
 trois intertitres : **« Il analyse ce qui arrive »** (des post-it jetés de travers et une note vocale), **« Il va
@@ -683,12 +741,11 @@ Moins de tâches, pas plus — c'est tout l'argument.
 - **Vérifier après toute modification** : `scrollWidth` à 360 px, CLS nul, hauteur du bloc constante, et qu'aucun
   libellé de la colonne de gauche n'atteint le tronc à 360 px.
 
-### Écran partagé de « Sous le capot »
-Depuis le 2026-09-20, le terminal n'occupe plus toute la largeur : il tient la moitié gauche d'une grille
-`lg:grid-cols-2`, la moitié droite attendant un second visuel. Cette moitié porte le marqueur `ACompleter` (§9)
-dans un cadre en pointillés, **jamais un vide** : un trou silencieux part en production sans que personne le voie,
-un marqueur ambre non. Le panneau n'est pas en `items-start` — il prend la hauteur de la colonne de gauche, sinon
-le partage ressemble à un oubli plutôt qu'à une intention.
+### Terminal pleine largeur dans « Sous le capot »
+Du 2026-09-20 au 2026-10-07, le terminal tenait la moitié gauche d'une grille `lg:grid-cols-2`, la moitié droite
+portant le marqueur `ACompleter` d'un second visuel à venir. Marqueur retiré le 2026-10-07 (demande explicite,
+avant redéploiement) : le terminal reprend toute la largeur. Un second visuel, s'il arrive, revient avec sa grille ;
+**ne pas remettre de moitié vide** à la place du marqueur — un trou silencieux se lit comme un oubli.
 
 ### Qui décide quoi (Confiance)
 Refait le 2026-09-20 : deux listes plates séparées par un petit badge ne se lisaient pas, et rien n'y avait le
@@ -811,7 +868,8 @@ en `h3` sous le h2 de section : la section parle des clients, ce cas n'en est qu
 Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
 
-### Constat — étiquettes de coût
+### Constat — étiquettes de coût (section supprimée le 2026-10-07)
+Historique : la section et son composant ont été retirés ; leurs scènes vivent dans les arguments de l'offre.
 Au bas de chaque carte du constat, deux étiquettes en `--accent` traduisent le problème en risque :
 « perte de temps / risque d'erreur », « occasions manquées / perte de contrôle », « délais
 supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole la section.
@@ -863,8 +921,9 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
   « studio » décrit ce que sosese est, ce qui est le sujet de la page.
 - **« elle » désigne la solution, et a besoin d'un antécédent.** La solution est nommée une seule fois, dans le
   chapeau de l'offre (« une solution qui connaît vos prix… **Elle** prépare le travail »). Partout **au-dessus**
-  de ce chapeau — hero, bandeau, constat — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
-  encore de sujet. En dessous (offre, cas client, confiance, FAQ), « elle » partout, plus jamais
+  de ce chapeau — hero, bandeau, cas client — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
+  encore de sujet. En dessous (offre, confiance, FAQ), « elle » partout. Le cas client, remonté au-dessus le
+  2026-10-07, dit « la solution » ; seul le « Elle lit » de sa démonstration est permis, rattaché à « L'IA » juste avant, plus jamais
   « l'automatisation » comme sujet.
 - **Règles ≠ données.** « Elle retient vos corrections » (offre) et « rien n'est mémorisé par défaut » (bandeau,
   confiance) se contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *elle
@@ -994,6 +1053,7 @@ Tolérées, à ne pas étendre sans raison :
 - Anneau de focus : `2px` d'épaisseur et de décalage.
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
+- `max-w-4xl` sur le h1 du hero en texte seul (même échelle de largeurs).
 - `public/favicon.svg` : `#F59E0B` en dur (fichier statique, hors CSS).
 - Points de rupture de `tokens.css` (`768px`, aligné sur `md:`) et de `global.css` (`1280px` pour FlowDiagram, aligné sur `xl:`).
 - Terminal : curseur en unités relatives à la police (`h-[1em] w-[0.55em] translate-y-[0.15em]`) et lignes vides en `min-h-[1lh]`.
@@ -1163,6 +1223,12 @@ Tolérées, à ne pas étendre sans raison :
     `document.getAnimations().forEach(a => { a.pause(); a.currentTime = T })` — `currentTime` inclut
     le délai, donc T se lit directement dans la feuille de style. C'est ce que fait `?fige=N` sur la
     page de contrôle du labo. `--run-all-compositor-stages-before-draw` aide, mais ne suffit pas.
+
+30. **Un SMTP qui se fige ne renvoie aucune erreur : la requête reste pendante.** Rencontré le 2026-10-07 en
+    local : Mailpit acceptait les connexions sans plus répondre, et le questionnaire restait sur « Envoi en
+    cours… » sans message ni journal d'erreur. Avec les délais par défaut de nodemailer, ce serait jusqu'à 10 min
+    en production. → Délais explicites sur le transport (`server/index.mjs`) ; en local, un envoi qui ne répond
+    plus se diagnostique par `printf 'QUIT\r\n' | nc 127.0.0.1 1025` (pas de « 220 » = redémarrer Mailpit).
 
 ## Anti-patterns
 - Dégradés multicolores
