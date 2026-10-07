@@ -137,6 +137,32 @@ git branch -d fix/formulaire-message-erreur
 
 ## 2. Publier une version
 
+### 2.0 Voie normale : `npm run release`
+
+Une fois les PR de la version mergées, sur `main` à jour et identique à `origin/main` :
+
+```bash
+npm run release -- 0.9
+```
+
+`scripts/release.sh` enchaîne les étapes 2.1 à 2.3 et s'arrête à la première anomalie :
+
+1. contrôles : sur `main`, aucun fichier modifié, aucun commit non poussé, tag et branche `chore/v0.9` inexistants,
+   version supérieure à l'actuelle ;
+2. numéro de version dans `package.json`, `package-lock.json` et `compose.yml`, **sans `npm install`**, puis contrôle
+   bloquant du diff (3 fichiers, 4 lignes, uniquement des lignes `version` — piège 19) ;
+3. `npm ci && npm run build` (le lockfile ne doit pas bouger), puis, au choix, `npm start` pour parcourir les pages ;
+4. **confirmation**, puis commit, push et PR ; **confirmation**, puis merge et retour sur `main` ;
+5. résumé de la version, **confirmation**, puis tag annoté et push du tag ;
+6. suivi du build GitHub Actions jusqu'à la publication de l'image ;
+7. alerte si `compose.yml` a changé au-delà du tag (labels Traefik…) : il faut alors le copier sur le VPS (§5) avant
+   de déployer. Affiche enfin la commande de déploiement.
+
+Refuser la première confirmation annule tout et revient sur `main`. Après le merge, un arrêt laisse `main` prêt :
+reprendre à la main à l'étape indiquée. Si la CI échoue, le tag est grillé : corriger, puis publier la version suivante.
+
+Les sections 2.1 à 2.4 décrivent les mêmes étapes à la main (secours, ou pour comprendre ce que fait le script).
+
 Le tag déclenche GitHub Actions : build, **test de démarrage du conteneur**, puis publication sur GHCR.
 Rien ne part sur le VPS.
 
@@ -206,6 +232,41 @@ Une image qui ne démarre pas en local ne démarrera pas mieux en production.
 ---
 
 ## 3. Déployer — sur le VPS, manuellement
+
+### 3.0 Voie normale : `deploy.sh`
+
+```bash
+ssh root@186.241.17.83
+/srv/sosese/deploy.sh v0.9
+```
+
+`scripts/deploy-vps.sh`, installé sous `/srv/sosese/deploy.sh`, enchaîne les étapes 3.1 à 3.4 :
+
+1. `docker pull` de l'image **avant** de toucher à quoi que ce soit (tag inexistant ou CI en échec = arrêt immédiat) ;
+2. tag remplacé dans `compose.yml` (copie de l'ancien dans `compose.yml.precedent`), `docker compose config --quiet`,
+   `docker compose up -d` ;
+3. attente de `healthy` sur la bonne image, puis `https://sosese.tech/api/health`, `/` et `/contact` via Traefik ;
+   **si l'une de ces vérifications échoue, retour automatique à la version précédente** ;
+4. vérifications non bloquantes (sans rollback, la cause étant extérieure à l'image) : ligne SMTP des journaux,
+   redirection `www`, Traefik en 401, Extrabat en 200 ;
+5. nettoyage des seules images `ghcr.io/sosese/sosese` : la version en ligne et les 3 plus récentes sont conservées.
+
+**Rollback** : la même commande avec l'ancien tag (`/srv/sosese/deploy.sh v0.8`), puis reporter ce tag dans
+`compose.yml` sur `main` (§4).
+
+Reste à faire à la main : envoyer le formulaire et vérifier la réception (§3.3), puis la synchronisation (§8).
+
+Le script ne modifie que la ligne `image:`. Si `release.sh` a signalé d'autres changements dans `compose.yml`, copier
+d'abord le fichier comme en 3.1.
+
+**Installation et mise à jour du script** (une fois, puis à chaque modification de `scripts/deploy-vps.sh` sur `main`) :
+
+```bash
+scp scripts/deploy-vps.sh root@186.241.17.83:/srv/sosese/deploy.sh
+ssh root@186.241.17.83 chmod 700 /srv/sosese/deploy.sh
+```
+
+Les sections 3.1 à 3.4 décrivent les mêmes étapes à la main (secours).
 
 Snapshot Hostinger avant toute intervention sur l'infrastructure (Traefik, réseaux, volumes). Pas nécessaire pour un
 simple changement de tag.
