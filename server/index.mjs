@@ -112,6 +112,11 @@ const transport = smtpManquants.length
       secure: smtpPort === 465,
       requireTLS: smtpPort === 587,
       auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+      // Délais de nodemailer par défaut : 2 min de connexion, 10 min d'inactivité. Un SMTP figé laissait le
+      // visiteur sur « Envoi en cours… » ; ainsi il obtient l'erreur et l'email de repli en 20 s au plus.
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
     });
 if (!transport) {
   app.log.warn(`SMTP non configuré (${smtpManquants.join(", ")}) : POST /api/contact et /api/questionnaire répondront 503.`);

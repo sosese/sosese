@@ -264,7 +264,10 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   minimale, texte de l'accusé de réception. `src/lib/questionnaire.ts` l'expose au front, `server/questionnaire.mjs`
   en construit le schéma zod. Email, téléphone et champ piège reprennent `shared/contact.json`. Ajouter, retirer ou
   reformuler une question = modifier ce JSON seulement. Types : `texte`, `paragraphe`, `nombre`, `choix` (une
-  réponse, effaçable), `multi`, `email`, `tel`.
+  réponse, effaçable), `multi`, `email`, `tel`. `optionsDe: "secteurs" | "irritants"` reprend les listes de
+  `shared/contact.json` au lieu de les recopier (réponses croisables avec le formulaire de contact).
+- Version du 2026-10-07 : 6 étapes, ~6 minutes, texte libre limité à 4 champs ; identité regroupée à la dernière
+  étape, avec l'échéance, la proposition d'échange de 20 minutes et la provenance du lien (lien unique pour tous).
 - **Tout est facultatif**, sauf le consentement à la dernière étape. Validation par étape (nombres, email,
   téléphone) avec les mêmes motifs que le formulaire de contact : `aria-invalid`, message relié, focus sur le
   premier champ en erreur, erreurs en `--accent`.
@@ -297,6 +300,8 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   configuration. Un script externe (autre domaine) serait bloqué — c'est voulu (§11, aucune requête tierce).
 - Email : texte brut, `Reply-To` = le demandeur, sujet « Demande de contact — {société} ».
 - SMTP : port 465 → TLS implicite ; 587 → STARTTLS obligatoire ; autre port (ex. Mailpit 1025) → sans TLS.
+- SMTP : délais de 10 s (connexion, accueil) et 20 s (inactivité). Ceux de nodemailer par défaut (2 min, 10 min)
+  laissaient le visiteur bloqué sur « Envoi en cours… » si le SMTP se figeait (piège 30).
 
 ### Docker
 - `Dockerfile` multi-stage (§7.3) : Astro, React et Tailwind sont en `devDependencies`, l'image finale n'installe
@@ -1168,6 +1173,12 @@ Tolérées, à ne pas étendre sans raison :
     `document.getAnimations().forEach(a => { a.pause(); a.currentTime = T })` — `currentTime` inclut
     le délai, donc T se lit directement dans la feuille de style. C'est ce que fait `?fige=N` sur la
     page de contrôle du labo. `--run-all-compositor-stages-before-draw` aide, mais ne suffit pas.
+
+30. **Un SMTP qui se fige ne renvoie aucune erreur : la requête reste pendante.** Rencontré le 2026-10-07 en
+    local : Mailpit acceptait les connexions sans plus répondre, et le questionnaire restait sur « Envoi en
+    cours… » sans message ni journal d'erreur. Avec les délais par défaut de nodemailer, ce serait jusqu'à 10 min
+    en production. → Délais explicites sur le transport (`server/index.mjs`) ; en local, un envoi qui ne répond
+    plus se diagnostique par `printf 'QUIT\r\n' | nc 127.0.0.1 1025` (pas de « 220 » = redémarrer Mailpit).
 
 ## Anti-patterns
 - Dégradés multicolores

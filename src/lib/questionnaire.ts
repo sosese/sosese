@@ -15,11 +15,17 @@ export type Question = {
   autocomplete?: string;
 };
 
+type QuestionSource = Omit<Question, "options"> & { options?: string[]; optionsDe?: "secteurs" | "irritants" };
+
 export type Section = { titre: string; chapeau: string; questions: Question[] };
 
 export const QUESTIONNAIRE_ENDPOINT = regles.endpoint;
 export const TITRE = regles.titre;
-export const SECTIONS = regles.sections as Section[];
+// `optionsDe` : options reprises de shared/contact.json (secteurs, irritants), pour croiser les deux sources.
+export const SECTIONS: Section[] = (regles.sections as { titre: string; chapeau: string; questions: QuestionSource[] }[]).map((s) => ({
+  ...s,
+  questions: s.questions.map(({ optionsDe, ...q }) => ({ ...q, options: q.options ?? (optionsDe ? contact[optionsDe] : undefined) })),
+}));
 export const LIMITES = { ...regles.limites, email: contact.limites.email, telephone: contact.limites.telephone };
 export const HONEYPOT_FIELD = contact.champPiege;
 export const EMAIL_RE = new RegExp(contact.emailRegex);

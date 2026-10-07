@@ -18,6 +18,22 @@ type Errors = Record<string, string>;
 // Brouillon gardé dans ce navigateur seulement (politique de confidentialité), effacé après l'envoi.
 const BROUILLON = "questionnaire-brouillon";
 const DERNIERE = SECTIONS.length - 1;
+const QUESTIONS = SECTIONS.flatMap((s) => s.questions);
+
+// Seulement les questions et options actuelles : un brouillon d'une version précédente du questionnaire peut
+// contenir une question retirée ou une option renommée, que le serveur refuserait (objet strict, listes fermées).
+function nettoyer(reponses: Reponses): Reponses {
+  const propres: Reponses = {};
+  for (const q of QUESTIONS) {
+    const v = reponses[q.id];
+    if (v === undefined) continue;
+    if (q.type === "multi") propres[q.id] = (Array.isArray(v) ? v : []).filter((o) => q.options!.includes(o));
+    else if (typeof v !== "string") continue;
+    else if (q.type === "choix") propres[q.id] = q.options!.includes(v) ? v : "";
+    else propres[q.id] = v.trim();
+  }
+  return propres;
+}
 
 function lireBrouillon(): { etape: number; reponses: Reponses } | null {
   try {
@@ -125,9 +141,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
     if (!derniere) return allerA(etape + 1);
 
     const payload: QuestionnairePayload = {
-      reponses: Object.fromEntries(
-        Object.entries(reponses).map(([id, v]) => [id, Array.isArray(v) ? v : v.trim()]),
-      ),
+      reponses: nettoyer(reponses),
       consentement: true,
       site_web: String(new FormData(form).get(HONEYPOT_FIELD) ?? ""),
       dureeRemplissage: Date.now() - startedAt.current,

@@ -30,6 +30,8 @@ const schemaQuestion = (q) => {
   }
 };
 
+// `optionsDe` : options reprises de shared/contact.json (secteurs, irritants), comme côté front.
+for (const s of regles.sections) for (const q of s.questions) if (q.optionsDe) q.options = contact[q.optionsDe];
 const questions = regles.sections.flatMap((s) => s.questions);
 const schema = z.object({
   reponses: z.strictObject(Object.fromEntries(questions.map((q) => [q.id, schemaQuestion(q)]))),
