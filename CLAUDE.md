@@ -51,3 +51,4 @@
 - `npm run dev` : http://localhost:4321
 - `npm run build && npm start` : serveur Fastify de production sur http://localhost:3000 (requis pour tester le formulaire, y compris depuis `npm run dev`)
 - `docker compose -f compose.dev.yml up --build` : image locale + Mailpit (http://localhost:8025)
+- `npm run release -- X.Y` (local) puis `/srv/sosese/deploy.sh vX.Y` (VPS) : publication et déploiement, **lancés par l'humain uniquement** (voir `RUNBOOK.md` §2.0 et §3.0)

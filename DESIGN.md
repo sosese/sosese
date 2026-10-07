@@ -295,6 +295,26 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - Versions : le tag `vX.Y` correspond à `version` dans `package.json` (`X.Y.0`). Un tag = une mise en production =
   l'unité de rollback (§7.2).
 
+### Scripts de publication et de déploiement (`scripts/`)
+- `scripts/release.sh` (`npm run release -- X.Y`, en local) : RUNBOOK §2 de bout en bout, jusqu'à l'image publiée.
+  `scripts/deploy-vps.sh` (copié sur le VPS sous `/srv/sosese/deploy.sh`) : RUNBOOK §3, avec rollback automatique.
+- Décision (2026-10-07) : **pas de déploiement depuis GitHub Actions**. Le déploiement reste un geste humain sur le
+  VPS, en une commande ; aucune clé SSH ni aucun secret de déploiement côté GitHub, la CI ne touche toujours pas au
+  VPS. Claude Code ne lance aucun des deux scripts (push, merge, tag et VPS sont réservés à l'humain).
+- `deploy.sh` ne modifie que la ligne `image:` de `compose.yml` ; tout autre changement (labels Traefik) se copie à
+  la main, et `release.sh` le signale. Rollback automatique seulement sur ce que l'image peut casser (santé,
+  `/api/health`, `/`, `/contact` via Traefik) ; SMTP et voisins = alertes sans rollback.
+- Nettoyage borné aux images `ghcr.io/sosese/sosese` (version en ligne + 3 plus récentes) : jamais de `prune` global,
+  le VPS est partagé.
+- Pièges rencontrés en écrivant les scripts :
+  - `sort` suit la locale : en `fr_FR`, `package.json` passe avant `package-lock.json` (la ponctuation est ignorée),
+    et la comparaison de la liste de fichiers échouait. Toute comparaison de sortie triée se fait en `LC_ALL=C`.
+  - Après le changement de version, `package-lock.json` est déjà modifié : vérifier que `npm ci` n'y touche pas se
+    fait par empreinte (`git hash-object` avant / après), pas par `git status`.
+- Testés le 2026-10-07 avec des `docker`, `curl`, `gh` et `npm` simulés et un dépôt distant local : succès, rollback
+  sur conteneur `unhealthy`, tag inexistant, tag déjà publié, diff de version pollué, refus aux confirmations. Le
+  premier passage réel (VPS, GitHub) reste à valider.
+
 ### Mise en production (`compose.yml`)
 - Utilisé **uniquement sur le VPS**, dans `/srv/sosese`, par l'humain. Jamais lancé depuis la session de code.
 - Écarts avec le §7.4 : image au **tag figé** (`:v0.1`, pas `:latest`, pour qu'un `pull` ne change jamais de version
