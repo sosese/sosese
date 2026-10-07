@@ -4,6 +4,10 @@
 // Contrat des schémas (DESIGN.md) : tout est toujours dans le DOM, seule l'opacité change, l'état rendu par le
 // serveur est l'état FINAL (rien ne bouge sans JS ni sous mouvement réduit), bloc en aria-hidden + transcription.
 // Pas de « elle » ici : le hero est au-dessus du chapeau de l'offre (DESIGN.md, « Copy ») — l'agent est « il ».
+// `anime={false}` : la scène reste sur son état final, sans boucle ni bouton pause.
+type Props = { anime?: boolean };
+const { anime = true } = Astro.props;
+
 const tache = "Relance les devis restés sans réponse.";
 const outils = [
   { nom: "Logiciel de gestion", trouve: "3 devis en attente" },
@@ -13,7 +17,7 @@ const outils = [
 const proposition = "3 relances prêtes, rédigées à votre façon";
 ---
 
-<figure data-agent class="flex w-full max-w-[31rem] flex-col gap-3 justify-self-center lg:justify-self-end">
+<figure data-agent data-statique={anime ? undefined : ""} class="flex w-full max-w-[31rem] flex-col gap-3 justify-self-center lg:justify-self-end">
   <p class="eyebrow">Votre solution IA s'en occupe</p>
   <figcaption class="sr-only">
     Exemple : vous demandez de relancer les devis restés sans réponse. L'agent consulte votre logiciel de gestion
@@ -67,7 +71,7 @@ const proposition = "3 relances prêtes, rédigées à votre façon";
       <div data-pas class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-accent px-3 py-3">
         <span class="text-14 font-medium text-ink">{proposition}</span>
         <span class="inline-grid">
-          <span data-agent-valider class="agent-etat rounded-md bg-accent px-4 py-2 text-14 font-medium text-on-accent opacity-0 [grid-area:1/1]">Valider</span>
+          <span data-agent-valider class="agent-etat rounded-md bg-accent px-4 py-2 text-center text-14 font-medium text-on-accent opacity-0 [grid-area:1/1]">Valider</span>
           <span data-agent-fait class="agent-etat flex items-center gap-2 px-4 py-2 text-14 font-medium text-ink [grid-area:1/1]">
             <span class="font-mono text-accent">✓</span> Envoyées
           </span>
@@ -95,6 +99,13 @@ const proposition = "3 relances prêtes, rédigées à votre façon";
   [data-agent][data-joue].attente [data-agent-fait] {
     opacity: 0;
   }
+  /* Version figée : on montre la décision (le bouton « Valider »), pas l'exécution. */
+  [data-agent][data-statique] [data-agent-valider] {
+    opacity: 1;
+  }
+  [data-agent][data-statique] [data-agent-fait] {
+    opacity: 0;
+  }
   @media (prefers-reduced-motion: no-preference) {
     [data-agent].appui [data-agent-valider] {
       transform: scale(0.94);
@@ -110,7 +121,7 @@ const proposition = "3 relances prêtes, rédigées à votre façon";
   const FAIT = 7700;
   const BOUCLE = 11000;
 
-  for (const scene of document.querySelectorAll<HTMLElement>("[data-agent]")) {
+  for (const scene of document.querySelectorAll<HTMLElement>("[data-agent]:not([data-statique])")) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) continue;
     const pas = [...scene.querySelectorAll<HTMLElement>("[data-pas]")];
     const bouton = scene.querySelector<HTMLButtonElement>("[data-agent-pause]")!;
