@@ -1,0 +1,96 @@
+{
+  "endpoint": "/api/questionnaire",
+  "titre": "Gagner du temps au quotidien : votre avis",
+  "limites": {
+    "texte": 200,
+    "paragraphe": 3000
+  },
+  "nombreRegex": "^(\\d{1,6}([.,]\\d{1,2})?)?$",
+  "dureeMinimaleMs": 8000,
+  "accuse": {
+    "sujet": "Merci pour vos réponses",
+    "texte": [
+      "Bonjour,",
+      "",
+      "Merci d'avoir pris le temps de répondre au questionnaire « Gagner du temps au quotidien ». Vos réponses sont bien arrivées.",
+      "",
+      "Je les lis personnellement. Si vous avez accepté d'être recontacté, je reviens vers vous dans les prochains jours.",
+      "",
+      "Si vous n'êtes pas à l'origine de cet envoi, ignorez simplement ce message.",
+      "",
+      "sosese — https://sosese.tech"
+    ]
+  },
+  "sections": [
+    {
+      "titre": "Vous et votre entreprise",
+      "chapeau": "Pour situer votre activité.",
+      "questions": [
+        { "id": "prenom", "type": "texte", "label": "Votre prénom", "autocomplete": "given-name" },
+        { "id": "entreprise", "type": "texte", "label": "Nom de l'entreprise", "autocomplete": "organization" },
+        { "id": "metier", "type": "texte", "label": "Votre métier en quelques mots", "aide": "Par exemple : menuiserie, agence immobilière, cabinet comptable…" },
+        { "id": "equipe", "type": "choix", "label": "Taille de l'équipe", "options": ["Seul", "2 à 3", "4 à 9", "10 et plus"] },
+        { "id": "zone", "type": "texte", "label": "Zone d'intervention" }
+      ]
+    },
+    {
+      "titre": "Votre quotidien",
+      "chapeau": "Ce qui vous prend du temps sans créer de valeur.",
+      "questions": [
+        { "id": "taches", "type": "paragraphe", "label": "Quelles tâches vous prennent du temps sans rien vous rapporter ?", "aide": "Par exemple : devis, relances, saisie, comptes rendus, emails, planning…" },
+        { "id": "tache_pire", "type": "texte", "label": "Si vous ne deviez en supprimer qu'une, laquelle ?" },
+        { "id": "h_admin", "type": "nombre", "label": "Heures d'administratif par semaine, à votre estimation", "unite": "h / semaine" },
+        { "id": "qui", "type": "multi", "label": "Qui s'en charge ?", "options": ["Moi", "Mon conjoint ou un proche", "Un(e) assistant(e)", "Un salarié en plus de son poste", "Un prestataire externe"] },
+        { "id": "quand", "type": "multi", "label": "Quand ?", "options": ["En journée", "Le soir", "Le week-end", "En déplacement"] }
+      ]
+    },
+    {
+      "titre": "Vos outils",
+      "chapeau": "Ce que vous utilisez déjà, et ce qui se ressaisit.",
+      "questions": [
+        { "id": "outils", "type": "multi", "label": "Outils utilisés au quotidien", "options": ["Logiciel métier (devis, gestion…)", "Email", "Agenda en ligne", "Excel / tableurs", "Papier", "Téléphone / SMS / WhatsApp", "Logiciel de comptabilité", "Aucun en particulier"] },
+        { "id": "logiciel_metier", "type": "texte", "label": "Nom de votre logiciel métier, si vous en avez un" },
+        { "id": "ressaisie", "type": "paragraphe", "label": "Qu'est-ce que vous ressaisissez d'un outil à l'autre ?" },
+        { "id": "essais", "type": "paragraphe", "label": "Avez-vous déjà essayé une solution pour gagner du temps (logiciel, IA, secrétariat) ? Qu'est-ce qui a marché ou échoué ?" }
+      ]
+    },
+    {
+      "titre": "Vos données et vos projets",
+      "chapeau": "Ce que vous aimeriez savoir, et ce que vous repoussez.",
+      "questions": [
+        { "id": "donnees", "type": "paragraphe", "label": "Que voudriez-vous savoir sur votre activité sans pouvoir l'obtenir facilement aujourd'hui ?", "aide": "Par exemple : vos clients les plus rentables, vos devis sans réponse, vos marges par chantier…" },
+        { "id": "projets", "type": "paragraphe", "label": "Quels projets de fond repoussez-vous faute de temps ou de méthode ?", "aide": "Par exemple : facturation électronique, recrutement, site web, nouveau service…" }
+      ]
+    },
+    {
+      "titre": "Freins et attentes",
+      "chapeau": "Ce qui vous ferait hésiter, et ce qui vous convaincrait.",
+      "questions": [
+        { "id": "freins", "type": "multi", "label": "Qu'est-ce qui vous ferait hésiter à utiliser un assistant IA ?", "options": ["Confiance dans les réponses de l'IA", "Confidentialité de mes données", "Réaction de mon équipe", "Le prix", "Le temps de mise en place", "Devoir changer mes habitudes", "Rien de particulier"] },
+        { "id": "convaincre", "type": "paragraphe", "label": "Qu'est-ce qui vous ferait dire oui ?" }
+      ]
+    },
+    {
+      "titre": "Budget",
+      "chapeau": "Pour proposer des formules adaptées.",
+      "questions": [
+        { "id": "valeur_heure", "type": "nombre", "label": "Selon vous, combien vaut une heure de votre temps ?", "unite": "€ / heure" },
+        { "id": "logiciels_mois", "type": "nombre", "label": "Combien dépensez-vous en logiciels par mois ?", "unite": "€ / mois" },
+        { "id": "fourchette", "type": "choix", "label": "Pour un assistant qui vous ferait gagner plusieurs heures par semaine, quel budget mensuel vous semblerait raisonnable ?", "options": ["Moins de 50 €", "50 à 150 €", "150 à 300 €", "300 à 500 €", "Plus de 500 €", "Je ne sais pas"] },
+        { "id": "formule", "type": "choix", "label": "Quelle formule préféreriez-vous ?", "options": ["Abonnement mensuel tout compris", "Mise en place payée une fois + petit abonnement", "Paiement à l'usage", "Je ne sais pas"] }
+      ]
+    },
+    {
+      "titre": "Pour aller plus loin",
+      "chapeau": "Dernière étape, sans engagement.",
+      "questions": [
+        { "id": "pilote", "type": "choix", "label": "Un essai sur une de vos tâches vous intéresserait-il ?", "options": ["Oui", "Peut-être", "Non"] },
+        { "id": "conditions", "type": "paragraphe", "label": "À quelles conditions ?" },
+        { "id": "email", "type": "email", "label": "Votre email", "aide": "Pour recevoir un accusé de réception et être recontacté. Laissez vide si vous préférez rester anonyme.", "autocomplete": "email" },
+        { "id": "telephone", "type": "tel", "label": "Votre téléphone", "aide": "Si vous préférez être rappelé.", "autocomplete": "tel" },
+        { "id": "reco", "type": "paragraphe", "label": "Connaissez-vous d'autres professionnels que ce sujet pourrait intéresser ?", "aide": "Juste un prénom et le métier ; je vous demanderai avant de les contacter." },
+        { "id": "libre", "type": "paragraphe", "label": "Autre chose à me dire ?" }
+      ]
+    }
+  ]
+}

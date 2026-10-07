@@ -34,7 +34,7 @@ export const legal = {
   // Journal d'accès Traefik (/var/log/traefik/access.log sur le VPS : IP, date, chemin, statut),
   // lu par CrowdSec. Durée = rotation logrotate hebdomadaire × 26 sur le VPS : les deux doivent rester alignées.
   dureeJournauxTechniques: "6 mois" as Texte,
-  miseAJour: "15 septembre 2026",
+  miseAJour: "7 octobre 2026",
 };
 
 export const personne = null as null | {

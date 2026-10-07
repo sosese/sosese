@@ -192,6 +192,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
+| Questionnaire | `islands/Questionnaire.tsx` | îlot React, `client:idle` — questionnaire prospects en sept étapes, voir « Questionnaire » |
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — **non utilisé depuis le 2026-09-20** (hero jusqu'au 2026-09-17, « L'offre » jusqu'au 2026-09-19, « Sous le capot » une journée) ; conservé : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de la dictée » |
 | RotationEcrans | `ui/diagrams/RotationEcrans.astro` | statique + script natif — mockup animé de **« L'offre »** depuis le 2026-09-19, en 24 rem depuis le 2026-09-20 (hero le 2026-09-19, le temps d'une itération) : le même enchaînement joué dans quatre décors (messagerie, boîte mail, téléphone, application de gestion), quatre boutons pour aller à l'un d'eux, bouton pause. Voir « Rotation d'écrans » |
@@ -224,7 +225,7 @@ un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-
   fond de page en thème sombre et le rythme vertical disparaît.
 
 ### Pages internes
-`/a-propos`, `/contact`, `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
+`/a-propos`, `/contact`, `/questionnaire` (`noindex`, hors navigation), `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
 fallback Fastify du §6.4). Structure : `PageHeader` puis contenu dans `container-site` + `py-(--section-y)`.
 Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HTML simple dedans (`h2`, `h3`, `p`,
 `ul`, `dl`, `a`, `strong`) — pas de classes sur chaque balise.
@@ -255,6 +256,27 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - En dev, Vite relaie `/api` vers `http://127.0.0.1:3000` : lancer `npm run build && npm start` à côté de
   `npm run dev` pour tester l'envoi. Sans serveur, l'état `error` est le comportement attendu.
 
+### Questionnaire (`/questionnaire`)
+- Questionnaire de découverte envoyé **par lien direct** aux prospects (étude de marché, premiers rendez-vous) :
+  `noindex`, absent de la navigation, bouton flottant `MobileCta` masqué (il couvrait les boutons de l'étape).
+  Un seul lien générique, sans paramètre de suivi (décision du 2026-10-07).
+- **Source unique : `shared/questionnaire.json`** — sections, questions, options, unités, aides, limites, durée
+  minimale, texte de l'accusé de réception. `src/lib/questionnaire.ts` l'expose au front, `server/questionnaire.mjs`
+  en construit le schéma zod. Email, téléphone et champ piège reprennent `shared/contact.json`. Ajouter, retirer ou
+  reformuler une question = modifier ce JSON seulement. Types : `texte`, `paragraphe`, `nombre`, `choix` (une
+  réponse, effaçable), `multi`, `email`, `tel`.
+- **Tout est facultatif**, sauf le consentement à la dernière étape. Validation par étape (nombres, email,
+  téléphone) avec les mêmes motifs que le formulaire de contact : `aria-invalid`, message relié, focus sur le
+  premier champ en erreur, erreurs en `--accent`.
+- Changement d'étape : le focus va sur le titre de l'étape (`h2`, `tabIndex=-1`), ce qui l'annonce et ramène la
+  page en haut du formulaire. Pas au premier rendu.
+- **Brouillon** en `localStorage` (clé `questionnaire-brouillon` : étape + réponses), relu après hydratation,
+  effacé après envoi réussi. Mentionné dans la politique de confidentialité, comme le thème.
+- Mise en page : l'encart « Avant de commencer » est **avant** la carte dans le HTML (lu d'abord sur mobile) et
+  passe à droite ≥ lg (`lg:col-start-2 lg:row-start-1`).
+- Copy : le questionnaire parle à la première personne (« je »), contrairement au reste du site (« nous ») — ton
+  conservé de la version d'origine, à revoir avec la pertinence des questions.
+
 ### Serveur (`server/index.mjs`)
 | Route / comportement | Détail |
 |---|---|
@@ -263,6 +285,9 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 | Compression | Brotli / gzip **dans Fastify** → **ne pas l'activer dans Traefik** (Lot 5) |
 | `GET /api/health` | `{ ok: true }` |
 | `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
+| `POST /api/questionnaire` | `server/questionnaire.mjs` · JSON, `bodyLimit` 64 ko (sept champs de 3 000 caractères) · objet `reponses` strict (clé inconnue = 400) · 5 requêtes / 10 min / IP · `200 {ok:true, accuse}` · mêmes codes d'erreur que le contact · anti-spam : remplissage < 8 s |
+| Email du questionnaire | texte brut question par question + **pièce jointe JSON** (`{ recu, reponses }`) pour regrouper les réponses dans un tableur ; `Reply-To` = l'email du prospect s'il est donné ; sujet « Questionnaire — {prénom} — {entreprise} » |
+| Accusé de réception | envoyé si un email est donné, **texte fixe** (`accuse` du JSON) : rien de saisi n'y est recopié, l'adresse n'étant pas vérifiée (sinon le formulaire servirait à envoyer un contenu choisi par un tiers depuis le domaine). Son échec est journalisé sans faire échouer la réponse (`accuse: false`) |
 | Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
 | Sécurité | helmet ; CSP `script-src 'self'` (scripts des composants en fichiers `/_astro`) + empreintes sha256 des scripts restés inline (anti-flash du thème), calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
 | Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |

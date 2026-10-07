@@ -1,7 +1,8 @@
 ---
 import { cta } from "../../config/site";
 
-const hidden = Astro.url.pathname.replace(/\/$/, "") === cta.href;
+// Masqué là où il ferait doublon (/contact) ou détournerait d'un formulaire en cours (/questionnaire).
+const hidden = [cta.href, "/questionnaire"].includes(Astro.url.pathname.replace(/\/$/, ""));
 ---
 
 {

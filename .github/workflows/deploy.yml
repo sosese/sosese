@@ -47,6 +47,7 @@ jobs:
           test "$(curl -fsS http://localhost:3000/api/health)" = '{"ok":true}'
           test "$(statut /)" = 200
           test "$(statut /contact)" = 200
+          test "$(statut /questionnaire)" = 200
           test "$(statut /page-inexistante)" = 404
           test "$(docker inspect -f '{{.Config.User}}' sosese-test)" = node
           for i in $(seq 1 20); do
