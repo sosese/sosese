@@ -20,6 +20,13 @@ const etapes = [
 >
   <PageHeader eyebrow="Contact" title="Parlons de ce qui vous fait perdre du temps">
     Quelques informations suffisent. On vous répond franchement, y compris si l'automatisation n'est pas la bonne réponse.
+    {/* Pour qui n'a pas encore de demande précise : le questionnaire prospects (DESIGN.md, « Questionnaire »). */}
+    <Fragment slot="actions">
+      <Button href="/questionnaire" size="lg">
+        Répondre au questionnaire <span aria-hidden="true">→</span>
+      </Button>
+      <p class="text-14 text-ink-muted">Pas encore de demande précise ? 6 minutes, sans engagement.</p>
+    </Fragment>
   </PageHeader>
 
   <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
@@ -57,17 +64,6 @@ const etapes = [
             ))
           }
         </ol>
-      </div>
-
-      {/* Pour qui n'a pas encore de demande précise : le questionnaire prospects (DESIGN.md, « Questionnaire »). */}
-      <div class="flex flex-col gap-4 rounded-lg border border-border bg-bg-subtle p-6">
-        <p class="eyebrow">Pas encore de demande précise ?</p>
-        <p class="text-16 text-ink-muted">
-          Six minutes de questions sur votre quotidien, vos outils et ce qui vous freine. Sans engagement.
-        </p>
-        <Button href="/questionnaire" variant="secondary" size="lg" class="w-fit">
-          Répondre au questionnaire <span aria-hidden="true">→</span>
-        </Button>
       </div>
     </aside>
   </div>

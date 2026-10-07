@@ -18,5 +18,12 @@ const { eyebrow, title } = Astro.props;
         </div>
       )
     }
+    {
+      Astro.slots.has("actions") && (
+        <div class="mt-4 flex flex-wrap items-center gap-4">
+          <slot name="actions" />
+        </div>
+      )
+    }
   </div>
 </header>

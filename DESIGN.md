@@ -189,7 +189,7 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit. **Non utilisé depuis le 2026-09-17** (retiré de l'offre, doublon avec `DicteeMobile` placé juste à côté) ; conservé |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
-| PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau |
+| PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau, slot nommé `actions` (rangée de boutons sous le chapeau) |
 | ACompleter | `ui/ACompleter.astro` | statique — marqueur visible d'un contenu non fourni (§9), `label` |
 | ContactForm | `islands/ContactForm.tsx` | îlot React, `client:idle` — voir « Formulaire de contact » |
 | Questionnaire | `islands/Questionnaire.tsx` | îlot React, `client:idle` — questionnaire prospects en sept étapes, voir « Questionnaire » |
@@ -258,7 +258,9 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 
 ### Questionnaire (`/questionnaire`)
 - Questionnaire de découverte envoyé **par lien direct** aux prospects (étude de marché, premiers rendez-vous),
-  et proposé sur `/contact` (encart « Pas encore de demande précise ? », bouton secondaire, depuis le 2026-10-07) :
+  et proposé sur `/contact` : bouton principal « Répondre au questionnaire » sous le chapeau (slot `actions` de
+  `PageHeader`), suivi de « Pas encore de demande précise ? 6 minutes, sans engagement. » (2026-10-07). Libellé du
+  bouton court : `Button` est en `whitespace-nowrap` (piège 12) :
   `noindex`, absent de la navigation principale, bouton flottant `MobileCta` masqué (il couvrait les boutons de l'étape).
   Un seul lien générique, sans paramètre de suivi (décision du 2026-10-07).
 - **Source unique : `shared/questionnaire.json`** — sections, questions, options, unités, aides, limites, durée
