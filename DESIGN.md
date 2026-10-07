@@ -196,7 +196,8 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | Accordion | `ui/Accordion.astro` | statique — `<details>` / `<summary>` natif, `title`, `name` optionnel (ouverture exclusive), slot = réponse. Zéro JS |
 | DicteeMobile | `ui/diagrams/DicteeMobile.astro` | statique + script natif — **non utilisé depuis le 2026-09-20** (hero jusqu'au 2026-09-17, « L'offre » jusqu'au 2026-09-19, « Sous le capot » une journée) ; conservé : cinq tâches jouées en boucle, pause réelle, précédent / suivant, connecteur assemblé sur les règles du client. Scénarios dans `src/config/demo-hero.ts`. Voir « Mockup de la dictée » |
 | RotationEcrans | `ui/diagrams/RotationEcrans.astro` | statique + script natif — mockup animé de **« L'offre »** depuis le 2026-09-19, en 24 rem depuis le 2026-09-20 (hero le 2026-09-19, le temps d'une itération) : le même enchaînement joué dans quatre décors (messagerie, boîte mail, téléphone, application de gestion), quatre boutons pour aller à l'un d'eux, bouton pause. Voir « Rotation d'écrans » |
-| VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — visuel du **hero** depuis le 2026-09-19 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
+| AgentEnAction | `ui/diagrams/AgentEnAction.astro` | statique + script natif — visuel du **hero** depuis le 2026-10-07 : une tâche, l'agent qui consulte trois outils, une proposition à valider puis exécutée. Voir « L'agent en action (hero) » |
+| VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — **non utilisé depuis le 2026-10-07** (remplacé par `AgentEnAction`, jugé trop chargé), conservé ; visuel du hero du 2026-09-19 au 2026-10-07 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
 | ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
@@ -217,9 +218,11 @@ flux, hero le 2026-09-17), conservé mais non utilisé. `DicteeMobile` avait ell
 « L'offre » le 2026-09-16, terminal descendu dans « Sous le capot », où les deux se répondent aujourd'hui — la même
 mission (un devis préparé depuis le catalogue) vue côté personne puis côté machine.
 
-Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Probleme, Methode (`#methode`),
-Offre (`#offre`), Clients (`#cas-client`), SousLeCapot (invert), Confiance (`#confiance`),
-Faq (`#faq`), CtaFinal (invert). Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
+Sections de l'accueil (`src/components/sections/`), dans l'ordre : Hero, Engagements, Clients (`#cas-client`),
+Methode (`#methode`), Offre (`#offre`), SousLeCapot (invert), Confiance (`#confiance`), Faq (`#faq`), CtaFinal
+(invert). Le 2026-10-07 (demande explicite) : la preuve d'abord — Clients monte juste sous le bandeau, sur fond
+`bg-bg` (entre le bandeau et la Méthode, tous deux `bg-bg-subtle`) ; la section Probleme (« Le constat ») est
+supprimée, ses trois scènes reprises dans les arguments de l'offre. Le menu suit l'ordre de la page. Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
 un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
@@ -462,7 +465,22 @@ du texte qu'elle supprime.
 - `transform` n'affecte pas la mise en page : une barre animée ne décale rien. Toute animation de schéma doit
   rester sur `transform` ou `opacity` pour cette raison.
 
-### Le passage du hero (VracEnActions)
+### L'agent en action (hero, AgentEnAction)
+Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
+**Vos tâches sont prises en charge par l'agent avec les données de vos outils actuels ; vous validez, il exécute.**
+- Trois temps numérotés dans une carte : 01 la tâche (une bulle, la phrase du dirigeant), 02 « Il consulte vos
+  outils » (logiciel de gestion, boîte mail, agenda, chacun avec ce qu'il y trouve), 03 « Vous validez, il
+  exécute » (la proposition, le bouton « Valider » qui devient « ✓ Envoyées » dans la même case — piège 28).
+- **Seul aplat de couleur : le bouton « Valider »**, comme dans la version précédente. La carte de la
+  proposition n'a qu'une bordure `--accent`.
+- « il » = l'agent : le hero est au-dessus du chapeau de l'offre, « elle » y est interdit (voir « Copy »).
+- Contrat des schémas : tout est dans le DOM, seule l'opacité change ; l'état rendu par le serveur est l'état
+  **final** (« ✓ Envoyées ») ; sans JS ou sous mouvement réduit, rien ne bouge et le bouton pause reste masqué.
+  Scène en `aria-hidden` + `figcaption` `sr-only` ; le bouton pause est **hors** de la zone `aria-hidden`.
+- Rythme dans le script (`PAS`, `APPUI`, `FAIT`, `BOUCLE` ≈ 11 s) ; l'attente du « oui » est le temps le plus long.
+- Lignes d'outils : nom et résultat empilés avant `sm`, côte à côte ensuite (à 360 px, la ligne coupait mal).
+
+### Le passage du hero (VracEnActions) — retiré du hero le 2026-10-07, conservé
 Visuel du hero depuis le 2026-09-19, mis au point au labo (neuf versions, T6a → T6i). Registre **R1 assoupli** : c'est
 un schéma, mais ses entrées sont des objets de bureau, pas des icônes de fichiers. Ce qu'il dit, en trois temps et
 trois intertitres : **« Il analyse ce qui arrive »** (des post-it jetés de travers et une note vocale), **« Il va
@@ -823,7 +841,8 @@ en `h3` sous le h2 de section : la section parle des clients, ce cas n'en est qu
 Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
 
-### Constat — étiquettes de coût
+### Constat — étiquettes de coût (section supprimée le 2026-10-07)
+Historique : la section et son composant ont été retirés ; leurs scènes vivent dans les arguments de l'offre.
 Au bas de chaque carte du constat, deux étiquettes en `--accent` traduisent le problème en risque :
 « perte de temps / risque d'erreur », « occasions manquées / perte de contrôle », « délais
 supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole la section.
@@ -875,8 +894,9 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
   « studio » décrit ce que sosese est, ce qui est le sujet de la page.
 - **« elle » désigne la solution, et a besoin d'un antécédent.** La solution est nommée une seule fois, dans le
   chapeau de l'offre (« une solution qui connaît vos prix… **Elle** prépare le travail »). Partout **au-dessus**
-  de ce chapeau — hero, bandeau, constat — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
-  encore de sujet. En dessous (offre, cas client, confiance, FAQ), « elle » partout, plus jamais
+  de ce chapeau — hero, bandeau, cas client — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
+  encore de sujet. En dessous (offre, confiance, FAQ), « elle » partout. Le cas client, remonté au-dessus le
+  2026-10-07, dit « la solution » ; seul le « Elle lit » de sa démonstration est permis, rattaché à « L'IA » juste avant, plus jamais
   « l'automatisation » comme sujet.
 - **Règles ≠ données.** « Elle retient vos corrections » (offre) et « rien n'est mémorisé par défaut » (bandeau,
   confiance) se contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *elle

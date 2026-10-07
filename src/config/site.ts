@@ -63,10 +63,10 @@ export const casClient = {
 export const zoneIntervention = null as Texte;
 
 export const mainNav = [
+  // Dans l'ordre de la page. L'ancre reste `#cas-client` : elle est publiée depuis la v1, le libellé seul change.
+  { label: "Clients", href: "/#cas-client" },
   { label: "Méthode", href: "/#methode" },
   { label: "Offre", href: "/#offre" },
-  // L'ancre reste `#cas-client` : elle est publiée depuis la v1, le libellé seul change.
-  { label: "Clients", href: "/#cas-client" },
   { label: "À propos", href: "/a-propos" },
 ];
 

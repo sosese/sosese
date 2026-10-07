@@ -62,7 +62,7 @@ const viewBox = logo?.endsWith(".svg")
 const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / Number(viewBox[2])) : undefined;
 ---
 
-<section id="cas-client" aria-labelledby="cas-client-titre" class="border-t border-border bg-bg-subtle py-(--section-y)">
+<section id="cas-client" aria-labelledby="cas-client-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-8">
     {/* L'intro et les compteurs sur une rangée : sans ça, la moitié droite de la section restait
         vide sur toute la hauteur du titre, du logo et du paragraphe. La comparaison passe pleine
