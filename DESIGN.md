@@ -257,8 +257,9 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   `npm run dev` pour tester l'envoi. Sans serveur, l'état `error` est le comportement attendu.
 
 ### Questionnaire (`/questionnaire`)
-- Questionnaire de découverte envoyé **par lien direct** aux prospects (étude de marché, premiers rendez-vous) :
-  `noindex`, absent de la navigation, bouton flottant `MobileCta` masqué (il couvrait les boutons de l'étape).
+- Questionnaire de découverte envoyé **par lien direct** aux prospects (étude de marché, premiers rendez-vous),
+  et proposé sur `/contact` (encart « Pas encore de demande précise ? », bouton secondaire, depuis le 2026-10-07) :
+  `noindex`, absent de la navigation principale, bouton flottant `MobileCta` masqué (il couvrait les boutons de l'étape).
   Un seul lien générique, sans paramètre de suivi (décision du 2026-10-07).
 - **Source unique : `shared/questionnaire.json`** — sections, questions, options, unités, aides, limites, durée
   minimale, texte de l'accusé de réception. `src/lib/questionnaire.ts` l'expose au front, `server/questionnaire.mjs`
@@ -693,12 +694,11 @@ Moins de tâches, pas plus — c'est tout l'argument.
 - **Vérifier après toute modification** : `scrollWidth` à 360 px, CLS nul, hauteur du bloc constante, et qu'aucun
   libellé de la colonne de gauche n'atteint le tronc à 360 px.
 
-### Écran partagé de « Sous le capot »
-Depuis le 2026-09-20, le terminal n'occupe plus toute la largeur : il tient la moitié gauche d'une grille
-`lg:grid-cols-2`, la moitié droite attendant un second visuel. Cette moitié porte le marqueur `ACompleter` (§9)
-dans un cadre en pointillés, **jamais un vide** : un trou silencieux part en production sans que personne le voie,
-un marqueur ambre non. Le panneau n'est pas en `items-start` — il prend la hauteur de la colonne de gauche, sinon
-le partage ressemble à un oubli plutôt qu'à une intention.
+### Terminal pleine largeur dans « Sous le capot »
+Du 2026-09-20 au 2026-10-07, le terminal tenait la moitié gauche d'une grille `lg:grid-cols-2`, la moitié droite
+portant le marqueur `ACompleter` d'un second visuel à venir. Marqueur retiré le 2026-10-07 (demande explicite,
+avant redéploiement) : le terminal reprend toute la largeur. Un second visuel, s'il arrive, revient avec sa grille ;
+**ne pas remettre de moitié vide** à la place du marqueur — un trou silencieux se lit comme un oubli.
 
 ### Qui décide quoi (Confiance)
 Refait le 2026-09-20 : deux listes plates séparées par un petit badge ne se lisaient pas, et rien n'y avait le
