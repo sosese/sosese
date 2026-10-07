@@ -18,7 +18,8 @@ ok()      { printf '%s✓ %s%s\n' "$vert" "$*" "$neutre"; }
 alerte()  { printf '%s⚠ %s%s\n' "$jaune" "$*" "$neutre"; }
 arreter() { printf '%s✗ %s%s\n' "$rouge" "$*" "$neutre" >&2; exit 1; }
 
-[[ ${1:-} =~ ^v[0-9]+\.[0-9]+$ ]] || arreter "Usage : deploy.sh vX.Y   (exemple : deploy.sh v0.9)"
+# vX.Y, ou une préversion vX.Y-suffixe (ex. v0.9-v2-preview.1) : seule forme possible pour revenir sur une préversion.
+[[ ${1:-} =~ ^v[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] || arreter "Usage : deploy.sh vX.Y   (exemple : deploy.sh v0.9)"
 tag="$1"
 cd "$DOSSIER"
 [[ -f compose.yml && -f .env ]] || arreter "compose.yml ou .env absent de $DOSSIER."
@@ -27,7 +28,7 @@ cd "$DOSSIER"
 exec 9>"$DOSSIER/.deploy.lock"
 flock -n 9 || arreter "Un autre déploiement est en cours."
 
-actuel=$(sed -nE "s#^ *image: $IMAGE:(v[0-9]+\.[0-9]+) *\$#\1#p" compose.yml)
+actuel=$(sed -nE "s#^ *image: $IMAGE:([0-9A-Za-z._-]+) *\$#\1#p" compose.yml)
 [[ $(wc -w <<<"$actuel") == 1 ]] || arreter "Ligne image: introuvable ou en double dans compose.yml."
 
 # --- Fonctions de vérification ------------------------------------------------------------------------------
@@ -90,8 +91,8 @@ ok "Image récupérée"
 
 etape "Déploiement"
 cp compose.yml compose.yml.precedent
-sed -i -E "s#^( *image: $IMAGE:)v[0-9]+\.[0-9]+( *)\$#\1$tag\2#" compose.yml
-grep -q "image: $IMAGE:$tag" compose.yml || { cp compose.yml.precedent compose.yml; arreter "Remplacement du tag raté."; }
+sed -i -E "s#^( *image: $IMAGE:)[0-9A-Za-z._-]+( *)\$#\1$tag\2#" compose.yml
+grep -qE "^ *image: $IMAGE:$tag *\$" compose.yml || { cp compose.yml.precedent compose.yml; arreter "Remplacement du tag raté."; }
 # --quiet obligatoire : sans lui, la sortie affiche les valeurs du .env (RUNBOOK §3.2).
 docker compose config --quiet || { cp compose.yml.precedent compose.yml; arreter "compose.yml invalide : rien n'a été redémarré."; }
 

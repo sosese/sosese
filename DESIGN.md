@@ -345,6 +345,10 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - Pièges rencontrés en écrivant les scripts :
   - `sort` suit la locale : en `fr_FR`, `package.json` passe avant `package-lock.json` (la ponctuation est ignorée),
     et la comparaison de la liste de fichiers échouait. Toute comparaison de sortie triée se fait en `LC_ALL=C`.
+  - Premier passage réel (2026-10-07) : le VPS tournait sur `v0.9-v2-preview.1` alors que `compose.yml` sur `main`
+    indiquait `v0.8` (préversion déployée à la main hors de `main`). `deploy.sh` n'acceptait que `vX.Y` et s'est
+    arrêté sans rien toucher. Il accepte désormais aussi `vX.Y-suffixe`, en version en ligne comme en cible de
+    rollback. Le nettoyage ne touche toujours qu'aux tags `vX.Y` : les préversions restent sur le VPS.
   - Après le changement de version, `package-lock.json` est déjà modifié : vérifier que `npm ci` n'y touche pas se
     fait par empreinte (`git hash-object` avant / après), pas par `git status`.
 - Testés le 2026-10-07 avec des `docker`, `curl`, `gh` et `npm` simulés et un dépôt distant local : succès, rollback
