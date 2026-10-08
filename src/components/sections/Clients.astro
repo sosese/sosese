@@ -1,6 +1,8 @@
 ---
 import SectionHeading from "../ui/SectionHeading.astro";
+import PastilleIcone from "../ui/PastilleIcone.astro";
 import Temoignage from "../ui/Temoignage.astro";
+import CompareBars from "../ui/diagrams/CompareBars.astro";
 import EnchainementClient from "../ui/diagrams/EnchainementClient.astro";
 import { casClient } from "../../config/site";
 
@@ -21,9 +23,27 @@ const tempsGagne =
 
 // Deux chiffres, pas un de plus : ceux qu'il a donnés. Pas les 2 h d'administratif d'avant (il faudrait
 // expliquer pourquoi il en gagne 4 : l'assistant fait aussi du suivi commercial), pas sa note.
-const chiffres = [
-  { label: "Pour un devis", avant: "25 min", apres: "3 min" },
-  { label: "Gagnées par semaine", environ: true, valeur: "4 h" },
+// Le devis en comparaison de grandeurs (R3) : les valeurs sont écrites, les barres ne font que les
+// mettre en proportion.
+const devis = [
+  { label: "Avant", value: 25, display: "25 min", tone: "muted" as const },
+  { label: "Avec l'assistant", value: 3, display: "3 min", tone: "accent" as const },
+];
+
+// Tracés des pastilles d'icônes (24 × 24, trait) : chaînes statiques, décoratives, le texte est à côté.
+const icones = {
+  bureau: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  telephone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17h2"/>',
+  deplacement: '<path d="M5 17H3v-5l2-1 2.5-5h9l2.5 5 2 1v5h-2M9 17h6M5 11h14"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
+  horloge: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+};
+
+// Son usage, tel qu'il l'a décrit : « plusieurs fois par jour, au bureau, au téléphone et en déplacement ».
+// Une donnée de son formulaire, pas un chiffre de plus.
+const lieux = [
+  { icone: icones.bureau, texte: "au bureau" },
+  { icone: icones.telephone, texte: "au téléphone" },
+  { icone: icones.deplacement, texte: "en déplacement" },
 ];
 
 const guillemets = (texte: string) => `« ${texte} »`;
@@ -52,34 +72,40 @@ const guillemets = (texte: string) => `« ${texte} »`;
     />
 
     {/* Les chiffres d'abord dans le DOM : empilés sur mobile, ils se lisent juste sous la citation.
-        Sobres : pas de grille de compteurs, pas de couleur d'accent, la valeur et son libellé. */}
+        Une carte « ce qu'il en tire » : son usage, le devis en barres, le temps gagné en grand. */}
     <div class="grid items-start gap-6 lg:grid-cols-[2fr_3fr]">
-      <div class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 shadow-sm">
-        <dl class="flex flex-col gap-6">
-          {
-            chiffres.map((chiffre) => (
-              <div class="flex flex-col gap-1">
-                <dt class="text-14 text-ink-muted">{chiffre.label}</dt>
-                <dd class="font-display text-28 text-ink tabular-nums md:text-36">
-                  {"avant" in chiffre ? (
-                    <Fragment>
-                      {/* Lu « avant 25 min, maintenant 3 min » : la flèche seule ne dit pas le sens. */}
-                      <span class="sr-only">avant </span>
-                      {chiffre.avant} <span aria-hidden="true" class="font-sans text-ink-muted">→</span>
-                      <span class="sr-only">, maintenant </span>
-                      {chiffre.apres}
-                    </Fragment>
-                  ) : (
-                    <Fragment>
-                      <span aria-hidden="true">≈ </span>
-                      <span class="sr-only">environ </span>
-                      {chiffre.valeur}
-                    </Fragment>
-                  )}
-                </dd>
-              </div>
-            ))
-          }
+      <div class="flex flex-col gap-8 rounded-lg border border-border bg-surface p-6 shadow-sm">
+        <div class="flex flex-col gap-3">
+          {/* « Jason » et non « il » : juste après la citation, « il » pourrait se lire comme l'assistant. */}
+          <p class="text-16 text-ink">{casClient.prenom} s'en sert plusieurs fois par jour :</p>
+          <ul class="flex flex-wrap gap-x-6 gap-y-3">
+            {
+              lieux.map((lieu) => (
+                <li class="flex items-center gap-2 text-16 text-ink">
+                  <PastilleIcone trace={lieu.icone} />
+                  {lieu.texte}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <dl class="flex flex-col gap-8">
+          <div class="flex flex-col gap-3">
+            <dt class="text-14 text-ink-muted">Pour un devis</dt>
+            <dd><CompareBars bars={devis} reveal /></dd>
+          </div>
+          <div class="flex flex-col gap-1">
+            <dt class="text-14 text-ink-muted">Gagnées par semaine</dt>
+            <dd class="flex items-center gap-4">
+              <PastilleIcone trace={icones.horloge} />
+              <span class="font-display text-36 leading-(--leading-tight) text-accent tabular-nums md:text-48">
+                <span aria-hidden="true">≈ </span>
+                <span class="sr-only">environ </span>
+                4 h
+              </span>
+            </dd>
+          </div>
         </dl>
         <p class="text-14 text-ink-muted">Selon {casClient.prenom}.</p>
       </div>

@@ -1,0 +1,25 @@
+---
+// Pastille d'icône (DESIGN.md, « Clients ») : même contrat que les cartes de l'Offre et de Confiance —
+// `size-9 rounded-md`, tracé SVG en ligne en `size-5`, toujours décoratif (`aria-hidden`) : le texte
+// écrit à côté dit déjà tout. `trace` est une chaîne statique du composant appelant, jamais du contenu
+// éditable (`set:html`).
+type Props = {
+  trace: string;
+  // `accent` : ce que l'assistant apporte ; `neutre` : l'état d'avant, sans couleur.
+  ton?: "accent" | "neutre";
+  class?: string;
+};
+
+const { trace, ton = "accent", class: className } = Astro.props;
+---
+
+<span
+  aria-hidden="true"
+  class:list={[
+    "flex size-9 shrink-0 items-center justify-center rounded-md",
+    ton === "accent" ? "bg-accent-soft text-accent" : "bg-bg-subtle text-ink-muted",
+    className,
+  ]}
+>
+  <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={trace} />
+</span>

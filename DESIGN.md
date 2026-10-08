@@ -12,8 +12,8 @@
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
 - Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal** (aujourd'hui dans « Sous le capot », voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
-- Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode et la démonstration du
-  cas client : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
+- Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode, celle des barres de
+  `CompareBars` (devis de Clients) et la démonstration du cas client : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
   Tout le reste est statique. Avant de créer un îlot, vérifier qu'un composant statique ou quelques lignes de JS natif ne suffisent pas.
 
 ## Tokens
@@ -128,7 +128,7 @@ Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes ava
   (ex. icône soleil / lune).
 
 ## Typographie
-Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et ses deux chiffres seulement) / JetBrains Mono
+Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et son « ≈ 4 h » seulement) / JetBrains Mono
 (« Sous le capot » seulement, voir plus bas).
 Échelle : 12 14 16 18 21 28 36 48 64. Corps 17px, line-height 1.6.
 - Fichiers : `public/fonts/inter-var.woff2` et `jetbrains-mono-var.woff2`, polices **variables**, sous-ensemble
@@ -162,7 +162,8 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
   - **Historique** : du 2026-10-08 (étape 2) à l'étape 4 bis, les `h1` / `h2` étaient en serif 400 (Georgia,
     puis Noto Serif en repli) par une règle de base dans `global.css`. Retiré : ne pas remettre cette règle.
 - **Serif (`--font-display`, utilitaire `font-display`) réservée au témoignage** : la citation de `Temoignage` et
-  les deux chiffres de `Clients`, pour qu'ils se détachent comme une parole. **Aucun autre usage** (`grep -rn
+  le « ≈ 4 h » de `Clients`, pour qu'ils se détachent comme une parole (le devis 25 min / 3 min passe en barres
+  le 2026-10-08, étape 5 bis : ses valeurs sont celles de `CompareBars`, en Inter `tabular-nums`). **Aucun autre usage** (`grep -rn
   "font-display" src` : `tokens.css`, `global.css`, `Temoignage.astro`, `Clients.astro` — les `font-display: swap`
   des `@font-face` sont un descripteur homonyme). Graisse 400 (Georgia n'a que 400 / 700 ; le gras y sonne titre
   de journal), interlettrage normal.
@@ -261,7 +262,8 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
 | ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` Inter 12, mono jusqu'au 2026-10-08), slot = le schéma |
-| CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas ». **Non utilisé depuis le 2026-10-08** (retiré de la section Clients avec les anciens chiffres, étape 3 du plan « site moins geek ») ; conservé, ainsi que ses règles `.revele-cache` / `data-revele="barre"` de `global.css` |
+| CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas ». **Utilisé dans Clients** (devis 25 min / 3 min, avec `reveal`) depuis le 2026-10-08, étape 5 bis — il en avait été retiré à l'étape 3 avec les anciens chiffres. Règles `.revele-cache` / `data-revele="barre"` dans `global.css` |
+| PastilleIcone | `ui/PastilleIcone.astro` | statique — pastille d'icône `size-9 rounded-md`, tracé SVG en ligne `size-5` (`trace`, chaîne statique en `set:html`), `ton` accent (`bg-accent-soft text-accent`, défaut) / neutre (`bg-bg-subtle text-ink-muted`), toujours `aria-hidden`. Créée le 2026-10-08 (étape 5 bis) pour la section Clients, même contrat que les pastilles de l'Offre et de Confiance (qui gardent leur balisage écrit à la main) |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative`. **Seulement dans « Sous le capot » depuis le 2026-10-08** (retiré du CTA final, étape 5 : décor technique hors de la section geek) |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
@@ -623,7 +625,7 @@ du texte qu'elle supprime.
   sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
   état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
   visiteur n'en veut pas. **Ne pas remplacer par un `IntersectionObserver`** : ce serait du React pour une décoration.
-- **`CompareBars reveal`** (2026-09-18, cas client ; **non utilisé depuis le 2026-10-08**, conservé) : révélation ligne par ligne au défilement, à la place de
+- **`CompareBars reveal`** (2026-09-18, cas client ; retiré à l'étape 3, **réutilisé depuis le 2026-10-08**, étape 5 bis, pour le devis 25 min / 3 min de Clients) : révélation ligne par ligne au défilement, à la place de
   `.bar-grow`. Libellé + valeur, puis la barre qui se déploie depuis la gauche, puis la note — pas de 260 ms,
   même rythme et même machinerie que la Méthode (`IntersectionObserver` au seuil 0,25, `data-revele`,
   `.revele-cache`). La comparaison se lit alors dans l'ordre de l'histoire : les 40 minutes d'abord, les 2 minutes
@@ -981,14 +983,24 @@ Ordre de lecture, pensé pour 10 secondes :
    **grand guillemet décoratif** ajouté au-dessus (il doublait les guillemets du texte, qu'on ne retire pas) et le
    **fond `accent-soft`** sur la carte (il aurait fait de la carte du témoignage un bloc ambre de plus, juste au-dessus
    de la carte « Aujourd'hui » bordée d'accent). Le texte de la citation ne change pas.
-3. **Deux chiffres, pas un de plus** (`<dl>`) : « Pour un devis : 25 min → 3 min » et « Gagnées par semaine : ≈ 4 h »,
-   légende commune « Selon Jason. ». Sobres : serif `text-28`/`text-36` en `--ink`, **pas d'accent, pas de grille de
-   compteurs, pas de barres**. La flèche est en Inter (`font-sans`) : en Noto Serif, elle collait à « min ».
-   Lecteur d'écran : `→` et `≈` en `aria-hidden`, doublés en `sr-only` : le devis se lit **« avant 25 min,
-   maintenant 3 min »** (« 25 min au lieu de 3 min », lu jusqu'au 2026-10-08, inversait le sens), l'autre
-   « environ 4 h ». **Ne pas
-   afficher** les 2 h d'administratif d'avant (il faudrait expliquer qu'il en gagne 4 parce que l'assistant fait
-   aussi du suivi commercial) ni sa note de recommandation.
+3. **Une carte « ce qu'il en tire »** (étape 5 bis, 2026-10-08) : son usage, puis **deux chiffres, pas un de plus**,
+   légende commune « Selon Jason. ».
+   - **Usage** (donnée du formulaire, pas un chiffre) : « Jason s'en sert plusieurs fois par jour : » puis une liste
+     `flex-wrap` de trois lieux, chacun avec sa `PastilleIcone` : écran (« au bureau »), téléphone (« au
+     téléphone »), voiture (« en déplacement »). **« Jason » et non « il »** (le plan proposait « Il s'en sert ») :
+     juste sous la citation, « il » pouvait se rattacher à l'assistant — même règle que le chapeau.
+   - **Devis en schéma (R3)** : `dt` « Pour un devis », puis `CompareBars reveal` — « Avant » 25 min (`muted`, barre
+     `--border-strong`) et « Avec l'assistant » 3 min (`accent`). Valeurs écrites (Inter `text-21`, « 3 min » en
+     `--accent`), barres en `aria-hidden` : un lecteur d'écran lit « Avant 25 min, Avec l'assistant 3 min », sans
+     la flèche ni les `sr-only` d'avant. Révélation ligne par ligne au défilement (libellé, barre qui se déploie),
+     rien sous mouvement réduit, tout visible sans JS.
+   - **≈ 4 h** : `dt` « Gagnées par semaine », puis une `PastilleIcone` horloge et « ≈ 4 h » en **serif `text-36` →
+     `text-48` dès `md`, en `--accent`** (5,42:1 / 8,28:1 sur `surface`). `≈` en `aria-hidden`, doublé d'un `sr-only`
+     « environ ».
+   - **Ne pas afficher** les 2 h d'administratif d'avant (il faudrait expliquer qu'il en gagne 4 parce que l'assistant
+     fait aussi du suivi commercial), sa note de recommandation, ni « 4 à 9 personnes » ou « 7 ans » comme chiffres.
+   - Historique : de l'étape 3 à l'étape 5 bis, les deux chiffres étaient en serif `--ink`, sans accent ni barres
+     (« sobres ») ; l'humain a jugé la section « trop morne, tout en noir et blanc » et levé cette consigne.
 4. **Avant / aujourd'hui côte à côte** (`sm:grid-cols-2`), puis « le temps gagné », trois `blockquote` de ses mots
    dans une même `<figure>` (« Jason, dans ses mots. »). Du texte, pas de graphique.
 5. **La démonstration (`EnchainementClient`) vient après** : ses montants inventés ne doivent jamais concurrencer
@@ -1012,7 +1024,8 @@ démonstration sont des paragraphes, pas des titres).
 - **Rôle** : `casClient.role` = « commercial et gestionnaire », mot du client (petite entreprise, plusieurs casquettes).
 - **Anciens chiffres retirés le 2026-10-08** : devis 40 min → 2 min, fiche client 5 min → 30 s, compteurs de
   production (+50 devis, +30 rendez-vous, +40 fiches, 3 rapports d'analyse) et « mesuré au bout de 6 semaines ».
-  Remplacés par ceux du formulaire ; ne pas les remettre. `CompareBars` n'est plus utilisé (conservé).
+  Remplacés par ceux du formulaire ; ne pas les remettre. `CompareBars` sert de nouveau, pour le seul devis 25 min /
+  3 min (étape 5 bis).
 - **Le logiciel de gestion du client est nommé** (`casClient.logiciel` = Extrabat), dans le chapeau : seul nom de
   logiciel tiers du site, **exception assumée au piège 17** — ce n'est pas une démonstration, c'est ce qui a été
   construit. Le **nom seul**, jamais le logo, jamais de partenariat. `null` → « leur logiciel de gestion ».
