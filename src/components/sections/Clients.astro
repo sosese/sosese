@@ -14,10 +14,8 @@ const citation =
   "Joris a su comprendre nos besoins lors de son expertise et y apporter des réponses et des automatisations que j'utilise maintenant au quotidien.";
 
 // Sa phrase « avant / après », coupée en deux pour se lire côte à côte, et ce que le temps gagné lui permet.
-const avantApres = [
-  { label: "Avant", texte: "Je créais tout dans mon logiciel." },
-  { label: "Aujourd'hui", texte: "L'assistant s'en charge et je ne fais plus que consulter. Un gain de temps énorme." },
-];
+const avant = "Je créais tout dans mon logiciel.";
+const aujourdhui = "L'assistant s'en charge et je ne fais plus que consulter. Un gain de temps énorme.";
 const tempsGagne =
   "Je travaille sur d'autres projets, je suis plus réactif pour envoyer les devis à mes clients, et ma direction a un meilleur suivi.";
 
@@ -36,7 +34,19 @@ const icones = {
   telephone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17h2"/>',
   deplacement: '<path d="M5 17H3v-5l2-1 2.5-5h9l2.5 5 2 1v5h-2M9 17h6M5 11h14"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
   horloge: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  saisie: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/>',
+  coche: '<path d="m5 12 5 5 9-10"/>',
+  projets: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 10.5v5M9.5 13h5"/>',
+  envoi: '<path d="M21 3 3 10.5l7 2.5 2.5 7z"/><path d="m10 13 4.5-4.5"/>',
+  suivi: '<path d="M4 4v16h16"/><path d="m8 14 3-3 3 2 5-5"/>',
 };
+
+// Ce que le temps gagné lui permet : sa phrase, reprise en trois points sans rien ajouter.
+const gains = [
+  { icone: icones.projets, texte: "D'autres projets" },
+  { icone: icones.envoi, texte: "Des devis envoyés plus vite" },
+  { icone: icones.suivi, texte: "Un meilleur suivi pour sa direction" },
+];
 
 // Son usage, tel qu'il l'a décrit : « plusieurs fois par jour, au bureau, au téléphone et en déplacement ».
 // Une donnée de son formulaire, pas un chiffre de plus.
@@ -110,22 +120,56 @@ const guillemets = (texte: string) => `« ${texte} »`;
         <p class="text-14 text-ink-muted">Selon {casClient.prenom}.</p>
       </div>
 
-      <figure class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 shadow-sm">
-        <div class="grid gap-6 sm:grid-cols-2">
-          {
-            avantApres.map((temps) => (
-              <div class="flex flex-col gap-2">
-                <p class="eyebrow">{temps.label}</p>
-                <blockquote class="text-18 text-ink">
-                  <p>{guillemets(temps.texte)}</p>
-                </blockquote>
-              </div>
-            ))
-          }
+      <figure class="flex flex-col gap-8 rounded-lg border border-border bg-surface p-6 shadow-sm">
+        {/* Avant → Aujourd'hui en flux (R1) : deux cases dans la carte (comme les temps de la démonstration),
+            reliées par une flèche, verticale sous `sm`. « Avant » neutre, « Aujourd'hui » bordée d'accent. */}
+        <div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr]">
+          <div class="flex flex-col gap-3 rounded-md border border-border bg-bg p-4">
+            <div class="flex items-center gap-3">
+              <PastilleIcone trace={icones.saisie} ton="neutre" />
+              <p class="eyebrow">Avant</p>
+            </div>
+            <blockquote class="text-16 text-ink">
+              <p>{guillemets(avant)}</p>
+            </blockquote>
+          </div>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            class="size-6 rotate-90 self-center justify-self-center text-accent sm:rotate-0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+          <div class="flex flex-col gap-3 rounded-md border border-accent bg-bg p-4">
+            <div class="flex items-center gap-3">
+              <PastilleIcone trace={icones.coche} />
+              <p class="eyebrow text-accent">Aujourd'hui</p>
+            </div>
+            <blockquote class="text-16 text-ink">
+              <p>{guillemets(aujourdhui)}</p>
+            </blockquote>
+          </div>
         </div>
-        <div class="flex flex-col gap-2 border-t border-border pt-6">
+
+        {/* Le temps gagné : trois points à icône qui reprennent sa phrase, puis la phrase elle-même. */}
+        <div class="flex flex-col gap-4">
           <p class="eyebrow">Le temps gagné</p>
-          <blockquote class="text-18 text-ink">
+          <ul class="flex flex-col gap-3">
+            {
+              gains.map((gain) => (
+                <li class="flex items-center gap-3 text-16 font-semibold text-ink">
+                  <PastilleIcone trace={gain.icone} />
+                  {gain.texte}
+                </li>
+              ))
+            }
+          </ul>
+          <blockquote class="text-16 text-ink-muted">
             <p>{guillemets(tempsGagne)}</p>
           </blockquote>
         </div>

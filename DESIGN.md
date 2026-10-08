@@ -110,6 +110,24 @@ de `--accent` à #AC4F08 et de `--bg-subtle` à #F6F1E9. Le thème sombre et les
 
 (La valeur sombre « accent / bg-subtle 6.42 » de l'ancien tableau était celle d'`ink-muted` : recalculée, 8.60.)
 
+Couples de la section Clients refaite le 2026-10-08 (étape 5 bis), même formule, translucides composés :
+| Couple (usage) | Clair | Sombre |
+|---|---|---|
+| ink / surface (ligne d'usage, points du temps gagné… dans les cartes) | 18.81 | 15.81 |
+| accent / surface (guillemets de la citation, « 3 min », « ≈ 4 h ») | 5.42 | 8.28 |
+| ink / bg (phrases des cases Avant / Aujourd'hui) | 18.19 | 17.25 |
+| accent / bg (eyebrow « Aujourd'hui ») | 5.24 | 9.03 |
+| ink-muted / bg (eyebrow « Avant ») | 5.77 | 6.74 |
+| ink-muted / surface (citation du temps gagné, libellés) | 5.97 | 6.18 |
+| *non textuel* — icône accent / pastille accent-soft sur surface | 4.77 | 6.43 |
+| *non textuel* — icône ink-muted / pastille bg-subtle | 5.31 | 6.42 |
+| *non textuel* — bordure « Aujourd'hui », flèche, barre accent / bg | 5.24 | 9.03 |
+| *non textuel* — barre « Avant » (border-strong) / piste bg | 1.48 | 1.56 |
+
+La barre « Avant » est volontairement pâle (c'est l'état d'avant) ; elle n'a pas à atteindre 3:1 : la valeur
+« 25 min » est écrite à côté et la barre est en `aria-hidden` (contrat des schémas). Les icônes sont toutes
+décoratives, le texte est à côté ; elles passent quand même 3:1.
+
 Conséquences :
 - **Depuis le 2026-10-08, plus aucun couple sous AA** : `--accent` passe en texte sur `bg`, `surface`, `bg-subtle`
   et `accent-soft`, dans les deux thèmes. C'est ce qui permet les eyebrows de section en accent (voir
@@ -280,7 +298,8 @@ Une seule apparence de carte sur le site : **`rounded-lg border border-border bg
 faisait « grille de tableau de bord » ; l'ombre seule disparaît en thème sombre — les deux ensemble.
 - **Écrites à la main, mêmes classes recopiées** (parce que l'élément n'est pas un `div` ou qu'une prop de `Card` ne
   suffirait pas sans piège 3) : `Temoignage` (`<figure>`, `md:p-10`), les deux blocs de `Clients` (chiffres :
-  `div` ; avant / aujourd'hui : `<figure>`), `EnchainementClient` (`<figure data-cc>`), les deux panneaux de
+  `div` ; avant / aujourd'hui : `<figure>` — ses cases Avant / Aujourd'hui restent des cases sans ombre, comme
+  ci-dessous), `EnchainementClient` (`<figure data-cc>`), les deux panneaux de
   Confiance (le second garde `border-accent` : c'est la moitié qui s'arrête), le cadre `dl` de la Méthode
   (`rounded-md` → `rounded-lg`).
 - **Restent différentes, volontairement** :
@@ -1001,13 +1020,35 @@ Ordre de lecture, pensé pour 10 secondes :
      fait aussi du suivi commercial), sa note de recommandation, ni « 4 à 9 personnes » ou « 7 ans » comme chiffres.
    - Historique : de l'étape 3 à l'étape 5 bis, les deux chiffres étaient en serif `--ink`, sans accent ni barres
      (« sobres ») ; l'humain a jugé la section « trop morne, tout en noir et blanc » et levé cette consigne.
-4. **Avant / aujourd'hui côte à côte** (`sm:grid-cols-2`), puis « le temps gagné », trois `blockquote` de ses mots
-   dans une même `<figure>` (« Jason, dans ses mots. »). Du texte, pas de graphique.
+4. **Ses mots, en flux** (étape 5 bis), dans une même `<figure>` (« Jason, dans ses mots. ») :
+   - **Avant → Aujourd'hui (R1)** : deux cases `rounded-md border bg-bg p-4` (des cases **dans** une carte, sans
+     ombre, comme les temps d'`EnchainementClient`), reliées par une flèche SVG en `--accent` (`aria-hidden`), en
+     grille `sm:grid-cols-[1fr_auto_1fr]` : côte à côte dès `sm`, empilées dessous avec la flèche tournée vers le bas
+     (`rotate-90`, transformation fixe, pas une animation). « Avant » est **neutre** (bordure `--border`, pastille
+     crayon `ton="neutre"`, eyebrow `--ink-muted`) ; « Aujourd'hui » est **bordée d'accent** (`border-accent`,
+     pastille coche, eyebrow `text-accent`). Les deux phrases du client, mot pour mot, en `text-16 text-ink`.
+   - **Le temps gagné** : eyebrow, puis **trois points à icône** en une colonne — dossier « D'autres projets »,
+     avion de papier « Des devis envoyés plus vite », courbe « Un meilleur suivi pour sa direction » (`text-16`
+     semi-gras, reprise fidèle de sa phrase, rien d'ajouté) — puis **sa phrase entière dessous**, en `text-16
+     text-ink-muted` : les points se lisent au survol, la citation dit d'où ils viennent. Une colonne à toutes les
+     largeurs : en trois colonnes (essayé), les points passaient sur trois lignes à 640 et 1024 px.
+   - Plus de filet entre les deux blocs (étape 5, « moins de bordures ») : l'écart `gap-8` les sépare.
 5. **La démonstration (`EnchainementClient`) vient après** : ses montants inventés ne doivent jamais concurrencer
    les deux chiffres du client.
 
 Grille de la rangée 3-4 : `lg:grid-cols-[2fr_3fr]` + `items-start` ; chiffres **en premier dans le DOM** pour
-qu'empilés sur mobile ils suivent directement la citation. Un `h2` et aucun `h3` dans la section (les temps de la
+qu'empilés sur mobile ils suivent directement la citation.
+
+**Plus d'impact (2026-10-08, plan « site moins geek », étape 5 bis, décision de l'humain).** « Trop morne, tout en
+noir et blanc » : la consigne de l'étape 3 (« avant / après en texte, pas de graphique », « chiffres sobres ») est
+**levée**. L'accent est désormais présent à chaque bloc (filet et guillemets du témoignage, pastilles d'icônes,
+barre et valeur « 3 min », « ≈ 4 h », case « Aujourd'hui », flèche). Restent en vigueur : deux chiffres clés au
+plus, mots du client inchangés, une seule couleur d'accent, registres R1 / R3 seulement, aucun nouveau script (la
+seule animation est le `reveal` existant de `CompareBars`). **Neuf icônes** ajoutées, toutes en `PastilleIcone`
+(tracés statiques en tête de `Clients.astro`, `aria-hidden`) : écran, téléphone, voiture, horloge, crayon, coche,
+dossier, avion de papier, courbe ; plus la flèche du flux. **Longueur** mesurée (mouvement réduit, état final) :
+2 438 → 2 980 px à 390 px (+22 %, plafond du plan ≈ 25 %), 2 490 → 3 054 px à 360, 2 088 → 2 449 à 640, 1 695 →
+1 849 à 1024, 1 596 → 1 782 à 1280. Un `h2` et aucun `h3` dans la section (les temps de la
 démonstration sont des paragraphes, pas des titres).
 
 - **Source unique des contenus : le formulaire de satisfaction rempli par le client** (2026-10-08). Phrases et
@@ -1325,7 +1366,9 @@ Tolérées, à ne pas étendre sans raison :
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 - Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
   `flex-grow` — des proportions, pas des espacements.
-- `Clients` : grille `lg:grid-cols-[2fr_3fr]` (chiffres à gauche, avant / aujourd'hui à droite).
+- `Clients` : grille `lg:grid-cols-[2fr_3fr]` (chiffres à gauche, avant / aujourd'hui à droite) et
+  `sm:grid-cols-[1fr_auto_1fr]` du flux Avant → Aujourd'hui (deux cases, la flèche au milieu) ; filet du témoignage
+  en `w-1` (pas de l'échelle, 4 px).
 - `Methode` : pas de révélation de 260 ms (420 ms pour un trait) dans le script, décalage `translateY(calc(var(--space-unit) * 3))` de `.revele-cache`.
 - `CompareBars reveal` : même pas de 260 ms, seuil `IntersectionObserver` à 0,25.
 - `Temoignage` : logo rendu en `h-10` (40 px), largeur calculée depuis le `viewBox` du SVG.
