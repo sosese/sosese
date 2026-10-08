@@ -62,13 +62,11 @@ const guillemets = (texte: string) => `« ${texte} »`;
 <section id="cas-client" aria-labelledby="cas-client-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
     <SectionHeading id="cas-client-titre" eyebrow="Clients" title={`Ce qu'en dit ${casClient.prenom}, chez ${casClient.nom}`}>
-      {/* Le nom de l'entreprise est déjà dans le titre et la signature : « Son entreprise » ici. Jason est
-          nommé comme sujet de chaque geste, pour que « il » ne se rattache jamais à l'assistant. */}
+      {/* Le nom de l'entreprise est déjà dans le titre et la signature : « Son entreprise » ici. Le déroulé
+          (demande, préparation, vérification) n'est plus raconté : la démonstration plus bas le montre. */}
       Son entreprise pose des sols entre Metz et le Luxembourg, avec une équipe de 4 à 9 personnes. J'y ai
       construit un assistant relié à{" "}
-      {casClient.logiciel ? `${casClient.logiciel}, leur logiciel de gestion` : "leur logiciel de gestion"} :{" "}
-      {casClient.prenom} demande le devis, le devis se prépare dans le logiciel, {casClient.prenom} le vérifie, et
-      c'est enregistré.
+      {casClient.logiciel ? `${casClient.logiciel}, leur logiciel de gestion` : "leur logiciel de gestion"}.
     </SectionHeading>
 
     <Temoignage
@@ -117,10 +115,9 @@ const guillemets = (texte: string) => `« ${texte} »`;
             </dd>
           </div>
         </dl>
-        <p class="text-14 text-ink-muted">Selon {casClient.prenom}.</p>
       </div>
 
-      <figure class="flex flex-col gap-8 rounded-lg border border-border bg-surface p-6 shadow-sm">
+      <div class="flex flex-col gap-8 rounded-lg border border-border bg-surface p-6 shadow-sm">
         {/* Avant → Aujourd'hui en flux (R1) : deux cases dans la carte (comme les temps de la démonstration),
             reliées par une flèche, verticale sous `sm`. « Avant » neutre, « Aujourd'hui » bordée d'accent. */}
         <div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr]">
@@ -173,8 +170,7 @@ const guillemets = (texte: string) => `« ${texte} »`;
             <p>{guillemets(tempsGagne)}</p>
           </blockquote>
         </div>
-        <figcaption class="text-14 text-ink-muted">{casClient.prenom}, dans ses mots.</figcaption>
-      </figure>
+      </div>
     </div>
 
     <EnchainementClient />

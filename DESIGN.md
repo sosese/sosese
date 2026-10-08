@@ -989,10 +989,12 @@ Voix : la section parle au **« je »** (Joris), comme tout le site depuis le 20
 Ordre de lecture, pensé pour 10 secondes :
 1. **Titre `h2` qui résume seul** : « Ce qu'en dit {prénom}, chez {entreprise} » (valeurs de `casClient`), puis un
    chapeau en « je » : qui ils sont (« Son entreprise pose des sols… », Metz – Luxembourg, 4 à 9 personnes) et ce que
-   j'ai construit, en mots simples (« Jason demande le devis, le devis se prépare dans le logiciel, Jason le
-   vérifie, et c'est enregistré »). **Le nom de l'entreprise n'est pas répété dans le chapeau** (il est déjà dans le
-   titre et la signature), et **Jason est nommé comme sujet de chaque geste** : avec « un assistant » juste avant,
-   un « il » se rattachait à la machine (corrigé le 2026-10-08).
+   j'ai construit, **en une phrase qui finit sur « …relié à Extrabat, leur logiciel de gestion. »**. **Le nom de
+   l'entreprise n'est pas répété dans le chapeau** (il est déjà dans le titre et la signature). Le déroulé (« Jason
+   demande le devis, le devis se prépare dans le logiciel, Jason le vérifie, et c'est enregistré ») a été **retiré
+   le 2026-10-08** (étape 5 bis, correction 1, demande de l'humain) : la démonstration plus bas le montre. S'il
+   revient, nommer Jason comme sujet de chaque geste : avec « un assistant » juste avant, un « il » se rattache à la
+   machine.
 2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
    `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
    gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, `shadow-sm` (comme `Card`, depuis l'étape 5).
@@ -1002,12 +1004,13 @@ Ordre de lecture, pensé pour 10 secondes :
    **grand guillemet décoratif** ajouté au-dessus (il doublait les guillemets du texte, qu'on ne retire pas) et le
    **fond `accent-soft`** sur la carte (il aurait fait de la carte du témoignage un bloc ambre de plus, juste au-dessus
    de la carte « Aujourd'hui » bordée d'accent). Le texte de la citation ne change pas.
-3. **Une carte « ce qu'il en tire »** (étape 5 bis, 2026-10-08) : son usage, puis **deux chiffres, pas un de plus**,
-   légende commune « Selon Jason. ».
+3. **Une carte « ce qu'il en tire »** (étape 5 bis, 2026-10-08) : son usage, puis **deux chiffres, pas un de plus**.
+   Plus de légende « Selon Jason. » (retirée le 2026-10-08, correction 1 de l'étape 5 bis, demande de l'humain) : la
+   section entière est sa parole, le titre le dit déjà.
    - **Usage** (donnée du formulaire, pas un chiffre) : « Jason s'en sert plusieurs fois par jour : » puis une liste
      `flex-wrap` de trois lieux, chacun avec sa `PastilleIcone` : écran (« au bureau »), téléphone (« au
      téléphone »), voiture (« en déplacement »). **« Jason » et non « il »** (le plan proposait « Il s'en sert ») :
-     juste sous la citation, « il » pouvait se rattacher à l'assistant — même règle que le chapeau.
+     juste sous la citation, « il » pouvait se rattacher à l'assistant — même règle que l'ancien chapeau.
    - **Devis en schéma (R3)** : `dt` « Pour un devis », puis `CompareBars reveal` — « Avant » 25 min (`muted`, barre
      `--border-strong`) et « Avec l'assistant » 3 min (`accent`). Valeurs écrites (Inter `text-21`, « 3 min » en
      `--accent`), barres en `aria-hidden` : un lecteur d'écran lit « Avant 25 min, Avec l'assistant 3 min », sans
@@ -1020,7 +1023,9 @@ Ordre de lecture, pensé pour 10 secondes :
      fait aussi du suivi commercial), sa note de recommandation, ni « 4 à 9 personnes » ou « 7 ans » comme chiffres.
    - Historique : de l'étape 3 à l'étape 5 bis, les deux chiffres étaient en serif `--ink`, sans accent ni barres
      (« sobres ») ; l'humain a jugé la section « trop morne, tout en noir et blanc » et levé cette consigne.
-4. **Ses mots, en flux** (étape 5 bis), dans une même `<figure>` (« Jason, dans ses mots. ») :
+4. **Ses mots, en flux** (étape 5 bis), dans une même carte (`<div>` ; c'était une `<figure>` légendée « Jason,
+   dans ses mots. » jusqu'à la correction 1 de l'étape 5 bis — légende retirée à la demande de l'humain, et une
+   `figure` sans légende n'apportait plus rien) :
    - **Avant → Aujourd'hui (R1)** : deux cases `rounded-md border bg-bg p-4` (des cases **dans** une carte, sans
      ombre, comme les temps d'`EnchainementClient`), reliées par une flèche SVG en `--accent` (`aria-hidden`), en
      grille `sm:grid-cols-[1fr_auto_1fr]` : côte à côte dès `sm`, empilées dessous avec la flèche tournée vers le bas
@@ -1191,7 +1196,7 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
 - **« il » a besoin d'un antécédent.** Il désigne l'assistant seulement dans un texte où « l'assistant » vient
   d'être nommé (hero, offre, chapeau de Confiance, FAQ) ; une section éloignée le renomme avant d'employer le
   pronom (chapeau de Confiance : « L'assistant lit ce qu'il faut. Il n'en garde rien. »). Dans le cas client, « il »
-  désigne **Jason**, jamais la machine — et le chapeau nomme Jason à chaque geste pour lever l'ambiguïté. Le
+  désigne **Jason**, jamais la machine — la section le nomme (« Jason s'en sert… ») là où un « il » serait ambigu. Le
   bandeau d'engagements n'emploie aucun pronom.
 - **Règles ≠ données.** « Il retient vos règles » et « rien de mémorisé » se contredisent si les deux objets ne
   sont pas nommés séparément. Depuis le 2026-10-08 (trois assistants), l'offre n'en parle plus : la distinction vit
