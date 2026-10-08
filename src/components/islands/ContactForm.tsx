@@ -37,7 +37,7 @@ function validate(data: FormData): Errors {
 
   if (get("message").length > LIMITES.message) errors.message = `${LIMITES.message} caractères maximum.`;
 
-  if (data.get("consentement") !== "on") errors.consentement = "Votre accord est nécessaire pour que l'on puisse vous répondre.";
+  if (data.get("consentement") !== "on") errors.consentement = "Votre accord est nécessaire pour que je puisse vous répondre.";
 
   return errors;
 }
@@ -128,7 +128,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
         <p className="eyebrow">Message envoyé</p>
         <p className="text-28 font-semibold tracking-tight">Merci, votre demande est bien partie.</p>
         <p className="text-16 text-ink-muted">
-          Nous revenons vers vous par email. Si c'est urgent, écrivez directement à{" "}
+          Je reviens vers vous par email. Si c'est urgent, écrivez-moi directement à{" "}
           <a href={`mailto:${fallbackEmail}`} className="text-accent underline underline-offset-4 hover:text-accent-hover">
             {fallbackEmail}
           </a>
@@ -194,7 +194,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
             <label key={irritant}
               className="group/chip inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-border-strong bg-surface px-4 text-14 text-ink select-none transition-[background-color,border-color,color] duration-(--duration-fast) ease-out hover:border-accent has-checked:border-accent has-checked:bg-accent has-checked:text-on-accent has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent">
               <input type="checkbox" name="irritants" value={irritant} className="sr-only" />
-              <span aria-hidden="true" className="hidden font-mono group-has-checked/chip:inline">✓</span>
+              <span aria-hidden="true" className="hidden group-has-checked/chip:inline">✓</span>
               {irritant}
             </label>
           ))}
@@ -238,7 +238,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
           <div className="mb-6 flex flex-col gap-1 rounded-md border border-accent bg-accent-soft p-4 text-14 text-ink">
             <p className="font-medium">L'envoi n'a pas abouti.</p>
             <p>
-              Vos informations sont conservées ci-dessus : réessayez dans un instant, ou écrivez-nous directement à{" "}
+              Vos informations sont conservées ci-dessus : réessayez dans un instant, ou écrivez-moi directement à{" "}
               <a href={`mailto:${fallbackEmail}`} className="font-medium underline underline-offset-4">
                 {fallbackEmail}
               </a>
@@ -250,7 +250,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
 
       <div className="flex flex-wrap items-center gap-4">
         <button type="submit" disabled={status === "sending"}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-accent px-6 text-16 font-medium text-on-accent transition-[background-color,transform] duration-(--duration-fast) ease-out hover:bg-accent-hover disabled:cursor-wait disabled:opacity-70 motion-safe:active:translate-y-px">
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-16 font-medium text-on-accent transition-[background-color,transform] duration-(--duration-fast) ease-out hover:bg-accent-hover disabled:cursor-wait disabled:opacity-70 motion-safe:active:translate-y-px">
           {status === "sending" ? "Envoi en cours…" : "Envoyer ma demande"}
         </button>
         <p role="status" aria-live="polite" className="text-14 text-ink-muted">
@@ -296,7 +296,7 @@ function Field({
 function ErrorText({ id, children }: { id: string; children: ReactNode }) {
   return (
     <p id={id} className="flex items-baseline gap-2 text-14 text-accent">
-      <span aria-hidden="true" className="font-mono">!</span>
+      <span aria-hidden="true">!</span>
       {children}
     </p>
   );

@@ -3,25 +3,34 @@ import Button from "../ui/Button.astro";
 import { cta } from "../../config/site";
 ---
 
-<section aria-labelledby="hero-titre" class="border-b border-border">
+<section aria-labelledby="hero-titre">
   {/* Texte seul depuis le 2026-10-07 (demande explicite) : plus de visuel à droite. Le titre prend la place
-      libérée (text-64 ≥ lg) et le chapeau reste à la mesure de lecture. */}
+      libérée (text-64 ≥ lg) et le chapeau reste à la mesure de lecture.
+      Voix (2026-10-08) : « je », Joris nommé dès la première ligne du chapeau ; « il » = l'assistant,
+      nommé dans le titre (DESIGN.md, « Copy »).
+      Titre (2026-10-08, étape 4 ter) : la relation d'abord (vous parlez, je construis). Couleurs inversées à
+      l'étape 5 (décision de l'humain) : la première phrase en ink-muted, la promesse en ink — c'est elle qui
+      porte le message. */}
   <div class="container-site py-(--hero-y)">
     <div class="flex flex-col gap-6">
-      <p class="eyebrow">IA sur-mesure pour PME</p>
+      <p class="eyebrow text-accent">Artisans, indépendants, petites entreprises</p>
       <h1 id="hero-titre" class="max-w-4xl text-36 font-semibold tracking-tight sm:text-48 lg:text-64">
-        Vos tâches répétitives, automatisées. <span class="text-ink-muted">Sans changer vos outils.</span>
+        <span class="text-ink-muted">Vous me parlez de votre métier.</span> Je construis l'assistant qui s'occupe du reste.
       </h1>
       <p class="max-w-(--measure) text-18 text-ink-muted">
-        On repère avec vous ce qui remplit les journées de vos équipes.{" "}
-        <strong class="font-medium text-ink">On conçoit la solution qui s'en occupe à votre place</strong> —
-        branché sur les logiciels que vous utilisez déjà, intégré à vos manières de travailler.
+        Je suis Joris. Je repère avec vous les tâches qui remplissent vos journées, et je relie votre assistant aux
+        logiciels que vous utilisez déjà.{" "}
+        <strong class="font-medium text-ink">Il prépare le travail, vous vérifiez, puis c'est enregistré.</strong>
       </p>
       <div class="flex flex-wrap items-center gap-3 pt-2">
-        <Button href={cta.href} size="lg">
-          {cta.label}
-          <span aria-hidden="true" class="font-mono transition-transform duration-(--duration-fast) ease-out motion-safe:group-hover/button:translate-x-0.5">→</span>
-        </Button>
+        {/* Sous md, l'appel principal est le bouton flottant (MobileCta, toujours visible) : celui-ci ferait
+            doublon (demande de l'humain, étape 6). Masqué par un conteneur, Button fixant son display (piège 3). */}
+        <div class="hidden md:block">
+          <Button href={cta.href} size="lg">
+            {cta.label}
+            <span aria-hidden="true" class="transition-transform duration-(--duration-fast) ease-out motion-safe:group-hover/button:translate-x-0.5">→</span>
+          </Button>
+        </div>
         <Button href="#methode" variant="secondary" size="lg">Voir la méthode</Button>
       </div>
     </div>

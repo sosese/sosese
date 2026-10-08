@@ -52,6 +52,15 @@ function ecrireBrouillon(etape: number, reponses: Reponses | null) {
   } catch {}
 }
 
+// Focus sans laisser le navigateur choisir où défiler (il remontait jusqu'au titre de la page), puis le haut de
+// la carte (`data-questionnaire-carte`, posé par la page) sous l'en-tête collant, grâce au scroll-padding-top de
+// html. Sans option behavior : le défilement doux de global.css ne s'applique que hors mouvement réduit.
+function ramener(cible: HTMLElement | null) {
+  if (!cible) return;
+  cible.focus({ preventScroll: true });
+  (cible.closest<HTMLElement>("[data-questionnaire-carte]") ?? cible).scrollIntoView({ block: "start" });
+}
+
 function valider(questions: Question[], reponses: Reponses): Errors {
   const errors: Errors = {};
   for (const q of questions) {
@@ -68,7 +77,7 @@ function valider(questions: Question[], reponses: Reponses): Errors {
 const inputClass =
   "h-12 w-full rounded-md border border-border-strong bg-surface px-4 text-16 text-ink transition-colors duration-(--duration-fast) ease-out hover:border-ink-muted aria-invalid:border-accent";
 const boutonBase =
-  "inline-flex h-12 items-center justify-center gap-2 rounded-md px-6 text-16 font-medium transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-out motion-safe:active:translate-y-px";
+  "inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-16 font-medium transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-out motion-safe:active:translate-y-px";
 const boutonPrimaire = `${boutonBase} bg-accent text-on-accent hover:bg-accent-hover disabled:cursor-wait disabled:opacity-70`;
 const boutonSecondaire = `${boutonBase} border border-border-strong bg-surface text-ink hover:border-accent hover:text-accent`;
 
@@ -93,14 +102,13 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
     }
   }, []);
 
-  // Au changement d'étape (pas au chargement), le focus va sur le titre : le lecteur d'écran l'annonce
-  // et le navigateur ramène la page en haut du formulaire.
+  // Au changement d'étape (pas au chargement), le focus va sur le titre : le lecteur d'écran l'annonce.
   useEffect(() => {
-    if (aNavigue.current) titreRef.current?.focus();
+    if (aNavigue.current) ramener(titreRef.current);
   }, [etape]);
 
   useEffect(() => {
-    if (status === "success") successRef.current?.focus();
+    if (status === "success") ramener(successRef.current);
   }, [status]);
 
   const section = SECTIONS[etape];
@@ -131,7 +139,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
     const form = event.currentTarget;
 
     const found = valider(section.questions, reponses);
-    if (derniere && !consentement) found.consentement = "Votre accord est nécessaire pour que l'on puisse lire vos réponses.";
+    if (derniere && !consentement) found.consentement = "Votre accord est nécessaire pour que je puisse lire vos réponses.";
     setErrors(found);
     const premier = [...section.questions.map((q) => q.id), "consentement"].find((id) => found[id]);
     if (premier) {
@@ -173,7 +181,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
           {accuse
             ? "Vos réponses sont bien arrivées. Un accusé de réception vient de partir vers votre boîte email."
             : "Vos réponses sont bien arrivées."}{" "}
-          Pour toute question, écrivez à{" "}
+          Pour toute question, écrivez-moi à{" "}
           <a href={`mailto:${fallbackEmail}`} className="text-accent underline underline-offset-4 hover:text-accent-hover">
             {fallbackEmail}
           </a>
@@ -243,7 +251,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
             <div className="mb-6 flex flex-col gap-1 rounded-md border border-accent bg-accent-soft p-4 text-14 text-ink">
               <p className="font-medium">L'envoi n'a pas abouti.</p>
               <p>
-                Vos réponses sont conservées : réessayez dans un instant, ou écrivez directement à{" "}
+                Vos réponses sont conservées : réessayez dans un instant, ou écrivez-moi directement à{" "}
                 <a href={`mailto:${fallbackEmail}`} className="font-medium underline underline-offset-4">
                   {fallbackEmail}
                 </a>
@@ -305,7 +313,7 @@ function Champ({
                   onChange(e.target.checked ? [...coches, option] : coches.filter((c) => c !== option));
                 }}
                 className="sr-only" />
-              <span aria-hidden="true" className="hidden font-mono group-has-checked/chip:inline">✓</span>
+              <span aria-hidden="true" className="hidden group-has-checked/chip:inline">✓</span>
               {option}
             </label>
           ))}
@@ -372,7 +380,7 @@ function Champ({
 function ErrorText({ id, children }: { id: string; children: ReactNode }) {
   return (
     <p id={id} className="flex items-baseline gap-2 text-14 text-accent">
-      <span aria-hidden="true" className="font-mono">!</span>
+      <span aria-hidden="true">!</span>
       {children}
     </p>
   );

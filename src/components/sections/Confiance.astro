@@ -8,23 +8,25 @@ import Figure from "../ui/diagrams/Figure.astro";
 const libre = ["lire les demandes qui arrivent", "chercher dans vos dossiers", "calculer un prix sur vos tarifs", "préparer le brouillon"];
 const accord = ["envoyer un message à un client", "créer un devis dans votre logiciel", "modifier une fiche", "engager un prix"];
 
+// « il » = l'assistant, nommé en tête du chapeau (la section est trop loin de l'offre pour reprendre
+// le pronom sans le renommer). « données » au sens de vie privée : exception assumée à la liste noire.
 // Quatre cartes, pas cinq : la grille `lg:grid-cols-4` ne tient qu'à quatre. « Aucun entraînement »
 // rejoint la carte mémoire (on scanne les titres, c'est donc le titre qui doit porter les deux), « code »
 // et « réversibilité » fusionnent, et la place libérée accueille le périmètre d'accès (2026-09-19).
 const engagements = [
   {
-    titre: "Rien de mémorisé, rien qui serve à entraîner l'IA",
-    texte: "La tâche finie, il ne reste rien. Ce qu'elle retient — vos règles, vos préférences — c'est vous qui le décidez, et vous pouvez l'effacer.",
+    titre: "Rien de mémorisé, rien de réutilisé",
+    texte: "La tâche finie, il ne reste rien, et rien ne sert à entraîner une IA. Ce qu'il retient — vos règles, vos préférences — c'est vous qui le décidez, et vous pouvez l'effacer.",
     icone: '<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>',
   },
   {
-    titre: "Elle ne consulte que ce qu'il faut",
-    texte: "Pour chaque tâche, on écrit noir sur blanc à quelles données elle a accès. Le reste de vos dossiers, elle ne l'ouvre pas.",
+    titre: "Il ne consulte que ce qu'il faut",
+    texte: "Pour chaque tâche, j'écris noir sur blanc ce qu'il a le droit d'ouvrir. Le reste de vos dossiers, il ne l'ouvre pas.",
     icone: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="m9 13 2 2 4-4"/>',
   },
   {
     titre: "Vos données ne quittent pas l'Europe",
-    texte: "Elles sont traitées et stockées dans l'Union européenne, chez des hébergeurs qu'on vous nomme.",
+    texte: "Elles sont traitées et stockées dans l'Union européenne, chez des hébergeurs que je vous nomme.",
     icone: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   },
   {
@@ -37,14 +39,14 @@ const engagements = [
 
 <section id="confiance" aria-labelledby="confiance-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
-    <SectionHeading id="confiance-titre" eyebrow="Confiance & données" title="Vos données restent les vôtres">
-      Elle lit ce qu'il faut. Elle n'en garde rien. Elle n'envoie rien sans vous.
+    <SectionHeading id="confiance-titre" eyebrow="Confiance" title="Vos données restent les vôtres">
+      L'assistant lit ce qu'il faut. Il n'en garde rien. Il n'envoie rien sans vous.
     </SectionHeading>
 
-    <Figure label="Qui décide quoi" caption="La même règle vaut pour tout ce que nous construisons.">
+    <Figure label="Qui décide quoi" caption="La même règle vaut pour tout ce que je construis.">
       <div class="grid items-stretch gap-3 lg:grid-cols-[1fr_auto_1fr]">
-        <div class="flex flex-col gap-5 rounded-lg border border-border bg-surface p-6">
-          <p class="text-18 font-semibold text-ink">Elle avance seule</p>
+        <div class="flex flex-col gap-5 rounded-lg border border-border bg-surface p-6 shadow-sm">
+          <p class="text-18 font-semibold text-ink">Il avance seul</p>
           <ul class="flex flex-col gap-3 text-16 text-ink-muted">
             {
               libre.map((item) => (
@@ -62,14 +64,14 @@ const engagements = [
         {/* La porte, et le seul aplat de couleur de la section : c'est là que tout s'arrête. */}
         <div aria-hidden="true" class="flex flex-col items-center justify-center gap-2 py-1 lg:flex-row lg:px-3 lg:py-0">
           <span class="h-5 w-px bg-border-strong lg:h-px lg:w-5"></span>
-          <span class="rounded-full bg-accent px-4 py-1.5 font-mono text-12 font-semibold tracking-wide whitespace-nowrap text-on-accent uppercase">
+          <span class="rounded-full bg-accent px-4 py-1.5 text-12 font-semibold tracking-wide whitespace-nowrap text-on-accent uppercase">
             votre oui
           </span>
           <span class="h-5 w-px bg-border-strong lg:h-px lg:w-5"></span>
         </div>
 
-        <div class="flex flex-col gap-5 rounded-lg border border-accent bg-surface p-6">
-          <p class="text-18 font-semibold text-ink">Elle s'arrête net</p>
+        <div class="flex flex-col gap-5 rounded-lg border border-accent bg-surface p-6 shadow-sm">
+          <p class="text-18 font-semibold text-ink">Il s'arrête net</p>
           <ul class="flex flex-col gap-3 text-16 text-ink">
             {
               accord.map((item) => (

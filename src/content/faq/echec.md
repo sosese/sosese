@@ -2,6 +2,6 @@
 question: Et si ça ne marche pas ?
 ordre: 6
 ---
-La faisabilité de chaque piste est évaluée dans la feuille de route, avant toute construction.
+Je vérifie que chaque piste est faisable dans la feuille de route, avant de construire quoi que ce soit.
 
-Pendant la construction, vous voyez la solution avancer chaque semaine, et vous pouvez arrêter à la fin de chaque étape.
+Pendant la construction, vous voyez l'assistant avancer chaque semaine, et vous pouvez arrêter à la fin de chaque étape.

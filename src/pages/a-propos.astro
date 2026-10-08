@@ -11,7 +11,7 @@ import { personne } from "../config/site";
 const principes = [
   {
     titre: "Le résultat avant la technologie",
-    texte: "On part du temps perdu par vos équipes, pas d'un outil à placer. Si un tableur bien construit suffit, on vous le dit.",
+    texte: "Je pars du temps que vous perdez, pas d'un logiciel à placer. Si un tableur bien construit suffit, je vous le dis.",
   },
   {
     titre: "Des chiffres avant de construire",
@@ -19,32 +19,32 @@ const principes = [
   },
   {
     titre: "Vous restez propriétaire",
-    texte: "Code, accès et documentation vous sont remis. Vous pouvez continuer avec nous, ou sans nous.",
+    texte: "Code, accès et documentation vous sont remis. Vous pouvez continuer avec moi, ou sans moi.",
   },
   {
     titre: "Des mots simples",
-    texte: "On parle de devis, de factures et de relances. Le vocabulaire technique reste chez nous.",
+    texte: "Je parle de devis, de factures et de relances. Le vocabulaire technique reste chez moi.",
   },
 ];
 ---
 
 <Base
-  title="À propos du studio sosese"
-  description="sosese accompagne les PME de bout en bout : identifier les tâches à automatiser, les prioriser, puis construire des solutions intégrées à leurs outils."
+  title="À propos | sosese"
+  description="sosese, c'est Joris Chamvoux : j'accompagne artisans, indépendants et petites entreprises, du repérage des tâches qui prennent du temps jusqu'à l'assistant en service."
 >
-  <PageHeader eyebrow="À propos" title="Un studio IA pour les PME qui veulent du concret">
-    sosese accompagne les entreprises de 15 à 150 personnes, de l'identification des tâches à automatiser jusqu'à la
-    solution en service.
+  <PageHeader eyebrow="À propos" title="Du concret pour les artisans, les indépendants et les petites entreprises">
+    sosese, c'est moi, Joris Chamvoux. J'accompagne les artisans, les indépendants et les petites entreprises, du
+    repérage des tâches qui prennent du temps jusqu'à l'assistant en service.
   </PageHeader>
 
   <section aria-labelledby="studio-titre" class="py-(--section-y)">
     <div class="container-site grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
-      <SectionHeading id="studio-titre" eyebrow="Le studio" title="Identifier, prioriser, construire" />
+      <SectionHeading id="studio-titre" eyebrow="Ma démarche" title="Repérer, choisir, construire" />
       <div class="flex flex-col gap-4 text-18 text-ink-muted">
         <p>
-          L'intelligence artificielle est souvent vendue comme une solution à la recherche d'un problème. Nous faisons
-          l'inverse : partir des tâches répétitives qui pèsent sur vos équipes, mesurer ce qu'elles coûtent, puis
-          choisir avec vous celles qui méritent d'être automatisées.
+          Les nouvelles technologies sont souvent vendues comme des réponses à la recherche d'une question. Je fais
+          l'inverse : je pars des tâches répétitives qui pèsent sur vos journées, je mesure ce qu'elles coûtent, puis
+          je choisis avec vous celles qu'un assistant peut prendre en charge.
         </p>
         <p>
           Ce qui est construit se branche sur vos logiciels actuels et vous appartient entièrement.
@@ -56,7 +56,7 @@ const principes = [
     </div>
   </section>
 
-  <section aria-labelledby="posture-titre" class="border-y border-border bg-bg-subtle py-(--section-y)">
+  <section aria-labelledby="posture-titre" class="bg-bg-subtle py-(--section-y)">
     <div class="container-site flex flex-col gap-12">
       <SectionHeading id="posture-titre" eyebrow="La posture" title="Quatre principes qui guident chaque mission" />
       <ul class="grid gap-4 md:grid-cols-2">
@@ -64,7 +64,7 @@ const principes = [
           principes.map((p, i) => (
             <li class="flex">
               <Card interactive class="flex w-full flex-col gap-3">
-                <span class="font-mono text-12 text-accent">0{i + 1}</span>
+                <span class="text-12 text-accent tabular-nums">0{i + 1}</span>
                 <h3 class="text-21 font-semibold">{p.titre}</h3>
                 <p class="text-16 text-ink-muted">{p.texte}</p>
               </Card>
@@ -83,7 +83,7 @@ const principes = [
           <div class="flex flex-col gap-4">
             <p class="eyebrow">La personne</p>
             <h2 id="personne-titre" class="text-28 font-semibold tracking-tight md:text-36">{personne.nom}</h2>
-            <p class="font-mono text-14 text-ink-muted">{personne.role}</p>
+            <p class="text-14 text-ink-muted">{personne.role}</p>
             <div class="flex max-w-(--measure) flex-col gap-4 text-18 text-ink-muted">
               {personne.bio.map((paragraphe) => <p>{paragraphe}</p>)}
             </div>

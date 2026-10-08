@@ -4,18 +4,22 @@
 - Aucune couleur, rayon ou espacement en dur. Toujours un token.
 - Une seule couleur d'accent. Jamais deux accents dans un même écran.
 - --accent-bright n'est jamais une couleur de texte sur fond clair.
-- Bordures 1px sur --border. Ombres réservées aux éléments flottants.
+- Bordures 1px sur --border. **Cartes : bordure 1px `--border` + `--shadow-sm`** (relief doux, depuis le 2026-10-08,
+  plan « site moins geek », étape 5 — l'ombre seule ne se voit pas en thème sombre, la bordure seule faisait
+  « grille de tableau de bord »). `--shadow-md` reste réservée aux éléments flottants (bouton flottant, lien
+  d'évitement, éléments posés dans les maquettes). Pas d'ombre sur ce qui n'est pas une carte : sections, listes,
+  accordéons, filets.
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
 - Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal** (aujourd'hui dans « Sous le capot », voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
-- Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode et la démonstration du
-  cas client : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
+- Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode, celle des barres de
+  `CompareBars` (devis de Clients), la démonstration du cas client et la planche du protocole (« Sous le capot ») : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
   Tout le reste est statique. Avant de créer un îlot, vérifier qu'un composant statique ou quelques lignes de JS natif ne suffisent pas.
 
 ## Tokens
 Source unique : `src/styles/tokens.css`. Ils sont exposés à Tailwind dans `src/styles/global.css`
 (`bg-bg`, `bg-surface`, `text-ink`, `text-ink-muted`, `border-border`, `bg-accent`, `text-on-accent`,
-`rounded-md`, `shadow-md`, `text-14`, `font-mono`…). La palette, les rayons, les ombres, les tailles de texte
+`rounded-md`, `shadow-md`, `text-14`, `font-display`, `font-mono`…). La palette, les rayons, les ombres, les tailles de texte
 et les familles de polices par défaut de Tailwind sont désactivés : une classe comme `bg-red-500` ou `text-sm`
 ne produit rien (et sans erreur, voir « Pièges »).
 
@@ -23,7 +27,7 @@ ne produit rien (et sans erreur, voir « Pièges »).
 :root {
   /* Base — thème clair */
   --bg:            #FCFBF9;
-  --bg-subtle:     #F5F2ED;
+  --bg-subtle:     #F6F1E9; /* #F5F2ED jusqu'au 2026-10-08 */
   --surface:       #FFFFFF;
   --ink:           #14110E;
   --ink-muted:     #6B6259;
@@ -31,7 +35,7 @@ ne produit rien (et sans erreur, voir « Pièges »).
   --border-strong: rgba(20,17,14,0.18);
 
   /* Accent ambre */
-  --accent:        #B45309; /* texte, bordures, fond de bouton (blanc dessus = 5:1) */
+  --accent:        #AC4F08; /* texte, bordures, fond de bouton (blanc dessus = 5,4:1) ; #B45309 jusqu'au 2026-10-08 */
   --accent-hover:  #92400E;
   --accent-bright: #F59E0B; /* décoratif uniquement : traits, glows, icônes */
   --accent-soft:   rgba(217,119,6,0.12);
@@ -40,8 +44,8 @@ ne produit rien (et sans erreur, voir « Pièges »).
   /* Rayons */
   --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-full: 999px;
 
-  /* Ombres — usage rare, éléments flottants uniquement */
-  --shadow-sm: 0 1px 2px rgba(20,17,14,0.06);
+  /* Ombres — sm : cartes (avec leur bordure) ; md : éléments flottants uniquement */
+  --shadow-sm: 0 1px 2px rgba(20,17,14,0.04), 0 4px 12px rgba(20,17,14,0.05);
   --shadow-md: 0 8px 24px rgba(20,17,14,0.10);
 }
 
@@ -60,7 +64,7 @@ ne produit rien (et sans erreur, voir « Pièges »).
   --accent-soft:   rgba(245,158,11,0.14);
   --on-accent:     #14110E;
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.25);
   --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
 }
 
@@ -80,31 +84,63 @@ Tokens complémentaires dans `tokens.css` :
 
 | Groupe | Tokens |
 |---|---|
-| Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
+| Typographie | `--font-sans`, `--font-display` (serif du témoignage seulement), `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
 | Espacement / gabarit | `--space-unit`, `--section-y`, `--hero-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
 | Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
 ### Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1)
+Recalculés le 2026-10-08 (étape 5, formule WCAG 2.x, fonds translucides composés sur le fond réel) après le passage
+de `--accent` à #AC4F08 et de `--bg-subtle` à #F6F1E9. Le thème sombre et les sections invert n'ont pas changé.
 | Couple | Clair | Sombre / invert |
 |---|---|---|
 | ink / bg | 18.19 | 17.25 |
 | ink-muted / bg | 5.77 | 6.74 |
-| ink-muted / bg-subtle | 5.35 | 6.42 |
+| ink-muted / bg-subtle | 5.31 (5.35 avant) | 6.42 |
 | ink-muted / surface | 5.97 | 6.18 |
-| accent / bg (texte accent) | 4.86 | 9.03 |
-| accent / surface | 5.02 | — |
-| on-accent / accent (bouton) | 5.02 | 8.76 |
+| accent / bg (texte accent, eyebrows) | 5.24 (4.86 avant) | 9.03 |
+| accent / surface | 5.42 (5.02 avant) | 8.28 |
+| accent / bg-subtle | **4.82** (4.49 ✗ avant) | 8.60 |
+| accent / accent-soft (sur bg) | **4.62** (4.28 ✗ avant) | 7.28 |
+| accent / accent-soft (sur surface) | 4.77 | 6.43 |
+| accent / accent-soft (sur bg-subtle) | **4.28 ✗** | 6.76 |
+| ink / accent-soft | 16.04 | 13.90 |
+| on-accent / accent (bouton) | 5.42 (5.02 avant) | 8.76 |
 | on-accent / accent-hover | 7.09 | 11.27 |
-| **accent / accent-soft** | **4.28 ✗** | 7.28 |
-| **accent / bg-subtle** | **4.49 ✗** (axe) | 6.42 |
-| accent-hover / bg-subtle | 6.35 | — |
+| accent-hover / bg-subtle | 6.31 (6.35 avant) | 11.07 |
+
+(La valeur sombre « accent / bg-subtle 6.42 » de l'ancien tableau était celle d'`ink-muted` : recalculée, 8.60.)
+
+Couples de la section Clients refaite le 2026-10-08 (étape 5 bis), même formule, translucides composés :
+| Couple (usage) | Clair | Sombre |
+|---|---|---|
+| ink / surface (ligne d'usage, points du temps gagné… dans les cartes) | 18.81 | 15.81 |
+| accent / surface (guillemets de la citation, « 3 min », « ≈ 4 h ») | 5.42 | 8.28 |
+| ink / bg (phrases des cases Avant / Aujourd'hui) | 18.19 | 17.25 |
+| accent / bg (eyebrow « Aujourd'hui ») | 5.24 | 9.03 |
+| ink-muted / bg (eyebrow « Avant ») | 5.77 | 6.74 |
+| ink-muted / surface (citation du temps gagné, libellés) | 5.97 | 6.18 |
+| *non textuel* — icône accent / pastille accent-soft sur surface | 4.77 | 6.43 |
+| *non textuel* — icône ink-muted / pastille bg-subtle | 5.31 | 6.42 |
+| *non textuel* — bordure « Aujourd'hui », flèche, barre accent / bg | 5.24 | 9.03 |
+| *non textuel* — barre « Avant » (border-strong) / piste bg | 1.48 | 1.56 |
+
+La barre « Avant » est volontairement pâle (c'est l'état d'avant) ; elle n'a pas à atteindre 3:1 : la valeur
+« 25 min » est écrite à côté et la barre est en `aria-hidden` (contrat des schémas). Les icônes sont toutes
+décoratives, le texte est à côté ; elles passent quand même 3:1.
 
 Conséquences :
-- sur un fond `--accent-soft`, le texte est `--ink`, jamais `--accent` (cas du Badge accent) ;
-- sur un fond `--bg-subtle`, pas de texte `--accent` : fond `--bg` ou `--surface` à la place (numéros du FlowDiagram),
-  ou `--accent-hover` pour un état de survol (questions de la FAQ). Exemptés : le point du wordmark (logotype) et les
-  « ✓ » décoratifs en `aria-hidden`.
+- **Depuis le 2026-10-08, `--accent` passe AA en texte sur `bg`, `surface` et `bg-subtle`**, et sur `accent-soft`
+  posé sur `bg` ou `surface`, dans les deux thèmes. C'est ce qui permet les eyebrows de section en accent (voir
+  « Typographie »). **Une exception : `accent-soft` posé sur `bg-subtle`, en clair (4,28:1, ✗)** — ligne ajoutée le
+  2026-10-08 (plan « site moins geek », étape 6). Aucun texte n'y est concerné : vérifié à l'exécution sur les
+  7 pages × 2 thèmes (tout texte `--accent` visible, pile de fonds remontée jusqu'au premier opaque : 0 sur
+  `accent-soft`). Dans une section `bg-subtle`, `accent-soft` ne porte que des éléments décoratifs en `aria-hidden`
+  (coches du bandeau Engagements, pastilles d'icône). Un badge ou un texte accent sur pastille douce dans une
+  section `bg-subtle` passerait sous AA : mettre le texte en `--ink` (14,87:1).
+- On garde pourtant les choix faits quand ces couples échouaient — ils restent justes, et la marge est mince
+  (4,62 et 4,82) : Badge accent et actif de `RotationEcrans` en `--ink` sur `--accent-soft`, survol des questions de
+  FAQ en `--accent-hover`. Une nouvelle teinte d'accent plus claire les ferait repasser sous AA.
 Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes avant usage.
 
 ## Thème
@@ -116,18 +152,67 @@ Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes ava
   (ex. icône soleil / lune).
 
 ## Typographie
-Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
+Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et son « ≈ 4 h » seulement) / JetBrains Mono
+(« Sous le capot » seulement, voir plus bas).
 Échelle : 12 14 16 18 21 28 36 48 64. Corps 17px, line-height 1.6.
 - Fichiers : `public/fonts/inter-var.woff2` et `jetbrains-mono-var.woff2`, polices **variables**, sous-ensemble
   **latin** de Fontsource (couvre é, à, œ, €, guillemets et tirets typographiques). Licences OFL à côté.
-- Un seul fichier par famille couvre toutes les graisses : ce sont ces deux fichiers qui sont préchargés.
+- Un seul fichier par famille couvre toutes les graisses. **Seul `inter-var.woff2` est préchargé** (2026-10-08) :
+  la mono ne sert plus qu'en bas de l'accueil, dans « Sous le capot » ; son `@font-face` reste, le fichier est
+  chargé à la demande. Voir piège 31 avant de remettre ou de retirer un préchargement.
+- **JetBrains Mono : « Sous le capot » seulement** (2026-10-08, plan « site moins geek », étape 2) — la section,
+  le terminal (`TerminalDemo`) et le labo (`src/labo/`, `src/pages/labo/`). Partout ailleurs, Inter : libellés,
+  chiffres, badges, pied de page, flèches « → » des boutons, coches et « ! » des formulaires. Les chiffres
+  qu'on compare en colonne prennent `tabular-nums` (valeurs de `CompareBars`, montants d'`EnchainementClient`,
+  numéros 01 / 02 / 03 de `/contact` et `/a-propos`, pastilles de la Méthode).
+  **Exceptions, non rendues sur une page publique et donc non converties** (invérifiables à l'écran) :
+  `Calculateur`, `FlowDiagram`, `DicteeMobile`, `ConvergenceDonnees`, `AgentEnAction`, `VracEnActions`. Elles
+  gardent la mono : **à convertir en Inter si l'une revient sur une page**, en revérifiant ses largeurs (piège 12).
 - Noms de famille déclarés : `"Inter"` et `"JetBrains Mono"` (et non `"Inter Variable"`).
 - Police de secours **`"Inter Fallback"`** (Arial / Liberation Sans / Helvetica locales) avec `size-adjust` et
   `ascent/descent/line-gap-override` mesurés sur `inter-var.woff2` : l'arrivée d'Inter ne change pas la taille du
   texte (pas de saut, pas de second LCP). **Remplacer le fichier Inter = remesurer ces valeurs.**
 - Pas d'italique chargée. En ajouter une = nouveau fichier + `@font-face`, pas de faux italique.
 - Titres `h1`–`h4` : `line-height: var(--leading-tight)`, `letter-spacing: -0.02em`, `text-wrap: balance`.
-- Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : mono, 12px, capitales, `--ink-muted`).
+- **Titres `h1` et `h2` en Inter semi-gras (600), `tracking-tight`** — la police d'origine, rétablie le 2026-10-08
+  (plan « site moins geek », étape 4 bis, décision de l'humain : préférence pour la police d'origine). Les classes
+  sont **sur chaque titre** (`font-semibold tracking-tight`, comme avant l'étape 2) : `SectionHeading`,
+  `PageHeader`, hero, CTA final, 404, `/a-propos`, `h2` d'étape de l'îlot `Questionnaire` ; `prose-site h2` en 600
+  dans `global.css`. **Pas de règle de base `h1, h2`** : un titre ajouté sans classe sortirait en Inter 400, donc
+  reprendre `SectionHeading` / `PageHeader` ou recopier les classes.
+  - **`letter-spacing`** : la règle de base `h1`–`h4` donne -0,02em ; `tracking-tight` (-0,025em) la remplace sur les
+    `h1` / `h2` qui le portent. `prose-site h2` et le `h2` de repli de `/a-propos` (section masquée) restent à
+    -0,02em, comme avant l'étape 2.
+  - **Historique** : du 2026-10-08 (étape 2) à l'étape 4 bis, les `h1` / `h2` étaient en serif 400 (Georgia,
+    puis Noto Serif en repli) par une règle de base dans `global.css`. Retiré : ne pas remettre cette règle.
+- **Serif (`--font-display`, utilitaire `font-display`) réservée au témoignage** : la citation de `Temoignage` et
+  le « ≈ 4 h » de `Clients`, pour qu'ils se détachent comme une parole (le devis 25 min / 3 min passe en barres
+  le 2026-10-08, étape 5 bis : ses valeurs sont celles de `CompareBars`, en Inter `tabular-nums`). **Aucun autre usage** (`grep -rn
+  "font-display" src` : `tokens.css`, `global.css`, `Temoignage.astro`, `Clients.astro` — les `font-display: swap`
+  des `@font-face` sont un descripteur homonyme). Graisse 400 (Georgia n'a que 400 / 700 ; le gras y sonne titre
+  de journal), interlettrage normal.
+  - **Pile `Georgia, "Noto Serif", serif`** (correction du 2026-10-08, au lieu de `Georgia, "Times New Roman",
+    serif`). Ce que voit chaque système : **Georgia** sur Windows, macOS et iOS ; **Noto Serif** sur Android (c'est
+    sa serif) et sur Linux quand elle est installée ; la **serif générique** du système sinon. Ne pas remettre
+    « Times New Roman » en second : sous Linux, c'est un alias de Liberation Serif (copie métrique de Times, rendu
+    « document Word ») qui passait avant Noto Serif ; Noto Serif est bien plus proche de Georgia (œil large,
+    empattements nets).
+  - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger, aucun préchargement. Revers : le
+    rendu varie selon le système (Georgia ou Noto Serif, largeurs proches mais pas identiques) — accepté.
+- Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : **Inter semi-gras (600)**, 12px, capitales
+  espacées de 0,08em, `--ink-muted`). Mono jusqu'au 2026-10-08. Le semi-gras est celui de la V7 : en Inter
+  normal, des capitales de 12 px paraissent grêles.
+- **Deux couleurs d'eyebrow** (2026-10-08, étape 5 — choix du codeur, à confirmer à l'œil par l'humain) :
+  - **eyebrow de section en `--accent`** (`eyebrow text-accent`) : `SectionHeading`, `PageHeader`, hero, CTA final,
+    404. Il ouvre chaque section d'une touche chaude et marque la hiérarchie. Possible depuis `--accent` #AC4F08 :
+    ≥ 4,82:1 sur `bg`, `bg-subtle` et `surface` en clair, ≥ 8,28:1 en sombre et en invert (voir contrastes).
+  - **libellés internes en `--ink-muted`** (utilitaire seul) : `dt` de la Méthode, « Avant / Aujourd'hui » de
+    Clients, libellés de `Figure`, eyebrow de la maquette de l'offre, `EnchainementClient`, pied de page, `/contact`,
+    `/a-propos`, libellés de « Sous le capot ». En accent, les neuf `dt` de la Méthode faisaient une colonne
+    orange : trop d'ambre pour des étiquettes qui ne sont pas des titres.
+  - `text-accent` passe après `eyebrow` dans le CSS construit (Tailwind 4 ordonne les utilitaires par propriété :
+    `color` après `font-family`) : vérifié dans `dist/` et à l'écran. Si un jour l'eyebrow reste gris malgré
+    `text-accent`, c'est cet ordre qui a changé (piège 3).
 
 ## Espacement
 - Unité : `--space-unit` = 0.25rem (4px). Tailwind est rebranché dessus (`--spacing`) : `p-4` = 16px, `gap-2` = 8px.
@@ -183,10 +268,10 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 ## Composants disponibles
 | Composant | Fichier | Type / API |
 |---|---|---|
-| Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">` |
-| Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
-| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `href` → rendu en `<a>` avec `rel="noopener"` et soulignement au survol (cas client), `w-fit` (ne s'étire pas dans un flex en colonne) |
-| SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
+| Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">`. **Pilule** (`rounded-full`) depuis le 2026-10-08 (étape 5, `rounded-md` avant) : forme plus douce, la même que le bouton flottant et les puces des formulaires. Les boutons écrits à la main des îlots (envoi du contact, Suivant / Précédent / Envoyer du questionnaire, appel du menu mobile) suivent |
+| Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>`. `rounded-lg border border-border bg-surface` **+ `shadow-sm`** depuis le 2026-10-08 (voir « Cartes ») |
+| Badge | `ui/Badge.astro` | **non rendu sur une page publique** (revu à l'étape 5, inchangé : un changement invisible ne se vérifie pas) — statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `href` → rendu en `<a>` avec `rel="noopener"` et soulignement au survol (cas client), `w-fit` (ne s'étire pas dans un flex en colonne) |
+| SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow` (en `--accent` depuis l'étape 5), `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit. **Non utilisé depuis le 2026-09-17** (retiré de l'offre, doublon avec `DicteeMobile` placé juste à côté) ; conservé |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau, slot nommé `actions` (rangée de boutons sous le chapeau) |
@@ -200,16 +285,37 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
 | VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — **non utilisé depuis le 2026-10-07** (remplacé par `AgentEnAction`, jugé trop chargé), conservé ; visuel du hero du 2026-09-19 au 2026-10-07 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
 | ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
-| Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
-| CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas » |
-| DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
+| Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` Inter 12, mono jusqu'au 2026-10-08), slot = le schéma |
+| CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas ». **Utilisé dans Clients** (devis 25 min / 3 min, avec `reveal`) depuis le 2026-10-08, étape 5 bis — il en avait été retiré à l'étape 3 avec les anciens chiffres. Règles `.revele-cache` / `data-revele="barre"` dans `global.css` |
+| PastilleIcone | `ui/PastilleIcone.astro` | statique — pastille d'icône `size-9 rounded-md`, tracé SVG en ligne `size-5` (`trace`, chaîne statique en `set:html`), `ton` accent (`bg-accent-soft text-accent`, défaut) / neutre (`bg-bg-subtle text-ink-muted`), toujours `aria-hidden`. Créée le 2026-10-08 (étape 5 bis) pour la section Clients, même contrat que les pastilles de l'Offre et de Confiance (qui gardent leur balisage écrit à la main) |
+| DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative`. **Seulement dans « Sous le capot » depuis le 2026-10-08** (retiré du CTA final, étape 5 : décor technique hors de la section geek) |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
-| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client : fiche client dictée → devis → intervention, puis l'analyse. Voir « Cas client » |
+| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il demande le devis → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
+| Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. **Relief depuis le 2026-10-08 (étape 5 bis)** : filet d'accent vertical à gauche de la citation (`w-1 rounded-full bg-accent`, `aria-hidden`) et guillemets de la citation en `--accent`. Voir « Clients » |
+| ProtocoleBoutEnBout | `ui/diagrams/ProtocoleBoutEnBout.astro` | statique + script natif — planche « Le protocole, de bout en bout », dans le volet « La pile technique en détail » de **« Sous le capot »** depuis le 2026-10-08 (étape 5 ter) : trois conteneurs (client, serveur MCP, éditeur), l'objet qui change de forme à chaque traversée, treize temps en boucle (~39 s), bouton pause. Masquée sous `lg` (une phrase la remplace, transcription toujours lue). Portée de `src/labo/S3Protocole.astro`, sans rien en importer. Voir « Le protocole, de bout en bout » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
+
+### Cartes (2026-10-08, plan « site moins geek », étape 5)
+Une seule apparence de carte sur le site : **`rounded-lg border border-border bg-surface shadow-sm`** — celle de
+`Card`. Référence : les cartes du mini-CRM (fond blanc, bordure légère, ombre à peine visible). La bordure seule
+faisait « grille de tableau de bord » ; l'ombre seule disparaît en thème sombre — les deux ensemble.
+- **Écrites à la main, mêmes classes recopiées** (parce que l'élément n'est pas un `div` ou qu'une prop de `Card` ne
+  suffirait pas sans piège 3) : `Temoignage` (`<figure>`, `md:p-10`), les deux blocs de `Clients` (chiffres :
+  `div` ; avant / aujourd'hui : `<figure>` — ses cases Avant / Aujourd'hui restent des cases sans ombre, comme
+  ci-dessous), `EnchainementClient` (`<figure data-cc>`), les deux panneaux de
+  Confiance (le second garde `border-accent` : c'est la moitié qui s'arrête), le cadre `dl` de la Méthode
+  (`rounded-md` → `rounded-lg`).
+- **Restent différentes, volontairement** :
+  - les trois temps d'`EnchainementClient` (`rounded-md border bg-bg`, sans ombre) : ce sont des cases **dans** une
+    carte, et leur bordure passe en `--accent` à l'étape en cours (script inchangé) ;
+  - les blocs de « Sous le capot » (`border-border-strong`, sans ombre) : la section reste telle quelle ;
+  - le terminal et les maquettes (`RotationEcrans`) : décors d'écran, pas des cartes de page ;
+  - les champs de formulaire (`rounded-md border-border-strong`) : contrôles, pas cartes.
+- Pas d'ombre sur les accordéons de la FAQ, les sections ni les listes : l'ombre est le signe d'une carte.
 
 Le **hero** porte `VracEnActions` (le passage) depuis le 2026-09-19. Chaque visuel remplacé descend d'un cran dans la
 page plutôt que d'être supprimé : `RotationEcrans` (quatre décors, hero le 2026-09-19) est descendu dans « L'offre »,
@@ -223,13 +329,19 @@ Methode (`#methode`), Offre (`#offre`), SousLeCapot (invert), Confiance (`#confi
 (invert). Le 2026-10-07 (demande explicite) : la preuve d'abord — Clients monte juste sous le bandeau, sur fond
 `bg-bg` (entre le bandeau et la Méthode, tous deux `bg-bg-subtle`) ; la section Probleme (« Le constat ») est
 supprimée, ses trois scènes reprises dans les arguments de l'offre. Le menu suit l'ordre de la page. Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
-un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
+un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle`, **sans filet** depuis le
+2026-10-08 (étape 5, « moins de bordures ») : le changement de fond sépare seul — `bg-subtle` plus chaud y aide.
+Retirés : `border-b` du hero et du bandeau, `border-y` de la Méthode, de la FAQ et de la section « posture » de
+`/a-propos`. Restent : la bordure basse de l'en-tête collant, celle de `PageHeader` (deux fonds identiques de part
+et d'autre), le haut du pied de page.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
 
 ### Pages internes
 `/a-propos`, `/contact`, `/questionnaire` (`noindex`, hors navigation), `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
 fallback Fastify du §6.4). Structure : `PageHeader` puis contenu dans `container-site` + `py-(--section-y)`.
+La 404 porte un eyebrow « Erreur 404 » au-dessus de son `h1` (plus de « $ cd page-demandee », 2026-10-08 : clin
+d'œil de terminal hors « Sous le capot »).
 Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HTML simple dedans (`h2`, `h3`, `p`,
 `ul`, `dl`, `a`, `strong`) — pas de classes sur chaque balise.
 
@@ -252,8 +364,13 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - États : `idle` / `sending` (bouton désactivé, `role="status"`) / `success` (panneau qui reçoit le focus) /
   `error` (`role="alert"` toujours présent dans le DOM, champs conservés, **email de repli affiché**).
 - Puces : cases à cocher `sr-only` dans des `<label>` stylés par `has-checked:` et `has-focus-visible:` — zéro état React.
+- Textes (2026-10-08) : en « je » (« pour que je puisse vous répondre », « Je reviens vers vous par email »,
+  « écrivez-moi »). Puce « Reporting » renommée **« Tableaux de bord »** (anglicisme technique) : le libellé est
+  aussi la valeur envoyée et validée par le serveur, et il est repris par le questionnaire (`optionsDe`) ; les
+  réponses reçues avant cette date portent l'ancien libellé. Un libellé de puce ne contient jamais « , » (le
+  serveur découpe la liste sur « , »).
 - **Erreurs en `--accent`** (bordure et texte) : pas de rouge, une seule couleur d'accent. Texte d'erreur : `text-accent`
-  sur `surface` = 5.02:1 en clair. Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
+  sur `surface` = 5.42:1 en clair (5.02 avant l'accent #AC4F08). Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
 - `action="/api/contact" method="post"` sur le `<form>` : sans JS, les données partent dans le corps (jamais dans
   l'URL) et le serveur répond 415 — le serveur n'accepte que du JSON, choix assumé en V1.
 - En dev, Vite relaie `/api` vers `http://127.0.0.1:3000` : lancer `npm run build && npm start` à côté de
@@ -277,14 +394,29 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - **Tout est facultatif**, sauf le consentement à la dernière étape. Validation par étape (nombres, email,
   téléphone) avec les mêmes motifs que le formulaire de contact : `aria-invalid`, message relié, focus sur le
   premier champ en erreur, erreurs en `--accent`.
-- Changement d'étape : le focus va sur le titre de l'étape (`h2`, `tabIndex=-1`), ce qui l'annonce et ramène la
-  page en haut du formulaire. Pas au premier rendu.
+- Changement d'étape (« Suivant » et « Précédent ») et écran « Réponses envoyées » : le focus va sur le titre de
+  l'étape (`h2`, `tabIndex=-1`) ou sur le panneau de succès, ce qui l'annonce au lecteur d'écran, **avec
+  `preventScroll`** ; puis `scrollIntoView({ block: "start" })` sur la carte (`data-questionnaire-carte`, posé par
+  la page sur `Card`). Sa bordure haute s'arrête sous l'en-tête collant, au `scroll-padding-top` de `html`
+  (64 + 16 px). Pourquoi (2026-10-08, demande explicite) : un `focus()` seul laissait le navigateur choisir où
+  défiler, et il remontait jusqu'au titre de la page — on quittait le questionnaire. Pas d'option `behavior` :
+  le défilement doux vient de `scroll-behavior` (`global.css`), donc instantané sous mouvement réduit. Pas de
+  défilement au premier rendu (ni à la reprise d'un brouillon). Le focus du premier champ en erreur reste un
+  `focus()` simple.
 - **Brouillon** en `localStorage` (clé `questionnaire-brouillon` : étape + réponses), relu après hydratation,
   effacé après envoi réussi. Mentionné dans la politique de confidentialité, comme le thème.
-- Mise en page : l'encart « Avant de commencer » est **avant** la carte dans le HTML (lu d'abord sur mobile) et
-  passe à droite ≥ lg (`lg:col-start-2 lg:row-start-1`).
-- Copy : le questionnaire parle à la première personne (« je »), contrairement au reste du site (« nous ») — ton
-  conservé de la version d'origine, à revoir avec la pertinence des questions.
+- Mise en page (2026-10-08, demande explicite) : **plus d'encart « Avant de commencer »** (durée, questions
+  facultatives, brouillon gardé sur l'appareil) — la page va droit au formulaire. Une seule colonne centrée,
+  `mx-auto max-w-(--measure)`, aux deux tailles d'écran. Seule la mention de confidentialité survit, en `text-14`
+  **sous** la carte : « La confidentialité de vos données est respectée. » — texte de l'humain, au mot près
+  (2026-10-08), **sans lien** : la case de consentement de la dernière étape renvoie déjà à `/confidentialite`.
+  « données » y est une exception assumée à la liste noire du jargon (sens courant de vie privée). Ne pas redire
+  sur la page que les questions sont facultatives ni que le brouillon est gardé sur l'appareil (décision du même
+  jour) ; la durée (« six minutes ») reste dans la meta description et sur `/contact`.
+- Copy : le questionnaire parle à la première personne (« je »), comme tout le site depuis le 2026-10-08. Le chapeau
+  s'adresse aux « artisans, indépendants et petites entreprises ». Les **questions** de `shared/questionnaire.json`
+  (dont « IA » et « assistant IA ») n'ont pas été reformulées à l'étape 4 : ce sont des questions d'étude, les
+  changer romprait la comparaison des réponses — à revoir avec la pertinence des questions.
 
 ### Serveur (`server/index.mjs`)
 | Route / comportement | Détail |
@@ -406,6 +538,27 @@ masqué, pas de lecture automatique, boutons pause masqués, précédent / suiva
 atteint au clavier sur les quatre nouveaux boutons. Aucune erreur console, aucune requête en erreur, aucune requête
 tierce. Test de démarrage de l'image Docker : laissé à GitHub Actions (non rejoué en local).
 
+**Avant la v0.10** (plan « site moins geek », étape 6, 2026-10-08, branche `feat/site-moins-geek` au commit `be32db8`,
+`npm start` local, Lighthouse 12.8.2 mobile simulé, axe-core 4.11, Chrome 153 headless) :
+
+| Page | Perf | A11y | Bonnes pratiques | SEO | LCP | CLS | JS |
+|---|---|---|---|---|---|---|---|
+| `/` (3 passages) | 98–99 | 100 | 100 | 100 | 1,8–1,9 s (1,9 s sur `main`, même machine, 3 passages) | 0 | 86 ko |
+| `/contact` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 80 ko |
+| `/a-propos` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 74 ko |
+| `/questionnaire` | 100 | 100 | 100 | 63 (`noindex`, voulu) | 1,5 s | 0 | 83 ko |
+| `/mentions-legales` | 100 | 100 | 100 | 100 | 1,4 s | 0 | 74 ko |
+
+Même jour, **production v0.9** (requêtes publiques) : `/` 98–100 / 96–100 / 100 / 100, LCP 1,4–1,5 s ; `/contact` et
+`/a-propos` 100 / 100 / 100 / 100. Les « JS » locaux sont plus lourds que ceux de la production (86 contre 72 ko sur
+`/`) : en local, HTTP/1.1 renvoie ~1,3 ko d'en-têtes non compressés avec chaque fichier (CSP comprise), la production
+est en HTTP/2 ; ne pas comparer ces colonnes entre elles.
+axe (WCAG 2.0 / 2.1 A et AA + bonnes pratiques) : **0 violation WCAG** sur 7 pages × 2 thèmes × 390 / 1280 px (volets
+ouverts) et sur le menu mobile ouvert. Seule remarque : `region` (bonne pratique, pas WCAG) sur le bouton flottant
+`MobileCta` à 390 px, hors de tout repère — **identique en production**, préexistante ; les audits précédents ne
+lançaient que les règles WCAG. Clavier : contour 2 px `--accent` dès le focus (sans attendre la transition) sur chaque
+arrêt de Tab, 7 pages × 2 thèmes × 2 largeurs. CLS d'animation et de chargement : voir pièges 31 et 33.
+
 Procédures de publication, déploiement et vérification : **`RUNBOOK.md`**.
 
 ### Contenus éditables (Content Collections)
@@ -419,27 +572,50 @@ illustratifs : supprimés »). Le nom de fichier sert d'identifiant, en kebab-ca
 
 **Offre : une seule chose** (2026-09-17). « Audit & diagnostic » et « Ateliers & acculturation » **ont été
 supprimées** : elles répétaient les étapes 1 et 2 de la Méthode, juste au-dessus, et faisaient lire trois fois la
-même promesse. La section ne présente plus que le sur-mesure. Trois arguments (`arguments_` en tête de
-`Offre.astro`), chacun une phrase d'accroche en `text-ink` suivie d'une ou deux phrases, puis trois `points`
-cochés. Aucun chiffre, aucune promesse d'apprentissage automatique : « la solution s'ajuste » veut dire que vos
-corrections servent à l'ajuster. Si une prestation détachable (audit, ateliers) doit réapparaître, elle ne revient
-pas en carte à côté du sur-mesure : la Méthode la décrit déjà.
+même promesse. La section ne présente plus que le sur-mesure. Si une prestation détachable (audit, ateliers) doit
+réapparaître, elle ne revient pas en carte à côté du sur-mesure : la Méthode la décrit déjà.
+
+**Offre : trois assistants** (2026-10-08, décision de l'humain, étape 4 ter). `h2` « Quel assistant vous
+faut-il ? » (eyebrow « Ce que je construis »), puis **trois cartes** (`assistants` en tête de `Offre.astro`) où
+chaque visiteur se reconnaît : commercial, chiffres (gestion), saisie. Elles remplacent les quatre arguments
+(« L'administratif en moins, pas un logiciel en plus », « Vos informations enfin réunies », « Il prend les
+devants », « Il garde vos règles, pas vos données »).
+- **Contrat de carte** : `Card` non interactive (rien de cliquable sauf un lien), pastille d'icône
+  `size-9 rounded-md bg-accent-soft text-accent` à gauche, `h3` `text-18` semi-gras = **la question** (« Besoin
+  d'… ? »), corps `text-16 text-ink-muted`, ligne de preuve éventuelle en `text-14`. La question suffit au survol :
+  le corps dit comment, jamais une autre promesse. Liste `ul` en `max-w-(--measure)`, écart fixe `gap-4` (celui des
+  cartes de Confiance — les bordures séparent déjà).
+- **Preuves autorisées, et seulement celles-ci** : l'assistant de chiffres est **réel** (construit pour Jason, il
+  lit l'historique des devis et des bons de commande) → une ligne sans chiffre, « Pour Jason, j'en ai tiré un
+  rapport : les chiffres qui comptent et les actions à mener. » ; l'assistant de saisie → lien discret « Voir ce
+  qu'en dit Jason » vers `#cas-client` (souligné, `text-ink-muted`, comme le lien de la signature du témoignage).
+  Aucune autre affirmation « en service ».
+- **Le contenu du rapport ne se publie jamais, même anonymisé** : Jason est nommé sur le site, tout chiffre lui
+  serait attribuable, et il n'a donné son accord que pour son témoignage et son logo (piège 17). On dit *ce qui a
+  été fait*, jamais *ce qu'il contient*. Tout exemple chiffré éventuel est inventé et légendé « exemple
+  illustratif ».
+- Ce que les quatre arguments disaient et qui reste dit ailleurs : « rien de nouveau à apprendre » (bandeau),
+  « ce qu'il retient — vos règles » (Confiance, FAQ « mémoire »). La pro-activité par routines (« il prend les
+  devants ») est revenue dans la carte commerciale (étape 5, voir « Copy », « Pro-activité ») ; « le dossier n'attend
+  plus quand la bonne personne est absente » est abandonné (décision de l'humain).
+- Les quatre arguments et leur liste de `points` cochés ont disparu ; les `points` étaient déjà absents du code
+  avant le 2026-10-08.
 
 **Plus de bento** (2026-09-17) : la grille `md:grid-cols-3 md:grid-rows-2` a disparu avec les deux cartes, et
-`BentoOffre.astro` est devenu `Offre.astro`. La section est désormais une grille `lg:grid-cols-[1fr_auto]` —
-arguments à gauche, démonstration `DicteeMobile` (24rem) à droite, empilées avant `lg`. Toujours pas de composant
+`BentoOffre.astro` est devenu `Offre.astro`. La section est désormais une grille `lg:grid-cols-[1fr_24rem]` —
+cartes à gauche, `RotationEcrans` (24rem) à droite, empilées avant `lg`. Toujours pas de composant
 BentoGrid / BentoCard : à créer seulement si un vrai bento réapparaît.
 
-**Les deux colonnes se répondent** (2026-09-18) : `lg:items-center`. La colonne de texte est plus courte que le
-mockup ; alignées en haut (`items-start`), elles laissaient un vide d'une centaine de pixels sous les `points`
-cochés et la section paraissait bancale. `items-start` reste en vigueur sous `lg`, où les deux blocs sont empilés.
+**Les deux colonnes se répondent** (2026-09-18) : `lg:items-center`. Alignées en haut (`items-start`), une colonne
+plus courte que la maquette laissait un vide sous elle et la section paraissait bancale. `items-start` reste en
+vigueur sous `lg`, où les deux blocs sont empilés. Mesuré le 2026-10-08 avec les trois cartes : 530 px de cartes
+face à 550 px de maquette à 1280 px ; à 1024 px les cartes, plus étroites (512 px), montent à 607 px et dépassent
+la maquette de 57 px — centrées l'une sur l'autre, sans débordement.
 
-**Une icône par argument** (2026-09-18) : chaque argument porte un pictogramme ambre dans une pastille
-`size-9 rounded-md bg-accent-soft text-accent`, même contrat que les cartes de la section Confiance — tracé SVG
-en ligne, chaîne statique passée en `set:html`, `aria-hidden` (l'argument est écrit juste à côté, l'icône
-n'ajoute aucune information). Les trois tracés disent ce que dit l'argument : des lignes de tâches barrées,
-des données empilées d'où repart une flèche, des curseurs de réglage. Pas de bibliothèque d'icônes : quatre
-tracés dans Confiance, trois ici, c'est tout ce dont le site a besoin.
+**Une icône par carte** (2026-09-18 pour les arguments, redessinées le 2026-10-08) : tracé SVG en ligne, chaîne
+statique passée en `set:html`, `aria-hidden` (la question est écrite juste à côté). Les trois tracés disent
+l'assistant : une bulle de message (commercial), un graphique en barres (chiffres), une fiche (saisie). Pas de
+bibliothèque d'icônes : quatre tracés dans Confiance, trois ici, c'est tout ce dont le site a besoin.
 
 **Exemples illustratifs : supprimés** (2026-09-18, demande explicite). La section `Exemples` (`#exemples`), la
 collection `exemples` et son composant `MicroFlux` ont été **supprimés** — cinq cartes de cas types juste avant
@@ -453,6 +629,21 @@ inventés.
 Le **`FlowDiagram` « Exemple : une demande de devis »** a été retiré de la carte en même temps : `DicteeMobile`
 arrive juste à côté et montre le même circuit en mieux. Un schéma remplace du texte, il ne redouble pas un autre
 schéma.
+
+### Décor allégé (2026-10-08, plan « site moins geek », étape 5)
+Référence : une page qui ressemble à un outil du quotidien bien tenu, pas à une console. Revue section par section :
+- **CTA final** : `DotPattern` retiré (section invert et `border-y` conservées). Le motif ne vit plus que dans
+  « Sous le capot », qui ne change pas (terminal, mono, points) : c'est la touche geek assumée.
+- **Filets de section** retirés sur les fonds `bg-subtle` (voir « Sections de l'accueil »).
+- **Méthode** : le cadre « Votre temps / Durée / Vous recevez » perd ses filets internes (`divide-y`) : l'espace
+  (`gap-4`, `p-4`) sépare les lignes, la carte les regroupe. Script de révélation inchangé (`data-revele` aux mêmes
+  places). Le trait entre les pastilles reste : c'est le fil de lecture.
+- **Clients** : `gap-8` → `gap-12` entre l'en-tête, le témoignage, les chiffres et la démonstration (l'écart des
+  autres sections) : plus d'air autour de la parole du client.
+- **Schémas affichés sur l'accueil** passés en revue : `EnchainementClient` (un devis, trois temps), `RotationEcrans`
+  (messagerie, mail, téléphone, application — que des messages et des cartes à valider, aucun graphique), « Qui
+  décide quoi » de Confiance. Aucun n'évoque un tableau de bord ni un terminal : **conservés tels quels**, cartes
+  alignées sur `Card`. Le seul terminal est dans « Sous le capot ».
 
 ### Schémas
 Registres autorisés (décision du 2026-09-16, voir « Décisions ») : **R1 schéma de flux**, **R2 mockup stylisé**,
@@ -477,11 +668,21 @@ du texte qu'elle supprime.
   ne s'est pas jouée chez l'humain (Firefox ne la gère pas) et ne sait pas enchaîner les trois colonnes dans le
   temps. Les classes ne sont posées que par le script : sans JS ou sous mouvement réduit, tout est visible.
   **Le cadre `dl` porte `data-revele`, pas sa première ligne** : sinon il apparaît vide avant son contenu.
+  **Cadres alignés dès `md`** (2026-10-08, étape 5 bis, correction 1, demande de l'humain) : chaque `li` est une
+  **sous-grille** de trois rangées (`md:row-span-3 md:grid md:grid-rows-subgrid`) — pastille, texte, cadre — et le
+  conteneur du texte et du cadre passe en `md:contents` pour que ses deux enfants deviennent des cases de la
+  sous-grille. Les trois cadres partent ainsi de la même ligne et prennent la hauteur du plus haut, quelle que soit
+  la longueur des textes au-dessus. Jamais de hauteur fixe. Écarts conservés : `md:gap-4` entre les rangées,
+  `md:mb-2` sous la pastille (24 px pastille → titre, comme avant), `md:mr-4` (l'ancien `md:pr-4` du conteneur,
+  perdu avec `display: contents`). Sous `md`, rien ne change : pastille et trait à gauche, colonne à droite. L'ordre
+  du DOM, donc la révélation, est inchangé. **Piège** : un `display: contents` ignore padding, bordure et fond —
+  ne rien poser dessus. Seuls les cadres sont alignés, pas leurs lignes internes (une valeur sur deux lignes décale
+  les suivantes).
 - **Animation** : `.bar-grow` dans `global.css`, `transform: scaleX()` piloté par `animation-timeline: view()`,
   sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
   état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
   visiteur n'en veut pas. **Ne pas remplacer par un `IntersectionObserver`** : ce serait du React pour une décoration.
-- **`CompareBars reveal`** (2026-09-18, cas client) : révélation ligne par ligne au défilement, à la place de
+- **`CompareBars reveal`** (2026-09-18, cas client ; retiré à l'étape 3, **réutilisé depuis le 2026-10-08**, étape 5 bis, pour le devis 25 min / 3 min de Clients) : révélation ligne par ligne au défilement, à la place de
   `.bar-grow`. Libellé + valeur, puis la barre qui se déploie depuis la gauche, puis la note — pas de 260 ms,
   même rythme et même machinerie que la Méthode (`IntersectionObserver` au seuil 0,25, `data-revele`,
   `.revele-cache`). La comparaison se lit alors dans l'ordre de l'histoire : les 40 minutes d'abord, les 2 minutes
@@ -498,6 +699,28 @@ plus de visuel**. Une seule colonne : eyebrow, h1 en `text-64` à partir de `lg`
 lignes), chapeau à la mesure, deux boutons. La démonstration du service commence au cas client, juste en dessous.
 Effet de bord : plus aucun script ni animation au-dessus de la ligne de flottaison. **Remettre un visuel = revenir à
 la grille `lg:grid-cols-[1fr_1fr]` et au `text-48`**, sinon le titre écrase la colonne de droite.
+
+**Titre (2026-10-08, décision de l'humain, étape 4 ter)** : « Vous me parlez de votre métier. Je construis
+l'assistant qui s'occupe du reste. » — il remplace « Moins de temps à recopier. Plus de temps pour votre métier. »,
+jugé pas assez fort, qui reste l'accroche du pied de page. Il pose la **relation** (vous parlez, je construis) au
+lieu d'un bénéfice abstrait, et présente « l'assistant » dès le titre. Sans « IA ». **Couleurs inversées le
+2026-10-08** (étape 5, décision de l'humain) : première phrase en `text-ink-muted`, **la promesse (« Je construis
+l'assistant… ») en `text-ink`** — c'est elle qui porte le message. Tailles inchangées (`text-36` / `sm:text-48` /
+`lg:text-64`, `max-w-4xl`).
+Le chapeau ne redit plus « je construis un assistant » : « Je repère avec vous les tâches qui remplissent vos
+journées, et je relie votre assistant aux logiciels que vous utilisez déjà. »
+
+**Hero sur téléphone (2026-10-08, étape 5, mesuré)** : `h1` en `text-36` sous `sm` **conservé**. Il tient sur
+5 lignes à 390 et 360 px (4 à 640 px en `text-48`), mais le bouton « Parlons-en » reste au-dessus de la ligne de
+flottaison : haut / bas du bouton à **547 / 595 px** sur 390 × 844, **595 / 643 px** sur 360 × 740 (`npm start`,
+Chromium, Inter chargée). Marge suffisante même avec les barres du navigateur (Safari iOS laisse ~660 px visibles sur
+un 390 × 844). Descendre à `text-28` aurait gagné une ligne, mais le `h1` aurait eu la taille des `h2` sur téléphone (`text-28`
+sous `md`) : la hiérarchie se perdait. À remesurer si le chapeau ou l'eyebrow s'allongent. Le bouton flottant `MobileCta` reste de toute
+façon visible en permanence sous `md`.
+**Depuis l'étape 6 (2026-10-08, demande de l'humain), le hero n'a plus de bouton « Parlons-en » sous `md`** : il
+doublait le bouton flottant, visible en permanence à ces largeurs. Masqué par un conteneur `hidden md:block` (piège 3) ;
+seul « Voir la méthode » reste dans le hero. Les mesures ci-dessus valent désormais pour « Voir la méthode », à la même
+place. Mêmes bornes que `MobileCta` (`md:hidden`) : à toute largeur, un et un seul « Parlons-en » est visible.
 
 ### L'agent en action (AgentEnAction) — non utilisé, conservé
 Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
@@ -644,8 +867,13 @@ il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 
 ### Rotation d'écrans (RotationEcrans)
 Visuel du hero le 2026-09-19, descendu dans « L'offre » le jour même, repris d'une planche de maquettes. Registre **R2, écrans plutôt que schéma**.
 Ce qu'il dit : le travail préparé **arrive là où la personne se trouve déjà**. Le même enchaînement — une demande
-arrive, la solution consulte les outils de l'entreprise un par un en montrant ce qu'elle y trouve, une action prête
+arrive, l'assistant consulte les logiciels de l'entreprise un par un en montrant ce qu'il y trouve, une action prête
 à valider en sort — joué dans quatre décors : messagerie, boîte mail, téléphone, application de gestion.
+- **Textes (2026-10-08)** : dans la maquette, c'est l'assistant qui parle à la première personne (« Je regarde dans
+  vos logiciels… », « Je consulte vos logiciels », « outils » avant) — une réplique de personnage, comme les phrases
+  des clients inventés, pas la voix de sosese. La transcription `sr-only` dit « l'assistant », jamais « la solution ».
+  Remplacer un titre de panneau par un plus long impose de revérifier qu'il tient sur une ligne à 360 px (case de
+  hauteur constante).
 
 - **Un écran = un scénario.** Huit écrans depuis le 2026-09-19, **deux par décor** : messagerie (devis, création de
   fiche client), boîte mail (rendez-vous avancé, dépannage sous garantie), téléphone (question de gestion, recherche
@@ -659,18 +887,20 @@ arrive, la solution consulte les outils de l'entreprise un par un en montrant ce
   `lg:grid-cols-[1fr_24rem]` : avec `auto`, la piste se calait sur le max-content de la maquette — c'est-à-dire sur
   la barre de libellés — et élargir sa `max-width` ne produisait rien du tout. **21 rem est le plancher** : c'est la
   largeur la plus étroite où les quatre libellés et le bouton de lecture tiennent encore sur une ligne.
-- **L'écart entre les arguments est fixe, pas réparti** (2026-09-20) : `lg:gap-16` (64 px) sur la liste, et
+- **L'écart entre les arguments est fixe, pas réparti** (2026-09-20 ; depuis le 2026-10-08, trois cartes en
+  `gap-4`, voir « Offre : trois assistants ») : `lg:gap-16` (64 px) sur la liste, et
   `lg:items-center` sur la grille. Réparti sur la hauteur de la maquette (`justify-between`), l'écart montait à
   90 px — une ligne de corps de trop, la liste se lisait comme quatre blocs sans rapport. À 64 px elle respire
   encore et reste un ensemble ; elle est un peu plus courte que la maquette, qui la centre en face d'elle.
 - **`data-deroule="confirme"`** sur les écrans qui se terminent par une confirmation (aujourd'hui : les relances) :
   ils gardent une cinquième étape. Les autres s'arrêtent à l'étape 4.
-- **Libellés courts** (`Messagerie`, `Boîte mail`, `Téléphone`, `Gestion`) : en mono 12, les quatre plus le bouton
-  pause tiennent sur **une seule ligne** dans 24 rem — la largeur la plus étroite où la maquette ait tourné —, et
-  jusqu'à 360 px. Un libellé plus long (« Application ») les fait
+- **Libellés courts** (`Messagerie`, `Boîte mail`, `Téléphone`, `Gestion`) : en Inter 12 (mono jusqu'au
+  2026-10-08), les quatre plus le bouton pause tiennent sur **une seule ligne** dans 24 rem — la largeur la plus
+  étroite où la maquette ait tourné —, et jusqu'à 360 px. Mesuré le 2026-10-08 : 223 px de libellés en Inter
+  contre 259 px en mono ; à 360 px, la rangée passait à deux lignes en mono, elle tient sur une en Inter. Un libellé plus long (« Application ») les fait
   passer à deux lignes et laisse le bouton pause seul en bas. Le `title` porte la phrase entière.
-- **Actif = souligné en `--accent` sur texte `--ink`**, pas de pastille pleine : `accent` sur `accent-soft` est à
-  4,28:1 en clair (voir contrastes), donc inutilisable pour du texte 12.
+- **Actif = souligné en `--accent` sur texte `--ink`**, pas de pastille pleine : `accent` sur `accent-soft` était à
+  4,28:1 en clair (4,62 depuis l'accent #AC4F08, marge trop mince pour du texte 12 : choix conservé).
 - **Bouton pause obligatoire** : la rotation boucle et dure bien plus de 5 s (WCAG 2.2.2). Rendu hors mouvement
   réduit (`motion-reduce:hidden`), mis en pause aussi hors viewport (`IntersectionObserver`). **Ne jamais le retirer.**
 - **La pause est une vraie pause** (2026-09-19). Deux choses s'ajoutent à l'arrêt du minuteur :
@@ -686,7 +916,15 @@ arrive, la solution consulte les outils de l'entreprise un par un en montrant ce
   l'écran arrive directement dans son état final.
 - **L'état rendu par le serveur est l'état final du premier écran** (`data-etape="4"`, `data-actif`) : lisible sans
   JS, aucun flash à l'arrivée du script. Les quatre écrans sont empilés dans la même cellule de grille et toujours
-  présents : hauteur constante, CLS 0 au changement.
+  présents : hauteur constante, CLS 0 au changement **d'écran**. **Pas dans le déroulé d'un écran** (mesuré le
+  2026-10-08, étape 6) : dans la conversation, la bulle reçue remonte quand la réponse s'ajoute sous elle
+  (`.fil` en `justify-content: flex-end`) ; dans la boîte mail, le panneau `.statut` passe en `display: block` et
+  pousse les trois lignes pâles de ~130 px, puis les rend. Ce sont de vrais décalages de mise en page (piège 32) :
+  plus grande fenêtre de session 0,037 à 390 px et 0,011 à 1280 px (somme sur un tour de ~100 s : 0,21 et 0,06),
+  sous le seuil « bon » de 0,1. Lighthouse ne les voit pas (la maquette est sous la ligne de flottaison et ne joue
+  pas hors écran) ; un visiteur réel qui la regarde, si. Les annuler change le mouvement lui-même (panneau en
+  surimpression au lieu de pousser la liste, ou déplacements en `translate` mesurés par le script) : non fait,
+  décision laissée à l'humain.
 - **Le fondu est séquentiel, pas croisé** : le sortant s'efface entièrement (`--rot-sortie`) avant que l'entrant
   n'arrive (`--rot-entree` après `--rot-attente`). Deux chromes superposés à mi-fondu — les coins arrondis du
   téléphone sur le carré blanc de la messagerie — donnaient une bouillie. Passer par le fond de page une fraction
@@ -751,25 +989,78 @@ Moins de tâches, pas plus — c'est tout l'argument.
 ### Terminal pleine largeur dans « Sous le capot »
 Du 2026-09-20 au 2026-10-07, le terminal tenait la moitié gauche d'une grille `lg:grid-cols-2`, la moitié droite
 portant le marqueur `ACompleter` d'un second visuel à venir. Marqueur retiré le 2026-10-07 (demande explicite,
-avant redéploiement) : le terminal reprend toute la largeur. Un second visuel, s'il arrive, revient avec sa grille ;
-**ne pas remettre de moitié vide** à la place du marqueur — un trou silencieux se lit comme un oubli.
+avant redéploiement) : le terminal reprend toute la largeur. **Ne pas remettre de moitié vide** à la place du
+marqueur — un trou silencieux se lit comme un oubli.
+**Le second visuel est arrivé le 2026-10-08 sans grille** (étape 5 ter) : la planche du protocole est carrée et
+tout y est en `cqw` ; en demi-colonne à 1280 px, son plus petit texte tomberait à ~5 px. Elle est **pleine largeur,
+dans le volet « La pile technique en détail »** (demande de l'humain), sous la grille des technologies, et
+**masquée sous `lg`** (étape 6). Le terminal reste seul et pleine largeur. Voir « Le protocole, de bout en bout ».
+
+### Le protocole, de bout en bout (ProtocoleBoutEnBout)
+Ajouté le 2026-10-08 (plan « site moins geek », étape 5 ter), porté de la planche du labo `S3Protocole` (le labo
+garde la sienne ; le composant n'importe rien de `src/labo/`, il recopie ce qu'il faut de `moteur.ts`). Jargon
+permis : c'est « Sous le capot ». Ce qu'il dit : **où tourne quoi** — chez le client (la demande, le modèle de
+langage et son skill, le client MCP), sur le serveur MCP (résolution, authentification par jeton, adaptateur vers
+n routes, normalisation), chez l'éditeur (l'API et ses routes) — et ce que chaque étage fait à l'objet qui circule.
+- **Où** : dans le `<details>` « La pile technique en détail », sous la grille, précédée de l'eyebrow « Le protocole,
+  de bout en bout ». Choix de l'humain (2026-10-08) : la planche s'adresse à qui ouvre la pile technique, pas à tout
+  visiteur de la section. Volet fermé = planche non rendue, donc hors écran : l'`IntersectionObserver` la tient à
+  l'arrêt, et le déroulé part quand on l'ouvre et qu'elle entre dans la vue.
+- **Contrat** (le même que `RotationEcrans`) : état rendu par le serveur = **état final** (`data-etape="13"` :
+  réponse prête, circuit complet, bouton « Valider ») ; lisible sans JS. Le déroulé part après 1,6 s de tenue
+  (`ATTENTE`), par l'effacement (temps 14), puis 1 → 13 en boucle. Sous `prefers-reduced-motion` : état final,
+  aucun minuteur, bouton pause masqué (`motion-reduce:hidden`).
+- **Bouton pause obligatoire** (WCAG 2.2.2, la boucle dure ~39 s), sous la planche, hors de la scène (qui est en
+  `aria-hidden`) ; pastille de `RotationEcrans`, état dans `aria-pressed`, libellé « Mettre l'animation en pause » /
+  « Relancer l'animation ». **Vraie pause** : `data-fige` gèle les animations CSS (le trajet de l'objet, l'éclat
+  des routes), les **transitions** en cours sont suspendues par l'API Web Animations (`getAnimations`, que
+  `animation-play-state` n'atteint pas), et le minuteur garde son reliquat. Mesuré : pause à 1,5 s dans le temps 11
+  (4,2 s), reprise → temps 12 au bout de 2,7 s. **Ne jamais retirer ce bouton.**
+- **Hors écran** (seuil 0,2) : minuteur et animations suspendus, reprise au retour ; une pause du bouton prime.
+- **Déplacements en `translate`, jamais en `left` / `top`** (piège 32) : l'objet, l'éclat et le nom de l'objet. CLS
+  mesuré sur un tour à 1280 px : 0,029 avec `left` / `top` (version du labo), 0,00005 après ; le reliquat vient des
+  barres de fragments, qui changent de hauteur et d'écart à l'intérieur de l'objet. Hauteur constante (1088 px).
+- **Taille de texte : la planche n'est lisible qu'à partir de ~1024 px.** Tout est en `cqw` : plus petit texte
+  (« hôte », 1,05 cqw) mesuré à **3,1 px à 360 px**, 3,4 à 390, 5,8 à 640, 9,3 à 1024, **10,5 à 1280** ; le titre de
+  temps fait 6,4 px à 360.
+- **Masquée sous `lg`** (2026-10-08, étape 6, décision de l'humain) : la planche et son bouton pause sont dans un
+  bloc `hidden lg:flex` (`data-visuel`) ; à leur place, sous `lg`, une phrase `text-14 text-ink-muted` (« Le schéma
+  détaillé s'affiche sur un écran plus large. »). L'eyebrow du volet reste. La **transcription `sr-only` est hors du
+  bloc masqué** : lue à toutes les largeurs. L'`IntersectionObserver` observe **le bloc masqué, pas la racine** : en
+  `display: none`, il n'est jamais « dans la vue », donc sous `lg` le déroulé reste suspendu (la phrase de
+  remplacement, elle, entre dans l'écran — observer la racine aurait fait tourner la boucle pour rien). Passer la
+  fenêtre au-dessus de `lg` le relance. Une version mobile (planche verticale) n'est pas prévue.
+- **Carrée** (`aspect-ratio: 1 / 1`, comme la planche du labo, et non 4/5 comme les autres planches du labo) : la
+  boîte de contenu fait exactement 100 × 100 cqw (titre 5,6 + plan 94,4), à 1280 px la planche fait 1088 × 1088 px.
+- **Section invert** : la planche porte son propre fond `--surface` et sa bordure, mais **pas** `section-invert`
+  (piège 26) ; dans « Sous le capot », ses boîtes `--bg-subtle` et ses étages `--surface` se détachent du fond
+  `--bg`. La section étant invert dans les deux thèmes, le rendu est identique en clair et en sombre (vérifié).
+- **Un seul aplat** : « Valider », au dernier temps. Les petits traits de l'objet et la vignette allumée du bandeau
+  sont en `--accent` aussi, mais ce sont des glyphes, pas des surfaces.
+- **Rien d'inventé** : aucune marque, aucun domaine, aucun chiffre (« objectif 1 / n », « 1 outil suffit » sont des
+  compteurs du mécanisme, pas des résultats).
+- **Poids** (mesuré le 2026-10-08, accueil construit) : HTML 15,0 → **17,1 ko brotli** (18,2 → 20,7 ko gzip) — la
+  planche est dans le HTML même volet fermé ; CSS de l'accueil +3,5 ko gzip (la CSS de la planche part dans la
+  feuille de la page, pas dans le HTML) ; JS 72,9 → 73,7 ko gzip (script de 0,8 ko, fichier `/_astro`, jamais
+  `is:inline`).
 
 ### Qui décide quoi (Confiance)
 Refait le 2026-09-20 : deux listes plates séparées par un petit badge ne se lisaient pas, et rien n'y avait le
 poids de ce qui est promis.
-- **Les deux panneaux ont un titre de vrai titre** (`text-18 font-semibold`), pas une étiquette mono : « Elle
-  avance seule » / « Elle s'arrête net ». Ce sont les deux moitiés d'une même phrase, il faut qu'on les lise
-  avant les listes.
+- **Les deux panneaux ont un titre de vrai titre** (`text-18 font-semibold`), pas une étiquette mono : « Il
+  avance seul » / « Il s'arrête net » (« Elle… » jusqu'au 2026-10-08). Ce sont les deux moitiés d'une même phrase,
+  il faut qu'on les lise avant les listes.
 - **Chaque geste porte son signe** : une coche à gauche, un glyphe de pause à droite, tous deux en `--accent`,
   alignés sur la première ligne (`mt-1`). C'est ce qui donne le rythme que les listes nues n'avaient pas.
-- **La porte est le seul aplat de couleur de la section** : pastille `bg-accent` / `text-on-accent` (5,02:1,
+- **La porte est le seul aplat de couleur de la section** : pastille `bg-accent` / `text-on-accent` (5,42:1,
   voir contrastes). Les engagements en dessous n'ont que des fonds `accent-soft`, donc rien ne lui dispute
   l'attention.
 - **Le trait qui la traverse est un filet, pas une flèche** : `h-5 w-px` empilé avant lg, `lg:h-px lg:w-5` en
   ligne ensuite. Deux flèches `→` empilées verticalement dans une colonne `auto` disaient l'inverse du sens de
   lecture.
-- **Le chapeau est en trois phrases courtes** (« Elle lit ce qu'il faut. Elle n'en garde rien. Elle n'envoie
-  rien sans vous. ») et non en une phrase à trois virgules : c'est la même information, scandée.
+- **Le chapeau est en trois phrases courtes** (« L'assistant lit ce qu'il faut. Il n'en garde rien. Il n'envoie
+  rien sans vous. ») et non en une phrase à trois virgules : c'est la même information, scandée. La première
+  renomme l'assistant : l'offre, où il est présenté, est trois sections plus haut.
 
 ### Terminal
 - **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
@@ -786,97 +1077,144 @@ poids de ce qui est promis.
   **Pas de pause au survol** : voir piège 18. Ne jamais retirer ce bouton.
 - Curseur : `.terminal-cursor` déclaré hors de toute media query dans `global.css`.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
+- **Dernière ligne (`result`) sans chiffre** : « devis prêt, en attente de votre oui » (2026-10-08, plan « site
+  moins geek », étape 4 bis ; « 38 min économisées par devis » avant). Un visiteur rapprochait ce chiffre inventé
+  des 25 → 3 min de Jason. **Ne pas y remettre de durée ni de gain** : les seuls chiffres de résultat du site sont
+  ceux du client. Seule retouche de texte du terminal depuis l'étape 2 (« ne pas toucher »).
 
-### Clients (section « Ils nous ont fait confiance »)
-Titre de section et libellé de navigation changés le 2026-09-19 : eyebrow `Clients`, titre
-**« Ils nous ont fait confiance »**, entrée de menu **« Clients »**. Le composant s'appelle désormais
-`sections/Clients.astro`. **L'ancre reste `#cas-client`** : elle est publiée depuis la v1, la renommer
-casserait les liens existants. Le titre du cas (« Le devis part du chantier, pas du bureau ») est descendu
-en `h3` sous le h2 de section : la section parle des clients, ce cas n'en est qu'un.
+### Clients (section « Ce qu'en dit Jason, chez L'Atelier des Sols & Fils »)
+Refaite le 2026-10-08 (plan « site moins geek », étape 3, décision de l'humain) : **une parole de client à la
+place d'un tableau de bord**. Composant `sections/Clients.astro`, eyebrow `Clients`, entrée de menu « Clients ».
+**L'ancre reste `#cas-client`** (publiée depuis la v1). Place dans la page inchangée : juste sous le bandeau, `bg-bg`.
+Voix : la section parle au **« je »** (Joris), comme tout le site depuis le 2026-10-08.
 
-- **Compteurs de production** (`production`, 2026-09-19) : +50 devis créés, +30 rendez-vous posés,
-  +40 fiches clients créées, 3 rapports d'analyse annuels. Fournis par le client, **jamais lus dans un outil
-  connecté** (voir « Aucune donnée de tiers » ci-dessous) et jamais estimés. Le « + » fait partie de la valeur :
-  ce sont des planchers. Rendus dans **un seul cadre** (`Card` + `Figure`, 2 × 2), **à côté** de la comparaison
-  de temps et non au-dessus (2026-09-20, grille `lg:grid-cols-[2fr_3fr]`) : le « combien » et le « combien de
-  temps » se lisent ensemble, et la section ne double pas sa hauteur pour les séparer. Le rapport 2/3 n'est pas
-  décoratif — il amène les deux cartes à la même hauteur, sinon la comparaison gouverne et laisse un fond de
-  carte vide à gauche.
-- **L'intro et les compteurs partagent une rangée** (2026-09-20, `lg:grid-cols-[3fr_2fr]`) : le titre, le logo et
-  le paragraphe tiennent dans la colonne de mesure, ce qui laissait toute la moitié droite du haut de section
-  vide. La comparaison de temps passe **pleine largeur** en dessous — ses libellés et ses notes tiennent alors sur
-  une seule ligne au lieu de deux.
-- **Les deux cartes « 0 soirée » et « 100 % » ont été retirées** (2026-09-20, demande de réduction de la
-  section). Les deux affirmations restent sur la page, mais en prose et non plus en chiffre mesuré : la
-  ressaisie du soir est dite dans la note de la comparaison, la validation explicite est le sujet entier de la
-  section Confiance et la fin du paragraphe du cas (« une fois qu'ils ont dit oui »). **Si on veut remettre un
-  chiffre mesuré, c'est celui-là qu'il faut rechercher auprès du client, pas le réinventer.**
-- **Deux comparaisons de temps, côte à côte** (`lg:grid-cols-2`, 2026-09-20) : le devis (40 min → 2 min) et la
-  fiche client (5 min → 30 s). Chaque `CompareBars` cale ses longueurs sur **le maximum de son propre tableau** —
-  mises à la même échelle, les 5 min de la fiche client seraient invisibles à côté des 40 min du devis.
-  `items-start` sur la rangée : la fiche client n'a pas de note sous ses barres, sa carte est plus courte, et
-  l'étirer ne faisait que lui ajouter du blanc.
-- **Pas de note inventée sous les barres de la fiche client** : le client a donné les deux durées, rien de plus.
-  Sur un cas réel, on ne comble pas les trous — une carte plus courte est préférable à une phrase plausible.
-- **La légende des compteurs date la mesure** (2026-09-20) : « Statistiques mesurées au bout de 6 semaines
-  d'utilisation. » Fourni par le client. Si les compteurs sont mis à jour, **mettre à jour la durée avec eux** :
-  un nombre sans sa fenêtre de mesure n'est pas vérifiable.
-- **Le logiciel de gestion du client est nommé** (`casClient.logiciel` = Extrabat) : c'est le seul nom de
-  logiciel tiers du site, **exception assumée au piège 17**, qui interdit les marques dans les démonstrations
-  inventées. Ici, ce n'est pas une démonstration : c'est ce qui a été construit. Le **nom seul**, jamais le
-  logo, jamais de mention de partenariat ou de certification. `null` fait disparaître la phrase entière.
+Ordre de lecture, pensé pour 10 secondes :
+1. **Titre `h2` qui résume seul** : « Ce qu'en dit {prénom}, chez {entreprise} » (valeurs de `casClient`), puis un
+   chapeau en « je » : qui ils sont (« Son entreprise pose des sols… », Metz – Luxembourg, 4 à 9 personnes) et ce que
+   j'ai construit, **en une phrase qui finit sur « …relié à Extrabat, leur logiciel de gestion. »**. **Le nom de
+   l'entreprise n'est pas répété dans le chapeau** (il est déjà dans le titre et la signature). Le déroulé (« Jason
+   demande le devis, le devis se prépare dans le logiciel, Jason le vérifie, et c'est enregistré ») a été **retiré
+   le 2026-10-08** (étape 5 bis, correction 1, demande de l'humain) : la démonstration plus bas le montre. S'il
+   revient, nommer Jason comme sujet de chaque geste : avec « un assistant » juste avant, un « il » se rattache à la
+   machine.
+2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
+   `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
+   gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, `shadow-sm` (comme `Card`, depuis l'étape 5).
+   **Relief (étape 5 bis)** : deux des trois pistes du plan — un **filet d'accent** vertical à gauche de la citation
+   (`w-1` = 4 px, pas de l'échelle, `rounded-full bg-accent`, `aria-hidden`, pleine hauteur de la citation) et les
+   **guillemets de la citation en `--accent`** (5,42:1 sur `surface` en clair, 8,28:1 en sombre). Écartés : le
+   **grand guillemet décoratif** ajouté au-dessus (il doublait les guillemets du texte, qu'on ne retire pas) et le
+   **fond `accent-soft`** sur la carte (il aurait fait de la carte du témoignage un bloc ambre de plus, juste au-dessus
+   de la carte « Aujourd'hui » bordée d'accent). Le texte de la citation ne change pas.
+3. **Une carte « ce qu'il en tire »** (étape 5 bis, 2026-10-08) : son usage, puis **deux chiffres, pas un de plus**.
+   Plus de légende « Selon Jason. » (retirée le 2026-10-08, correction 1 de l'étape 5 bis, demande de l'humain) : la
+   section entière est sa parole, le titre le dit déjà.
+   - **Usage** (donnée du formulaire, pas un chiffre) : « Jason s'en sert plusieurs fois par jour : » puis une liste
+     `flex-wrap` de trois lieux, chacun avec sa `PastilleIcone` : écran (« au bureau »), téléphone (« au
+     téléphone »), voiture (« en déplacement »). **« Jason » et non « il »** (le plan proposait « Il s'en sert ») :
+     juste sous la citation, « il » pouvait se rattacher à l'assistant — même règle que l'ancien chapeau.
+   - **Devis en schéma (R3)** : `dt` « Pour un devis », puis `CompareBars reveal` — « Avant » 25 min (`muted`, barre
+     `--border-strong`) et « Avec l'assistant » 3 min (`accent`). Valeurs écrites (Inter `text-21`, « 3 min » en
+     `--accent`), barres en `aria-hidden` : un lecteur d'écran lit « Avant 25 min, Avec l'assistant 3 min », sans
+     la flèche ni les `sr-only` d'avant. Révélation ligne par ligne au défilement (libellé, barre qui se déploie),
+     rien sous mouvement réduit, tout visible sans JS.
+   - **≈ 4 h** : `dt` « Gagnées par semaine », puis une `PastilleIcone` horloge et « ≈ 4 h » en **serif `text-36` →
+     `text-48` dès `md`, en `--accent`** (5,42:1 / 8,28:1 sur `surface`). `≈` en `aria-hidden`, doublé d'un `sr-only`
+     « environ ».
+   - **Ne pas afficher** les 2 h d'administratif d'avant (il faudrait expliquer qu'il en gagne 4 parce que l'assistant
+     fait aussi du suivi commercial), sa note de recommandation, ni « 4 à 9 personnes » ou « 7 ans » comme chiffres.
+   - Historique : de l'étape 3 à l'étape 5 bis, les deux chiffres étaient en serif `--ink`, sans accent ni barres
+     (« sobres ») ; l'humain a jugé la section « trop morne, tout en noir et blanc » et levé cette consigne.
+4. **Ses mots, en flux** (étape 5 bis), dans une même carte (`<div>` ; c'était une `<figure>` légendée « Jason,
+   dans ses mots. » jusqu'à la correction 1 de l'étape 5 bis — légende retirée à la demande de l'humain, et une
+   `figure` sans légende n'apportait plus rien) :
+   - **Avant → Aujourd'hui (R1)** : deux cases `rounded-md border bg-bg p-4` (des cases **dans** une carte, sans
+     ombre, comme les temps d'`EnchainementClient`), reliées par une flèche SVG en `--accent` (`aria-hidden`), en
+     grille `sm:grid-cols-[1fr_auto_1fr]` : côte à côte dès `sm`, empilées dessous avec la flèche tournée vers le bas
+     (`rotate-90`, transformation fixe, pas une animation). « Avant » est **neutre** (bordure `--border`, pastille
+     crayon `ton="neutre"`, eyebrow `--ink-muted`) ; « Aujourd'hui » est **bordée d'accent** (`border-accent`,
+     pastille coche, eyebrow `text-accent`). Les deux phrases du client, mot pour mot, en `text-16 text-ink`.
+   - **Le temps gagné** : eyebrow, puis **trois points à icône** en une colonne — dossier « D'autres projets »,
+     avion de papier « Des devis envoyés plus vite », courbe « Un meilleur suivi pour sa direction » (`text-16`
+     semi-gras, reprise fidèle de sa phrase, rien d'ajouté) — puis **sa phrase entière dessous**, en `text-16
+     text-ink-muted` : les points se lisent au survol, la citation dit d'où ils viennent. Une colonne à toutes les
+     largeurs : en trois colonnes (essayé), les points passaient sur trois lignes à 640 et 1024 px.
+   - Plus de filet entre les deux blocs (étape 5, « moins de bordures ») : l'écart `gap-8` les sépare.
+5. **La démonstration (`EnchainementClient`) vient après** : ses montants inventés ne doivent jamais concurrencer
+   les deux chiffres du client.
+
+Grille de la rangée 3-4 : `lg:grid-cols-[2fr_3fr]` + `items-start` ; chiffres **en premier dans le DOM** pour
+qu'empilés sur mobile ils suivent directement la citation.
+
+**Plus d'impact (2026-10-08, plan « site moins geek », étape 5 bis, décision de l'humain).** « Trop morne, tout en
+noir et blanc » : la consigne de l'étape 3 (« avant / après en texte, pas de graphique », « chiffres sobres ») est
+**levée**. L'accent est désormais présent à chaque bloc (filet et guillemets du témoignage, pastilles d'icônes,
+barre et valeur « 3 min », « ≈ 4 h », case « Aujourd'hui », flèche). Restent en vigueur : deux chiffres clés au
+plus, mots du client inchangés, une seule couleur d'accent, registres R1 / R3 seulement, aucun nouveau script (la
+seule animation est le `reveal` existant de `CompareBars`). **Neuf icônes** ajoutées, toutes en `PastilleIcone`
+(tracés statiques en tête de `Clients.astro`, `aria-hidden`) : écran, téléphone, voiture, horloge, crayon, coche,
+dossier, avion de papier, courbe ; plus la flèche du flux. **Longueur** mesurée (mouvement réduit, état final) :
+2 438 → 2 980 px à 390 px (+22 %, plafond du plan ≈ 25 %), 2 490 → 3 054 px à 360, 2 088 → 2 449 à 640, 1 695 →
+1 849 à 1024, 1 596 → 1 782 à 1280. Un `h2` et aucun `h3` dans la section (les temps de la
+démonstration sont des paragraphes, pas des titres).
+
+- **Source unique des contenus : le formulaire de satisfaction rempli par le client** (2026-10-08). Phrases et
+  chiffres viennent de lui ; ils sont recopiés dans `Clients.astro` et `casClient`, le formulaire lui-même n'est
+  **jamais commité**. Citations **retouchées pour l'orthographe seulement, avec l'accord du client** (ses mots
+  « ma CRM » et « L'IA » deviennent « mon logiciel » et « l'assistant », sens inchangé). « automatisations » reste
+  dans la citation : ce sont ses mots, exception assumée à la liste noire du jargon.
+- **Les retours privés du formulaire ne se publient pas** — ni sur le site, ni dans un commentaire de code, ni ici.
+  Seules les réponses destinées au site (avis, avant / après, temps gagné, chiffres, identité) sont utilisables.
+- **Nom de famille non fourni** : `casClient.nomFamille = null`. La signature dit **« Jason » seul, sans marqueur
+  « à compléter »**, ni en dev ni en production (demande de l'humain, 2026-10-08) : un prénom suffit à signer un
+  témoignage. Écart assumé à la convention `ACompleter` des pages vitrines. Ne jamais l'inventer ni le déduire d'un
+  outil connecté ; s'il est fourni un jour, le renseigner dans `casClient` et il s'affiche.
+- **Rôle** : `casClient.role` = « commercial et gestionnaire », mot du client (petite entreprise, plusieurs casquettes).
+- **Anciens chiffres retirés le 2026-10-08** : devis 40 min → 2 min, fiche client 5 min → 30 s, compteurs de
+  production (+50 devis, +30 rendez-vous, +40 fiches, 3 rapports d'analyse) et « mesuré au bout de 6 semaines ».
+  Remplacés par ceux du formulaire ; ne pas les remettre. `CompareBars` sert de nouveau, pour le seul devis 25 min /
+  3 min (étape 5 bis).
+- **Le logiciel de gestion du client est nommé** (`casClient.logiciel` = Extrabat), dans le chapeau : seul nom de
+  logiciel tiers du site, **exception assumée au piège 17** — ce n'est pas une démonstration, c'est ce qui a été
+  construit. Le **nom seul**, jamais le logo, jamais de partenariat. `null` → « leur logiciel de gestion ».
 
 #### Le cas (L'Atelier des Sols & Fils)
-- Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5, voir
-  « Contenus éditables ») : section dédiée (`Clients.astro`, `#cas-client`), distincte de la collection
-  `exemples`, réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le
-  même accord pour chaque nouveau cas ; par défaut, un nouveau cas client reste dans `exemples` (illustratif).
-- Placée après Exemples, avant SousLeCapot ; `border-t border-border bg-bg-subtle` (alternance de fond),
-  pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot. Offre, juste au-dessus, n'a pas
-  non plus de `border-t` : celui-ci lui vient du `border-y` de la Méthode.
-- Les chiffres d'impact (2 min pour un devis, et les compteurs de production) sont les résultats mesurés du cas
-  réel. La démonstration (`EnchainementClient`) illustre le *mécanisme* : client, commune, montants et créneaux
-  sont inventés, jamais issus d'une pièce commerciale réelle. **La règle d'invention reste entière** ; seule sa
-  mention visible (« Scénario type : … pas une pièce réelle ») a été retirée le 2026-09-19, sur demande
-  explicite. Ne pas la remettre sans le redemander.
-- **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce) :
-  seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
-- **Identité du client** (2026-09-18) : nom, métier, prénom du dirigeant (**Jason**), lien vers son site et logo
-  vivent dans `casClient`, `src/config/site.ts` — publiés **avec son accord explicite**, comme le reste de la
-  section. Rien ne s'ajoute là sans le même accord : un prénom est une donnée personnelle, pas un détail de mise
-  en page.
-- **Logo** : fichier fourni par le client, déposé dans `public/clients/` (`casClient.logo` = son chemin). Le
-  composant vérifie sa présence au build (`existsSync`, `process.cwd()` — pas `import.meta.url`, qui pointe sur
-  un chunk après compilation) : **fichier absent, pas d'image** — jamais de vignette cassée, jamais de logo
-  reconstitué. La largeur est déduite du `viewBox` du SVG pour réserver la place (CLS 0).
-- **Le logo est posé sur une plaque `.section-invert`** : le lettrage du client est blanc sur fond transparent,
-  il disparaîtrait sur le fond clair. Une plaque sombre dans les deux thèmes (même procédé que le terminal) plutôt
-  qu'un logo retouché — on ne modifie pas l'identité d'un tiers. Tout nouveau logo de client se juge d'abord sur
-  les deux fonds.
-- **Un seul lien vers le site du client** : porté par le nom (`Badge href`, avec `↗` en `aria-hidden`). Le logo,
-  juste à côté, est décoratif (`alt=""`) — deux liens vers la même destination alourdissent la navigation au
-  clavier et au lecteur d'écran sans rien apporter.
-- Le temps d'un devis est révélé ligne par ligne au défilement (`CompareBars reveal`, voir « Schémas »).
-- Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
-  labels en français neutre (« Aperçu du principe », « sur place, à la voix », « et ensuite, vos chiffres »).
-- **`EnchainementClient`** (2026-09-17, remplace l'îlot React `DicteeChiffrageDemo`, supprimé) : montre un
-  **enchaînement de fonctions** sur un même client — 01 fiche client dictée sur place, 02 devis rattaché à cette
-  fiche, 03 intervention posée —, puis **04 l'analyse** : l'IA consulte les données déjà présentes et propose des
-  axes d'analyse, **en lecture seule** (asymétrie volontaire, comme dans le hero). Chaque écriture porte le « oui ».
-- Joué **en boucle** (~25 s) : l'étape en cours prend `border-accent`, ses éléments `data-cc-pas` apparaissent un à
-  un, tenue finale 3,8 s, fondu, reprise. Même contrat que le mockup du hero : état final rendu par le serveur,
-  contenu toujours dans le DOM (`opacity` seule, CLS 0 mesuré), rien sous mouvement réduit, **bouton pause toujours
-  rendu** (WCAG 2.2.2 — en pause, l'état complet est réaffiché), arrêt hors écran. Pas d'`aria-hidden` : tout le
-  contenu est du vrai texte.
-- **Le cadre d'une liste porte `data-cc-pas`, pas sa première ligne** : sinon il apparaît vide avant son contenu
-  (même règle que la Méthode).
-- JS natif et non React : un îlot de moins sur l'accueil.
+- Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5) : section
+  réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le même accord pour
+  chaque nouveau cas.
+- **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce),
+  **aucune donnée lue dans un outil connecté** (CRM, messagerie) : voir piège 17.
+- **Identité du client** : nom, métier, prénom (**Jason**), rôle, nom de famille (`null`), lien vers son site et
+  logo vivent dans `casClient`, `src/config/site.ts` — publiés **avec son accord explicite**. Rien ne s'ajoute là
+  sans le même accord : un prénom est une donnée personnelle, pas un détail de mise en page.
+- **Logo** : fichier fourni par le client, déposé dans `public/clients/` (`casClient.logo`). `Temoignage` vérifie sa
+  présence au build (`existsSync`, `process.cwd()` — piège 24) : **fichier absent, pas d'image**. Hauteur `h-10`
+  (40 px), largeur déduite du `viewBox` (CLS 0). **Posé sur une plaque `.section-invert`** : lettrage blanc sur fond
+  transparent, il disparaîtrait sur le fond clair. Plaque sombre dans les deux thèmes plutôt qu'un logo retouché.
+- **Un seul lien vers le site du client** : le nom de l'entreprise dans la signature (`↗` en `aria-hidden`). Le
+  logo est décoratif (`alt=""`). (Avant le 2026-10-08 : un `Badge href` à côté du logo.)
+- **`EnchainementClient`, allégé le 2026-10-08** (il montrait fiche client → devis → intervention → analyse,
+  avec « L'IA » dans le texte) : **trois temps sur un seul devis** — 1 « Il demande le devis » (la bulle ; « il dicte » jusqu'au 2026-10-08, remplacé à la demande de l'humain : le formulaire du client ne parle pas de dictée), 2 « Le devis se
+  prépare » (quatre lignes, montants en `text-12`, total en `--ink` semi-gras, **jamais en accent**), 3 « Il
+  vérifie, c'est enregistré » (sa réponse, la pastille « oui », « devis enregistré dans le logiciel »).
+  Eyebrow « Un devis, en trois temps ». La racine est une `<figure>`.
+- **Légende visible remise** : « Exemple illustratif : client et montants inventés. » (`figcaption`). Elle avait été
+  retirée le 2026-09-19 sur demande ; le plan « site moins geek », validé par l'humain, la redemande. **La règle
+  d'invention reste entière** : client, commune et montants ne viennent d'aucune pièce réelle.
+- Joué **en boucle** (~14 s) : l'étape en cours prend `border-accent`, ses éléments `data-cc-pas` apparaissent un à
+  un, tenue finale 3,8 s, fondu, reprise. Contrat inchangé : état final rendu par le serveur, contenu toujours dans
+  le DOM (`opacity` seule, CLS 0 mesuré sur un cycle), rien sous mouvement réduit, **bouton pause toujours rendu**
+  hors mouvement réduit (WCAG 2.2.2 — en pause, l'état complet est réaffiché), arrêt hors écran. Script inchangé.
+  Pas d'`aria-hidden` : tout le contenu est du vrai texte.
+- **Le cadre d'une liste porte `data-cc-pas`, pas sa première ligne** : sinon il apparaît vide avant son contenu.
+- Pas de jargon technique dans la section, y compris dans les petits libellés.
+- JS natif et non React : un îlot de moins sur l'accueil. `Temoignage` n'a aucun script.
 
 Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
 
 ### Constat — étiquettes de coût (section supprimée le 2026-10-07)
-Historique : la section et son composant ont été retirés ; leurs scènes vivent dans les arguments de l'offre.
+Historique : la section et son composant ont été retirés ; leurs scènes ont vécu dans les arguments de l'offre jusqu'au 2026-10-08 (trois assistants depuis).
 Au bas de chaque carte du constat, deux étiquettes en `--accent` traduisent le problème en risque :
 « perte de temps / risque d'erreur », « occasions manquées / perte de contrôle », « délais
 supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole la section.
@@ -897,9 +1235,9 @@ supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole
   manquées » (18) aussi une fois passé en `text-14` (300 px pour 302) ; « occasions perdues » (17)
   passe. Toute étiquette plus longue impose de revenir à `text-12`.
 - **Apparence d'un `Badge variant="accent" dot`, en plus compact** : même fond `--accent-soft`, même
-  pastille `--accent-bright`, même texte `--ink` (`accent` sur `accent-soft` = 4,28:1 en clair, donc
+  pastille `--accent-bright`, même texte `--ink` (`accent` sur `accent-soft` = 4,28:1 en clair à l'époque, donc
   jamais de texte accent sur ce fond). Pas le composant lui-même : ses `h-6`, `px-2`, `gap-2` et sa
-  police mono demandent 277 px pour la paire la plus courte, 320 px pour la plus longue — davantage que
+  police mono (Inter depuis le 2026-10-08) demandaient 277 px pour la paire la plus courte, 320 px pour la plus longue — davantage que
   ce que la grille offre à n'importe quelle largeur. D'où la reprise en local : police sans, `px-1.5`,
   `py-0.5`, pastille `size-1`. **Si le Badge de série devient plus compact, revenir au composant.**
 - `mt-auto` sur la rangée : les étiquettes s'alignent d'une carte à l'autre quelle que soit la longueur
@@ -909,55 +1247,112 @@ supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole
 
 ### Bandeau d'engagements
 - Rangée fluide (`flex-wrap`, libellés en `whitespace-nowrap` à partir de `sm`), pas de grille à colonnes fixes :
-  les libellés mono de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
-- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 32 caractères.
-- Contenu et registre du bandeau : voir « Copy (ligne éditoriale) » — pas de « elle » ici, le pronom n'a pas
-  encore d'antécédent à cette hauteur de page.
+  les libellés de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
+- **Inter 14 et coches douces** (2026-10-08, étape 2 du plan « site moins geek ») : libellés en Inter (mono avant),
+  chaque « ✓ » dans une pastille ronde `size-5 bg-accent-soft text-accent text-12`, alignée sur la ligne de base
+  du libellé (`items-baseline` + `inline-flex`). Coche en `aria-hidden` : exemptée de la règle « pas de texte
+  accent sur accent-soft », comme les autres coches décoratives. Comportement de la rangée inchangé ; mesuré sans
+  débordement à 360 / 640 / 1024 / 1280 px (1 colonne sous `sm`, 3 lignes à 640, 2 lignes à partir de 1024).
+- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : 34 caractères
+  (« chiffré uniquement sur vos besoins », « accès limités au strict nécessaire »).
+- Contenu et registre du bandeau : voir « Copy (ligne éditoriale) » — des faits sans sujet, pas de « il » pour
+  l'assistant : le bandeau doit se lire seul.
 
 ## Copy (ligne éditoriale)
-Passe du 2026-09-19 : la promesse de l'accueil est resserrée sur « on part de vos outils, l'administratif en
-moins, vos données enfin utiles, elle prend les devants, vous l'améliorez en l'utilisant, elle ne garde rien ».
-Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
+Passe du 2026-10-08 (plan « site moins geek », étape 4) : **le site parle à la première personne et à tout le
+monde**. Ton de référence : `variantes/v10/COPY.md` (« Voix et ton »). Elle remplace la passe du 2026-09-19
+(« on part de vos outils… elle prend les devants… »), dont l'esprit reste : mots simples, promesses adossées à un
+mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à cette occasion.
 
-- **Mots simples, concepts d'adulte.** Le registre n'est jamais oral appuyé : ni « calé », ni « vaut le coup »,
-  ni « c'est top ». Un mot courant à la place d'un mot technique, jamais une phrase qui prend le lecteur de haut.
-- **Vocabulaire retiré de l'accueil** : *studio IA*, *cartographier vos processus*, *livrable* (→ « vous
-  recevez »), *système d'information* (→ « vos logiciels »), *réversibilité* (→ « vous pouvez reprendre la
-  main »), *accord explicite* (→ « votre oui »), *documentation remise à la livraison* (→ « le mode d'emploi est
-  livré avec »). Le jargon reste autorisé dans « Sous le capot » **uniquement** (§2.1) — et sur `/a-propos`,
-  « studio » décrit ce que sosese est, ce qui est le sujet de la page.
-- **« elle » désigne la solution, et a besoin d'un antécédent.** La solution est nommée une seule fois, dans le
-  chapeau de l'offre (« une solution qui connaît vos prix… **Elle** prépare le travail »). Partout **au-dessus**
-  de ce chapeau — hero, bandeau, cas client — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
-  encore de sujet. En dessous (offre, confiance, FAQ), « elle » partout. Le cas client, remonté au-dessus le
-  2026-10-07, dit « la solution » ; seul le « Elle lit » de sa démonstration est permis, rattaché à « L'IA » juste avant, plus jamais
-  « l'automatisation » comme sujet.
-- **Règles ≠ données.** « Elle retient vos corrections » (offre) et « rien n'est mémorisé par défaut » (bandeau,
-  confiance) se contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *elle
-  garde vos règles, pas vos données*. **Ne jamais écrire que la solution « apprend de vos documents ».**
-- **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « elle ne calcule jamais un prix
-  elle-même, elle lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie
-  tient à la porte de validation, pas à une propriété du modèle.
-- **Pro-activité (2026-09-19)** : « elle prend les devants » est tenue par des routines — heure fixe ou seuil de
-  déclenchement. Le copy nomme les deux (« tous les lundis matin, ou dès qu'un dossier dépasse le délai que vous
-  avez fixé ») : la promesse doit rester adossée à un mécanisme réel.
-- **Exception à B8 (un argument, un seul endroit)** : « rien n'est mémorisé par défaut » est énoncé **en fait**
-  dans le bandeau d'engagements (réflexe de méfiance nº 1 face à l'IA) et **argumenté** une seule fois, dans la
-  section Confiance. Aucun autre argument n'a droit à ce doublon.
-- **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. C'est pourquoi la carte
-  de Confiance s'appelle « Rien de mémorisé, rien qui serve à entraîner l'IA » et non « Aucun entraînement » avec
-  la mémoire dans le corps. La grille `lg:grid-cols-4` impose **quatre cartes** : toute carte ajoutée en remplace
-  une autre ou fusionne avec elle.
-- **Porte de validation (Confiance)** : le libellé est passé de « votre accord » à « elle attend votre oui »,
-  puis à **« votre oui »** seul le 2026-09-20. Entre deux panneaux qui disent « Elle avance seule » et « Elle
-  s'arrête net », la phrase entière était redondante ; deux mots dans une pastille tiennent en `nowrap` sans
-  manger la largeur des panneaux, ce que l'ancien libellé imposait de corriger au `lg:whitespace-normal`.
-- **Méthode : des noms courts en titre** (Atelier / Feuille de route / Construction), la phrase d'action en
-  première ligne de description. Trois titres commençant par « On » font de sosese le sujet de sa propre
-  méthode, et ne se survolent pas.
+- **Voix : « je » (Joris), vouvoiement du lecteur.** sosese, c'est Joris : plus de « on » ni de « nous » pour
+  sosese, nulle part (titres, chapeaux, FAQ, formulaires, pages légales là où sosese parle). Joris est nommé dès le
+  chapeau du hero (« Je suis Joris. »). Restent permis : le « on » impersonnel (« les questions qu'on me pose »),
+  « Parlons-en » (vous et moi), et le « nous / nos » des **personnages** (phrases des clients inventés dans les
+  maquettes, mots de Jason) ou du **visiteur** (une question de FAQ posée par lui).
+- **Cible : artisans, indépendants, petites entreprises** — dans cet ordre, ou « les petites entreprises » seul.
+  Plus de « PME », plus de « vos équipes » quand le lecteur peut être seul (« vous ou votre équipe »).
+- **Phrases courtes, un titre = un message, aucun point d'exclamation.** On doit comprendre l'offre en ne lisant
+  que les titres : ce que je fais (hero), la preuve (Clients), comment (Méthode), quoi (Offre), les garanties
+  (Confiance), quoi faire (CTA).
+- **Liste noire, hors « Sous le capot »** : *IA*, *agent*, *connecteur*, *automatisation / automatisé*, *API*,
+  *MCP*, *données*, *outil* (quand « logiciel » suffit), *workflow*, *PME*, *processus*, *chronophage*, *solution*
+  (pour désigner ce que je construis). Mots de remplacement : « l'assistant », « vos logiciels », « relier »,
+  « préparer », « prendre en charge », « vos informations ». Exceptions assumées, à ne pas étendre :
+  - **« IA »** : seulement dans la FAQ, là où la question la pose (« Et si l'IA invente un prix ? »), dans les
+    questions du questionnaire prospects (on y mesure l'usage de l'IA, ce sont des questions d'étude), et dans
+    **« rien ne sert à entraîner une IA »** — carte « Rien de mémorisé, rien de réutilisé » de Confiance et réponse
+    de FAQ « Mes données sortent-elles de l'entreprise ? » (décision de l'humain, 2026-10-08, étape 4 bis) : c'est
+    la crainte réelle du visiteur, « un autre programme » l'esquivait.
+  - **« données »** au sens de vie privée : titre de Confiance (« Vos données restent les vôtres »), « Vos données
+    ne quittent pas l'Europe », questions de FAQ sur la confidentialité,
+    mention du questionnaire et pages légales.
+  - **« automatisations »** et **« expertise »** dans la citation de Jason : ses mots.
+  - **« outils »** quand le mot englobe papier, téléphone et logiciels (chapeau du questionnaire, section « Vos
+    outils ») ou quand le logiciel est un instrument de détection (politique de confidentialité).
+  - « Sous le capot » garde tout son jargon : c'est la touche geek assumée. Il passe au « je » comme le reste.
+  - Pages légales : seulement le passage au « je » là où sosese parle, **jamais un changement de sens juridique**.
+- **Un seul nom pour ce que je construis : « l'assistant »** (le mot du client dans son témoignage). Plus de « la
+  solution », plus de « elle ». Il est présenté dans le titre du hero (« Je construis l'assistant qui s'occupe du
+  reste », 2026-10-08) et décliné dans l'offre en trois assistants (commercial, chiffres, saisie — voir « Offre :
+  trois assistants »).
+- **« il » a besoin d'un antécédent.** Il désigne l'assistant seulement dans un texte où « l'assistant » vient
+  d'être nommé (hero, offre, chapeau de Confiance, FAQ) ; une section éloignée le renomme avant d'employer le
+  pronom (chapeau de Confiance : « L'assistant lit ce qu'il faut. Il n'en garde rien. »). Dans le cas client, « il »
+  désigne **Jason**, jamais la machine — la section le nomme (« Jason s'en sert… ») là où un « il » serait ambigu. Le
+  bandeau d'engagements n'emploie aucun pronom.
+- **Règles ≠ données.** « Il retient vos règles » et « rien de mémorisé » se contredisent si les deux objets ne
+  sont pas nommés séparément. Depuis le 2026-10-08 (trois assistants), l'offre n'en parle plus : la distinction vit
+  dans la carte « Rien de mémorisé, rien de réutilisé » de Confiance (« Ce qu'il retient — vos règles, vos
+  préférences ») et dans la FAQ « mémoire ». Formulation canonique si elle revient ailleurs : *il garde vos règles,
+  pas vos données* (au sens de vie privée : les documents lus ne sont pas conservés). **Ne jamais écrire que
+  l'assistant « apprend de vos documents ».**
+- **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « il ne calcule jamais un prix
+  lui-même, il lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie tient à la
+  porte de validation, pas à une propriété du modèle.
+- **Pro-activité** : « il prend les devants » est tenu par des routines — heure fixe ou seuil de déclenchement.
+  La promesse reste adossée à un mécanisme réel. Retirée de l'offre le 2026-10-08 avec les quatre arguments, **revenue
+  le même jour dans la carte commerciale** (étape 5, texte de l'humain) : « … repère qui relancer, chaque lundi ou
+  dès qu'un devis attend trop, et vous propose le message, prêt à partir. » — « chaque lundi » est l'heure fixe,
+  « dès qu'un devis attend trop » le seuil. « Le dossier n'attend plus quand la bonne personne est absente » est
+  abandonné.
+- **Exception à B8 (un argument, un seul endroit)** : « accès limités au strict nécessaire » est énoncé **en fait**
+  dans le bandeau d'engagements (réflexe de méfiance nº 1 : « il va tout lire ») et **argumenté** une seule fois,
+  dans la section Confiance (« Il ne consulte que ce qu'il faut »). Aucun autre argument n'a droit à ce doublon.
+  (« les accès de l'IA sont maîtrisés » jusqu'au 2026-10-08 ; avant, « rien n'est mémorisé par défaut ».)
+  Le chapeau du hero décrit le déroulé (« il prépare le travail, vous vérifiez, puis c'est enregistré ») sans
+  argumenter la porte : c'est Confiance qui la promet et la détaille.
+- **Titres et descriptions des pages (SEO)** suivent les mêmes règles : titre de l'accueil = ce que je fais et pour
+  qui (« Un assistant sur mesure pour artisans, indépendants et petites entreprises | sosese », 2026-10-08 — le
+  `h1` « Vous me parlez de votre métier… » ne dit rien seul dans un onglet ou un résultat de recherche ; jusque-là
+  le titre reprenait l'ancien `h1`), descriptions en « je » (Joris nommé sur l'accueil
+  et `/a-propos`), sans « IA » ni « PME ». Titre et description par défaut dans `site.ts` (`site.title`,
+  `site.description`) : **ce sont ceux de l'accueil**, qui ne les répète pas (`<Base>` sans `title`, étape 6 ; le
+  titre par défaut reprenait jusque-là l'ancien `h1`). Les pages légales gardent leur description descriptive à la troisième personne.
+- **Mêmes libellés de bouton partout** : l'appel principal vient de `cta.label` (`site.ts`, « Parlons-en ») pour
+  l'en-tête, le hero, le bouton flottant, le menu mobile, le CTA final et la 404 — ne jamais l'écrire en dur.
+- **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. La carte de Confiance
+  s'appelle « Rien de mémorisé, rien de réutilisé » (« … rien qui serve à entraîner l'IA » jusqu'au 2026-10-08) et
+  non « Aucun entraînement » avec la mémoire dans le corps. La grille `lg:grid-cols-4` impose **quatre cartes** :
+  toute carte ajoutée en remplace une autre ou fusionne avec elle.
+- **Porte de validation (Confiance)** : **« votre oui »** seul, dans une pastille, entre « Il avance seul » et « Il
+  s'arrête net ». Deux mots tiennent en `nowrap` sans manger la largeur des panneaux.
+- **Méthode : des noms courts en titre** (Atelier / Feuille de route / Construction), puis **une phrase courte par
+  étape**, en « je » (« Je regarde avec vous, sur le terrain, ce qui vous prend du temps. » ; raccourcies de 77 à
+  42 mots le 2026-10-08, correction 1 de l'étape 5 bis : le cadre dit déjà le temps demandé, la durée et ce que
+  vous recevez, la description ne le redit pas). Trois titres commençant
+  par « Je » feraient de moi le sujet de ma propre méthode, et ne se survolent pas.
 - **Cas client** : pas de « réel » ni de « vrai » dans l'eyebrow — on ne précise « vrai » que là où le doute
-  existe. L'eyebrow est `Cas client`, les chiffres prouvent. La note de `CompareBars` dit « avant la fin du
-  rendez-vous » : l'image du camion appartient au chapeau, elle n'est pas répétée.
+  existe. L'eyebrow est `Clients`, la parole du client prouve. « IA » n'y apparaît pas hors de ses mots.
+- **Vocabulaire retiré depuis 2026-09-19, toujours valable** : *studio IA*, *cartographier vos processus*,
+  *livrable* (→ « vous recevez »), *système d'information* (→ « vos logiciels »), *réversibilité* (→ « vous pouvez
+  reprendre la main »), *accord explicite* (→ « votre oui »), *documentation remise à la livraison* (→ « le mode
+  d'emploi est livré avec »). Registre jamais oral appuyé (ni « calé », ni « vaut le coup », ni « c'est top ») :
+  un mot courant à la place d'un mot technique, jamais une phrase qui prend le lecteur de haut.
+- **Vérifier après toute retouche de texte** : `grep -rniE "\b(nous|notre|nos|on )\b" src shared` et la liste
+  noire (`grep -rnwiE "IA|agent|connecteurs?|automatis[a-zéè]*|API|MCP|données|outils?|workflow|PME|solution"`),
+  hors labo et composants non rendus ; chaque occurrence restante est un commentaire de code, une réplique de
+  personnage, « Sous le capot » ou une exception ci-dessus. Puis `scrollWidth` à 360 / 640 / 1024 / 1280 px
+  (piège 12) si un libellé s'est allongé.
 
 ## Décisions et écarts par rapport au cahier des charges
 - **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`
@@ -1039,8 +1434,9 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
   plus grandes — celles-ci restent accueillies, mais le site ne leur parle pas en priorité. Conséquences pour
   la rédaction : vocabulaire du dirigeant qui fait lui-même, pas du responsable informatique ; pas de
   « service IT », « conduite du changement » ni « gouvernance » ; les chiffres d'exemple sont à l'échelle
-  d'une petite structure. `src/pages/a-propos.astro` annonce encore « de 15 à 150 personnes » : **écart connu**,
-  corrigé dans la passe de réécriture de la v2 (item B1 de `REVUE-V2.md`), pas avant.
+  d'une petite structure. **Précisée le 2026-10-08** (plan « site moins geek », étape 4) : artisans, indépendants,
+  petites entreprises — le site dit que c'est pour tout le monde. L'écart « de 15 à 150 personnes » de
+  `/a-propos` est corrigé (« J'accompagne les artisans, les indépendants et les petites entreprises »).
 - **Visuels : schémas SVG, pas d'images** (décision du 2026-09-16). Toute nouvelle illustration est un schéma
   en SVG en ligne (ou un mockup construit avec les tokens), jamais un bitmap, jamais un fichier importé d'une
   banque d'images. Trois registres autorisés et pas un de plus : schéma de flux, mockup stylisé d'interface,
@@ -1056,7 +1452,7 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
-- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, gros titres).
+- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (`h1` / `h2`, wordmark, messages de succès des formulaires, liens du menu mobile).
 - Anneau de focus : `2px` d'épaisseur et de décalage.
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
@@ -1076,14 +1472,21 @@ Tolérées, à ne pas étendre sans raison :
   bloc), `--rot-entree` 420 ms et `--rot-attente` 260 ms (ramenées à 0 sous mouvement réduit), rythme en
   millisecondes dans le script (`TOUR`, `ENTREE`, `SORTIE`), seuil `IntersectionObserver` à 0,2. **Couleurs : que
   des tokens**, aucune exception.
+- `ProtocoleBoutEnBout` : CSS de composant reprise de la planche du labo — tailles, écarts et coordonnées du circuit
+  en `cqw` (la planche se redimensionne d'un bloc) ; padding de la scène en `%` ; filets en `px` (`1px`, `1.5px`) ;
+  `letter-spacing` 0,16 / 0,1 / 0,06 em des intitulés ; rayon fin `calc(var(--radius-sm) / 3)` (dérivé d'un token) ;
+  durées des déplacements (`620ms`, `420ms`, keyframes de 900 à 3 600 ms, décalages 180 / 360 ms) et rythme du
+  script (`DEROULE`, `ATTENTE` 1 600 ms), seuil `IntersectionObserver` à 0,2. **Couleurs : que des tokens.**
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 - Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
   `flex-grow` — des proportions, pas des espacements.
-- `Clients` : grille `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
+- `Clients` : grille `lg:grid-cols-[2fr_3fr]` (chiffres à gauche, avant / aujourd'hui à droite) et
+  `sm:grid-cols-[1fr_auto_1fr]` du flux Avant → Aujourd'hui (deux cases, la flèche au milieu) ; filet du témoignage
+  en `w-1` (pas de l'échelle, 4 px).
 - `Methode` : pas de révélation de 260 ms (420 ms pour un trait) dans le script, décalage `translateY(calc(var(--space-unit) * 3))` de `.revele-cache`.
 - `CompareBars reveal` : même pas de 260 ms, seuil `IntersectionObserver` à 0,25.
-- `Clients` : logo rendu en `h-12` (48 px), largeur calculée depuis le `viewBox` du SVG.
+- `Temoignage` : logo rendu en `h-10` (40 px), largeur calculée depuis le `viewBox` du SVG.
 - `Offre` : pastilles d'icônes en `size-9`, tracé en `size-5` (échelle Tailwind, comme les cartes de Confiance).
 - `ConvergenceDonnees` : `viewBox` 100 × 100 en `preserveAspectRatio="none"` et `viewBox` 16 × 24 de la flèche
   (proportions, pas des espacements), `stroke-width` 2 en `non-scaling-stroke`, et les coordonnées des tracés —
@@ -1124,11 +1527,12 @@ Tolérées, à ne pas étendre sans raison :
     `npm run build`) pendant que `npm run dev` tourne, le cache de dépendances de Vite peut être périmé : tous les
     îlots disparaissent en dev alors que le build est sain. → Arrêter le serveur et relancer `npm run dev -- --force`.
     Toujours vérifier la console avant de chercher un bug dans le composant.
-12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
+12. **Libellés qui passent à la ligne** (mono à l'origine) dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
     en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ xl).
     Revers : un libellé `whitespace-nowrap` plus long que sa colonne déborde **sans rien signaler** et fait défiler
     toute la page horizontalement (cas du bandeau d'engagements). Après tout ajout ou allongement de libellé, vérifier
-    `document.documentElement.scrollWidth` à 360, 640, 1024 et 1280 px.
+    `document.documentElement.scrollWidth` à 360, 640, 1024 et 1280 px. Vaut aussi pour un **changement de
+    police** : le passage de la mono à Inter (2026-10-08) a raccourci tous les libellés, revérifié sans débordement.
 13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
     page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
     est en `flex-1` et le footer est poussé en bas de la fenêtre.
@@ -1237,6 +1641,37 @@ Tolérées, à ne pas étendre sans raison :
     en production. → Délais explicites sur le transport (`server/index.mjs`) ; en local, un envoi qui ne répond
     plus se diagnostique par `printf 'QUIT\r\n' | nc 127.0.0.1 1025` (pas de « 220 » = redémarrer Mailpit).
 
+31. **Retirer un préchargement de police peut faire apparaître un décalage qui existait déjà.** Le 2026-10-08,
+    sans le `preload` de la mono, un CLS de 0,0008 à 0,0012 est apparu une fois sur trois en local (Chrome
+    headless, `npm start`, ≥ 1024 px, pages internes) : une première image peinte pendant que l'analyse du HTML
+    est arrêtée sur le script d'amorçage des îlots d'Astro, au début du groupe de droite de l'en-tête (bouton de
+    thème) — groupe encore vide, donc la navigation centrée par `justify-between` se décale de 88 px quand il se
+    remplit. Le second préchargement retardait simplement la première image. **Sous réseau bridé** (150 ms,
+    1,6 Mb/s) : 0 décalage sur 30 chargements, avant comme après ; c'est un artefact de serveur local instantané.
+    → Pour juger un CLS de chargement, mesurer plusieurs passages, **dont un bridé**, et comparer au commit
+    précédent (worktree + `PORT=3001`) avant de conclure. Si le décalage devait apparaître en production, la piste
+    est l'en-tête (réserver la largeur du groupe de droite), pas le retour du préchargement.
+
+32. **Un élément animé en `left` / `top` est un décalage de mise en page, même dans une maquette qui ne bouge rien
+    d'autre.** La planche du protocole déplaçait son objet en `left` / `top` (transitions et keyframes) : CLS de
+    0,029 sur un tour, alors que la hauteur de la planche ne bougeait pas d'un pixel. Rencontré le 2026-10-08 en la
+    portant du labo (où personne ne mesure le CLS). Même chose pour un enfant qui se décale dans le flux quand son
+    voisin change de hauteur. → Déplacer avec `translate` (`left: 0; top: 0; translate: calc(X - 50%) calc(Y - 50%)`,
+    les `%` restent relatifs à l'élément), sortir du flux ce qui suit un élément qui change de taille, et mesurer :
+    `PerformanceObserver` sur `layout-shift` avec `entry.sources` donne les nœuds fautifs.
+
+33. **La police de secours a les bonnes métriques verticales, pas les bonnes largeurs de mots.** `"Inter Fallback"`
+    règle hauteur et taille (piège évité : pas de second LCP), mais un paragraphe au bord d'un retour à la ligne peut
+    en gagner une à l'arrivée d'Inter, et une largeur en `ch` (`--measure` = 70ch) change avec la police. Mesuré le
+    2026-10-08 sur `/questionnaire` **en réseau bridé seulement** (150 ms, 1,6 Mb/s ; 0 en libre) : à 390 px, le
+    chapeau passe de 8 à 9 lignes (+29 px, tout le formulaire descend : CLS 0,012) ; à 1280 px, la colonne centrée
+    `mx-auto max-w-(--measure)` change de largeur, donc de position horizontale (CLS 0,005). Les pages internes
+    alignées à gauche n'y sont pas sensibles (une `max-width` en `ch` qui change ne déplace rien), l'accueil non plus
+    (CLS 0 bridé, 5 largeurs). → Pour juger, bloquer les `.woff2` et comparer les hauteurs (`route('**/*.woff2',
+    r => r.abort())`). Un bloc **centré** ne prend pas de largeur en `ch` s'il doit rester immobile. Mesure faite
+    sous Linux (Liberation Sans en secours) : sur un autre système, la police de secours diffère, donc le retour à la
+    ligne aussi (non vérifié sur téléphone). Non corrigé, décision laissée à l'humain.
+
 ## Anti-patterns
 - Dégradés multicolores
 - Imagerie IA stock (cerveaux, robots, réseaux de neurones)
@@ -1247,4 +1682,4 @@ Tolérées, à ne pas étendre sans raison :
 - WebGL, backdrop-filter sur mobile
 - Faux témoignages, faux logos clients, chiffres inventés
 - `transition-all`, animation sans `motion-safe:` ou sans token de durée
-- Texte `--accent` sur fond `--accent-soft`
+- Texte `--accent` sur fond `--accent-soft` (AA de justesse depuis le 2026-10-08, 4,62:1 : la règle reste)

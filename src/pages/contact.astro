@@ -8,18 +8,18 @@ import ContactForm from "../components/islands/ContactForm";
 import { site, zoneIntervention } from "../config/site";
 
 const etapes = [
-  "On lit votre message et on revient vers vous par email.",
-  "Un premier échange pour comprendre vos processus et vos contraintes.",
-  "Si une automatisation a du sens, on vous propose un atelier. Sinon, on vous le dit.",
+  "Je lis votre message et je reviens vers vous par email.",
+  "Un premier échange pour comprendre votre façon de travailler et vos contraintes.",
+  "Si un assistant a du sens chez vous, je vous propose un atelier. Sinon, je vous le dis.",
 ];
 ---
 
 <Base
   title="Parlons de vos tâches répétitives | sosese"
-  description="Décrivez où votre équipe perd du temps : on vous dit franchement ce qui vaut la peine d'être automatisé."
+  description="Décrivez ce qui vous prend du temps : je vous dis franchement ce qu'un assistant peut prendre en charge, et ce qui n'en vaut pas la peine."
 >
   <PageHeader eyebrow="Contact" title="Parlons de ce qui vous fait perdre du temps">
-    Quelques informations suffisent. On vous répond franchement, y compris si l'automatisation n'est pas la bonne réponse.
+    Quelques informations suffisent. Je vous réponds franchement, y compris si un assistant n'est pas la bonne réponse.
     {/* Pour qui n'a pas encore de demande précise : le questionnaire prospects (DESIGN.md, « Questionnaire »). */}
     <Fragment slot="actions">
       <Button href="/questionnaire" size="lg">
@@ -58,7 +58,7 @@ const etapes = [
           {
             etapes.map((etape, i) => (
               <li class="flex gap-3 text-16 text-ink-muted">
-                <span class="font-mono text-14 text-accent">0{i + 1}</span>
+                <span class="text-14 text-accent tabular-nums">0{i + 1}</span>
                 <span>{etape}</span>
               </li>
             ))

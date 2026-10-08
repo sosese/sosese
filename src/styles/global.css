@@ -39,6 +39,7 @@
   --shadow-md: var(--shadow-md);
 
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --font-mono: var(--font-mono);
 
   --text-12: var(--text-12);
@@ -321,9 +322,11 @@
   bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
 }
 
+/* Inter et non plus la mono (2026-10-08) : semi-gras pour que les capitales de 12 px restent nettes. */
 @utility eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-12);
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-muted);

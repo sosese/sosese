@@ -2,6 +2,7 @@
 import DotPattern from "../ui/DotPattern.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 import TerminalDemo from "../islands/TerminalDemo";
+import ProtocoleBoutEnBout from "../ui/diagrams/ProtocoleBoutEnBout.astro";
 
 // À VALIDER : remplacer par la stack réellement utilisée (seul endroit où le jargon est autorisé, §2.1).
 const technos = [
@@ -20,7 +21,7 @@ const blocs = [
 ];
 
 // Porte de validation sur la liaison qui écrit dans le SI. La promesse elle-même est argumentée une
-// seule fois, dans la section Confiance (B8) : ici, on montre seulement où elle se situe.
+// seule fois, dans la section Confiance (B8) : ici, je montre seulement où elle se situe.
 const liaisons = ["écriture : votre accord", null];
 ---
 
@@ -95,6 +96,14 @@ const liaisons = ["écriture : votre accord", null];
           ))
         }
       </ul>
+      {/* Dans le volet, à la demande de l'humain (2026-10-08) : la planche s'adresse à qui ouvre la
+          pile technique. Pleine largeur du volet, jamais en demi-colonne : tout y est en cqw, ses plus
+          petits textes tomberaient à ~5 px (DESIGN.md). Volet fermé = planche hors écran, donc à
+          l'arrêt (IntersectionObserver). */}
+      <div class="mt-12 flex flex-col gap-4">
+        <p class="eyebrow">Le protocole, de bout en bout</p>
+        <ProtocoleBoutEnBout />
+      </div>
     </details>
   </div>
 </section>

@@ -12,7 +12,7 @@ const LINES: Line[] = [
   { kind: "ok", text: "lecture des demandes entrantes" },
   { kind: "ok", text: "génération du devis depuis votre catalogue" },
   { kind: "ok", text: "envoi pour validation" },
-  { kind: "result", text: "38 min économisées par devis" },
+  { kind: "result", text: "devis prêt, en attente de votre oui" },
 ];
 
 type Frame = { line: number; chars: number; delay: number };

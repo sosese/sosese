@@ -3,44 +3,49 @@ import SectionHeading from "../ui/SectionHeading.astro";
 
 // À VALIDER : durées, livrables et temps demandé au client (§5 ligne 4, contenu non fourni par le §9).
 const etapes = [
-  // Titres : des noms courts, pas des phrases. On survole ces trois mots ; la phrase d'action ouvre la
-  // description (2026-09-19). Durées et temps demandé au client inchangés.
+  // Titres : des noms courts, pas des phrases. Le visiteur survole ces trois mots ; la phrase d'action
+  // ouvre la description, en « je » (2026-10-08). Une phrase courte par étape (correction 1 de l'étape 5 bis) :
+  // durées, temps demandé au client et ce qu'il reçoit inchangés.
   {
     titre: "Atelier",
-    texte: "On étudie comment vous travaillez avec vos équipes sur le terrain. On identifie les tâches chronophages et les meilleurs candidats à l'automatisation IA",
+    texte: "Je regarde avec vous, sur le terrain, ce qui vous prend du temps.",
     duree: "2 jours",
-    livrable: "le déroulé de vos processus, et où ça coince",
-    tempsClient: "une demi-journée avec vos équipes",
+    livrable: "le déroulé de vos tâches, et où ça coince",
+    tempsClient: "une demi-journée, avec vous ou votre équipe",
   },
   {
     titre: "Feuille de route",
-    texte: "On vous dit ce qui mérite d'être fait. On mesure le temps gagné, le coût et la faisabilité. Vous choisissez par quoi commencer.",
+    texte: "Je chiffre chaque tâche : temps gagné, coût, faisabilité. Vous choisissez par quoi commencer.",
     duree: "1 semaine",
-    livrable: "liste chiffrée, dans l'ordre où on la ferait",
+    livrable: "liste chiffrée, dans l'ordre où je la ferais",
     tempsClient: "1 heure pour en parler",
   },
   {
     titre: "Construction",
-    texte: "On construit, et on branche. Ce que vous avez choisi, sur vos outils actuels, puis entre les mains de vos équipes. Vous voyez avancer chaque semaine.",
+    texte: "Je construis ce que vous avez choisi, dans vos logiciels actuels. Vous voyez avancer chaque semaine.",
     duree: "4 semaines",
-    livrable: "solution en service, avec mode d'emploi",
+    livrable: "assistant en service, avec mode d'emploi",
     tempsClient: "1 heure de point par semaine",
   },
 ];
 ---
 
-<section id="methode" aria-labelledby="methode-titre" class="border-y border-border bg-bg-subtle py-(--section-y)">
+<section id="methode" aria-labelledby="methode-titre" class="bg-bg-subtle py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
-    <SectionHeading id="methode-titre" eyebrow="Comment on travaille" title="Trois étapes, et vous décidez à la fin de chacune">
+    <SectionHeading id="methode-titre" eyebrow="Comment je travaille" title="Trois étapes, et vous décidez à la fin de chacune">
       Rien ne se construit avant que vous ayez vu, en face, ce que ça coûte et ce que ça rapporte.
     </SectionHeading>
 
+    {/* Dès `md`, chaque étape occupe trois rangées de la grille (pastille, texte, cadre) en sous-grille : les
+        cadres partent de la même ligne et prennent la même hauteur, quelle que soit la longueur des textes.
+        Le conteneur du texte et du cadre passe en `display: contents` pour que les deux deviennent des cases
+        de la sous-grille ; sous `md`, il reste la colonne à droite du trait vertical. */}
     <ol data-methode class="grid gap-8 md:grid-cols-3 md:gap-6">
       {
         etapes.map((etape, i) => (
-          <li class="relative flex gap-4 md:flex-col md:gap-6">
-            <div class="flex flex-col items-center md:flex-row">
-              <span data-revele class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface font-mono text-14 text-accent">
+          <li class="relative flex gap-4 md:row-span-3 md:grid md:grid-rows-subgrid md:gap-4">
+            <div class="flex flex-col items-center md:mb-2 md:flex-row">
+              <span data-revele class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface text-14 text-accent tabular-nums">
                 {i + 1}
               </span>
               {i < etapes.length - 1 && (
@@ -48,21 +53,22 @@ const etapes = [
               )}
             </div>
 
-            <div class="flex flex-1 flex-col gap-4 pb-2 md:pr-4">
-              <div data-revele class="flex flex-col gap-2">
+            <div class="flex flex-1 flex-col gap-4 pb-2 md:contents">
+              <div data-revele class="flex flex-col gap-2 md:mr-4">
                 <h3 class="text-21 font-semibold">{etape.titre}</h3>
                 <p class="text-16 text-ink-muted">{etape.texte}</p>
               </div>
-              <dl data-revele class="flex flex-col divide-y divide-border rounded-md border border-border bg-surface text-14">
-                <div class="flex flex-col gap-1 px-4 py-3">
+              {/* Sans filets entre les lignes (étape 5) : l'espace sépare, la carte regroupe. */}
+              <dl data-revele class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 text-14 shadow-sm md:mr-4 md:mb-2">
+                <div class="flex flex-col gap-1">
                   <dt class="eyebrow">Votre temps</dt>
                   <dd class="text-ink">{etape.tempsClient}</dd>
                 </div>
-                <div data-revele class="flex flex-col gap-1 px-4 py-3">
+                <div data-revele class="flex flex-col gap-1">
                   <dt class="eyebrow">Durée</dt>
-                  <dd class="font-mono text-ink">{etape.duree}</dd>
+                  <dd class="text-ink">{etape.duree}</dd>
                 </div>
-                <div data-revele class="flex flex-col gap-1 px-4 py-3">
+                <div data-revele class="flex flex-col gap-1">
                   <dt class="eyebrow">Vous recevez</dt>
                   <dd class="text-ink">{etape.livrable}</dd>
                 </div>

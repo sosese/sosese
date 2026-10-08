@@ -1,7 +1,7 @@
 ---
-question: Faut-il changer nos logiciels ?
+question: Faut-il changer de logiciel ?
 ordre: 3
 ---
-Non. Les automatisations se branchent sur les outils que vous utilisez déjà : messagerie, logiciel de gestion, tableurs, fichiers partagés. Vos équipes continuent de s'en servir normalement, sans formation particulière.
+Non. L'assistant se branche sur ce que vous utilisez déjà : messagerie, logiciel de gestion, tableurs, fichiers partagés. Vous continuez de vous en servir normalement, sans formation particulière.
 
-Si un outil ne permet aucune connexion, on vous le dit dès l'atelier, avant tout engagement.
+Si un logiciel ne se laisse pas relier, je vous le dis dès l'atelier, avant tout engagement.

@@ -72,7 +72,7 @@ export default function MobileNav({ links, cta }: Props) {
                   className="flex items-center justify-between py-4 text-28 font-medium tracking-tight transition-colors duration-(--duration-fast) ease-out hover:text-accent"
                 >
                   {link.label}
-                  <span aria-hidden="true" className="font-mono text-16 text-ink-muted">→</span>
+                  <span aria-hidden="true" className="text-16 text-ink-muted">→</span>
                 </a>
               </li>
             ))}
@@ -80,7 +80,7 @@ export default function MobileNav({ links, cta }: Props) {
           <a
             href={cta.href}
             onClick={close}
-            className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-accent px-6 text-16 font-medium text-on-accent transition-colors duration-(--duration-fast) ease-out hover:bg-accent-hover"
+            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-accent px-6 text-16 font-medium text-on-accent transition-colors duration-(--duration-fast) ease-out hover:bg-accent-hover"
           >
             {cta.label}
           </a>

@@ -1,8 +1,10 @@
 export const site = {
   name: "sosese",
-  title: "sosese — IA sur-mesure pour PME, branchée sur vos outils",
+  // Titre et description par défaut (accueil) : en « je », sans jargon (2026-10-08, DESIGN.md « Copy »).
+  // Le titre dit ce que je fais et pour qui : le h1 du hero ne dit rien seul dans un onglet.
+  title: "Un assistant sur mesure pour artisans, indépendants et petites entreprises | sosese",
   description:
-    "On part de vos logiciels actuels : l'administratif en moins, vos données enfin utiles, et rien qui parte sans votre accord.",
+    "Je suis Joris : je relie un assistant aux logiciels que vous avez déjà. Il prépare le travail, vous validez. Pour artisans, indépendants et petites entreprises.",
   // À confirmer (§9) : adresse de contact et URL LinkedIn réelles.
   email: "contact@sosese.tech",
   linkedin: null as string | null,
@@ -52,15 +54,20 @@ export const casClient = {
   nom: "L'Atelier des Sols & Fils",
   metier: "pose de sols",
   prenom: "Jason",
+  // Non fourni dans le formulaire de satisfaction : `null`, la signature dit « Jason » seul. Jamais inventé.
+  nomFamille: null as Texte,
+  // Son rôle, tel qu'il l'a donné dans le formulaire de satisfaction.
+  role: "commercial et gestionnaire",
   site: "https://www.atelier-sols-fils.com/",
   logo: "/clients/atelier-sols-fils.svg" as Texte,
   // Le logiciel de gestion sur lequel le connecteur a été construit. Seul nom de logiciel tiers cité
-  // sur le site : il dit ce qui a été fait, pas ce que nous vendons (DESIGN.md, « Cas client »).
+  // sur le site : il dit ce qui a été fait, pas ce que je vends (DESIGN.md, « Cas client »).
   // Le nom seul, jamais le logo, et aucune mention de partenariat.
   logiciel: "Extrabat" as Texte,
 };
 
-export const zoneIntervention = null as Texte;
+// Fournie par l'humain le 2026-10-08.
+export const zoneIntervention = "Je suis basé à Metz, mais j'interviens partout en France et en Europe." as Texte;
 
 export const mainNav = [
   // Dans l'ordre de la page. L'ancre reste `#cas-client` : elle est publiée depuis la v1, le libellé seul change.

@@ -9,8 +9,9 @@ type Props = {
 const { id, eyebrow, title, class: className } = Astro.props;
 ---
 
+{/* Eyebrow de section en accent (2026-10-08, étape 5) : AA sur tous les fonds (DESIGN.md, contrastes). */}
 <div class:list={["flex max-w-(--measure) flex-col gap-4", className]}>
-  <p class="eyebrow">{eyebrow}</p>
+  <p class="eyebrow text-accent">{eyebrow}</p>
   <h2 id={id} class="text-28 font-semibold tracking-tight md:text-36">{title}</h2>
   {
     Astro.slots.has("default") && (

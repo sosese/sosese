@@ -1,27 +1,29 @@
 ---
 // B8 : un argument, un seul endroit. « Aucune écriture sans votre accord » vit dans la section
-// Confiance, « votre code vous appartient » aussi, « aucun nouveau logiciel » dans le titre du hero.
-// Ne restent ici que des faits que rien d'autre ne porte — à une exception près, assumée le 2026-09-19 :
-// « rien n'est mémorisé par défaut » est le réflexe de méfiance nº 1 face à l'IA. Il est énoncé ici en
-// quatre mots (un fait) et argumenté une seule fois, dans la section Confiance.
-// Pas de « elle » ici : la solution n'est nommée qu'en tête de l'offre, plus bas. Sans antécédent, le
-// pronom laisse le lecteur chercher le sujet.
+// Confiance, « votre code vous appartient » aussi, « dans les logiciels que vous utilisez déjà » dans
+// le chapeau du hero. Ne restent ici que des faits que rien d'autre ne porte — à une exception près,
+// assumée : « accès limités au strict nécessaire » répond au réflexe de méfiance nº 1 (« il va tout
+// lire ») ; il est énoncé ici en fait, sans « IA » (2026-10-08), et argumenté une seule fois, dans la
+// section Confiance (« Il ne consulte que ce qu'il faut »).
+// Pas de « il » ici pour l'assistant : il n'est nommé qu'au chapeau du hero, et le bandeau doit se
+// lire seul. Libellé le plus long : 34 caractères (piège 12 : revérifier scrollWidth s'il s'allonge).
 const engagements = [
   "atelier sous 15 jours",
   "avis honnête sur votre situation",
   "chiffré uniquement sur vos besoins",
-  "les accès de l'IA sont maîtrisés",
-  "pas de nouvel outil à apprendre",
+  "accès limités au strict nécessaire",
+  "rien de nouveau à apprendre",
 ];
 ---
 
-<!-- Rangée fluide et non grille : des libellés mono de longueurs inégales débordent d'une colonne fixe (piège 12). -->
-<section aria-label="Nos engagements" class="border-b border-border bg-bg-subtle">
+<!-- Rangée fluide et non grille : des libellés de longueurs inégales débordent d'une colonne fixe (piège 12). -->
+<section aria-label="Mes engagements" class="bg-bg-subtle">
   <ul class="container-site flex flex-col gap-x-8 gap-y-3 py-8 sm:flex-row sm:flex-wrap">
     {
       engagements.map((item) => (
-        <li class="flex items-baseline gap-3 font-mono text-14 text-ink sm:whitespace-nowrap">
-          <span aria-hidden="true" class="text-accent">✓</span>
+        <li class="flex items-baseline gap-3 text-14 text-ink sm:whitespace-nowrap">
+          {/* Coche décorative dans une pastille douce (aria-hidden, exemptée de la règle accent sur accent-soft). */}
+          <span aria-hidden="true" class="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-12 text-accent">✓</span>
           {item}
         </li>
       ))
