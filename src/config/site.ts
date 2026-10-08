@@ -52,7 +52,7 @@ export const casClient = {
   nom: "L'Atelier des Sols & Fils",
   metier: "pose de sols",
   prenom: "Jason",
-  // Non fourni dans le formulaire de satisfaction : `null` = « à compléter », jamais inventé.
+  // Non fourni dans le formulaire de satisfaction : `null`, la signature dit « Jason » seul. Jamais inventé.
   nomFamille: null as Texte,
   // Son rôle, tel qu'il l'a donné dans le formulaire de satisfaction.
   role: "commercial et gestionnaire",

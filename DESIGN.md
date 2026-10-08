@@ -244,7 +244,7 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il dicte → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
-| Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → marqueur « à compléter » en dev, rien en production), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. Voir « Clients » |
+| Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. Voir « Clients » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 Le **hero** porte `VracEnActions` (le passage) depuis le 2026-09-19. Chaque visuel remplacé descend d'un cran dans la
@@ -873,8 +873,10 @@ démonstration sont des paragraphes, pas des titres).
   dans la citation : ce sont ses mots, exception assumée à la liste noire du jargon.
 - **Les retours privés du formulaire ne se publient pas** — ni sur le site, ni dans un commentaire de code, ni ici.
   Seules les réponses destinées au site (avis, avant / après, temps gagné, chiffres, identité) sont utilisables.
-- **Nom de famille non fourni** : `casClient.nomFamille = null`. Convention des pages vitrines : marqueur
-  `ACompleter` en dev, rien en production. Ne jamais l'inventer ni le déduire d'un outil connecté.
+- **Nom de famille non fourni** : `casClient.nomFamille = null`. La signature dit **« Jason » seul, sans marqueur
+  « à compléter »**, ni en dev ni en production (demande de l'humain, 2026-10-08) : un prénom suffit à signer un
+  témoignage. Écart assumé à la convention `ACompleter` des pages vitrines. Ne jamais l'inventer ni le déduire d'un
+  outil connecté ; s'il est fourni un jour, le renseigner dans `casClient` et il s'affiche.
 - **Rôle** : `casClient.role` = « commercial et gestionnaire », mot du client (petite entreprise, plusieurs casquettes).
 - **Anciens chiffres retirés le 2026-10-08** : devis 40 min → 2 min, fiche client 5 min → 30 s, compteurs de
   production (+50 devis, +30 rendez-vous, +40 fiches, 3 rapports d'analyse) et « mesuré au bout de 6 semaines ».

@@ -5,10 +5,9 @@
 // Règles dures :
 // - la citation est celle du client, retouchée pour l'orthographe seulement et avec son accord ;
 // - rien ne s'affiche qui ne vienne de lui (prénom, nom, rôle, entreprise, logo) ;
-// - `nomFamille` à `null` : marqueur « à compléter » en dev, rien en production — jamais un nom inventé.
+// - `nomFamille` à `null` : le prénom seul, sans marqueur (décision du 2026-10-08) — jamais un nom inventé.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import ACompleter from "./ACompleter.astro";
 
 type Props = {
   citation: string;
@@ -58,7 +57,7 @@ const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / N
   </blockquote>
 
   <figcaption class="text-16 text-ink-muted">
-    <span class="font-semibold text-ink">{prenom}{nomFamille ? ` ${nomFamille}` : import.meta.env.DEV && <Fragment> <ACompleter label="nom de famille" /></Fragment>}</span>, {role} —{" "}
+    <span class="font-semibold text-ink">{prenom}{nomFamille && ` ${nomFamille}`}</span>, {role} —{" "}
     {
       site ? (
         <a
