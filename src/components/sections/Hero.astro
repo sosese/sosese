@@ -23,10 +23,14 @@ import { cta } from "../../config/site";
         <strong class="font-medium text-ink">Il prépare le travail, vous vérifiez, puis c'est enregistré.</strong>
       </p>
       <div class="flex flex-wrap items-center gap-3 pt-2">
-        <Button href={cta.href} size="lg">
-          {cta.label}
-          <span aria-hidden="true" class="transition-transform duration-(--duration-fast) ease-out motion-safe:group-hover/button:translate-x-0.5">→</span>
-        </Button>
+        {/* Sous md, l'appel principal est le bouton flottant (MobileCta, toujours visible) : celui-ci ferait
+            doublon (demande de l'humain, étape 6). Masqué par un conteneur, Button fixant son display (piège 3). */}
+        <div class="hidden md:block">
+          <Button href={cta.href} size="lg">
+            {cta.label}
+            <span aria-hidden="true" class="transition-transform duration-(--duration-fast) ease-out motion-safe:group-hover/button:translate-x-0.5">→</span>
+          </Button>
+        </div>
         <Button href="#methode" variant="secondary" size="lg">Voir la méthode</Button>
       </div>
     </div>

@@ -690,6 +690,10 @@ Chromium, Inter chargée). Marge suffisante même avec les barres du navigateur 
 un 390 × 844). Descendre à `text-28` aurait gagné une ligne, mais le `h1` aurait eu la taille des `h2` sur téléphone (`text-28`
 sous `md`) : la hiérarchie se perdait. À remesurer si le chapeau ou l'eyebrow s'allongent. Le bouton flottant `MobileCta` reste de toute
 façon visible en permanence sous `md`.
+**Depuis l'étape 6 (2026-10-08, demande de l'humain), le hero n'a plus de bouton « Parlons-en » sous `md`** : il
+doublait le bouton flottant, visible en permanence à ces largeurs. Masqué par un conteneur `hidden md:block` (piège 3) ;
+seul « Voir la méthode » reste dans le hero. Les mesures ci-dessus valent désormais pour « Voir la méthode », à la même
+place. Mêmes bornes que `MobileCta` (`md:hidden`) : à toute largeur, un et un seul « Parlons-en » est visible.
 
 ### L'agent en action (AgentEnAction) — non utilisé, conservé
 Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
