@@ -6,11 +6,6 @@ import Questionnaire from "../components/islands/Questionnaire";
 import { site } from "../config/site";
 import { TITRE } from "../lib/questionnaire";
 
-const reperes = [
-  "Comptez environ six minutes.",
-  "Toutes les questions sont facultatives : répondez à celles qui vous parlent.",
-  "Vos réponses sont gardées sur cet appareil jusqu'à l'envoi : vous pouvez vous arrêter et revenir plus tard.",
-];
 // Page envoyée par lien direct aux prospects : hors navigation, non indexée.
 ---
 
@@ -25,28 +20,15 @@ const reperes = [
     bonne ni mauvaise réponse, et ce questionnaire ne vous engage à rien.
   </PageHeader>
 
-  <div class="container-site grid gap-8 py-(--section-y) lg:grid-cols-[2fr_1fr] lg:gap-12">
-    <aside class="flex flex-col gap-4 lg:col-start-2 lg:row-start-1" aria-label="Avant de commencer">
-      <p class="eyebrow">Avant de commencer</p>
-      <ul class="flex flex-col gap-4">
-        {
-          reperes.map((repere, i) => (
-            <li class="flex gap-3 text-16 text-ink-muted">
-              <span class="font-mono text-14 text-accent">0{i + 1}</span>
-              <span>{repere}</span>
-            </li>
-          ))
-        }
-      </ul>
+  <div class="container-site py-(--section-y)">
+    <div class="mx-auto flex max-w-(--measure) flex-col gap-6">
+      <Card padding="lg">
+        <Questionnaire client:idle fallbackEmail={site.email} />
+      </Card>
       <p class="text-14 text-ink-muted">
-        Vos réponses ne sont lues que par moi, Joris Chamvoux (sosese), jamais revendues ni publiées.
+        Vos réponses ne sont lues que par moi, Joris Chamvoux, jamais revendues ni publiées.
         <a href="/confidentialite" class="text-accent underline underline-offset-4 hover:text-accent-hover">En savoir plus</a>.
       </p>
-    </aside>
-
-    {/* Après l'encart dans le HTML (lu en premier sur mobile), à gauche sur grand écran. */}
-    <Card padding="lg" class="lg:col-start-1 lg:row-start-1">
-      <Questionnaire client:idle fallbackEmail={site.email} />
-    </Card>
+    </div>
   </div>
 </Base>

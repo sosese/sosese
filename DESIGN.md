@@ -281,8 +281,11 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   page en haut du formulaire. Pas au premier rendu.
 - **Brouillon** en `localStorage` (clé `questionnaire-brouillon` : étape + réponses), relu après hydratation,
   effacé après envoi réussi. Mentionné dans la politique de confidentialité, comme le thème.
-- Mise en page : l'encart « Avant de commencer » est **avant** la carte dans le HTML (lu d'abord sur mobile) et
-  passe à droite ≥ lg (`lg:col-start-2 lg:row-start-1`).
+- Mise en page (2026-10-08, demande explicite) : **plus d'encart « Avant de commencer »** (durée, questions
+  facultatives, brouillon gardé sur l'appareil) — la page va droit au formulaire. Une seule colonne centrée,
+  `mx-auto max-w-(--measure)`, aux deux tailles d'écran. Seule la mention de confidentialité survit, en `text-14`
+  **sous** la carte, avec le lien vers `/confidentialite` : c'est la seule information de l'encart qui protégeait
+  le prospect.
 - Copy : le questionnaire parle à la première personne (« je »), contrairement au reste du site (« nous ») — ton
   conservé de la version d'origine, à revoir avec la pertinence des questions.
 
