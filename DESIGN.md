@@ -1287,7 +1287,8 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   `h1` « Vous me parlez de votre métier… » ne dit rien seul dans un onglet ou un résultat de recherche ; jusque-là
   le titre reprenait l'ancien `h1`), descriptions en « je » (Joris nommé sur l'accueil
   et `/a-propos`), sans « IA » ni « PME ». Titre et description par défaut dans `site.ts` (`site.title`,
-  `site.description`). Les pages légales gardent leur description descriptive à la troisième personne.
+  `site.description`) : **ce sont ceux de l'accueil**, qui ne les répète pas (`<Base>` sans `title`, étape 6 ; le
+  titre par défaut reprenait jusque-là l'ancien `h1`). Les pages légales gardent leur description descriptive à la troisième personne.
 - **Mêmes libellés de bouton partout** : l'appel principal vient de `cta.label` (`site.ts`, « Parlons-en ») pour
   l'en-tête, le hero, le bouton flottant, le menu mobile, le CTA final et la 404 — ne jamais l'écrire en dur.
 - **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. La carte de Confiance

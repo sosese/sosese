@@ -1,7 +1,8 @@
 export const site = {
   name: "sosese",
   // Titre et description par défaut (accueil) : en « je », sans jargon (2026-10-08, DESIGN.md « Copy »).
-  title: "sosese — Moins de temps à recopier, plus de temps pour votre métier",
+  // Le titre dit ce que je fais et pour qui : le h1 du hero ne dit rien seul dans un onglet.
+  title: "Un assistant sur mesure pour artisans, indépendants et petites entreprises | sosese",
   description:
     "Je suis Joris : je relie un assistant aux logiciels que vous avez déjà. Il prépare le travail, vous validez. Pour artisans, indépendants et petites entreprises.",
   // À confirmer (§9) : adresse de contact et URL LinkedIn réelles.
