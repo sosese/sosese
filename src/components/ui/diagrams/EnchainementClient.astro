@@ -1,6 +1,6 @@
 ---
 // Démonstration du cas client (registre R2), allégée le 2026-10-08 (plan « site moins geek », étape 3) :
-// un devis en trois temps — il dicte, le devis se prépare, il vérifie et c'est enregistré. Jouée en boucle,
+// un devis en trois temps — il demande le devis, le devis se prépare, il vérifie et c'est enregistré. Jouée en boucle,
 // APRÈS le témoignage : elle montre le principe, les chiffres du client restent au-dessus.
 //
 // Règles dures (DESIGN.md, « Le cas ») :
@@ -53,7 +53,7 @@ const fondu = "transition-opacity duration-(--duration-slow) ease-out";
   <ol class="grid gap-3 lg:grid-cols-3">
     <li data-cc-etape class={carte}>
       <p class="flex items-baseline gap-2 text-16 font-semibold">
-        <span class="text-14 font-normal text-accent tabular-nums">1</span> Il dicte
+        <span class="text-14 font-normal text-accent tabular-nums">1</span> Il demande le devis
       </p>
       <p data-cc-pas class={bulle}>{dictee}</p>
     </li>

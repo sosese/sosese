@@ -243,7 +243,7 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
-| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il dicte → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
+| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il demande le devis → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
 | Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. Voir « Clients » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
@@ -847,7 +847,7 @@ l'étape 4 du plan (incohérence temporaire acceptée).
 Ordre de lecture, pensé pour 10 secondes :
 1. **Titre `h2` qui résume seul** : « Ce qu'en dit {prénom}, chez {entreprise} » (valeurs de `casClient`), puis un
    chapeau en « je » : qui ils sont (pose de sols, Metz – Luxembourg, 4 à 9 personnes) et ce que j'ai construit, en
-   mots simples (« il dicte, le devis se prépare dans le logiciel, il vérifie, c'est enregistré »).
+   mots simples (« il demande le devis, le devis se prépare dans le logiciel, il vérifie, c'est enregistré »).
 2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
    `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
    gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, sans ombre.
@@ -901,7 +901,7 @@ démonstration sont des paragraphes, pas des titres).
 - **Un seul lien vers le site du client** : le nom de l'entreprise dans la signature (`↗` en `aria-hidden`). Le
   logo est décoratif (`alt=""`). (Avant le 2026-10-08 : un `Badge href` à côté du logo.)
 - **`EnchainementClient`, allégé le 2026-10-08** (il montrait fiche client → devis → intervention → analyse,
-  avec « L'IA » dans le texte) : **trois temps sur un seul devis** — 1 « Il dicte » (la bulle), 2 « Le devis se
+  avec « L'IA » dans le texte) : **trois temps sur un seul devis** — 1 « Il demande le devis » (la bulle ; « il dicte » jusqu'au 2026-10-08, remplacé à la demande de l'humain : le formulaire du client ne parle pas de dictée), 2 « Le devis se
   prépare » (quatre lignes, montants en `text-12`, total en `--ink` semi-gras, **jamais en accent**), 3 « Il
   vérifie, c'est enregistré » (sa réponse, la pastille « oui », « devis enregistré dans le logiciel »).
   Eyebrow « Un devis, en trois temps ». La racine est une `<figure>`.
