@@ -19,6 +19,9 @@
 // final (temps 13) ; scène en aria-hidden, transcription en sr-only ; aucun libellé dans un SVG
 // (piège 20) ; couleurs et rayons en tokens, tailles en cqw ; un seul aplat (« Valider »), au
 // dernier temps ; aucune marque, aucun domaine, aucun chiffre inventé.
+// Sous lg, la planche est masquée (étape 6, décision de l'humain : tout en cqw, son plus petit
+// texte tombe à ~3 px à 360 px) et une phrase renvoie au grand écran. La transcription reste
+// lisible à toutes les largeurs ; le script observe le bloc masqué, donc rien ne tourne sous lg.
 //
 // Géométrie — repère = le haut du plan, tout en cqw. ATTENTION : 1 cqw = 1 % de la BOÎTE DE
 // CONTENU de la scène. Le plan fait 100 de large et 94,4 de haut.
@@ -81,205 +84,209 @@ const coche = "m3 8.4 3.4 3.4L13 5";
     la boucle pour le sous-objectif suivant, avec un autre outil, avant la synthèse finale.
   </p>
 
-  <div class="flux" data-scene data-etape="13" aria-hidden="true">
-    <p class="th-titre">
-      <span class="t">Une demande entre en langage naturel</span>
-      <span class="t">Le skill la décompose en sous-objectifs</span>
-      <span class="t">Le moteur choisit l'outil du premier objectif</span>
-      <span class="t">Le client MCP sérialise l'appel</span>
-      <span class="t">Le serveur résout l'outil dans son registre</span>
-      <span class="t">Il signe l'appel avec son jeton</span>
-      <span class="t">Un outil, plusieurs routes de l'API</span>
-      <span class="t">Les routes répondent, en vrac</span>
-      <span class="t">Le serveur normalise le retour</span>
-      <span class="t">Le skill évalue ce retour</span>
-      <span class="t">Objectif suivant : un autre outil</span>
-      <span class="t">Le skill synthétise l'ensemble</span>
-      <span class="t t--vif">La réponse repart en langage naturel</span>
-    </p>
+  <p class="text-14 text-ink-muted lg:hidden">Le schéma détaillé s'affiche sur un écran plus large.</p>
 
-    <div class="plan">
-      <!-- ———————————————— C1 · chez le client ———————————————— -->
-      <div class="boite boite--client">
-        <span class="tete">
-          <b>Chez le client</b>
-          <i>son poste, son réseau</i>
-        </span>
+  <div class="hidden flex-col gap-3 lg:flex" data-visuel>
+    <div class="flux" data-scene data-etape="13" aria-hidden="true">
+      <p class="th-titre">
+        <span class="t">Une demande entre en langage naturel</span>
+        <span class="t">Le skill la décompose en sous-objectifs</span>
+        <span class="t">Le moteur choisit l'outil du premier objectif</span>
+        <span class="t">Le client MCP sérialise l'appel</span>
+        <span class="t">Le serveur résout l'outil dans son registre</span>
+        <span class="t">Il signe l'appel avec son jeton</span>
+        <span class="t">Un outil, plusieurs routes de l'API</span>
+        <span class="t">Les routes répondent, en vrac</span>
+        <span class="t">Le serveur normalise le retour</span>
+        <span class="t">Le skill évalue ce retour</span>
+        <span class="t">Objectif suivant : un autre outil</span>
+        <span class="t">Le skill synthétise l'ensemble</span>
+        <span class="t t--vif">La réponse repart en langage naturel</span>
+      </p>
 
-        <div class="bloc bloc--demande">
-          <span class="rubrique">Demande<b class="jauge jauge--simple">1 outil suffit</b></span>
-          <span class="face face--avant">une intention, en langage naturel</span>
-          <span class="face face--apres">
-            <svg class="coche" viewBox="0 0 16 16" fill="none">
-              <path d={coche} stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span>réponse consolidée, prête à valider</span>
-            <span class="valider">Valider</span>
+      <div class="plan">
+        <!-- ———————————————— C1 · chez le client ———————————————— -->
+        <div class="boite boite--client">
+          <span class="tete">
+            <b>Chez le client</b>
+            <i>son poste, son réseau</i>
           </span>
-        </div>
 
-        <div class="bloc bloc--llm">
-          <span class="rubrique">Modèle de langage<b class="jauge">hôte</b></span>
-          <div class="skill">
-            <span class="skill-tete">
-              Skill
-              <b class="compteur"><em class="c1">objectif 1 / n</em><em class="c2">objectif 2 / n</em></b>
+          <div class="bloc bloc--demande">
+            <span class="rubrique">Demande<b class="jauge jauge--simple">1 outil suffit</b></span>
+            <span class="face face--avant">une intention, en langage naturel</span>
+            <span class="face face--apres">
+              <svg class="coche" viewBox="0 0 16 16" fill="none">
+                <path d={coche} stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>réponse consolidée, prête à valider</span>
+              <span class="valider">Valider</span>
             </span>
-            <i class="skill-sous">chargé dans le contexte du LLM, jamais sur le serveur</i>
-            {
-              roles.map(({ n, texte }) => (
-                <span class:list={["role", `role--${n}`]}>
-                  <em>{n}</em>
-                  {texte}
-                </span>
-              ))
-            }
-            <span class="verdict">
-              <i class="verdict--ok">suffisant → objectif suivant</i>
-              <i class="verdict--ko">insuffisant → on refait autrement</i>
-            </span>
+          </div>
+
+          <div class="bloc bloc--llm">
+            <span class="rubrique">Modèle de langage<b class="jauge">hôte</b></span>
+            <div class="skill">
+              <span class="skill-tete">
+                Skill
+                <b class="compteur"><em class="c1">objectif 1 / n</em><em class="c2">objectif 2 / n</em></b>
+              </span>
+              <i class="skill-sous">chargé dans le contexte du LLM, jamais sur le serveur</i>
+              {
+                roles.map(({ n, texte }) => (
+                  <span class:list={["role", `role--${n}`]}>
+                    <em>{n}</em>
+                    {texte}
+                  </span>
+                ))
+              }
+              <span class="verdict">
+                <i class="verdict--ok">suffisant → objectif suivant</i>
+                <i class="verdict--ko">insuffisant → on refait autrement</i>
+              </span>
+            </div>
+          </div>
+
+          <div class="bloc bloc--client">
+            <span class="rubrique">Client MCP<b class="jauge">sérialise</b></span>
           </div>
         </div>
 
-        <div class="bloc bloc--client">
-          <span class="rubrique">Client MCP<b class="jauge">sérialise</b></span>
-        </div>
-      </div>
-
-      <!-- ———————————————— C2 · sur le serveur ———————————————— -->
-      <div class="boite boite--serveur">
-        <span class="tete">
-          <b>Sur le serveur MCP</b>
-          <i>hébergé et supervisé</i>
-        </span>
-
-        <div class="bloc bloc--resout">
-          <span class="rubrique">Résolution<b class="jauge">registre</b></span>
-          <span class="ligne">un outil = une intention métier exposée</span>
-        </div>
-
-        <div class="bloc bloc--auth">
-          <span class="rubrique">
-            Authentification
-            <b class="jauge jauge--cle">
-              <svg viewBox="-9 -9 18 18" fill="none">
-                <path d={cadenas} stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
-              </svg>
-              jeton
-            </b>
+        <!-- ———————————————— C2 · sur le serveur ———————————————— -->
+        <div class="boite boite--serveur">
+          <span class="tete">
+            <b>Sur le serveur MCP</b>
+            <i>hébergé et supervisé</i>
           </span>
-          <span class="ligne">signe l'aller, vérifie le retour</span>
-          <span class="ligne ligne--sec">le jeton ne quitte jamais le serveur</span>
-        </div>
 
-        <div class="bloc bloc--adapte">
-          <span class="rubrique">Adaptateur<b class="jauge">n routes</b></span>
-          <span class="ligne">traduit l'outil en appels natifs de l'API</span>
-          <span class="ligne ligne--sec">enchaîne, réessaie, agrège</span>
-        </div>
+          <div class="bloc bloc--resout">
+            <span class="rubrique">Résolution<b class="jauge">registre</b></span>
+            <span class="ligne">un outil = une intention métier exposée</span>
+          </div>
 
-        <div class="bloc bloc--norme">
-          <span class="rubrique">Normalisation<b class="jauge">format standard</b></span>
-          <span class="ligne">ne remonte que ce que l'outil promet</span>
-        </div>
-      </div>
-
-      <!-- ———————————————— C3 · chez l'éditeur ———————————————— -->
-      <div class="boite boite--editeur">
-        <span class="tete">
-          <b>Chez l'éditeur</b>
-          <i>l'API du logiciel</i>
-        </span>
-
-        <span class="api">API du logiciel</span>
-
-        {
-          routes.map(({ n, texte }) => (
-            <div class:list={["bloc", "bloc--route", `route--${n}`]}>
-              <span class="rubrique">route<b class="jauge">{texte}</b></span>
-            </div>
-          ))
-        }
-
-        <span class="note">chaque appel porte le jeton · rien n'entre sans lui</span>
-      </div>
-
-      <!-- ———————————————— le circuit ———————————————— -->
-      <i class="fil f-p1"></i>
-      <i class="fil f-p2"></i>
-      <i class="fil f-sortie"></i>
-      <i class="fil f-canal"></i>
-      <i class="fil f-entree"></i>
-      <i class="fil f-q1"></i>
-      <i class="fil f-q2"></i>
-      <i class="fil f-retour"></i>
-      <i class="fil f-rentre"></i>
-
-      <i class="fil f-ev0"></i>
-      <i class="fil f-eh-a"></i>
-      <i class="fil f-eh-b"></i>
-      <i class="fil f-eh-c"></i>
-      <i class="fil f-rh-a"></i>
-      <i class="fil f-rh-b"></i>
-      <i class="fil f-rh-c"></i>
-      <i class="fil f-rq"></i>
-      <i class="fil f-ev-a"></i>
-      <i class="fil f-ev-b"></i>
-      <i class="fil f-ev-c"></i>
-      <i class="fil f-er-a"></i>
-      <i class="fil f-er-b"></i>
-      <i class="fil f-er-c"></i>
-
-      <!-- L'objet. Huit fragments dans le DOM ; sa nature décide combien on en montre, leur forme
-           et leur écart. Le nom court est posé sous lui, dans la gouttière. -->
-      <i class="objet">
-        <span class="frags"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-        <span class="sceau">
-          <svg viewBox="-9 -9 18 18" fill="none">
-            <path d={cadenas} stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
-          </svg>
-        </span>
-        <span class="nom">{natures.map(({ court }) => <b>{court}</b>)}</span>
-      </i>
-
-      <!-- L'éclat : l'objet se scinde en autant de morceaux qu'il y a de routes. -->
-      <i class="eclat eclat--a"></i>
-      <i class="eclat eclat--b"></i>
-      <i class="eclat eclat--c"></i>
-
-      <!-- ———————————————— le bandeau des natures ———————————————— -->
-      <div class="bandeau">
-        {
-          natures.map(({ long, f, forme }, i) => (
-            <span class:list={["nature", `n${i}`, `forme--${forme}`]}>
-              <i class="vignette">
-                {Array.from({ length: Math.min(f, 5) }).map(() => <s />)}
-              </i>
-              <em>{long}</em>
+          <div class="bloc bloc--auth">
+            <span class="rubrique">
+              Authentification
+              <b class="jauge jauge--cle">
+                <svg viewBox="-9 -9 18 18" fill="none">
+                  <path d={cadenas} stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" />
+                </svg>
+                jeton
+              </b>
             </span>
-          ))
-        }
+            <span class="ligne">signe l'aller, vérifie le retour</span>
+            <span class="ligne ligne--sec">le jeton ne quitte jamais le serveur</span>
+          </div>
+
+          <div class="bloc bloc--adapte">
+            <span class="rubrique">Adaptateur<b class="jauge">n routes</b></span>
+            <span class="ligne">traduit l'outil en appels natifs de l'API</span>
+            <span class="ligne ligne--sec">enchaîne, réessaie, agrège</span>
+          </div>
+
+          <div class="bloc bloc--norme">
+            <span class="rubrique">Normalisation<b class="jauge">format standard</b></span>
+            <span class="ligne">ne remonte que ce que l'outil promet</span>
+          </div>
+        </div>
+
+        <!-- ———————————————— C3 · chez l'éditeur ———————————————— -->
+        <div class="boite boite--editeur">
+          <span class="tete">
+            <b>Chez l'éditeur</b>
+            <i>l'API du logiciel</i>
+          </span>
+
+          <span class="api">API du logiciel</span>
+
+          {
+            routes.map(({ n, texte }) => (
+              <div class:list={["bloc", "bloc--route", `route--${n}`]}>
+                <span class="rubrique">route<b class="jauge">{texte}</b></span>
+              </div>
+            ))
+          }
+
+          <span class="note">chaque appel porte le jeton · rien n'entre sans lui</span>
+        </div>
+
+        <!-- ———————————————— le circuit ———————————————— -->
+        <i class="fil f-p1"></i>
+        <i class="fil f-p2"></i>
+        <i class="fil f-sortie"></i>
+        <i class="fil f-canal"></i>
+        <i class="fil f-entree"></i>
+        <i class="fil f-q1"></i>
+        <i class="fil f-q2"></i>
+        <i class="fil f-retour"></i>
+        <i class="fil f-rentre"></i>
+
+        <i class="fil f-ev0"></i>
+        <i class="fil f-eh-a"></i>
+        <i class="fil f-eh-b"></i>
+        <i class="fil f-eh-c"></i>
+        <i class="fil f-rh-a"></i>
+        <i class="fil f-rh-b"></i>
+        <i class="fil f-rh-c"></i>
+        <i class="fil f-rq"></i>
+        <i class="fil f-ev-a"></i>
+        <i class="fil f-ev-b"></i>
+        <i class="fil f-ev-c"></i>
+        <i class="fil f-er-a"></i>
+        <i class="fil f-er-b"></i>
+        <i class="fil f-er-c"></i>
+
+        <!-- L'objet. Huit fragments dans le DOM ; sa nature décide combien on en montre, leur forme
+             et leur écart. Le nom court est posé sous lui, dans la gouttière. -->
+        <i class="objet">
+          <span class="frags"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="sceau">
+            <svg viewBox="-9 -9 18 18" fill="none">
+              <path d={cadenas} stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="nom">{natures.map(({ court }) => <b>{court}</b>)}</span>
+        </i>
+
+        <!-- L'éclat : l'objet se scinde en autant de morceaux qu'il y a de routes. -->
+        <i class="eclat eclat--a"></i>
+        <i class="eclat eclat--b"></i>
+        <i class="eclat eclat--c"></i>
+
+        <!-- ———————————————— le bandeau des natures ———————————————— -->
+        <div class="bandeau">
+          {
+            natures.map(({ long, f, forme }, i) => (
+              <span class:list={["nature", `n${i}`, `forme--${forme}`]}>
+                <i class="vignette">
+                  {Array.from({ length: Math.min(f, 5) }).map(() => <s />)}
+                </i>
+                <em>{long}</em>
+              </span>
+            ))
+          }
+        </div>
       </div>
     </div>
-  </div>
 
-  {/* Pause obligatoire : le déroulé boucle et dure ~39 s (WCAG 2.2.2). Même pastille bordée que
-      RotationEcrans, hors de la scène (qui est en aria-hidden). Masquée sous mouvement réduit, où
-      rien ne bouge. `aria-pressed` porte l'état. Ne jamais la retirer. */}
-  <div class="flex justify-center">
-    <button
-      type="button"
-      data-pause
-      aria-pressed="false"
-      aria-label="Mettre l'animation en pause"
-      title="Mettre l'animation en pause"
-      class="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
-    >
-      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-2.5" fill="currentColor">
-        <path data-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
-        <path data-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
-      </svg>
-    </button>
+    {/* Pause obligatoire : le déroulé boucle et dure ~39 s (WCAG 2.2.2). Même pastille bordée que
+        RotationEcrans, hors de la scène (qui est en aria-hidden). Masquée sous mouvement réduit, où
+        rien ne bouge. `aria-pressed` porte l'état. Ne jamais la retirer. */}
+    <div class="flex justify-center">
+      <button
+        type="button"
+        data-pause
+        aria-pressed="false"
+        aria-label="Mettre l'animation en pause"
+        title="Mettre l'animation en pause"
+        class="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
+      >
+        <svg aria-hidden="true" viewBox="0 0 16 16" class="size-2.5" fill="currentColor">
+          <path data-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
+          <path data-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
+        </svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1139,7 +1146,8 @@ const coche = "m3 8.4 3.4 3.4L13 5";
   (function () {
     var racine = document.querySelector<HTMLElement>("[data-protocole]");
     var scene = racine?.querySelector<HTMLElement>("[data-scene]");
-    if (!racine || !scene) return;
+    var visuel = racine?.querySelector<HTMLElement>("[data-visuel]");
+    if (!racine || !scene || !visuel) return;
     var bouton = racine.querySelector<HTMLElement>("[data-pause]");
     var iconePause = racine.querySelector("[data-icone-pause]");
     var iconeLecture = racine.querySelector("[data-icone-lecture]");
@@ -1256,7 +1264,9 @@ const coche = "m3 8.4 3.4 3.4L13 5";
     reduit.addEventListener("change", demarre);
 
     // Hors de l'écran, rien ne tourne : ni minuteur, ni animation. Au retour, on reprend là où on
-    // s'était arrêté — sauf si la pause vient du bouton, qui, lui, décide.
+    // s'était arrêté — sauf si la pause vient du bouton, qui, lui, décide. On observe le bloc de la
+    // planche et non la racine : sous lg, il est en display: none (jamais « dans la vue »), alors
+    // que la phrase de remplacement, elle, entre dans l'écran.
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(
         function (entrees) {
@@ -1265,7 +1275,7 @@ const coche = "m3 8.4 3.4 3.4L13 5";
           else suspend();
         },
         { threshold: 0.2 },
-      ).observe(racine);
+      ).observe(visuel);
     }
 
     demarre();

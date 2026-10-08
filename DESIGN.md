@@ -290,7 +290,7 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et so
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il demande le devis → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
 | Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. **Relief depuis le 2026-10-08 (étape 5 bis)** : filet d'accent vertical à gauche de la citation (`w-1 rounded-full bg-accent`, `aria-hidden`) et guillemets de la citation en `--accent`. Voir « Clients » |
-| ProtocoleBoutEnBout | `ui/diagrams/ProtocoleBoutEnBout.astro` | statique + script natif — planche « Le protocole, de bout en bout », dans le volet « La pile technique en détail » de **« Sous le capot »** depuis le 2026-10-08 (étape 5 ter) : trois conteneurs (client, serveur MCP, éditeur), l'objet qui change de forme à chaque traversée, treize temps en boucle (~39 s), bouton pause. Portée de `src/labo/S3Protocole.astro`, sans rien en importer. Voir « Le protocole, de bout en bout » |
+| ProtocoleBoutEnBout | `ui/diagrams/ProtocoleBoutEnBout.astro` | statique + script natif — planche « Le protocole, de bout en bout », dans le volet « La pile technique en détail » de **« Sous le capot »** depuis le 2026-10-08 (étape 5 ter) : trois conteneurs (client, serveur MCP, éditeur), l'objet qui change de forme à chaque traversée, treize temps en boucle (~39 s), bouton pause. Masquée sous `lg` (une phrase la remplace, transcription toujours lue). Portée de `src/labo/S3Protocole.astro`, sans rien en importer. Voir « Le protocole, de bout en bout » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 ### Cartes (2026-10-08, plan « site moins geek », étape 5)
@@ -954,8 +954,8 @@ avant redéploiement) : le terminal reprend toute la largeur. **Ne pas remettre 
 marqueur — un trou silencieux se lit comme un oubli.
 **Le second visuel est arrivé le 2026-10-08 sans grille** (étape 5 ter) : la planche du protocole est carrée et
 tout y est en `cqw` ; en demi-colonne à 1280 px, son plus petit texte tomberait à ~5 px. Elle est **pleine largeur,
-dans le volet « La pile technique en détail »** (demande de l'humain), sous la grille des technologies. Le terminal
-reste seul et pleine largeur. Voir « Le protocole, de bout en bout ».
+dans le volet « La pile technique en détail »** (demande de l'humain), sous la grille des technologies, et
+**masquée sous `lg`** (étape 6). Le terminal reste seul et pleine largeur. Voir « Le protocole, de bout en bout ».
 
 ### Le protocole, de bout en bout (ProtocoleBoutEnBout)
 Ajouté le 2026-10-08 (plan « site moins geek », étape 5 ter), porté de la planche du labo `S3Protocole` (le labo
@@ -983,8 +983,14 @@ n routes, normalisation), chez l'éditeur (l'API et ses routes) — et ce que ch
   barres de fragments, qui changent de hauteur et d'écart à l'intérieur de l'objet. Hauteur constante (1088 px).
 - **Taille de texte : la planche n'est lisible qu'à partir de ~1024 px.** Tout est en `cqw` : plus petit texte
   (« hôte », 1,05 cqw) mesuré à **3,1 px à 360 px**, 3,4 à 390, 5,8 à 640, 9,3 à 1024, **10,5 à 1280** ; le titre de
-  temps fait 6,4 px à 360. Aucun débordement (`scrollWidth` = largeur) de 360 à 1280 px. Une version mobile
-  (planche verticale, ou défilement horizontal interne) reste à décider : non faite, signalée.
+  temps fait 6,4 px à 360.
+- **Masquée sous `lg`** (2026-10-08, étape 6, décision de l'humain) : la planche et son bouton pause sont dans un
+  bloc `hidden lg:flex` (`data-visuel`) ; à leur place, sous `lg`, une phrase `text-14 text-ink-muted` (« Le schéma
+  détaillé s'affiche sur un écran plus large. »). L'eyebrow du volet reste. La **transcription `sr-only` est hors du
+  bloc masqué** : lue à toutes les largeurs. L'`IntersectionObserver` observe **le bloc masqué, pas la racine** : en
+  `display: none`, il n'est jamais « dans la vue », donc sous `lg` le déroulé reste suspendu (la phrase de
+  remplacement, elle, entre dans l'écran — observer la racine aurait fait tourner la boucle pour rien). Passer la
+  fenêtre au-dessus de `lg` le relance. Une version mobile (planche verticale) n'est pas prévue.
 - **Carrée** (`aspect-ratio: 1 / 1`, comme la planche du labo, et non 4/5 comme les autres planches du labo) : la
   boîte de contenu fait exactement 100 × 100 cqw (titre 5,6 + plan 94,4), à 1280 px la planche fait 1088 × 1088 px.
 - **Section invert** : la planche porte son propre fond `--surface` et sa bordure, mais **pas** `section-invert`
