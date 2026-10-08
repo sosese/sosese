@@ -138,7 +138,7 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
 - Pas d'italique chargée. En ajouter une = nouveau fichier + `@font-face`, pas de faux italique.
 - Titres `h1`–`h4` : `line-height: var(--leading-tight)`, `letter-spacing: -0.02em`, `text-wrap: balance`.
 - **Titres `h1` et `h2` en serif** (2026-10-08, plan « site moins geek », étape 2) : token `--font-display`
-  (`Georgia, "Times New Roman", serif`, utilitaire `font-display`), posé par **une règle de base** dans
+  (`Georgia, "Noto Serif", serif`, utilitaire `font-display`), posé par **une règle de base** dans
   `global.css` (`h1, h2 { font-family; font-weight: 400 }`) — la solution la plus simple : tout `h1` / `h2`, y
   compris ceux de `prose-site` et de l'îlot `Questionnaire`, est en serif sans classe à ajouter. Les `h3` restent
   en Inter semi-gras.
@@ -147,11 +147,17 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
     titres serif en 400 ; la hiérarchie vient de la famille et de la taille. **Ne pas remettre `font-semibold` sur
     un `h1` / `h2`** : une classe utilitaire bat la règle de base. `prose-site h2` passe aussi en 400.
   - **`letter-spacing` : -0,02em conservé, `tracking-tight` retiré** des `h1` / `h2`. Georgia est une serif large :
-    un léger resserrement la tient aux grandes tailles ; le -0,055em de la V7 colle les lettres de
-    « Times New Roman » / Liberation Serif, les replis réels sur Linux et Android, où Georgia n'existe pas.
-  - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger. Le `h1` (élément LCP probable)
-    ne dépend plus du chargement d'Inter. Revers : le rendu varie selon le système (Georgia sur macOS / Windows /
-    iOS, Liberation Serif ou Noto Serif sous Linux, Noto Serif sous Android) — accepté, la pile reste serif.
+    un léger resserrement la tient aux grandes tailles ; le -0,055em de la V7 colle les lettres de Noto Serif,
+    le repli réel sur Android et Linux, où Georgia n'existe pas.
+  - **Pile `Georgia, "Noto Serif", serif`** (correction du 2026-10-08, au lieu de `Georgia, "Times New Roman",
+    serif`). Ce que voit chaque système : **Georgia** sur Windows, macOS et iOS ; **Noto Serif** sur Android (c'est
+    sa serif) et sur Linux quand elle est installée ; la **serif générique** du système sinon. Ne pas remettre
+    « Times New Roman » en second : sous Linux, c'est un alias de Liberation Serif (copie métrique de Times, rendu
+    « document Word ») qui passait avant Noto Serif ; Noto Serif est bien plus proche de Georgia (œil large,
+    empattements nets).
+  - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger, aucun préchargement. Le `h1`
+    (élément LCP probable) ne dépend plus du chargement d'Inter. Revers : le rendu varie selon le système (Georgia
+    ou Noto Serif, largeurs proches mais pas identiques) — accepté, la pile reste serif.
 - Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : **Inter semi-gras (600)**, 12px, capitales
   espacées de 0,08em, `--ink-muted`). Mono jusqu'au 2026-10-08. Le semi-gras est celui de la V7 : en Inter
   normal, des capitales de 12 px paraissent grêles. Contraste inchangé (`ink-muted` ≥ 5,35:1 sur tous les fonds).
