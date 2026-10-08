@@ -266,6 +266,8 @@ un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-
 ### Pages internes
 `/a-propos`, `/contact`, `/questionnaire` (`noindex`, hors navigation), `/mentions-legales`, `/confidentialite`, `404` (`noindex`, produit `404.html` pour le
 fallback Fastify du §6.4). Structure : `PageHeader` puis contenu dans `container-site` + `py-(--section-y)`.
+La 404 porte un eyebrow « Erreur 404 » au-dessus de son `h1` (plus de « $ cd page-demandee », 2026-10-08 : clin
+d'œil de terminal hors « Sous le capot »).
 Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HTML simple dedans (`h2`, `h3`, `p`,
 `ul`, `dl`, `a`, `strong`) — pas de classes sur chaque balise.
 
@@ -332,8 +334,10 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   « données » y est une exception assumée à la liste noire du jargon (sens courant de vie privée). Ne pas redire
   sur la page que les questions sont facultatives ni que le brouillon est gardé sur l'appareil (décision du même
   jour) ; la durée (« six minutes ») reste dans la meta description et sur `/contact`.
-- Copy : le questionnaire parle à la première personne (« je »), contrairement au reste du site (« nous ») — ton
-  conservé de la version d'origine, à revoir avec la pertinence des questions.
+- Copy : le questionnaire parle à la première personne (« je »), comme tout le site depuis le 2026-10-08. Le chapeau
+  s'adresse aux « artisans, indépendants et petites entreprises ». Les **questions** de `shared/questionnaire.json`
+  (dont « IA » et « assistant IA ») n'ont pas été reformulées à l'étape 4 : ce sont des questions d'étude, les
+  changer romprait la comparaison des réponses — à revoir avec la pertinence des questions.
 
 ### Serveur (`server/index.mjs`)
 | Route / comportement | Détail |
@@ -1133,8 +1137,9 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   plus grandes — celles-ci restent accueillies, mais le site ne leur parle pas en priorité. Conséquences pour
   la rédaction : vocabulaire du dirigeant qui fait lui-même, pas du responsable informatique ; pas de
   « service IT », « conduite du changement » ni « gouvernance » ; les chiffres d'exemple sont à l'échelle
-  d'une petite structure. `src/pages/a-propos.astro` annonce encore « de 15 à 150 personnes » : **écart connu**,
-  corrigé dans la passe de réécriture de la v2 (item B1 de `REVUE-V2.md`), pas avant.
+  d'une petite structure. **Précisée le 2026-10-08** (plan « site moins geek », étape 4) : artisans, indépendants,
+  petites entreprises — le site dit que c'est pour tout le monde. L'écart « de 15 à 150 personnes » de
+  `/a-propos` est corrigé (« J'accompagne les artisans, les indépendants et les petites entreprises »).
 - **Visuels : schémas SVG, pas d'images** (décision du 2026-09-16). Toute nouvelle illustration est un schéma
   en SVG en ligne (ou un mockup construit avec les tokens), jamais un bitmap, jamais un fichier importé d'une
   banque d'images. Trois registres autorisés et pas un de plus : schéma de flux, mockup stylisé d'interface,
