@@ -112,6 +112,11 @@ const transport = smtpManquants.length
       secure: smtpPort === 465,
       requireTLS: smtpPort === 587,
       auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+      // Connexion gardée ouverte entre deux envois (2026-10-09) : chaque email payait connexion, TLS et
+      // authentification, ~2 s en production. Une seule connexion suffit au trafic du site. Fermée par le
+      // serveur SMTP ou par socketTimeout quand elle dort : le pool en rouvre une au prochain envoi.
+      pool: true,
+      maxConnections: 1,
       // Délais de nodemailer par défaut : 2 min de connexion, 10 min d'inactivité. Un SMTP figé laissait le
       // visiteur sur « Envoi en cours… » ; ainsi il obtient l'erreur et l'email de repli en 20 s au plus.
       connectionTimeout: 10_000,
@@ -184,11 +189,21 @@ app.post("/api/contact", { config: { rateLimit: { max: 5, timeWindow: "10 minute
   }
 });
 
-routeQuestionnaire(app, { transport, env });
+// Envois lancés après la réponse au visiteur (accusé de réception du questionnaire) : attendus à l'arrêt, pour
+// qu'un redémarrage du conteneur ne les coupe pas. Les promesses suivies ne rejettent jamais (erreur journalisée).
+const envoisEnCours = new Set();
+const enArrierePlan = (promesse) => {
+  envoisEnCours.add(promesse);
+  promesse.finally(() => envoisEnCours.delete(promesse));
+};
+
+routeQuestionnaire(app, { transport, env, enArrierePlan });
 
 for (const signal of ["SIGTERM", "SIGINT"]) {
   process.once(signal, async () => {
     await app.close();
+    await Promise.allSettled(envoisEnCours);
+    transport?.close();
     process.exit(0);
   });
 }
