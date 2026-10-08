@@ -855,6 +855,10 @@ poids de ce qui est promis.
   **Pas de pause au survol** : voir piège 18. Ne jamais retirer ce bouton.
 - Curseur : `.terminal-cursor` déclaré hors de toute media query dans `global.css`.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
+- **Dernière ligne (`result`) sans chiffre** : « devis prêt, en attente de votre oui » (2026-10-08, plan « site
+  moins geek », étape 4 bis ; « 38 min économisées par devis » avant). Un visiteur rapprochait ce chiffre inventé
+  des 25 → 3 min de Jason. **Ne pas y remettre de durée ni de gain** : les seuls chiffres de résultat du site sont
+  ceux du client. Seule retouche de texte du terminal depuis l'étape 2 (« ne pas toucher »).
 
 ### Clients (section « Ce qu'en dit Jason, chez L'Atelier des Sols & Fils »)
 Refaite le 2026-10-08 (plan « site moins geek », étape 3, décision de l'humain) : **une parole de client à la
@@ -1008,8 +1012,11 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   *MCP*, *données*, *outil* (quand « logiciel » suffit), *workflow*, *PME*, *processus*, *chronophage*, *solution*
   (pour désigner ce que je construis). Mots de remplacement : « l'assistant », « vos logiciels », « relier »,
   « préparer », « prendre en charge », « vos informations ». Exceptions assumées, à ne pas étendre :
-  - **« IA »** : seulement dans la FAQ, là où la question la pose (« Et si l'IA invente un prix ? »), et dans les
-    questions du questionnaire prospects (on y mesure l'usage de l'IA, ce sont des questions d'étude).
+  - **« IA »** : seulement dans la FAQ, là où la question la pose (« Et si l'IA invente un prix ? »), dans les
+    questions du questionnaire prospects (on y mesure l'usage de l'IA, ce sont des questions d'étude), et dans
+    **« rien ne sert à entraîner une IA »** — carte « Rien de mémorisé, rien de réutilisé » de Confiance et réponse
+    de FAQ « Mes données sortent-elles de l'entreprise ? » (décision de l'humain, 2026-10-08, étape 4 bis) : c'est
+    la crainte réelle du visiteur, « un autre programme » l'esquivait.
   - **« données »** au sens de vie privée : titre de Confiance (« Vos données restent les vôtres »), « Vos données
     ne quittent pas l'Europe », « il garde vos règles, pas vos données », questions de FAQ sur la confidentialité,
     mention du questionnaire et pages légales.
