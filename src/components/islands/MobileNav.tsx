@@ -72,7 +72,7 @@ export default function MobileNav({ links, cta }: Props) {
                   className="flex items-center justify-between py-4 text-28 font-medium tracking-tight transition-colors duration-(--duration-fast) ease-out hover:text-accent"
                 >
                   {link.label}
-                  <span aria-hidden="true" className="font-mono text-16 text-ink-muted">→</span>
+                  <span aria-hidden="true" className="text-16 text-ink-muted">→</span>
                 </a>
               </li>
             ))}

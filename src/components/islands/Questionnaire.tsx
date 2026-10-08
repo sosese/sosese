@@ -313,7 +313,7 @@ function Champ({
                   onChange(e.target.checked ? [...coches, option] : coches.filter((c) => c !== option));
                 }}
                 className="sr-only" />
-              <span aria-hidden="true" className="hidden font-mono group-has-checked/chip:inline">✓</span>
+              <span aria-hidden="true" className="hidden group-has-checked/chip:inline">✓</span>
               {option}
             </label>
           ))}
@@ -380,7 +380,7 @@ function Champ({
 function ErrorText({ id, children }: { id: string; children: ReactNode }) {
   return (
     <p id={id} className="flex items-baseline gap-2 text-14 text-accent">
-      <span aria-hidden="true" className="font-mono">!</span>
+      <span aria-hidden="true">!</span>
       {children}
     </p>
   );

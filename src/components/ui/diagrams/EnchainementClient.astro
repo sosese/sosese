@@ -8,7 +8,7 @@
 //   La mention visible « Scénario type… » a été retirée le 2026-09-19 (demande explicite) : la règle
 //   d'invention, elle, ne bouge pas — voir DESIGN.md, « Clients » ;
 // - chaque écriture arrive après le « oui » ; l'analyse n'écrit rien et le dit ;
-// - aucun jargon technique, y compris dans les libellés mono.
+// - aucun jargon technique, y compris dans les petits libellés.
 //
 // Contrat, identique à celui du mockup du hero :
 // - l'état rendu par le serveur est l'état FINAL (tout visible) : lisible sans JS, aucun flash ;
@@ -100,7 +100,7 @@ const analyse = {
           data-cc-etape
           class="flex flex-col gap-2.5 rounded-md border border-border bg-bg p-3.5 transition-colors duration-(--duration-slow) ease-out"
         >
-          <p class="flex items-center gap-2 font-mono text-12">
+          <p class="flex items-center gap-2 text-12">
             <span class="text-accent">{etape.numero}</span>
             <span class="text-ink-muted">{etape.contexte}</span>
           </p>
@@ -111,7 +111,7 @@ const analyse = {
           </p>
 
           {/* Le cadre arrive avec sa première ligne : jamais de cadre vide à l'écran. */}
-          <ul data-cc-pas class="flex flex-col gap-1 rounded-md border border-border bg-surface p-3 font-mono text-12 transition-opacity duration-(--duration-slow) ease-out">
+          <ul data-cc-pas class="flex flex-col gap-1 rounded-md border border-border bg-surface p-3 text-12 transition-opacity duration-(--duration-slow) ease-out">
             {etape.lignes.map((ligne, i) => (
               <li
                 data-cc-pas={i > 0 ? "" : undefined}
@@ -121,12 +121,12 @@ const analyse = {
                 ]}
               >
                 <span class={ligne.fort ? "text-ink" : "text-ink-muted"}>{ligne.label}</span>
-                <span class:list={["shrink-0 text-right", ligne.fort ? "text-accent" : "text-ink"]}>{ligne.valeur}</span>
+                <span class:list={["shrink-0 text-right tabular-nums", ligne.fort ? "text-accent" : "text-ink"]}>{ligne.valeur}</span>
               </li>
             ))}
           </ul>
 
-          <p data-cc-pas class="mt-auto flex flex-wrap items-center gap-2 font-mono text-12 text-accent transition-opacity duration-(--duration-slow) ease-out">
+          <p data-cc-pas class="mt-auto flex flex-wrap items-center gap-2 text-12 text-accent transition-opacity duration-(--duration-slow) ease-out">
             <span class="rounded-full bg-accent px-2 text-on-accent">oui</span>
             <span aria-hidden="true">✓</span>
             <span>{etape.action}</span>
@@ -141,7 +141,7 @@ const analyse = {
     class="grid gap-3 rounded-md border border-border bg-bg p-3.5 transition-colors duration-(--duration-slow) ease-out lg:grid-cols-[2fr_3fr] lg:gap-8"
   >
     <div class="flex flex-col gap-2">
-      <p class="flex items-center gap-2 font-mono text-12">
+      <p class="flex items-center gap-2 text-12">
         <span class="text-accent">04</span>
         <span class="text-ink-muted">et ensuite, vos chiffres</span>
       </p>
@@ -158,13 +158,13 @@ const analyse = {
       <ul class="flex flex-wrap gap-2">
         {
           analyse.axes.map((axe) => (
-            <li data-cc-pas class="rounded-full border border-border bg-surface px-3 py-1 font-mono text-12 text-ink transition-opacity duration-(--duration-slow) ease-out">
+            <li data-cc-pas class="rounded-full border border-border bg-surface px-3 py-1 text-12 text-ink transition-opacity duration-(--duration-slow) ease-out">
               {axe}
             </li>
           ))
         }
       </ul>
-      <p data-cc-pas class="flex items-baseline gap-2 font-mono text-12 text-accent transition-opacity duration-(--duration-slow) ease-out">
+      <p data-cc-pas class="flex items-baseline gap-2 text-12 text-accent transition-opacity duration-(--duration-slow) ease-out">
         <span aria-hidden="true">✓</span>
         <span>lecture seule — rien n'a été modifié</span>
       </p>

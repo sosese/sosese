@@ -120,7 +120,17 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
 Échelle : 12 14 16 18 21 28 36 48 64. Corps 17px, line-height 1.6.
 - Fichiers : `public/fonts/inter-var.woff2` et `jetbrains-mono-var.woff2`, polices **variables**, sous-ensemble
   **latin** de Fontsource (couvre é, à, œ, €, guillemets et tirets typographiques). Licences OFL à côté.
-- Un seul fichier par famille couvre toutes les graisses : ce sont ces deux fichiers qui sont préchargés.
+- Un seul fichier par famille couvre toutes les graisses. **Seul `inter-var.woff2` est préchargé** (2026-10-08) :
+  la mono ne sert plus qu'en bas de l'accueil, dans « Sous le capot » ; son `@font-face` reste, le fichier est
+  chargé à la demande. Voir piège 31 avant de remettre ou de retirer un préchargement.
+- **JetBrains Mono : « Sous le capot » seulement** (2026-10-08, plan « site moins geek », étape 2) — la section,
+  le terminal (`TerminalDemo`) et le labo (`src/labo/`, `src/pages/labo/`). Partout ailleurs, Inter : libellés,
+  chiffres, badges, pied de page, flèches « → » des boutons, coches et « ! » des formulaires. Les chiffres
+  qu'on compare en colonne prennent `tabular-nums` (valeurs de `CompareBars`, montants d'`EnchainementClient`,
+  numéros 01 / 02 / 03 de `/contact` et `/a-propos`, pastilles de la Méthode).
+  **Exceptions, non rendues sur une page publique et donc non converties** (invérifiables à l'écran) :
+  `Calculateur`, `FlowDiagram`, `DicteeMobile`, `ConvergenceDonnees`, `AgentEnAction`, `VracEnActions`. Elles
+  gardent la mono : **à convertir en Inter si l'une revient sur une page**, en revérifiant ses largeurs (piège 12).
 - Noms de famille déclarés : `"Inter"` et `"JetBrains Mono"` (et non `"Inter Variable"`).
 - Police de secours **`"Inter Fallback"`** (Arial / Liberation Sans / Helvetica locales) avec `size-adjust` et
   `ascent/descent/line-gap-override` mesurés sur `inter-var.woff2` : l'arrivée d'Inter ne change pas la taille du
@@ -142,7 +152,11 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
   - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger. Le `h1` (élément LCP probable)
     ne dépend plus du chargement d'Inter. Revers : le rendu varie selon le système (Georgia sur macOS / Windows /
     iOS, Liberation Serif ou Noto Serif sous Linux, Noto Serif sous Android) — accepté, la pile reste serif.
-- Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : mono, 12px, capitales, `--ink-muted`).
+- Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : **Inter semi-gras (600)**, 12px, capitales
+  espacées de 0,08em, `--ink-muted`). Mono jusqu'au 2026-10-08. Le semi-gras est celui de la V7 : en Inter
+  normal, des capitales de 12 px paraissent grêles. Contraste inchangé (`ink-muted` ≥ 5,35:1 sur tous les fonds).
+  Le plan demandait la couleur accent : **non appliqué**, `accent` sur `bg-subtle` est à 4,49:1 (voir contrastes),
+  et plusieurs eyebrows vivent sur ce fond (Méthode, FAQ, pied de page). Question remontée au chef de projet.
 
 ## Espacement
 - Unité : `--space-unit` = 0.25rem (4px). Tailwind est rebranché dessus (`--spacing`) : `p-4` = 16px, `gap-2` = 8px.
@@ -215,7 +229,7 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
 | VracEnActions | `ui/diagrams/VracEnActions.astro` | statique + script natif — **non utilisé depuis le 2026-10-07** (remplacé par `AgentEnAction`, jugé trop chargé), conservé ; visuel du hero du 2026-09-19 au 2026-10-07 : ce qui arrive en vrac (post-it, note vocale) est lu par une bande qui traverse, recoupé dans vos outils, rendu en deux actions à valider. Trois intertitres, bouton pause. Voir « Le passage du hero » |
 | ConvergenceDonnees | `ui/diagrams/ConvergenceDonnees.astro` | statique + script natif — schéma du hero : trois sources éparpillées rejoignent un tronc, qui descend dans le hub ; il en ressort des actions déjà préparées qui attendent un « oui ». **Une seule passe** (~3,1 s), sans cadre, sans boucle, sans bouton pause. **Non utilisé depuis le 2026-09-19** (remplacé par `RotationEcrans`) ; conservé. Voir « Schéma du hero » |
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
-| Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` mono 12), slot = le schéma |
+| Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` Inter 12, mono jusqu'au 2026-10-08), slot = le schéma |
 | CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas » |
 | DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
@@ -693,9 +707,10 @@ arrive, la solution consulte les outils de l'entreprise un par un en montrant ce
   encore et reste un ensemble ; elle est un peu plus courte que la maquette, qui la centre en face d'elle.
 - **`data-deroule="confirme"`** sur les écrans qui se terminent par une confirmation (aujourd'hui : les relances) :
   ils gardent une cinquième étape. Les autres s'arrêtent à l'étape 4.
-- **Libellés courts** (`Messagerie`, `Boîte mail`, `Téléphone`, `Gestion`) : en mono 12, les quatre plus le bouton
-  pause tiennent sur **une seule ligne** dans 24 rem — la largeur la plus étroite où la maquette ait tourné —, et
-  jusqu'à 360 px. Un libellé plus long (« Application ») les fait
+- **Libellés courts** (`Messagerie`, `Boîte mail`, `Téléphone`, `Gestion`) : en Inter 12 (mono jusqu'au
+  2026-10-08), les quatre plus le bouton pause tiennent sur **une seule ligne** dans 24 rem — la largeur la plus
+  étroite où la maquette ait tourné —, et jusqu'à 360 px. Mesuré le 2026-10-08 : 223 px de libellés en Inter
+  contre 259 px en mono ; à 360 px, la rangée passait à deux lignes en mono, elle tient sur une en Inter. Un libellé plus long (« Application ») les fait
   passer à deux lignes et laisse le bouton pause seul en bas. Le `title` porte la phrase entière.
 - **Actif = souligné en `--accent` sur texte `--ink`**, pas de pastille pleine : `accent` sur `accent-soft` est à
   4,28:1 en clair (voir contrastes), donc inutilisable pour du texte 12.
@@ -885,7 +900,7 @@ en `h3` sous le h2 de section : la section parle des clients, ce cas n'en est qu
   juste à côté, est décoratif (`alt=""`) — deux liens vers la même destination alourdissent la navigation au
   clavier et au lecteur d'écran sans rien apporter.
 - Le temps d'un devis est révélé ligne par ligne au défilement (`CompareBars reveal`, voir « Schémas »).
-- Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels mono : eyebrow
+- Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels (mono jusqu'au 2026-10-08) : eyebrow
   labels en français neutre (« Aperçu du principe », « sur place, à la voix », « et ensuite, vos chiffres »).
 - **`EnchainementClient`** (2026-09-17, remplace l'îlot React `DicteeChiffrageDemo`, supprimé) : montre un
   **enchaînement de fonctions** sur un même client — 01 fiche client dictée sur place, 02 devis rattaché à cette
@@ -927,7 +942,7 @@ supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole
 - **Apparence d'un `Badge variant="accent" dot`, en plus compact** : même fond `--accent-soft`, même
   pastille `--accent-bright`, même texte `--ink` (`accent` sur `accent-soft` = 4,28:1 en clair, donc
   jamais de texte accent sur ce fond). Pas le composant lui-même : ses `h-6`, `px-2`, `gap-2` et sa
-  police mono demandent 277 px pour la paire la plus courte, 320 px pour la plus longue — davantage que
+  police mono (Inter depuis le 2026-10-08) demandaient 277 px pour la paire la plus courte, 320 px pour la plus longue — davantage que
   ce que la grille offre à n'importe quelle largeur. D'où la reprise en local : police sans, `px-1.5`,
   `py-0.5`, pastille `size-1`. **Si le Badge de série devient plus compact, revenir au composant.**
 - `mt-auto` sur la rangée : les étiquettes s'alignent d'une carte à l'autre quelle que soit la longueur
@@ -1089,7 +1104,7 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
-- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, gros titres).
+- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, `h3` du cas client, messages de succès des formulaires, liens du menu mobile — plus sur les `h1` / `h2` serif).
 - Anneau de focus : `2px` d'épaisseur et de décalage.
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
@@ -1157,11 +1172,12 @@ Tolérées, à ne pas étendre sans raison :
     `npm run build`) pendant que `npm run dev` tourne, le cache de dépendances de Vite peut être périmé : tous les
     îlots disparaissent en dev alors que le build est sain. → Arrêter le serveur et relancer `npm run dev -- --force`.
     Toujours vérifier la console avant de chercher un bug dans le composant.
-12. **Libellés mono qui passent à la ligne** dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
+12. **Libellés qui passent à la ligne** (mono à l'origine) dans une rangée étroite : forcer `whitespace-nowrap` et ne passer
     en ligne qu'à partir de la largeur qui les contient (FlowDiagram horizontal seulement ≥ xl).
     Revers : un libellé `whitespace-nowrap` plus long que sa colonne déborde **sans rien signaler** et fait défiler
     toute la page horizontalement (cas du bandeau d'engagements). Après tout ajout ou allongement de libellé, vérifier
-    `document.documentElement.scrollWidth` à 360, 640, 1024 et 1280 px.
+    `document.documentElement.scrollWidth` à 360, 640, 1024 et 1280 px. Vaut aussi pour un **changement de
+    police** : le passage de la mono à Inter (2026-10-08) a raccourci tous les libellés, revérifié sans débordement.
 13. **Captures headless sur une ancre (`/#section`) vides** : Chrome headless rend mal le défilement. Capturer la
     page entière (fenêtre très haute) et découper. Dans ce cas, le vide sous la dernière section est normal : `main`
     est en `flex-1` et le footer est poussé en bas de la fenêtre.

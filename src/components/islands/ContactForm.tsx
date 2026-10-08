@@ -194,7 +194,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
             <label key={irritant}
               className="group/chip inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-border-strong bg-surface px-4 text-14 text-ink select-none transition-[background-color,border-color,color] duration-(--duration-fast) ease-out hover:border-accent has-checked:border-accent has-checked:bg-accent has-checked:text-on-accent has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent">
               <input type="checkbox" name="irritants" value={irritant} className="sr-only" />
-              <span aria-hidden="true" className="hidden font-mono group-has-checked/chip:inline">✓</span>
+              <span aria-hidden="true" className="hidden group-has-checked/chip:inline">✓</span>
               {irritant}
             </label>
           ))}
@@ -296,7 +296,7 @@ function Field({
 function ErrorText({ id, children }: { id: string; children: ReactNode }) {
   return (
     <p id={id} className="flex items-baseline gap-2 text-14 text-accent">
-      <span aria-hidden="true" className="font-mono">!</span>
+      <span aria-hidden="true">!</span>
       {children}
     </p>
   );

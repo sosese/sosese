@@ -40,7 +40,7 @@ const etapes = [
         etapes.map((etape, i) => (
           <li class="relative flex gap-4 md:flex-col md:gap-6">
             <div class="flex flex-col items-center md:flex-row">
-              <span data-revele class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface font-mono text-14 text-accent">
+              <span data-revele class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface text-14 text-accent tabular-nums">
                 {i + 1}
               </span>
               {i < etapes.length - 1 && (
@@ -60,7 +60,7 @@ const etapes = [
                 </div>
                 <div data-revele class="flex flex-col gap-1 px-4 py-3">
                   <dt class="eyebrow">Durée</dt>
-                  <dd class="font-mono text-ink">{etape.duree}</dd>
+                  <dd class="text-ink">{etape.duree}</dd>
                 </div>
                 <div data-revele class="flex flex-col gap-1 px-4 py-3">
                   <dt class="eyebrow">Vous recevez</dt>

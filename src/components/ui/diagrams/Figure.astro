@@ -13,5 +13,5 @@ const { label, caption, class: className } = Astro.props;
 <figure class:list={["flex flex-col gap-4", className]}>
   {label && <p class="eyebrow">{label}</p>}
   <slot />
-  {caption && <figcaption class="font-mono text-12 text-ink-muted">{caption}</figcaption>}
+  {caption && <figcaption class="text-12 text-ink-muted">{caption}</figcaption>}
 </figure>

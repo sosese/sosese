@@ -32,7 +32,7 @@ const echelle = max ?? Math.max(...bars.map((b) => b.value));
           data-revele={reveal ? "ligne" : undefined}
         >
           <span class="text-16 text-ink">{bar.label}</span>
-          <span class:list={["font-mono text-21", bar.tone === "accent" ? "text-accent" : "text-ink"]}>
+          <span class:list={["text-21 tabular-nums", bar.tone === "accent" ? "text-accent" : "text-ink"]}>
             {bar.display}
           </span>
         </div>

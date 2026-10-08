@@ -28,7 +28,7 @@
 // exemple de ce décor, un deuxième clic passe à l'autre.
 //
 // Libellés courts : les quatre, plus le bouton de lecture, tiennent sur une seule ligne sous la
-// maquette, y compris à 360 px (mono 12 : ~7,2 px par caractère, 24 rem de large). Un libellé plus
+// maquette, y compris à 360 px (Inter 12 : 223 px pour les quatre, mesuré le 2026-10-08). Un libellé plus
 // long les fait passer à deux lignes. Le `titre` dit la phrase entière, en survol et pour les
 // lecteurs d'écran.
 const ecrans = [
@@ -93,7 +93,7 @@ const ecrans = [
           data-jalon={ecran.scenes.join(",")}
           aria-pressed={i === 0}
           title={`Voir ${ecran.titre} — deux exemples`}
-          class="rounded-sm py-1 font-mono text-12 text-ink-muted underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-ink aria-pressed:text-ink aria-pressed:underline aria-pressed:decoration-accent aria-pressed:decoration-2"
+          class="rounded-sm py-1 text-12 text-ink-muted underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-ink aria-pressed:text-ink aria-pressed:underline aria-pressed:decoration-accent aria-pressed:decoration-2"
         >
           {ecran.label}
         </button>
