@@ -505,7 +505,8 @@ devants », « Il garde vos règles, pas vos données »).
   illustratif ».
 - Ce que les quatre arguments disaient et qui reste dit ailleurs : « rien de nouveau à apprendre » (bandeau),
   « ce qu'il retient — vos règles » (Confiance, FAQ « mémoire »). La pro-activité par routines (« il prend les
-  devants ») et « le dossier n'attend plus quand la bonne personne est absente » **ne sont plus dites nulle part**.
+  devants ») est revenue dans la carte commerciale (étape 5, voir « Copy », « Pro-activité ») ; « le dossier n'attend
+  plus quand la bonne personne est absente » est abandonné (décision de l'humain).
 - Les quatre arguments et leur liste de `points` cochés ont disparu ; les `points` étaient déjà absents du code
   avant le 2026-10-08.
 
@@ -586,9 +587,10 @@ la grille `lg:grid-cols-[1fr_1fr]` et au `text-48`**, sinon le titre écrase la 
 **Titre (2026-10-08, décision de l'humain, étape 4 ter)** : « Vous me parlez de votre métier. Je construis
 l'assistant qui s'occupe du reste. » — il remplace « Moins de temps à recopier. Plus de temps pour votre métier. »,
 jugé pas assez fort, qui reste l'accroche du pied de page. Il pose la **relation** (vous parlez, je construis) au
-lieu d'un bénéfice abstrait, et présente « l'assistant » dès le titre. Sans « IA ». Même modèle de couleur que le
-précédent : première phrase en `text-ink`, seconde en `text-ink-muted` — le visiteur et son métier ouvrent, la
-réponse suit. Tailles inchangées (`text-36` / `sm:text-48` / `lg:text-64`, `max-w-4xl`).
+lieu d'un bénéfice abstrait, et présente « l'assistant » dès le titre. Sans « IA ». **Couleurs inversées le
+2026-10-08** (étape 5, décision de l'humain) : première phrase en `text-ink-muted`, **la promesse (« Je construis
+l'assistant… ») en `text-ink`** — c'est elle qui porte le message. Tailles inchangées (`text-36` / `sm:text-48` /
+`lg:text-64`, `max-w-4xl`).
 Le chapeau ne redit plus « je construis un assistant » : « Je repère avec vous les tâches qui remplissent vos
 journées, et je relie votre assistant aux logiciels que vous utilisez déjà. »
 
@@ -1075,9 +1077,12 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
 - **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « il ne calcule jamais un prix
   lui-même, il lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie tient à la
   porte de validation, pas à une propriété du modèle.
-- **Pro-activité** : « il prend les devants » est tenu par des routines — heure fixe ou seuil de déclenchement
-  (« le devis qui dort depuis dix jours… vous réglez ce qui le déclenche »). La promesse reste adossée à un
-  mécanisme réel. Retirée de l'offre le 2026-10-08 avec les quatre arguments : la règle vaut si elle revient.
+- **Pro-activité** : « il prend les devants » est tenu par des routines — heure fixe ou seuil de déclenchement.
+  La promesse reste adossée à un mécanisme réel. Retirée de l'offre le 2026-10-08 avec les quatre arguments, **revenue
+  le même jour dans la carte commerciale** (étape 5, texte de l'humain) : « … repère qui relancer, chaque lundi ou
+  dès qu'un devis attend trop, et vous propose le message, prêt à partir. » — « chaque lundi » est l'heure fixe,
+  « dès qu'un devis attend trop » le seuil. « Le dossier n'attend plus quand la bonne personne est absente » est
+  abandonné.
 - **Exception à B8 (un argument, un seul endroit)** : « accès limités au strict nécessaire » est énoncé **en fait**
   dans le bandeau d'engagements (réflexe de méfiance nº 1 : « il va tout lire ») et **argumenté** une seule fois,
   dans la section Confiance (« Il ne consulte que ce qu'il faut »). Aucun autre argument n'a droit à ce doublon.
