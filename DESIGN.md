@@ -1286,6 +1286,17 @@ Tolérées, à ne pas étendre sans raison :
     en production. → Délais explicites sur le transport (`server/index.mjs`) ; en local, un envoi qui ne répond
     plus se diagnostique par `printf 'QUIT\r\n' | nc 127.0.0.1 1025` (pas de « 220 » = redémarrer Mailpit).
 
+31. **Retirer un préchargement de police peut faire apparaître un décalage qui existait déjà.** Le 2026-10-08,
+    sans le `preload` de la mono, un CLS de 0,0008 à 0,0012 est apparu une fois sur trois en local (Chrome
+    headless, `npm start`, ≥ 1024 px, pages internes) : une première image peinte pendant que l'analyse du HTML
+    est arrêtée sur le script d'amorçage des îlots d'Astro, au début du groupe de droite de l'en-tête (bouton de
+    thème) — groupe encore vide, donc la navigation centrée par `justify-between` se décale de 88 px quand il se
+    remplit. Le second préchargement retardait simplement la première image. **Sous réseau bridé** (150 ms,
+    1,6 Mb/s) : 0 décalage sur 30 chargements, avant comme après ; c'est un artefact de serveur local instantané.
+    → Pour juger un CLS de chargement, mesurer plusieurs passages, **dont un bridé**, et comparer au commit
+    précédent (worktree + `PORT=3001`) avant de conclure. Si le décalage devait apparaître en production, la piste
+    est l'en-tête (réserver la largeur du groupe de droite), pas le retour du préchargement.
+
 ## Anti-patterns
 - Dégradés multicolores
 - Imagerie IA stock (cerveaux, robots, réseaux de neurones)
