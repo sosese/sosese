@@ -52,6 +52,15 @@ function ecrireBrouillon(etape: number, reponses: Reponses | null) {
   } catch {}
 }
 
+// Focus sans laisser le navigateur choisir où défiler (il remontait jusqu'au titre de la page), puis le haut de
+// la carte (`data-questionnaire-carte`, posé par la page) sous l'en-tête collant, grâce au scroll-padding-top de
+// html. Sans option behavior : le défilement doux de global.css ne s'applique que hors mouvement réduit.
+function ramener(cible: HTMLElement | null) {
+  if (!cible) return;
+  cible.focus({ preventScroll: true });
+  (cible.closest<HTMLElement>("[data-questionnaire-carte]") ?? cible).scrollIntoView({ block: "start" });
+}
+
 function valider(questions: Question[], reponses: Reponses): Errors {
   const errors: Errors = {};
   for (const q of questions) {
@@ -93,14 +102,13 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
     }
   }, []);
 
-  // Au changement d'étape (pas au chargement), le focus va sur le titre : le lecteur d'écran l'annonce
-  // et le navigateur ramène la page en haut du formulaire.
+  // Au changement d'étape (pas au chargement), le focus va sur le titre : le lecteur d'écran l'annonce.
   useEffect(() => {
-    if (aNavigue.current) titreRef.current?.focus();
+    if (aNavigue.current) ramener(titreRef.current);
   }, [etape]);
 
   useEffect(() => {
-    if (status === "success") successRef.current?.focus();
+    if (status === "success") ramener(successRef.current);
   }, [status]);
 
   const section = SECTIONS[etape];

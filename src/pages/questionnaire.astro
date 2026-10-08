@@ -22,13 +22,10 @@ import { TITRE } from "../lib/questionnaire";
 
   <div class="container-site py-(--section-y)">
     <div class="mx-auto flex max-w-(--measure) flex-col gap-6">
-      <Card padding="lg">
+      <Card padding="lg" data-questionnaire-carte>
         <Questionnaire client:idle fallbackEmail={site.email} />
       </Card>
-      <p class="text-14 text-ink-muted">
-        Vos réponses ne sont lues que par moi, Joris Chamvoux, jamais revendues ni publiées.
-        <a href="/confidentialite" class="text-accent underline underline-offset-4 hover:text-accent-hover">En savoir plus</a>.
-      </p>
+      <p class="text-14 text-ink-muted">La confidentialité de vos données est respectée.</p>
     </div>
   </div>
 </Base>

@@ -277,15 +277,25 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - **Tout est facultatif**, sauf le consentement à la dernière étape. Validation par étape (nombres, email,
   téléphone) avec les mêmes motifs que le formulaire de contact : `aria-invalid`, message relié, focus sur le
   premier champ en erreur, erreurs en `--accent`.
-- Changement d'étape : le focus va sur le titre de l'étape (`h2`, `tabIndex=-1`), ce qui l'annonce et ramène la
-  page en haut du formulaire. Pas au premier rendu.
+- Changement d'étape (« Suivant » et « Précédent ») et écran « Réponses envoyées » : le focus va sur le titre de
+  l'étape (`h2`, `tabIndex=-1`) ou sur le panneau de succès, ce qui l'annonce au lecteur d'écran, **avec
+  `preventScroll`** ; puis `scrollIntoView({ block: "start" })` sur la carte (`data-questionnaire-carte`, posé par
+  la page sur `Card`). Sa bordure haute s'arrête sous l'en-tête collant, au `scroll-padding-top` de `html`
+  (64 + 16 px). Pourquoi (2026-10-08, demande explicite) : un `focus()` seul laissait le navigateur choisir où
+  défiler, et il remontait jusqu'au titre de la page — on quittait le questionnaire. Pas d'option `behavior` :
+  le défilement doux vient de `scroll-behavior` (`global.css`), donc instantané sous mouvement réduit. Pas de
+  défilement au premier rendu (ni à la reprise d'un brouillon). Le focus du premier champ en erreur reste un
+  `focus()` simple.
 - **Brouillon** en `localStorage` (clé `questionnaire-brouillon` : étape + réponses), relu après hydratation,
   effacé après envoi réussi. Mentionné dans la politique de confidentialité, comme le thème.
 - Mise en page (2026-10-08, demande explicite) : **plus d'encart « Avant de commencer »** (durée, questions
   facultatives, brouillon gardé sur l'appareil) — la page va droit au formulaire. Une seule colonne centrée,
   `mx-auto max-w-(--measure)`, aux deux tailles d'écran. Seule la mention de confidentialité survit, en `text-14`
-  **sous** la carte, avec le lien vers `/confidentialite` : c'est la seule information de l'encart qui protégeait
-  le prospect.
+  **sous** la carte : « La confidentialité de vos données est respectée. » — texte de l'humain, au mot près
+  (2026-10-08), **sans lien** : la case de consentement de la dernière étape renvoie déjà à `/confidentialite`.
+  « données » y est une exception assumée à la liste noire du jargon (sens courant de vie privée). Ne pas redire
+  sur la page que les questions sont facultatives ni que le brouillon est gardé sur l'appareil (décision du même
+  jour) ; la durée (« six minutes ») reste dans la meta description et sur `/contact`.
 - Copy : le questionnaire parle à la première personne (« je »), contrairement au reste du site (« nous ») — ton
   conservé de la version d'origine, à revoir avec la pertinence des questions.
 
