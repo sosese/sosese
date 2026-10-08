@@ -1038,6 +1038,10 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   (« les accès de l'IA sont maîtrisés » jusqu'au 2026-10-08 ; avant, « rien n'est mémorisé par défaut ».)
   Le chapeau du hero décrit le déroulé (« il prépare le travail, vous vérifiez, puis c'est enregistré ») sans
   argumenter la porte : c'est Confiance qui la promet et la détaille.
+- **Titres et descriptions des pages (SEO)** suivent les mêmes règles : titre de l'accueil = le `h1` (« Moins de
+  temps à recopier, plus de temps pour votre métier | sosese »), descriptions en « je » (Joris nommé sur l'accueil
+  et `/a-propos`), sans « IA » ni « PME ». Titre et description par défaut dans `site.ts` (`site.title`,
+  `site.description`). Les pages légales gardent leur description descriptive à la troisième personne.
 - **Mêmes libellés de bouton partout** : l'appel principal vient de `cta.label` (`site.ts`, « Parlons-en ») pour
   l'en-tête, le hero, le bouton flottant, le menu mobile, le CTA final et la 404 — ne jamais l'écrire en dur.
 - **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. La carte de Confiance

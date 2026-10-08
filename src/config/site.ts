@@ -1,8 +1,9 @@
 export const site = {
   name: "sosese",
-  title: "sosese — IA sur-mesure pour PME, branchée sur vos outils",
+  // Titre et description par défaut (accueil) : en « je », sans jargon (2026-10-08, DESIGN.md « Copy »).
+  title: "sosese — Moins de temps à recopier, plus de temps pour votre métier",
   description:
-    "On part de vos logiciels actuels : l'administratif en moins, vos données enfin utiles, et rien qui parte sans votre accord.",
+    "Je suis Joris : je relie un assistant aux logiciels que vous avez déjà. Il prépare le travail, vous validez. Pour artisans, indépendants et petites entreprises.",
   // À confirmer (§9) : adresse de contact et URL LinkedIn réelles.
   email: "contact@sosese.tech",
   linkedin: null as string | null,
@@ -59,7 +60,7 @@ export const casClient = {
   site: "https://www.atelier-sols-fils.com/",
   logo: "/clients/atelier-sols-fils.svg" as Texte,
   // Le logiciel de gestion sur lequel le connecteur a été construit. Seul nom de logiciel tiers cité
-  // sur le site : il dit ce qui a été fait, pas ce que nous vendons (DESIGN.md, « Cas client »).
+  // sur le site : il dit ce qui a été fait, pas ce que je vends (DESIGN.md, « Cas client »).
   // Le nom seul, jamais le logo, et aucune mention de partenariat.
   logiciel: "Extrabat" as Texte,
 };
