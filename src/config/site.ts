@@ -65,7 +65,8 @@ export const casClient = {
   logiciel: "Extrabat" as Texte,
 };
 
-export const zoneIntervention = null as Texte;
+// Fournie par l'humain le 2026-10-08.
+export const zoneIntervention = "Je suis basé à Metz, mais j'interviens partout en France et en Europe." as Texte;
 
 export const mainNav = [
   // Dans l'ordre de la page. L'ancre reste `#cas-client` : elle est publiée depuis la v1, le libellé seul change.
