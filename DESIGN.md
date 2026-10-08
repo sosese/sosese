@@ -13,7 +13,7 @@
 - Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal** (aujourd'hui dans « Sous le capot », voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
 - Les composants interactifs sont des îlots React, **sauf** le mockup du hero, la révélation de la Méthode, celle des barres de
-  `CompareBars` (devis de Clients) et la démonstration du cas client : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
+  `CompareBars` (devis de Clients), la démonstration du cas client et la planche du protocole (« Sous le capot ») : JS natif dans une balise `<script>` du composant, servie en fichier externe (voir « Décisions »).
   Tout le reste est statique. Avant de créer un îlot, vérifier qu'un composant statique ou quelques lignes de JS natif ne suffisent pas.
 
 ## Tokens
@@ -290,6 +290,7 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et so
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il demande le devis → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
 | Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. **Relief depuis le 2026-10-08 (étape 5 bis)** : filet d'accent vertical à gauche de la citation (`w-1 rounded-full bg-accent`, `aria-hidden`) et guillemets de la citation en `--accent`. Voir « Clients » |
+| ProtocoleBoutEnBout | `ui/diagrams/ProtocoleBoutEnBout.astro` | statique + script natif — planche « Le protocole, de bout en bout », dans le volet « La pile technique en détail » de **« Sous le capot »** depuis le 2026-10-08 (étape 5 ter) : trois conteneurs (client, serveur MCP, éditeur), l'objet qui change de forme à chaque traversée, treize temps en boucle (~39 s), bouton pause. Portée de `src/labo/S3Protocole.astro`, sans rien en importer. Voir « Le protocole, de bout en bout » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 ### Cartes (2026-10-08, plan « site moins geek », étape 5)
@@ -949,8 +950,54 @@ Moins de tâches, pas plus — c'est tout l'argument.
 ### Terminal pleine largeur dans « Sous le capot »
 Du 2026-09-20 au 2026-10-07, le terminal tenait la moitié gauche d'une grille `lg:grid-cols-2`, la moitié droite
 portant le marqueur `ACompleter` d'un second visuel à venir. Marqueur retiré le 2026-10-07 (demande explicite,
-avant redéploiement) : le terminal reprend toute la largeur. Un second visuel, s'il arrive, revient avec sa grille ;
-**ne pas remettre de moitié vide** à la place du marqueur — un trou silencieux se lit comme un oubli.
+avant redéploiement) : le terminal reprend toute la largeur. **Ne pas remettre de moitié vide** à la place du
+marqueur — un trou silencieux se lit comme un oubli.
+**Le second visuel est arrivé le 2026-10-08 sans grille** (étape 5 ter) : la planche du protocole est carrée et
+tout y est en `cqw` ; en demi-colonne à 1280 px, son plus petit texte tomberait à ~5 px. Elle est **pleine largeur,
+dans le volet « La pile technique en détail »** (demande de l'humain), sous la grille des technologies. Le terminal
+reste seul et pleine largeur. Voir « Le protocole, de bout en bout ».
+
+### Le protocole, de bout en bout (ProtocoleBoutEnBout)
+Ajouté le 2026-10-08 (plan « site moins geek », étape 5 ter), porté de la planche du labo `S3Protocole` (le labo
+garde la sienne ; le composant n'importe rien de `src/labo/`, il recopie ce qu'il faut de `moteur.ts`). Jargon
+permis : c'est « Sous le capot ». Ce qu'il dit : **où tourne quoi** — chez le client (la demande, le modèle de
+langage et son skill, le client MCP), sur le serveur MCP (résolution, authentification par jeton, adaptateur vers
+n routes, normalisation), chez l'éditeur (l'API et ses routes) — et ce que chaque étage fait à l'objet qui circule.
+- **Où** : dans le `<details>` « La pile technique en détail », sous la grille, précédée de l'eyebrow « Le protocole,
+  de bout en bout ». Choix de l'humain (2026-10-08) : la planche s'adresse à qui ouvre la pile technique, pas à tout
+  visiteur de la section. Volet fermé = planche non rendue, donc hors écran : l'`IntersectionObserver` la tient à
+  l'arrêt, et le déroulé part quand on l'ouvre et qu'elle entre dans la vue.
+- **Contrat** (le même que `RotationEcrans`) : état rendu par le serveur = **état final** (`data-etape="13"` :
+  réponse prête, circuit complet, bouton « Valider ») ; lisible sans JS. Le déroulé part après 1,6 s de tenue
+  (`ATTENTE`), par l'effacement (temps 14), puis 1 → 13 en boucle. Sous `prefers-reduced-motion` : état final,
+  aucun minuteur, bouton pause masqué (`motion-reduce:hidden`).
+- **Bouton pause obligatoire** (WCAG 2.2.2, la boucle dure ~39 s), sous la planche, hors de la scène (qui est en
+  `aria-hidden`) ; pastille de `RotationEcrans`, état dans `aria-pressed`, libellé « Mettre l'animation en pause » /
+  « Relancer l'animation ». **Vraie pause** : `data-fige` gèle les animations CSS (le trajet de l'objet, l'éclat
+  des routes), les **transitions** en cours sont suspendues par l'API Web Animations (`getAnimations`, que
+  `animation-play-state` n'atteint pas), et le minuteur garde son reliquat. Mesuré : pause à 1,5 s dans le temps 11
+  (4,2 s), reprise → temps 12 au bout de 2,7 s. **Ne jamais retirer ce bouton.**
+- **Hors écran** (seuil 0,2) : minuteur et animations suspendus, reprise au retour ; une pause du bouton prime.
+- **Déplacements en `translate`, jamais en `left` / `top`** (piège 32) : l'objet, l'éclat et le nom de l'objet. CLS
+  mesuré sur un tour à 1280 px : 0,029 avec `left` / `top` (version du labo), 0,00005 après ; le reliquat vient des
+  barres de fragments, qui changent de hauteur et d'écart à l'intérieur de l'objet. Hauteur constante (1088 px).
+- **Taille de texte : la planche n'est lisible qu'à partir de ~1024 px.** Tout est en `cqw` : plus petit texte
+  (« hôte », 1,05 cqw) mesuré à **3,1 px à 360 px**, 3,4 à 390, 5,8 à 640, 9,3 à 1024, **10,5 à 1280** ; le titre de
+  temps fait 6,4 px à 360. Aucun débordement (`scrollWidth` = largeur) de 360 à 1280 px. Une version mobile
+  (planche verticale, ou défilement horizontal interne) reste à décider : non faite, signalée.
+- **Carrée** (`aspect-ratio: 1 / 1`, comme la planche du labo, et non 4/5 comme les autres planches du labo) : la
+  boîte de contenu fait exactement 100 × 100 cqw (titre 5,6 + plan 94,4), à 1280 px la planche fait 1088 × 1088 px.
+- **Section invert** : la planche porte son propre fond `--surface` et sa bordure, mais **pas** `section-invert`
+  (piège 26) ; dans « Sous le capot », ses boîtes `--bg-subtle` et ses étages `--surface` se détachent du fond
+  `--bg`. La section étant invert dans les deux thèmes, le rendu est identique en clair et en sombre (vérifié).
+- **Un seul aplat** : « Valider », au dernier temps. Les petits traits de l'objet et la vignette allumée du bandeau
+  sont en `--accent` aussi, mais ce sont des glyphes, pas des surfaces.
+- **Rien d'inventé** : aucune marque, aucun domaine, aucun chiffre (« objectif 1 / n », « 1 outil suffit » sont des
+  compteurs du mécanisme, pas des résultats).
+- **Poids** (mesuré le 2026-10-08, accueil construit) : HTML 15,0 → **17,1 ko brotli** (18,2 → 20,7 ko gzip) — la
+  planche est dans le HTML même volet fermé ; CSS de l'accueil +3,5 ko gzip (la CSS de la planche part dans la
+  feuille de la page, pas dans le HTML) ; JS 72,9 → 73,7 ko gzip (script de 0,8 ko, fichier `/_astro`, jamais
+  `is:inline`).
 
 ### Qui décide quoi (Confiance)
 Refait le 2026-09-20 : deux listes plates séparées par un petit badge ne se lisaient pas, et rien n'y avait le
@@ -1379,6 +1426,11 @@ Tolérées, à ne pas étendre sans raison :
   bloc), `--rot-entree` 420 ms et `--rot-attente` 260 ms (ramenées à 0 sous mouvement réduit), rythme en
   millisecondes dans le script (`TOUR`, `ENTREE`, `SORTIE`), seuil `IntersectionObserver` à 0,2. **Couleurs : que
   des tokens**, aucune exception.
+- `ProtocoleBoutEnBout` : CSS de composant reprise de la planche du labo — tailles, écarts et coordonnées du circuit
+  en `cqw` (la planche se redimensionne d'un bloc) ; padding de la scène en `%` ; filets en `px` (`1px`, `1.5px`) ;
+  `letter-spacing` 0,16 / 0,1 / 0,06 em des intitulés ; rayon fin `calc(var(--radius-sm) / 3)` (dérivé d'un token) ;
+  durées des déplacements (`620ms`, `420ms`, keyframes de 900 à 3 600 ms, décalages 180 / 360 ms) et rythme du
+  script (`DEROULE`, `ATTENTE` 1 600 ms), seuil `IntersectionObserver` à 0,2. **Couleurs : que des tokens.**
 - Icônes de la section Confiance : tracés SVG en ligne dans le composant (`set:html` sur des chaînes statiques, jamais sur du contenu éditable).
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 - Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
@@ -1553,6 +1605,14 @@ Tolérées, à ne pas étendre sans raison :
     → Pour juger un CLS de chargement, mesurer plusieurs passages, **dont un bridé**, et comparer au commit
     précédent (worktree + `PORT=3001`) avant de conclure. Si le décalage devait apparaître en production, la piste
     est l'en-tête (réserver la largeur du groupe de droite), pas le retour du préchargement.
+
+32. **Un élément animé en `left` / `top` est un décalage de mise en page, même dans une maquette qui ne bouge rien
+    d'autre.** La planche du protocole déplaçait son objet en `left` / `top` (transitions et keyframes) : CLS de
+    0,029 sur un tour, alors que la hauteur de la planche ne bougeait pas d'un pixel. Rencontré le 2026-10-08 en la
+    portant du labo (où personne ne mesure le CLS). Même chose pour un enfant qui se décale dans le flux quand son
+    voisin change de hauteur. → Déplacer avec `translate` (`left: 0; top: 0; translate: calc(X - 50%) calc(Y - 50%)`,
+    les `%` restent relatifs à l'élément), sortir du flux ce qui suit un élément qui change de taille, et mesurer :
+    `PerformanceObserver` sur `layout-shift` avec `entry.sources` donne les nœuds fautifs.
 
 ## Anti-patterns
 - Dégradés multicolores
