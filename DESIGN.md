@@ -80,7 +80,7 @@ Tokens complémentaires dans `tokens.css` :
 
 | Groupe | Tokens |
 |---|---|
-| Typographie | `--font-sans`, `--font-display` (titres h1 / h2), `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
+| Typographie | `--font-sans`, `--font-display` (serif du témoignage seulement), `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
 | Espacement / gabarit | `--space-unit`, `--section-y`, `--hero-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
 | Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
@@ -116,7 +116,8 @@ Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes ava
   (ex. icône soleil / lune).
 
 ## Typographie
-Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (« Sous le capot » seulement, voir plus bas).
+Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et ses deux chiffres seulement) / JetBrains Mono
+(« Sous le capot » seulement, voir plus bas).
 Échelle : 12 14 16 18 21 28 36 48 64. Corps 17px, line-height 1.6.
 - Fichiers : `public/fonts/inter-var.woff2` et `jetbrains-mono-var.woff2`, polices **variables**, sous-ensemble
   **latin** de Fontsource (couvre é, à, œ, €, guillemets et tirets typographiques). Licences OFL à côté.
@@ -137,27 +138,30 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
   texte (pas de saut, pas de second LCP). **Remplacer le fichier Inter = remesurer ces valeurs.**
 - Pas d'italique chargée. En ajouter une = nouveau fichier + `@font-face`, pas de faux italique.
 - Titres `h1`–`h4` : `line-height: var(--leading-tight)`, `letter-spacing: -0.02em`, `text-wrap: balance`.
-- **Titres `h1` et `h2` en serif** (2026-10-08, plan « site moins geek », étape 2) : token `--font-display`
-  (`Georgia, "Noto Serif", serif`, utilitaire `font-display`), posé par **une règle de base** dans
-  `global.css` (`h1, h2 { font-family; font-weight: 400 }`) — la solution la plus simple : tout `h1` / `h2`, y
-  compris ceux de `prose-site` et de l'îlot `Questionnaire`, est en serif sans classe à ajouter. Les `h3` restent
-  en Inter semi-gras.
-  - **Graisse normale (400), pas de `font-semibold`** : Georgia n'a que deux graisses ; `font-semibold` y devient
-    du gras (700), qui à 36–64 px sonne titre de journal et alourdit la page. La V7 (référence du plan) met ses
-    titres serif en 400 ; la hiérarchie vient de la famille et de la taille. **Ne pas remettre `font-semibold` sur
-    un `h1` / `h2`** : une classe utilitaire bat la règle de base. `prose-site h2` passe aussi en 400.
-  - **`letter-spacing` : -0,02em conservé, `tracking-tight` retiré** des `h1` / `h2`. Georgia est une serif large :
-    un léger resserrement la tient aux grandes tailles ; le -0,055em de la V7 colle les lettres de Noto Serif,
-    le repli réel sur Android et Linux, où Georgia n'existe pas.
+- **Titres `h1` et `h2` en Inter semi-gras (600), `tracking-tight`** — la police d'origine, rétablie le 2026-10-08
+  (plan « site moins geek », étape 4 bis, décision de l'humain : préférence pour la police d'origine). Les classes
+  sont **sur chaque titre** (`font-semibold tracking-tight`, comme avant l'étape 2) : `SectionHeading`,
+  `PageHeader`, hero, CTA final, 404, `/a-propos`, `h2` d'étape de l'îlot `Questionnaire` ; `prose-site h2` en 600
+  dans `global.css`. **Pas de règle de base `h1, h2`** : un titre ajouté sans classe sortirait en Inter 400, donc
+  reprendre `SectionHeading` / `PageHeader` ou recopier les classes.
+  - **`letter-spacing`** : la règle de base `h1`–`h4` donne -0,02em ; `tracking-tight` (-0,025em) la remplace sur les
+    `h1` / `h2` qui le portent. `prose-site h2` et le `h2` de repli de `/a-propos` (section masquée) restent à
+    -0,02em, comme avant l'étape 2.
+  - **Historique** : du 2026-10-08 (étape 2) à l'étape 4 bis, les `h1` / `h2` étaient en serif 400 (Georgia,
+    puis Noto Serif en repli) par une règle de base dans `global.css`. Retiré : ne pas remettre cette règle.
+- **Serif (`--font-display`, utilitaire `font-display`) réservée au témoignage** : la citation de `Temoignage` et
+  les deux chiffres de `Clients`, pour qu'ils se détachent comme une parole. **Aucun autre usage** (`grep -rn
+  "font-display" src` : `tokens.css`, `global.css`, `Temoignage.astro`, `Clients.astro` — les `font-display: swap`
+  des `@font-face` sont un descripteur homonyme). Graisse 400 (Georgia n'a que 400 / 700 ; le gras y sonne titre
+  de journal), interlettrage normal.
   - **Pile `Georgia, "Noto Serif", serif`** (correction du 2026-10-08, au lieu de `Georgia, "Times New Roman",
     serif`). Ce que voit chaque système : **Georgia** sur Windows, macOS et iOS ; **Noto Serif** sur Android (c'est
     sa serif) et sur Linux quand elle est installée ; la **serif générique** du système sinon. Ne pas remettre
     « Times New Roman » en second : sous Linux, c'est un alias de Liberation Serif (copie métrique de Times, rendu
     « document Word ») qui passait avant Noto Serif ; Noto Serif est bien plus proche de Georgia (œil large,
     empattements nets).
-  - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger, aucun préchargement. Le `h1`
-    (élément LCP probable) ne dépend plus du chargement d'Inter. Revers : le rendu varie selon le système (Georgia
-    ou Noto Serif, largeurs proches mais pas identiques) — accepté, la pile reste serif.
+  - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger, aucun préchargement. Revers : le
+    rendu varie selon le système (Georgia ou Noto Serif, largeurs proches mais pas identiques) — accepté.
 - Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : **Inter semi-gras (600)**, 12px, capitales
   espacées de 0,08em, `--ink-muted`). Mono jusqu'au 2026-10-08. Le semi-gras est celui de la V7 : en Inter
   normal, des capitales de 12 px paraissent grêles. Contraste inchangé (`ink-muted` ≥ 5,35:1 sur tous les fonds).
@@ -1164,7 +1168,7 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
-- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, messages de succès des formulaires, liens du menu mobile — plus sur les `h1` / `h2` serif).
+- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (`h1` / `h2`, wordmark, messages de succès des formulaires, liens du menu mobile).
 - Anneau de focus : `2px` d'épaisseur et de décalage.
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).

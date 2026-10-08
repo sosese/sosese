@@ -112,13 +112,6 @@
     text-wrap: balance;
   }
 
-  /* Titres en serif, graisse normale : Georgia n'a que deux graisses, et le gras à 36-64 px
-     sonne titre de journal (DESIGN.md, « Typographie »). Les h3 restent en Inter. */
-  h1, h2 {
-    font-family: var(--font-display);
-    font-weight: 400;
-  }
-
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -264,7 +257,7 @@
     margin-top: calc(var(--space-unit) * 12);
     margin-bottom: calc(var(--space-unit) * 4);
     font-size: var(--text-21);
-    font-weight: 400;
+    font-weight: 600;
     color: var(--ink);
   }
 

@@ -82,7 +82,7 @@ const principes = [
           <img src={personne.photo} alt={`Portrait de ${personne.nom}`} width="480" height="600" class="aspect-4/5 w-full rounded-lg border border-border object-cover" />
           <div class="flex flex-col gap-4">
             <p class="eyebrow">La personne</p>
-            <h2 id="personne-titre" class="text-28 md:text-36">{personne.nom}</h2>
+            <h2 id="personne-titre" class="text-28 font-semibold tracking-tight md:text-36">{personne.nom}</h2>
             <p class="text-14 text-ink-muted">{personne.role}</p>
             <div class="flex max-w-(--measure) flex-col gap-4 text-18 text-ink-muted">
               {personne.bio.map((paragraphe) => <p>{paragraphe}</p>)}
@@ -95,7 +95,7 @@ const principes = [
         <section aria-labelledby="personne-titre" class="py-(--section-y)">
           <div class="container-site flex flex-col gap-4">
             <p class="eyebrow">La personne</p>
-            <h2 id="personne-titre" class="text-28">Section masquée en production</h2>
+            <h2 id="personne-titre" class="text-28 font-semibold">Section masquée en production</h2>
             <p class="text-16 text-ink-muted">
               <ACompleter label="photo, nom, rôle et bio (§9) dans src/config/site.ts → personne" />
             </p>

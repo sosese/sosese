@@ -28,7 +28,8 @@
 
   /* Typographie */
   --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  /* Titres h1 / h2 : serif système, rien à télécharger (le h1 ne dépend d'aucune webfont pour le LCP). */
+  /* Serif système, réservée au témoignage (citation de Temoignage, chiffres de Clients) ; rien à télécharger.
+     Les titres h1 / h2 sont en Inter (--font-sans). */
   --font-display: Georgia, "Noto Serif", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
