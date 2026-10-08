@@ -64,7 +64,7 @@ const cadenas = "M -4.4 -0.4 h 8.8 v 6.6 h -8.8 z M -2.7 -0.4 v -2.5 a 2.7 2.7 0
 const coche = "m3 8.4 3.4 3.4L13 5";
 ---
 
-<div class="protocole" data-protocole>
+<div class="protocole flex flex-col gap-3" data-protocole>
   <p class="sr-only">
     Schéma générique du protocole, en treize temps, sans exemple. Trois conteneurs : ce qui tourne
     chez le client, ce qui tourne sur le serveur MCP, ce qui tourne chez l'éditeur du logiciel. Chez
@@ -261,6 +261,25 @@ const coche = "m3 8.4 3.4 3.4L13 5";
         }
       </div>
     </div>
+  </div>
+
+  {/* Pause obligatoire : le déroulé boucle et dure ~39 s (WCAG 2.2.2). Même pastille bordée que
+      RotationEcrans, hors de la scène (qui est en aria-hidden). Masquée sous mouvement réduit, où
+      rien ne bouge. `aria-pressed` porte l'état. Ne jamais la retirer. */}
+  <div class="flex justify-center">
+    <button
+      type="button"
+      data-pause
+      aria-pressed="false"
+      aria-label="Mettre l'animation en pause"
+      title="Mettre l'animation en pause"
+      class="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors duration-(--duration-fast) ease-out hover:border-border-strong hover:text-ink aria-pressed:border-accent aria-pressed:text-accent motion-reduce:hidden"
+    >
+      <svg aria-hidden="true" viewBox="0 0 16 16" class="size-2.5" fill="currentColor">
+        <path data-icone-pause d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
+        <path data-icone-lecture class="hidden" d="M4 2.5v11l9-5.5-9-5.5Z" />
+      </svg>
+    </button>
   </div>
 </div>
 
@@ -997,6 +1016,24 @@ const coche = "m3 8.4 3.4 3.4L13 5";
     color: var(--ink);
   }
 
+  /* — Pause — */
+  /* Une vraie pause : les déplacements de l'objet et de l'éclat sont des animations CSS de plusieurs
+     secondes (la boucle du second objectif dure 3,6 s) ; sans ce gel, l'objet finissait son trajet
+     pendant que tout le reste était arrêté. Les transitions en cours sont gelées par le script. */
+  .protocole[data-fige] .flux *,
+  .protocole[data-fige] .flux *::before,
+  .protocole[data-fige] .flux *::after {
+    animation-play-state: paused !important;
+  }
+  /* Sous mouvement réduit, la planche reste sur son état final ; si le réglage change en cours de
+     route, elle y revient sans glisser (ces deux durées ne sont pas des tokens, voir DESIGN.md). */
+  @media (prefers-reduced-motion: reduce) {
+    .fil::after,
+    .objet {
+      transition: none;
+    }
+  }
+
   /* — Déroulé — */
   @media (prefers-reduced-motion: no-preference) {
     /* La sortie du client : l'objet descend, longe le canal et remonte jusqu'au serveur. Trois
@@ -1084,9 +1121,17 @@ const coche = "m3 8.4 3.4 3.4L13 5";
   // Treize temps, plus l'effacement (14, identique visuellement au temps 0 de la planche du labo).
   // Les temps longs sont ceux où quelque chose se transforme vraiment : la décomposition, l'éventail
   // des routes, la boucle du second objectif, la synthèse. ~39 s par tour.
+  // Contrat des animations du site (DESIGN.md, « Rotation d'écrans ») : état final rendu par le
+  // serveur ; rien ne bouge sous mouvement réduit ; bouton pause, et une VRAIE pause (animations CSS
+  // gelées par `data-fige`, transitions en cours gelées ici, reliquat du minuteur retenu) ; arrêt
+  // hors de l'écran.
   (function () {
-    var scene = document.querySelector<HTMLElement>("[data-protocole] [data-scene]");
-    if (!scene) return;
+    var racine = document.querySelector<HTMLElement>("[data-protocole]");
+    var scene = racine?.querySelector<HTMLElement>("[data-scene]");
+    if (!racine || !scene) return;
+    var bouton = racine.querySelector<HTMLElement>("[data-pause]");
+    var iconePause = racine.querySelector("[data-icone-pause]");
+    var iconeLecture = racine.querySelector("[data-icone-lecture]");
     var reduit = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     var DEROULE: [string, number][] = [
@@ -1097,27 +1142,121 @@ const coche = "m3 8.4 3.4 3.4L13 5";
     var EFFACEMENT = DEROULE.length - 1;
     var ATTENTE = 1600; // l'état rendu par le serveur reste lisible avant que le déroulé ne parte
 
+    var gele = false; // arrêté par le bouton — distinct d'une sortie d'écran
+    var dansLaVue = true;
+    var enCours = false; // un minuteur tourne
+
+    // Un seul minuteur à la fois, et on retient ce qu'il RESTAIT à attendre : reprendre n'attend
+    // que le reste, au lieu de rejouer le temps depuis son début.
     var minuteur: number | undefined;
+    var suite: (() => void) | null = null;
+    var reste = 0;
+    var depart = 0;
+    var transitionsGelees: Animation[] = [];
+
+    function attends(ms: number, fn: () => void) {
+      suite = fn;
+      reste = ms;
+      depart = Date.now();
+      enCours = true;
+      minuteur = window.setTimeout(function () {
+        suite = null;
+        enCours = false;
+        fn();
+      }, ms);
+    }
+
+    function suspend() {
+      if (!enCours) return;
+      window.clearTimeout(minuteur);
+      enCours = false;
+      reste = Math.max(0, reste - (Date.now() - depart));
+      racine!.setAttribute("data-fige", "");
+      // `animation-play-state` ne gèle pas une transition : on suspend celles qui sont en cours
+      // (un filet qui se trace, un panneau qui s'allume), sinon elles finiraient pendant la pause.
+      transitionsGelees = scene!.getAnimations
+        ? scene!.getAnimations({ subtree: true }).filter(function (a) {
+            return a instanceof CSSTransition;
+          })
+        : [];
+      transitionsGelees.forEach(function (a) {
+        a.pause();
+      });
+    }
+
+    function relance() {
+      if (enCours || gele || !dansLaVue || reduit.matches || !suite) return;
+      racine!.removeAttribute("data-fige");
+      transitionsGelees.forEach(function (a) {
+        a.play();
+      });
+      transitionsGelees = [];
+      attends(reste, suite);
+    }
+
+    function majBouton() {
+      if (!bouton) return;
+      var libelle = gele ? "Relancer l'animation" : "Mettre l'animation en pause";
+      bouton.setAttribute("aria-label", libelle);
+      bouton.setAttribute("title", libelle);
+      bouton.setAttribute("aria-pressed", String(gele));
+      iconePause?.classList.toggle("hidden", gele);
+      iconeLecture?.classList.toggle("hidden", !gele);
+    }
 
     function joue(pas: number) {
       var i = pas % DEROULE.length;
       scene!.dataset.etape = DEROULE[i][0];
-      minuteur = window.setTimeout(function () {
+      attends(DEROULE[i][1], function () {
         joue(i + 1);
-      }, DEROULE[i][1]);
+      });
     }
 
     function demarre() {
       window.clearTimeout(minuteur);
+      enCours = false;
+      suite = null;
+      gele = false;
+      transitionsGelees.forEach(function (a) {
+        a.play();
+      });
+      transitionsGelees = [];
+      racine!.removeAttribute("data-fige");
       scene!.dataset.etape = FINAL;
+      majBouton();
       if (reduit.matches) return; // mouvement réduit : l'état final, et rien ne bouge
       // On part de l'effacement : la planche se vide avant le premier temps.
-      minuteur = window.setTimeout(function () {
+      attends(ATTENTE, function () {
         joue(EFFACEMENT);
-      }, ATTENTE);
+      });
+      if (!dansLaVue) suspend();
     }
 
+    bouton?.addEventListener("click", function () {
+      gele = !gele;
+      if (gele) {
+        // Hors de l'écran, le minuteur est déjà suspendu : rien de plus à faire.
+        suspend();
+        racine!.setAttribute("data-fige", "");
+      } else relance();
+      majBouton();
+    });
+
     reduit.addEventListener("change", demarre);
+
+    // Hors de l'écran, rien ne tourne : ni minuteur, ni animation. Au retour, on reprend là où on
+    // s'était arrêté — sauf si la pause vient du bouton, qui, lui, décide.
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(
+        function (entrees) {
+          dansLaVue = entrees[0].isIntersecting;
+          if (dansLaVue) relance();
+          else suspend();
+        },
+        { threshold: 0.2 },
+      ).observe(racine);
+    }
+
     demarre();
   })();
 </script>
