@@ -269,7 +269,7 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il demande le devis → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
-| Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. Voir « Clients » |
+| Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. **Relief depuis le 2026-10-08 (étape 5 bis)** : filet d'accent vertical à gauche de la citation (`w-1 rounded-full bg-accent`, `aria-hidden`) et guillemets de la citation en `--accent`. Voir « Clients » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 ### Cartes (2026-10-08, plan « site moins geek », étape 5)
@@ -975,6 +975,12 @@ Ordre de lecture, pensé pour 10 secondes :
 2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
    `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
    gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, `shadow-sm` (comme `Card`, depuis l'étape 5).
+   **Relief (étape 5 bis)** : deux des trois pistes du plan — un **filet d'accent** vertical à gauche de la citation
+   (`w-1` = 4 px, pas de l'échelle, `rounded-full bg-accent`, `aria-hidden`, pleine hauteur de la citation) et les
+   **guillemets de la citation en `--accent`** (5,42:1 sur `surface` en clair, 8,28:1 en sombre). Écartés : le
+   **grand guillemet décoratif** ajouté au-dessus (il doublait les guillemets du texte, qu'on ne retire pas) et le
+   **fond `accent-soft`** sur la carte (il aurait fait de la carte du témoignage un bloc ambre de plus, juste au-dessus
+   de la carte « Aujourd'hui » bordée d'accent). Le texte de la citation ne change pas.
 3. **Deux chiffres, pas un de plus** (`<dl>`) : « Pour un devis : 25 min → 3 min » et « Gagnées par semaine : ≈ 4 h »,
    légende commune « Selon Jason. ». Sobres : serif `text-28`/`text-36` en `--ink`, **pas d'accent, pas de grille de
    compteurs, pas de barres**. La flèche est en Inter (`font-sans`) : en Noto Serif, elle collait à « min ».

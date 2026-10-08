@@ -51,10 +51,15 @@ const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / N
     )
   }
 
-  <blockquote class="max-w-(--measure) font-display text-21 leading-(--leading-tight) text-ink md:text-28 lg:text-36">
-    {/* Guillemets français collés par une espace fine insécable (U+202F), comme ailleurs sur le site. */}
-    <p>{`«\u202F${citation}\u202F»`}</p>
-  </blockquote>
+  {/* Relief sans toucher au texte (étape 5 bis) : un filet d'accent à gauche de la citation, et ses propres
+      guillemets en accent. Pas de grand guillemet ajouté : il aurait doublé ceux du texte. */}
+  <div class="flex gap-4 md:gap-6">
+    <span aria-hidden="true" class="w-1 shrink-0 rounded-full bg-accent"></span>
+    <blockquote class="max-w-(--measure) font-display text-21 leading-(--leading-tight) text-ink md:text-28 lg:text-36">
+      {/* Guillemets français collés par une espace fine insécable (U+202F), comme ailleurs sur le site. */}
+      <p><span class="text-accent">{"« "}</span>{citation}<span class="text-accent">{" »"}</span></p>
+    </blockquote>
+  </div>
 
   <figcaption class="text-16 text-ink-muted">
     <span class="font-semibold text-ink">{prenom}{nomFamille && ` ${nomFamille}`}</span>, {role} —{" "}
