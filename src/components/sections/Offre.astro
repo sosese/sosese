@@ -5,52 +5,53 @@ import SectionHeading from "../ui/SectionHeading.astro";
 // Une seule offre depuis le 2026-09-17 : « Audit & diagnostic » et « Ateliers & acculturation »
 // répétaient les étapes 1 et 2 de la Méthode, juste au-dessus. La grille bento a disparu avec elles.
 //
-// Ce que change une solution sur-mesure. Aucune promesse chiffrée ici : ce sont des principes de
+// Ce que change un assistant sur-mesure. Aucune promesse chiffrée ici : ce sont des principes de
 // fonctionnement, cohérents avec les engagements (aucune écriture sans accord, code et données remis).
 //
 // `icone` : tracé SVG en ligne, chaîne statique (même contrat que la section Confiance — jamais de
 // `set:html` sur du contenu éditable). Décoratif : l'argument est déjà écrit à côté.
 //
-// « elle » : la solution est nommée une fois dans le chapeau ci-dessous, puis reprise en « elle » ici et
-// dans la section Confiance. Ne jamais employer le pronom avant ce chapeau — plus haut dans la page, il
-// n'a pas d'antécédent (voir DESIGN.md, « Copy »).
+// « il » : l'assistant est nommé dans le chapeau ci-dessous, puis repris en « il » dans les arguments.
+// Un seul nom pour ce que je construis : « l'assistant » (le mot du client), jamais « la solution »
+// (voir DESIGN.md, « Copy »).
 const arguments_ = [
   {
     // Des lignes de tâches, dont une est barrée : ce qui disparaît, ce sont les tâches, pas les outils.
     icone: '<path d="M4 6h13M4 11h9M4 16h5"/><path d="m11 13 6 6M17 13l-6 6"/>',
-    titre: "L'administratif en moins, pas un outil en plus.",
+    titre: "L'administratif en moins, pas un logiciel en plus.",
     // Scènes reprises de l'ancienne section « Le constat », retirée le 2026-10-07.
-    texte: "La même commande tapée dans le devis, puis dans la facture, puis dans le tableau de suivi : ces recopies, les saisies et les relances partent en premier. Vos équipes gardent leurs logiciels et leurs habitudes.",
+    texte: "La même commande tapée dans le devis, puis dans la facture, puis dans le tableau de suivi : ces recopies, les saisies et les relances partent en premier. Vous gardez vos logiciels et vos habitudes.",
   },
   {
     // Des données empilées d'où repart une flèche : ce qui dort se remet en mouvement.
     icone: '<ellipse cx="9" cy="6" rx="5" ry="2.5"/><path d="M4 6v6c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V6"/><path d="M4 12v6c0 1.4 2.2 2.5 5 2.5"/><path d="M14 18h6m-3-3 3 3-3 3"/>',
     titre: "Vos informations enfin réunies.",
-    texte: "Vos tarifs, vos chantiers, l'historique client : tout est déjà là, éparpillé entre quatre outils, et personne n'a le temps de le chercher. Elle va chercher au bon endroit, dans tous vos outils à la fois.",
+    texte: "Vos tarifs, vos chantiers, l'historique client : tout est déjà là, éparpillé entre quatre logiciels, et personne n'a le temps de le chercher. Il va chercher au bon endroit, dans tous vos logiciels à la fois.",
   },
   {
-    // Une horloge : elle part toute seule, à l'heure ou au seuil que vous avez fixés.
+    // Une horloge : il part tout seul, à l'heure ou au seuil que vous avez fixés.
     icone: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-    titre: "Elle prend les devants.",
-    texte: "Le devis qui dort depuis dix jours, la relance à envoyer : c'est préparé quand vous arrivez. Vous réglez ce qui la déclenche.",
+    titre: "Il prend les devants.",
+    texte: "Le devis qui dort depuis dix jours, la relance à envoyer : c'est préparé quand vous arrivez. Vous réglez ce qui le déclenche.",
   },
   {
     // Des curseurs de réglage : c'est vous qui tenez les manettes, et vous les déplacez quand il faut.
     icone: '<path d="M4 6h8M17 6h3M4 12h3M12 12h8M4 18h8M17 18h3"/><circle cx="14.5" cy="6" r="2.5"/><circle cx="9.5" cy="12" r="2.5"/><circle cx="14.5" cy="18" r="2.5"/>',
-    // Règles ≠ données : sans cette distinction, « elle retient vos corrections » contredit « rien n'est
-    // mémorisé par défaut » (bandeau et section Confiance). Les deux objets sont nommés séparément.
-    titre: "Elle garde vos règles, pas vos données.",
-    texte: "Vos corrections deviennent des règles de travail : votre façon de rédiger, vos remises, vos exceptions. Quand la bonne personne est absente, le dossier n'attend plus. Ce sont ces règles qu'elle garde — jamais les documents qu'elle a lus.",
+    // Règles ≠ données : sans cette distinction, « il retient vos corrections » contredit « rien de
+    // mémorisé » (section Confiance). Les deux objets sont nommés séparément ; « données » au sens de
+    // vie privée, exception assumée à la liste noire du jargon.
+    titre: "Il garde vos règles, pas vos données.",
+    texte: "Vos corrections deviennent des règles de travail : votre façon de rédiger, vos remises, vos exceptions. Quand la bonne personne est absente, le dossier n'attend plus. Ce sont ces règles qu'il garde — jamais les documents qu'il a lus.",
   },
 ];
 ---
 
 <section id="offre" aria-labelledby="offre-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
-    <SectionHeading id="offre-titre" eyebrow="Ce qu'on construit" title="Une solution construite pour vous, qui travaille comme vous">
+    <SectionHeading id="offre-titre" eyebrow="Ce que je construis" title="Un assistant construit pour vous, qui travaille comme vous">
       Les tâches écrites dans aucune fiche de poste remplissent quand même les journées. Pas un
-      logiciel de plus à apprendre : une solution qui connaît vos prix, vos dossiers et votre façon de travailler.
-      Elle prépare le travail, vous gardez la main.
+      logiciel de plus à apprendre : un assistant qui connaît vos prix, vos dossiers et votre façon de travailler.
+      Il prépare le travail, vous gardez la main.
     </SectionHeading>
 
     {/* Piste de droite en **21rem**, et non `auto` : `auto` se cale sur le max-content de la

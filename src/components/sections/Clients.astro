@@ -32,10 +32,13 @@ const guillemets = (texte: string) => `« ${texte} »`;
 <section id="cas-client" aria-labelledby="cas-client-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-8">
     <SectionHeading id="cas-client-titre" eyebrow="Clients" title={`Ce qu'en dit ${casClient.prenom}, chez ${casClient.nom}`}>
-      {casClient.nom} pose des sols entre Metz et le Luxembourg, avec une équipe de 4 à 9 personnes. Pour{" "}
-      {casClient.prenom}, j'ai construit un assistant relié à{" "}
-      {casClient.logiciel ? `${casClient.logiciel}, leur logiciel de gestion` : "leur logiciel de gestion"} : il demande le devis,
-      le devis se prépare dans le logiciel, il vérifie, c'est enregistré.
+      {/* Le nom de l'entreprise est déjà dans le titre et la signature : « Son entreprise » ici. Jason est
+          nommé comme sujet de chaque geste, pour que « il » ne se rattache jamais à l'assistant. */}
+      Son entreprise pose des sols entre Metz et le Luxembourg, avec une équipe de 4 à 9 personnes. J'y ai
+      construit un assistant relié à{" "}
+      {casClient.logiciel ? `${casClient.logiciel}, leur logiciel de gestion` : "leur logiciel de gestion"} :{" "}
+      {casClient.prenom} demande le devis, le devis se prépare dans le logiciel, {casClient.prenom} le vérifie, et
+      c'est enregistré.
     </SectionHeading>
 
     <Temoignage
@@ -60,8 +63,10 @@ const guillemets = (texte: string) => `« ${texte} »`;
                 <dd class="font-display text-28 text-ink tabular-nums md:text-36">
                   {"avant" in chiffre ? (
                     <Fragment>
+                      {/* Lu « avant 25 min, maintenant 3 min » : la flèche seule ne dit pas le sens. */}
+                      <span class="sr-only">avant </span>
                       {chiffre.avant} <span aria-hidden="true" class="font-sans text-ink-muted">→</span>
-                      <span class="sr-only">au lieu de </span>
+                      <span class="sr-only">, maintenant </span>
                       {chiffre.apres}
                     </Fragment>
                   ) : (

@@ -470,8 +470,8 @@ illustratifs : supprimés »). Le nom de fichier sert d'identifiant, en kebab-ca
 supprimées** : elles répétaient les étapes 1 et 2 de la Méthode, juste au-dessus, et faisaient lire trois fois la
 même promesse. La section ne présente plus que le sur-mesure. Trois arguments (`arguments_` en tête de
 `Offre.astro`), chacun une phrase d'accroche en `text-ink` suivie d'une ou deux phrases, puis trois `points`
-cochés. Aucun chiffre, aucune promesse d'apprentissage automatique : « la solution s'ajuste » veut dire que vos
-corrections servent à l'ajuster. Si une prestation détachable (audit, ateliers) doit réapparaître, elle ne revient
+cochés. Aucun chiffre, aucune promesse d'apprentissage automatique : « l'assistant s'ajuste » veut dire que vos
+corrections servent à l'ajuster (« la solution » jusqu'au 2026-10-08, voir « Copy »). Si une prestation détachable (audit, ateliers) doit réapparaître, elle ne revient
 pas en carte à côté du sur-mesure : la Méthode la décrit déjà.
 
 **Plus de bento** (2026-09-17) : la grille `md:grid-cols-3 md:grid-rows-2` a disparu avec les deux cartes, et
@@ -693,8 +693,13 @@ il comprend que le connecteur n'est pas un outil à devis. Chaque scène dure 9 
 ### Rotation d'écrans (RotationEcrans)
 Visuel du hero le 2026-09-19, descendu dans « L'offre » le jour même, repris d'une planche de maquettes. Registre **R2, écrans plutôt que schéma**.
 Ce qu'il dit : le travail préparé **arrive là où la personne se trouve déjà**. Le même enchaînement — une demande
-arrive, la solution consulte les outils de l'entreprise un par un en montrant ce qu'elle y trouve, une action prête
+arrive, l'assistant consulte les logiciels de l'entreprise un par un en montrant ce qu'il y trouve, une action prête
 à valider en sort — joué dans quatre décors : messagerie, boîte mail, téléphone, application de gestion.
+- **Textes (2026-10-08)** : dans la maquette, c'est l'assistant qui parle à la première personne (« Je regarde dans
+  vos logiciels… », « Je consulte vos logiciels », « outils » avant) — une réplique de personnage, comme les phrases
+  des clients inventés, pas la voix de sosese. La transcription `sr-only` dit « l'assistant », jamais « la solution ».
+  Remplacer un titre de panneau par un plus long impose de revérifier qu'il tient sur une ligne à 360 px (case de
+  hauteur constante).
 
 - **Un écran = un scénario.** Huit écrans depuis le 2026-09-19, **deux par décor** : messagerie (devis, création de
   fiche client), boîte mail (rendez-vous avancé, dépannage sous garantie), téléphone (question de gestion, recherche
@@ -807,9 +812,9 @@ avant redéploiement) : le terminal reprend toute la largeur. Un second visuel, 
 ### Qui décide quoi (Confiance)
 Refait le 2026-09-20 : deux listes plates séparées par un petit badge ne se lisaient pas, et rien n'y avait le
 poids de ce qui est promis.
-- **Les deux panneaux ont un titre de vrai titre** (`text-18 font-semibold`), pas une étiquette mono : « Elle
-  avance seule » / « Elle s'arrête net ». Ce sont les deux moitiés d'une même phrase, il faut qu'on les lise
-  avant les listes.
+- **Les deux panneaux ont un titre de vrai titre** (`text-18 font-semibold`), pas une étiquette mono : « Il
+  avance seul » / « Il s'arrête net » (« Elle… » jusqu'au 2026-10-08). Ce sont les deux moitiés d'une même phrase,
+  il faut qu'on les lise avant les listes.
 - **Chaque geste porte son signe** : une coche à gauche, un glyphe de pause à droite, tous deux en `--accent`,
   alignés sur la première ligne (`mt-1`). C'est ce qui donne le rythme que les listes nues n'avaient pas.
 - **La porte est le seul aplat de couleur de la section** : pastille `bg-accent` / `text-on-accent` (5,02:1,
@@ -818,8 +823,9 @@ poids de ce qui est promis.
 - **Le trait qui la traverse est un filet, pas une flèche** : `h-5 w-px` empilé avant lg, `lg:h-px lg:w-5` en
   ligne ensuite. Deux flèches `→` empilées verticalement dans une colonne `auto` disaient l'inverse du sens de
   lecture.
-- **Le chapeau est en trois phrases courtes** (« Elle lit ce qu'il faut. Elle n'en garde rien. Elle n'envoie
-  rien sans vous. ») et non en une phrase à trois virgules : c'est la même information, scandée.
+- **Le chapeau est en trois phrases courtes** (« L'assistant lit ce qu'il faut. Il n'en garde rien. Il n'envoie
+  rien sans vous. ») et non en une phrase à trois virgules : c'est la même information, scandée. La première
+  renomme l'assistant : l'offre, où il est présenté, est trois sections plus haut.
 
 ### Terminal
 - **Vit dans « Sous le capot »** depuis le 2026-09-16 (auparavant dans le hero, voir « Décisions »). Il porte
@@ -841,20 +847,24 @@ poids de ce qui est promis.
 Refaite le 2026-10-08 (plan « site moins geek », étape 3, décision de l'humain) : **une parole de client à la
 place d'un tableau de bord**. Composant `sections/Clients.astro`, eyebrow `Clients`, entrée de menu « Clients ».
 **L'ancre reste `#cas-client`** (publiée depuis la v1). Place dans la page inchangée : juste sous le bandeau, `bg-bg`.
-Voix : la section parle au **« je »** (Joris) depuis le 2026-10-08 ; le reste du site reste au « nous » jusqu'à
-l'étape 4 du plan (incohérence temporaire acceptée).
+Voix : la section parle au **« je »** (Joris), comme tout le site depuis le 2026-10-08.
 
 Ordre de lecture, pensé pour 10 secondes :
 1. **Titre `h2` qui résume seul** : « Ce qu'en dit {prénom}, chez {entreprise} » (valeurs de `casClient`), puis un
-   chapeau en « je » : qui ils sont (pose de sols, Metz – Luxembourg, 4 à 9 personnes) et ce que j'ai construit, en
-   mots simples (« il demande le devis, le devis se prépare dans le logiciel, il vérifie, c'est enregistré »).
+   chapeau en « je » : qui ils sont (« Son entreprise pose des sols… », Metz – Luxembourg, 4 à 9 personnes) et ce que
+   j'ai construit, en mots simples (« Jason demande le devis, le devis se prépare dans le logiciel, Jason le
+   vérifie, et c'est enregistré »). **Le nom de l'entreprise n'est pas répété dans le chapeau** (il est déjà dans le
+   titre et la signature), et **Jason est nommé comme sujet de chaque geste** : avec « un assistant » juste avant,
+   un « il » se rattachait à la machine (corrigé le 2026-10-08).
 2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
    `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
    gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, sans ombre.
 3. **Deux chiffres, pas un de plus** (`<dl>`) : « Pour un devis : 25 min → 3 min » et « Gagnées par semaine : ≈ 4 h »,
    légende commune « Selon Jason. ». Sobres : serif `text-28`/`text-36` en `--ink`, **pas d'accent, pas de grille de
    compteurs, pas de barres**. La flèche est en Inter (`font-sans`) : en Noto Serif, elle collait à « min ».
-   Lecteur d'écran : `→` et `≈` en `aria-hidden`, doublés de « au lieu de » et « environ » en `sr-only`. **Ne pas
+   Lecteur d'écran : `→` et `≈` en `aria-hidden`, doublés en `sr-only` : le devis se lit **« avant 25 min,
+   maintenant 3 min »** (« 25 min au lieu de 3 min », lu jusqu'au 2026-10-08, inversait le sens), l'autre
+   « environ 4 h ». **Ne pas
    afficher** les 2 h d'administratif d'avant (il faudrait expliquer qu'il en gagne 4 parce que l'assistant fait
    aussi du suivi commercial) ni sa note de recommandation.
 4. **Avant / aujourd'hui côte à côte** (`sm:grid-cols-2`), puis « le temps gagné », trois `blockquote` de ses mots
@@ -960,54 +970,88 @@ supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole
   du libellé (`items-baseline` + `inline-flex`). Coche en `aria-hidden` : exemptée de la règle « pas de texte
   accent sur accent-soft », comme les autres coches décoratives. Comportement de la rangée inchangé ; mesuré sans
   débordement à 360 / 640 / 1024 / 1280 px (1 colonne sous `sm`, 3 lignes à 640, 2 lignes à partir de 1024).
-- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 32 caractères.
-- Contenu et registre du bandeau : voir « Copy (ligne éditoriale) » — pas de « elle » ici, le pronom n'a pas
-  encore d'antécédent à cette hauteur de page.
+- Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : 34 caractères
+  (« chiffré uniquement sur vos besoins », « accès limités au strict nécessaire »).
+- Contenu et registre du bandeau : voir « Copy (ligne éditoriale) » — des faits sans sujet, pas de « il » pour
+  l'assistant : le bandeau doit se lire seul.
 
 ## Copy (ligne éditoriale)
-Passe du 2026-09-19 : la promesse de l'accueil est resserrée sur « on part de vos outils, l'administratif en
-moins, vos données enfin utiles, elle prend les devants, vous l'améliorez en l'utilisant, elle ne garde rien ».
-Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
+Passe du 2026-10-08 (plan « site moins geek », étape 4) : **le site parle à la première personne et à tout le
+monde**. Ton de référence : `variantes/v10/COPY.md` (« Voix et ton »). Elle remplace la passe du 2026-09-19
+(« on part de vos outils… elle prend les devants… »), dont l'esprit reste : mots simples, promesses adossées à un
+mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à cette occasion.
 
-- **Mots simples, concepts d'adulte.** Le registre n'est jamais oral appuyé : ni « calé », ni « vaut le coup »,
-  ni « c'est top ». Un mot courant à la place d'un mot technique, jamais une phrase qui prend le lecteur de haut.
-- **Vocabulaire retiré de l'accueil** : *studio IA*, *cartographier vos processus*, *livrable* (→ « vous
-  recevez »), *système d'information* (→ « vos logiciels »), *réversibilité* (→ « vous pouvez reprendre la
-  main »), *accord explicite* (→ « votre oui »), *documentation remise à la livraison* (→ « le mode d'emploi est
-  livré avec »). Le jargon reste autorisé dans « Sous le capot » **uniquement** (§2.1) — et sur `/a-propos`,
-  « studio » décrit ce que sosese est, ce qui est le sujet de la page.
-- **« elle » désigne la solution, et a besoin d'un antécédent.** La solution est nommée une seule fois, dans le
-  chapeau de l'offre (« une solution qui connaît vos prix… **Elle** prépare le travail »). Partout **au-dessus**
-  de ce chapeau — hero, bandeau, cas client — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
-  encore de sujet. En dessous (offre, confiance, FAQ), « elle » partout. Le cas client, remonté au-dessus le
-  2026-10-07, ne dit pas « elle » : depuis le 2026-10-08, il dit « un assistant » / « l'assistant » (le mot du client),
-  et « il » y désigne Jason, jamais la machine.
-- **Règles ≠ données.** « Elle retient vos corrections » (offre) et « rien n'est mémorisé par défaut » (bandeau,
-  confiance) se contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *elle
-  garde vos règles, pas vos données*. **Ne jamais écrire que la solution « apprend de vos documents ».**
-- **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « elle ne calcule jamais un prix
-  elle-même, elle lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie
-  tient à la porte de validation, pas à une propriété du modèle.
-- **Pro-activité (2026-09-19)** : « elle prend les devants » est tenue par des routines — heure fixe ou seuil de
-  déclenchement. Le copy nomme les deux (« tous les lundis matin, ou dès qu'un dossier dépasse le délai que vous
-  avez fixé ») : la promesse doit rester adossée à un mécanisme réel.
-- **Exception à B8 (un argument, un seul endroit)** : « rien n'est mémorisé par défaut » est énoncé **en fait**
-  dans le bandeau d'engagements (réflexe de méfiance nº 1 face à l'IA) et **argumenté** une seule fois, dans la
-  section Confiance. Aucun autre argument n'a droit à ce doublon.
-- **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. C'est pourquoi la carte
-  de Confiance s'appelle « Rien de mémorisé, rien qui serve à entraîner l'IA » et non « Aucun entraînement » avec
-  la mémoire dans le corps. La grille `lg:grid-cols-4` impose **quatre cartes** : toute carte ajoutée en remplace
-  une autre ou fusionne avec elle.
-- **Porte de validation (Confiance)** : le libellé est passé de « votre accord » à « elle attend votre oui »,
-  puis à **« votre oui »** seul le 2026-09-20. Entre deux panneaux qui disent « Elle avance seule » et « Elle
-  s'arrête net », la phrase entière était redondante ; deux mots dans une pastille tiennent en `nowrap` sans
-  manger la largeur des panneaux, ce que l'ancien libellé imposait de corriger au `lg:whitespace-normal`.
+- **Voix : « je » (Joris), vouvoiement du lecteur.** sosese, c'est Joris : plus de « on » ni de « nous » pour
+  sosese, nulle part (titres, chapeaux, FAQ, formulaires, pages légales là où sosese parle). Joris est nommé dès le
+  chapeau du hero (« Je suis Joris. »). Restent permis : le « on » impersonnel (« les questions qu'on me pose »),
+  « Parlons-en » (vous et moi), et le « nous / nos » des **personnages** (phrases des clients inventés dans les
+  maquettes, mots de Jason) ou du **visiteur** (une question de FAQ posée par lui).
+- **Cible : artisans, indépendants, petites entreprises** — dans cet ordre, ou « les petites entreprises » seul.
+  Plus de « PME », plus de « vos équipes » quand le lecteur peut être seul (« vous ou votre équipe »).
+- **Phrases courtes, un titre = un message, aucun point d'exclamation.** On doit comprendre l'offre en ne lisant
+  que les titres : ce que je fais (hero), la preuve (Clients), comment (Méthode), quoi (Offre), les garanties
+  (Confiance), quoi faire (CTA).
+- **Liste noire, hors « Sous le capot »** : *IA*, *agent*, *connecteur*, *automatisation / automatisé*, *API*,
+  *MCP*, *données*, *outil* (quand « logiciel » suffit), *workflow*, *PME*, *processus*, *chronophage*, *solution*
+  (pour désigner ce que je construis). Mots de remplacement : « l'assistant », « vos logiciels », « relier »,
+  « préparer », « prendre en charge », « vos informations ». Exceptions assumées, à ne pas étendre :
+  - **« IA »** : seulement dans la FAQ, là où la question la pose (« Et si l'IA invente un prix ? »), et dans les
+    questions du questionnaire prospects (on y mesure l'usage de l'IA, ce sont des questions d'étude).
+  - **« données »** au sens de vie privée : titre de Confiance (« Vos données restent les vôtres »), « Vos données
+    ne quittent pas l'Europe », « il garde vos règles, pas vos données », questions de FAQ sur la confidentialité,
+    mention du questionnaire et pages légales.
+  - **« automatisations »** et **« expertise »** dans la citation de Jason : ses mots.
+  - **« outils »** quand le mot englobe papier, téléphone et logiciels (chapeau du questionnaire, section « Vos
+    outils ») ou quand le logiciel est un instrument de détection (politique de confidentialité).
+  - « Sous le capot » garde tout son jargon : c'est la touche geek assumée. Il passe au « je » comme le reste.
+  - Pages légales : seulement le passage au « je » là où sosese parle, **jamais un changement de sens juridique**.
+- **Un seul nom pour ce que je construis : « l'assistant »** (le mot du client dans son témoignage). Plus de « la
+  solution », plus de « elle ». Il est présenté dans le hero (« je construis un assistant qui s'en occupe ») et dans
+  le chapeau de l'offre (« un assistant qui connaît vos prix… Il prépare le travail »).
+- **« il » a besoin d'un antécédent.** Il désigne l'assistant seulement dans un texte où « l'assistant » vient
+  d'être nommé (hero, offre, chapeau de Confiance, FAQ) ; une section éloignée le renomme avant d'employer le
+  pronom (chapeau de Confiance : « L'assistant lit ce qu'il faut. Il n'en garde rien. »). Dans le cas client, « il »
+  désigne **Jason**, jamais la machine — et le chapeau nomme Jason à chaque geste pour lever l'ambiguïté. Le
+  bandeau d'engagements n'emploie aucun pronom.
+- **Règles ≠ données.** « Il retient vos corrections » (offre) et « rien de mémorisé » (Confiance, FAQ) se
+  contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *il garde vos règles, pas
+  vos données* (au sens de vie privée : les documents lus ne sont pas conservés). **Ne jamais écrire que
+  l'assistant « apprend de vos documents ».**
+- **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « il ne calcule jamais un prix
+  lui-même, il lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie tient à la
+  porte de validation, pas à une propriété du modèle.
+- **Pro-activité** : « il prend les devants » est tenu par des routines — heure fixe ou seuil de déclenchement
+  (« le devis qui dort depuis dix jours… vous réglez ce qui le déclenche »). La promesse reste adossée à un
+  mécanisme réel.
+- **Exception à B8 (un argument, un seul endroit)** : « accès limités au strict nécessaire » est énoncé **en fait**
+  dans le bandeau d'engagements (réflexe de méfiance nº 1 : « il va tout lire ») et **argumenté** une seule fois,
+  dans la section Confiance (« Il ne consulte que ce qu'il faut »). Aucun autre argument n'a droit à ce doublon.
+  (« les accès de l'IA sont maîtrisés » jusqu'au 2026-10-08 ; avant, « rien n'est mémorisé par défaut ».)
+  Le chapeau du hero décrit le déroulé (« il prépare le travail, vous vérifiez, puis c'est enregistré ») sans
+  argumenter la porte : c'est Confiance qui la promet et la détaille.
+- **Mêmes libellés de bouton partout** : l'appel principal vient de `cta.label` (`site.ts`, « Parlons-en ») pour
+  l'en-tête, le hero, le bouton flottant, le menu mobile, le CTA final et la 404 — ne jamais l'écrire en dur.
+- **Titres de cartes scannés, pas lus** : ce qu'on veut faire savoir est dans le titre. La carte de Confiance
+  s'appelle « Rien de mémorisé, rien de réutilisé » (« … rien qui serve à entraîner l'IA » jusqu'au 2026-10-08) et
+  non « Aucun entraînement » avec la mémoire dans le corps. La grille `lg:grid-cols-4` impose **quatre cartes** :
+  toute carte ajoutée en remplace une autre ou fusionne avec elle.
+- **Porte de validation (Confiance)** : **« votre oui »** seul, dans une pastille, entre « Il avance seul » et « Il
+  s'arrête net ». Deux mots tiennent en `nowrap` sans manger la largeur des panneaux.
 - **Méthode : des noms courts en titre** (Atelier / Feuille de route / Construction), la phrase d'action en
-  première ligne de description. Trois titres commençant par « On » font de sosese le sujet de sa propre
-  méthode, et ne se survolent pas.
+  première ligne de description, en « je » (« Je regarde avec vous, sur le terrain… »). Trois titres commençant
+  par « Je » feraient de moi le sujet de ma propre méthode, et ne se survolent pas.
 - **Cas client** : pas de « réel » ni de « vrai » dans l'eyebrow — on ne précise « vrai » que là où le doute
-  existe. L'eyebrow est `Clients`, la parole du client prouve. Depuis le 2026-10-08, la section parle au « je »
-  (Joris) et cite le client ; « IA » n'y apparaît pas hors de ses mots.
+  existe. L'eyebrow est `Clients`, la parole du client prouve. « IA » n'y apparaît pas hors de ses mots.
+- **Vocabulaire retiré depuis 2026-09-19, toujours valable** : *studio IA*, *cartographier vos processus*,
+  *livrable* (→ « vous recevez »), *système d'information* (→ « vos logiciels »), *réversibilité* (→ « vous pouvez
+  reprendre la main »), *accord explicite* (→ « votre oui »), *documentation remise à la livraison* (→ « le mode
+  d'emploi est livré avec »). Registre jamais oral appuyé (ni « calé », ni « vaut le coup », ni « c'est top ») :
+  un mot courant à la place d'un mot technique, jamais une phrase qui prend le lecteur de haut.
+- **Vérifier après toute retouche de texte** : `grep -rniE "\b(nous|notre|nos|on )\b" src shared` et la liste
+  noire (`grep -rnwiE "IA|agent|connecteurs?|automatis[a-zéè]*|API|MCP|données|outils?|workflow|PME|solution"`),
+  hors labo et composants non rendus ; chaque occurrence restante est un commentaire de code, une réplique de
+  personnage, « Sous le capot » ou une exception ci-dessus. Puis `scrollWidth` à 360 / 640 / 1024 / 1280 px
+  (piège 12) si un libellé s'est allongé.
 
 ## Décisions et écarts par rapport au cahier des charges
 - **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`

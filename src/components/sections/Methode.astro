@@ -3,27 +3,27 @@ import SectionHeading from "../ui/SectionHeading.astro";
 
 // À VALIDER : durées, livrables et temps demandé au client (§5 ligne 4, contenu non fourni par le §9).
 const etapes = [
-  // Titres : des noms courts, pas des phrases. On survole ces trois mots ; la phrase d'action ouvre la
-  // description (2026-09-19). Durées et temps demandé au client inchangés.
+  // Titres : des noms courts, pas des phrases. Le visiteur survole ces trois mots ; la phrase d'action
+  // ouvre la description, en « je » (2026-10-08). Durées et temps demandé au client inchangés.
   {
     titre: "Atelier",
-    texte: "On étudie comment vous travaillez avec vos équipes sur le terrain. On identifie les tâches chronophages et les meilleurs candidats à l'automatisation IA",
+    texte: "Je regarde avec vous, sur le terrain, comment se passent vos journées. Je repère les tâches qui prennent du temps, et celles qu'un assistant peut préparer pour vous.",
     duree: "2 jours",
-    livrable: "le déroulé de vos processus, et où ça coince",
-    tempsClient: "une demi-journée avec vos équipes",
+    livrable: "le déroulé de vos tâches, et où ça coince",
+    tempsClient: "une demi-journée, avec vous ou votre équipe",
   },
   {
     titre: "Feuille de route",
-    texte: "On vous dit ce qui mérite d'être fait. On mesure le temps gagné, le coût et la faisabilité. Vous choisissez par quoi commencer.",
+    texte: "Je vous dis ce qui mérite d'être fait. Pour chaque tâche : le temps gagné, le coût, et si c'est faisable. Vous choisissez par quoi commencer.",
     duree: "1 semaine",
-    livrable: "liste chiffrée, dans l'ordre où on la ferait",
+    livrable: "liste chiffrée, dans l'ordre où je la ferais",
     tempsClient: "1 heure pour en parler",
   },
   {
     titre: "Construction",
-    texte: "On construit, et on branche. Ce que vous avez choisi, sur vos outils actuels, puis entre les mains de vos équipes. Vous voyez avancer chaque semaine.",
+    texte: "Je construis ce que vous avez choisi, dans vos logiciels actuels, puis je vous le mets entre les mains. Vous voyez avancer chaque semaine.",
     duree: "4 semaines",
-    livrable: "solution en service, avec mode d'emploi",
+    livrable: "assistant en service, avec mode d'emploi",
     tempsClient: "1 heure de point par semaine",
   },
 ];
@@ -31,7 +31,7 @@ const etapes = [
 
 <section id="methode" aria-labelledby="methode-titre" class="border-y border-border bg-bg-subtle py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
-    <SectionHeading id="methode-titre" eyebrow="Comment on travaille" title="Trois étapes, et vous décidez à la fin de chacune">
+    <SectionHeading id="methode-titre" eyebrow="Comment je travaille" title="Trois étapes, et vous décidez à la fin de chacune">
       Rien ne se construit avant que vous ayez vu, en face, ce que ça coûte et ce que ça rapporte.
     </SectionHeading>
 
