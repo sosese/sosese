@@ -481,27 +481,49 @@ illustratifs : supprimés »). Le nom de fichier sert d'identifiant, en kebab-ca
 
 **Offre : une seule chose** (2026-09-17). « Audit & diagnostic » et « Ateliers & acculturation » **ont été
 supprimées** : elles répétaient les étapes 1 et 2 de la Méthode, juste au-dessus, et faisaient lire trois fois la
-même promesse. La section ne présente plus que le sur-mesure. Trois arguments (`arguments_` en tête de
-`Offre.astro`), chacun une phrase d'accroche en `text-ink` suivie d'une ou deux phrases, puis trois `points`
-cochés. Aucun chiffre, aucune promesse d'apprentissage automatique : « l'assistant s'ajuste » veut dire que vos
-corrections servent à l'ajuster (« la solution » jusqu'au 2026-10-08, voir « Copy »). Si une prestation détachable (audit, ateliers) doit réapparaître, elle ne revient
-pas en carte à côté du sur-mesure : la Méthode la décrit déjà.
+même promesse. La section ne présente plus que le sur-mesure. Si une prestation détachable (audit, ateliers) doit
+réapparaître, elle ne revient pas en carte à côté du sur-mesure : la Méthode la décrit déjà.
+
+**Offre : trois assistants** (2026-10-08, décision de l'humain, étape 4 ter). `h2` « Quel assistant vous
+faut-il ? » (eyebrow « Ce que je construis »), puis **trois cartes** (`assistants` en tête de `Offre.astro`) où
+chaque visiteur se reconnaît : commercial, chiffres (gestion), saisie. Elles remplacent les quatre arguments
+(« L'administratif en moins, pas un logiciel en plus », « Vos informations enfin réunies », « Il prend les
+devants », « Il garde vos règles, pas vos données »).
+- **Contrat de carte** : `Card` non interactive (rien de cliquable sauf un lien), pastille d'icône
+  `size-9 rounded-md bg-accent-soft text-accent` à gauche, `h3` `text-18` semi-gras = **la question** (« Besoin
+  d'… ? »), corps `text-16 text-ink-muted`, ligne de preuve éventuelle en `text-14`. La question suffit au survol :
+  le corps dit comment, jamais une autre promesse. Liste `ul` en `max-w-(--measure)`, écart fixe `gap-4` (celui des
+  cartes de Confiance — les bordures séparent déjà).
+- **Preuves autorisées, et seulement celles-ci** : l'assistant de chiffres est **réel** (construit pour Jason, il
+  lit l'historique des devis et des bons de commande) → une ligne sans chiffre, « Pour Jason, j'en ai tiré un
+  rapport : les chiffres qui comptent et les actions à mener. » ; l'assistant de saisie → lien discret « Voir ce
+  qu'en dit Jason » vers `#cas-client` (souligné, `text-ink-muted`, comme le lien de la signature du témoignage).
+  Aucune autre affirmation « en service ».
+- **Le contenu du rapport ne se publie jamais, même anonymisé** : Jason est nommé sur le site, tout chiffre lui
+  serait attribuable, et il n'a donné son accord que pour son témoignage et son logo (piège 17). On dit *ce qui a
+  été fait*, jamais *ce qu'il contient*. Tout exemple chiffré éventuel est inventé et légendé « exemple
+  illustratif ».
+- Ce que les quatre arguments disaient et qui reste dit ailleurs : « rien de nouveau à apprendre » (bandeau),
+  « ce qu'il retient — vos règles » (Confiance, FAQ « mémoire »). La pro-activité par routines (« il prend les
+  devants ») et « le dossier n'attend plus quand la bonne personne est absente » **ne sont plus dites nulle part**.
+- Les quatre arguments et leur liste de `points` cochés ont disparu ; les `points` étaient déjà absents du code
+  avant le 2026-10-08.
 
 **Plus de bento** (2026-09-17) : la grille `md:grid-cols-3 md:grid-rows-2` a disparu avec les deux cartes, et
-`BentoOffre.astro` est devenu `Offre.astro`. La section est désormais une grille `lg:grid-cols-[1fr_auto]` —
-arguments à gauche, démonstration `DicteeMobile` (24rem) à droite, empilées avant `lg`. Toujours pas de composant
+`BentoOffre.astro` est devenu `Offre.astro`. La section est désormais une grille `lg:grid-cols-[1fr_24rem]` —
+cartes à gauche, `RotationEcrans` (24rem) à droite, empilées avant `lg`. Toujours pas de composant
 BentoGrid / BentoCard : à créer seulement si un vrai bento réapparaît.
 
-**Les deux colonnes se répondent** (2026-09-18) : `lg:items-center`. La colonne de texte est plus courte que le
-mockup ; alignées en haut (`items-start`), elles laissaient un vide d'une centaine de pixels sous les `points`
-cochés et la section paraissait bancale. `items-start` reste en vigueur sous `lg`, où les deux blocs sont empilés.
+**Les deux colonnes se répondent** (2026-09-18) : `lg:items-center`. Alignées en haut (`items-start`), une colonne
+plus courte que la maquette laissait un vide sous elle et la section paraissait bancale. `items-start` reste en
+vigueur sous `lg`, où les deux blocs sont empilés. Mesuré le 2026-10-08 avec les trois cartes : 530 px de cartes
+face à 550 px de maquette à 1280 px ; à 1024 px les cartes, plus étroites (512 px), montent à 607 px et dépassent
+la maquette de 57 px — centrées l'une sur l'autre, sans débordement.
 
-**Une icône par argument** (2026-09-18) : chaque argument porte un pictogramme ambre dans une pastille
-`size-9 rounded-md bg-accent-soft text-accent`, même contrat que les cartes de la section Confiance — tracé SVG
-en ligne, chaîne statique passée en `set:html`, `aria-hidden` (l'argument est écrit juste à côté, l'icône
-n'ajoute aucune information). Les trois tracés disent ce que dit l'argument : des lignes de tâches barrées,
-des données empilées d'où repart une flèche, des curseurs de réglage. Pas de bibliothèque d'icônes : quatre
-tracés dans Confiance, trois ici, c'est tout ce dont le site a besoin.
+**Une icône par carte** (2026-09-18 pour les arguments, redessinées le 2026-10-08) : tracé SVG en ligne, chaîne
+statique passée en `set:html`, `aria-hidden` (la question est écrite juste à côté). Les trois tracés disent
+l'assistant : une bulle de message (commercial), un graphique en barres (chiffres), une fiche (saisie). Pas de
+bibliothèque d'icônes : quatre tracés dans Confiance, trois ici, c'est tout ce dont le site a besoin.
 
 **Exemples illustratifs : supprimés** (2026-09-18, demande explicite). La section `Exemples` (`#exemples`), la
 collection `exemples` et son composant `MicroFlux` ont été **supprimés** — cinq cartes de cas types juste avant
@@ -735,7 +757,8 @@ arrive, l'assistant consulte les logiciels de l'entreprise un par un en montrant
   `lg:grid-cols-[1fr_24rem]` : avec `auto`, la piste se calait sur le max-content de la maquette — c'est-à-dire sur
   la barre de libellés — et élargir sa `max-width` ne produisait rien du tout. **21 rem est le plancher** : c'est la
   largeur la plus étroite où les quatre libellés et le bouton de lecture tiennent encore sur une ligne.
-- **L'écart entre les arguments est fixe, pas réparti** (2026-09-20) : `lg:gap-16` (64 px) sur la liste, et
+- **L'écart entre les arguments est fixe, pas réparti** (2026-09-20 ; depuis le 2026-10-08, trois cartes en
+  `gap-4`, voir « Offre : trois assistants ») : `lg:gap-16` (64 px) sur la liste, et
   `lg:items-center` sur la grille. Réparti sur la hauteur de la maquette (`justify-between`), l'écart montait à
   90 px — une ligne de corps de trop, la liste se lisait comme quatre blocs sans rapport. À 64 px elle respire
   encore et reste un ensemble ; elle est un peu plus courte que la maquette, qui la centre en face d'elle.
@@ -957,7 +980,7 @@ Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam
 Toujours réutiliser avant de créer.
 
 ### Constat — étiquettes de coût (section supprimée le 2026-10-07)
-Historique : la section et son composant ont été retirés ; leurs scènes vivent dans les arguments de l'offre.
+Historique : la section et son composant ont été retirés ; leurs scènes ont vécu dans les arguments de l'offre jusqu'au 2026-10-08 (trois assistants depuis).
 Au bas de chaque carte du constat, deux étiquettes en `--accent` traduisent le problème en risque :
 « perte de temps / risque d'erreur », « occasions manquées / perte de contrôle », « délais
 supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole la section.
@@ -1027,7 +1050,7 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
     de FAQ « Mes données sortent-elles de l'entreprise ? » (décision de l'humain, 2026-10-08, étape 4 bis) : c'est
     la crainte réelle du visiteur, « un autre programme » l'esquivait.
   - **« données »** au sens de vie privée : titre de Confiance (« Vos données restent les vôtres »), « Vos données
-    ne quittent pas l'Europe », « il garde vos règles, pas vos données », questions de FAQ sur la confidentialité,
+    ne quittent pas l'Europe », questions de FAQ sur la confidentialité,
     mention du questionnaire et pages légales.
   - **« automatisations »** et **« expertise »** dans la citation de Jason : ses mots.
   - **« outils »** quand le mot englobe papier, téléphone et logiciels (chapeau du questionnaire, section « Vos
@@ -1043,16 +1066,18 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   pronom (chapeau de Confiance : « L'assistant lit ce qu'il faut. Il n'en garde rien. »). Dans le cas client, « il »
   désigne **Jason**, jamais la machine — et le chapeau nomme Jason à chaque geste pour lever l'ambiguïté. Le
   bandeau d'engagements n'emploie aucun pronom.
-- **Règles ≠ données.** « Il retient vos corrections » (offre) et « rien de mémorisé » (Confiance, FAQ) se
-  contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *il garde vos règles, pas
-  vos données* (au sens de vie privée : les documents lus ne sont pas conservés). **Ne jamais écrire que
+- **Règles ≠ données.** « Il retient vos règles » et « rien de mémorisé » se contredisent si les deux objets ne
+  sont pas nommés séparément. Depuis le 2026-10-08 (trois assistants), l'offre n'en parle plus : la distinction vit
+  dans la carte « Rien de mémorisé, rien de réutilisé » de Confiance (« Ce qu'il retient — vos règles, vos
+  préférences ») et dans la FAQ « mémoire ». Formulation canonique si elle revient ailleurs : *il garde vos règles,
+  pas vos données* (au sens de vie privée : les documents lus ne sont pas conservés). **Ne jamais écrire que
   l'assistant « apprend de vos documents ».**
 - **Pas de promesse d'impossibilité.** Un LLM est dans la boucle : on écrit « il ne calcule jamais un prix
   lui-même, il lit vos tarifs dans votre logiciel », jamais « impossible par construction ». La garantie tient à la
   porte de validation, pas à une propriété du modèle.
 - **Pro-activité** : « il prend les devants » est tenu par des routines — heure fixe ou seuil de déclenchement
   (« le devis qui dort depuis dix jours… vous réglez ce qui le déclenche »). La promesse reste adossée à un
-  mécanisme réel.
+  mécanisme réel. Retirée de l'offre le 2026-10-08 avec les quatre arguments : la règle vaut si elle revient.
 - **Exception à B8 (un argument, un seul endroit)** : « accès limités au strict nécessaire » est énoncé **en fait**
   dans le bandeau d'engagements (réflexe de méfiance nº 1 : « il va tout lire ») et **argumenté** une seule fois,
   dans la section Confiance (« Il ne consulte que ce qu'il faut »). Aucun autre argument n'a droit à ce doublon.

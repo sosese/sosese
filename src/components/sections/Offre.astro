@@ -1,86 +1,94 @@
 ---
+import Card from "../ui/Card.astro";
 import RotationEcrans from "../ui/diagrams/RotationEcrans.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
 
 // Une seule offre depuis le 2026-09-17 : « Audit & diagnostic » et « Ateliers & acculturation »
 // répétaient les étapes 1 et 2 de la Méthode, juste au-dessus. La grille bento a disparu avec elles.
 //
-// Ce que change un assistant sur-mesure. Aucune promesse chiffrée ici : ce sont des principes de
-// fonctionnement, cohérents avec les engagements (aucune écriture sans accord, code et données remis).
+// Trois assistants depuis le 2026-10-08 (étape 4 ter, décision de l'humain) : chaque visiteur doit se
+// reconnaître dans une question « Besoin de… ? ». Le titre de carte (h3) est la question : elle suffit
+// au survol. Aucun chiffre, et aucune affirmation « en service » au-delà de celles-ci (DESIGN.md, « Offre »).
+//
+// Le rapport tiré pour Jason par l'assistant de chiffres ne se publie pas, même anonymisé : Jason est
+// nommé sur le site, tout chiffre lui serait attribuable (piège 17). Dire qu'il existe, jamais ce qu'il
+// contient.
 //
 // `icone` : tracé SVG en ligne, chaîne statique (même contrat que la section Confiance — jamais de
-// `set:html` sur du contenu éditable). Décoratif : l'argument est déjà écrit à côté.
+// `set:html` sur du contenu éditable). Décoratif : la question est déjà écrite à côté.
 //
-// « il » : l'assistant est nommé dans le chapeau ci-dessous, puis repris en « il » dans les arguments.
-// Un seul nom pour ce que je construis : « l'assistant » (le mot du client), jamais « la solution »
-// (voir DESIGN.md, « Copy »).
-const arguments_ = [
+// « il » : l'assistant est nommé dans la question de chaque carte, puis repris en « il ».
+const assistants = [
   {
-    // Des lignes de tâches, dont une est barrée : ce qui disparaît, ce sont les tâches, pas les outils.
-    icone: '<path d="M4 6h13M4 11h9M4 16h5"/><path d="m11 13 6 6M17 13l-6 6"/>',
-    titre: "L'administratif en moins, pas un logiciel en plus.",
-    // Scènes reprises de l'ancienne section « Le constat », retirée le 2026-10-07.
-    texte: "La même commande tapée dans le devis, puis dans la facture, puis dans le tableau de suivi : ces recopies, les saisies et les relances partent en premier. Vous gardez vos logiciels et vos habitudes.",
+    // Une bulle de message avec deux lignes de texte : le message proposé, prêt à partir.
+    icone: '<path d="M4 5h16v11H10l-6 4z"/><path d="M8 9h8M8 12h5"/>',
+    titre: "Besoin d'un assistant commercial ?",
+    texte: "Il lit vos emails et votre suivi client, repère qui relancer et vous propose le message, prêt à partir. Vous relisez, il envoie.",
   },
   {
-    // Des données empilées d'où repart une flèche : ce qui dort se remet en mouvement.
-    icone: '<ellipse cx="9" cy="6" rx="5" ry="2.5"/><path d="M4 6v6c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V6"/><path d="M4 12v6c0 1.4 2.2 2.5 5 2.5"/><path d="M14 18h6m-3-3 3 3-3 3"/>',
-    titre: "Vos informations enfin réunies.",
-    texte: "Vos tarifs, vos chantiers, l'historique client : tout est déjà là, éparpillé entre quatre logiciels, et personne n'a le temps de le chercher. Il va chercher au bon endroit, dans tous vos logiciels à la fois.",
+    // Un graphique en barres : vos chiffres, lus et rassemblés.
+    icone: '<path d="M4 4v16h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>',
+    titre: "Besoin d'y voir clair dans vos chiffres ?",
+    texte: "Il rassemble vos ventes, vos devis et vos commandes, et répond à vos questions : quel client rapporte le plus, quel devis attend une réponse. Il lit, il ne modifie rien.",
+    preuve: "Pour Jason, j'en ai tiré un rapport : les chiffres qui comptent et les actions à mener.",
   },
   {
-    // Une horloge : il part tout seul, à l'heure ou au seuil que vous avez fixés.
-    icone: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-    titre: "Il prend les devants.",
-    texte: "Le devis qui dort depuis dix jours, la relance à envoyer : c'est préparé quand vous arrivez. Vous réglez ce qui le déclenche.",
-  },
-  {
-    // Des curseurs de réglage : c'est vous qui tenez les manettes, et vous les déplacez quand il faut.
-    icone: '<path d="M4 6h8M17 6h3M4 12h3M12 12h8M4 18h8M17 18h3"/><circle cx="14.5" cy="6" r="2.5"/><circle cx="9.5" cy="12" r="2.5"/><circle cx="14.5" cy="18" r="2.5"/>',
-    // Règles ≠ données : sans cette distinction, « il retient vos corrections » contredit « rien de
-    // mémorisé » (section Confiance). Les deux objets sont nommés séparément ; « données » au sens de
-    // vie privée, exception assumée à la liste noire du jargon.
-    titre: "Il garde vos règles, pas vos données.",
-    texte: "Vos corrections deviennent des règles de travail : votre façon de rédiger, vos remises, vos exceptions. Quand la bonne personne est absente, le dossier n'attend plus. Ce sont ces règles qu'il garde — jamais les documents qu'il a lus.",
+    // Une fiche : une photo et des lignes de champs, remplies pour vous.
+    icone: '<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M13 8h4M13 11h3M8 15h8M8 18h5"/>',
+    titre: "Besoin d'arrêter de recopier ?",
+    texte: "Il sait se servir de vos logiciels : il crée la fiche client, le devis, le rendez-vous, et tient tout à jour. Vous vérifiez, puis c'est enregistré.",
+    lien: { href: "#cas-client", label: "Voir ce qu'en dit Jason" },
   },
 ];
 ---
 
 <section id="offre" aria-labelledby="offre-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-12">
-    <SectionHeading id="offre-titre" eyebrow="Ce que je construis" title="Un assistant construit pour vous, qui travaille comme vous">
-      Les tâches écrites dans aucune fiche de poste remplissent quand même les journées. Pas un
-      logiciel de plus à apprendre : un assistant qui connaît vos prix, vos dossiers et votre façon de travailler.
-      Il prépare le travail, vous gardez la main.
+    <SectionHeading id="offre-titre" eyebrow="Ce que je construis" title="Quel assistant vous faut-il ?">
+      Chacun est construit pour vous : il connaît vos prix, vos dossiers et votre façon de travailler. Il prépare
+      le travail, vous gardez la main.
     </SectionHeading>
 
-    {/* Piste de droite en **21rem**, et non `auto` : `auto` se cale sur le max-content de la
+    {/* Piste de droite en **24rem**, et non `auto` : `auto` se cale sur le max-content de la
         maquette — c'est-à-dire sur sa barre de libellés, ~21 rem — et lui donner une `max-width`
         plus large n'y change rien (plancher : 21 rem, la largeur la plus étroite où la barre des
-        quatre décors tient encore sur une ligne). La colonne de texte prend le reste, et les deux
+        quatre décors tient encore sur une ligne). La colonne des cartes prend le reste, et les deux
         passent l'une sous l'autre avant lg.
-        L'écart entre arguments est **fixe** (`lg:gap-16`, 64 px) et non réparti sur la hauteur :
-        `justify-between` les espaçait de 90 px, soit une ligne de corps de trop. La liste est donc
-        un peu plus courte que la maquette, et `lg:items-center` la centre en face d'elle. */}
+        Écart **fixe** entre les cartes (`gap-4`, comme les cartes de Confiance) : leurs bordures les
+        séparent déjà. La pile est plus courte que la maquette, et `lg:items-center` la centre en face. */}
     <div class="grid items-start gap-12 lg:grid-cols-[1fr_24rem] lg:items-center lg:gap-16">
-      <div class="flex flex-col">
-        <ul class="flex max-w-(--measure) flex-col gap-6 text-16 text-ink-muted lg:gap-16">
-          {
-            arguments_.map((a) => (
-              <li class="flex gap-4">
+      <ul class="flex max-w-(--measure) flex-col gap-4">
+        {
+          assistants.map((a) => (
+            <li class="flex">
+              <Card class="flex w-full gap-4">
                 <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent">
                   <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={a.icone} />
                 </span>
-                <p>
-                  <strong class="font-medium text-ink">{a.titre}</strong> {a.texte}
-                </p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
+                <div class="flex flex-col gap-2">
+                  <h3 class="text-18 font-semibold">{a.titre}</h3>
+                  <p class="text-16 text-ink-muted">{a.texte}</p>
+                  {a.preuve && <p class="text-14 text-ink-muted">{a.preuve}</p>}
+                  {
+                    a.lien && (
+                      <p class="text-14">
+                        <a
+                          href={a.lien.href}
+                          class="text-ink-muted underline underline-offset-4 transition-colors duration-(--duration-fast) ease-out hover:text-ink"
+                        >
+                          {a.lien.label}
+                        </a>
+                      </p>
+                    )
+                  }
+                </div>
+              </Card>
+            </li>
+          ))
+        }
+      </ul>
 
-      {/* La rotation d'écrans, descendue du hero le 2026-09-19 : c'est ici, en face des arguments,
+      {/* La rotation d'écrans, descendue du hero le 2026-09-19 : c'est ici, en face des assistants,
           qu'elle prouve « pas un logiciel de plus » — le même enchaînement arrive dans la
           messagerie, la boîte mail, le téléphone, l'application de gestion. Elle y remplace
           `DicteeMobile`, sans emploi depuis. */}
