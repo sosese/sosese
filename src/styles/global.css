@@ -39,6 +39,7 @@
   --shadow-md: var(--shadow-md);
 
   --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --font-mono: var(--font-mono);
 
   --text-12: var(--text-12);
@@ -109,6 +110,13 @@
     line-height: var(--leading-tight);
     letter-spacing: -0.02em;
     text-wrap: balance;
+  }
+
+  /* Titres en serif, graisse normale : Georgia n'a que deux graisses, et le gras à 36-64 px
+     sonne titre de journal (DESIGN.md, « Typographie »). Les h3 restent en Inter. */
+  h1, h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
   }
 
   :focus-visible {
@@ -256,7 +264,7 @@
     margin-top: calc(var(--space-unit) * 12);
     margin-bottom: calc(var(--space-unit) * 4);
     font-size: var(--text-21);
-    font-weight: 600;
+    font-weight: 400;
     color: var(--ink);
   }
 

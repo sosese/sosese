@@ -15,7 +15,7 @@
 ## Tokens
 Source unique : `src/styles/tokens.css`. Ils sont exposés à Tailwind dans `src/styles/global.css`
 (`bg-bg`, `bg-surface`, `text-ink`, `text-ink-muted`, `border-border`, `bg-accent`, `text-on-accent`,
-`rounded-md`, `shadow-md`, `text-14`, `font-mono`…). La palette, les rayons, les ombres, les tailles de texte
+`rounded-md`, `shadow-md`, `text-14`, `font-display`, `font-mono`…). La palette, les rayons, les ombres, les tailles de texte
 et les familles de polices par défaut de Tailwind sont désactivés : une classe comme `bg-red-500` ou `text-sm`
 ne produit rien (et sans erreur, voir « Pièges »).
 
@@ -80,7 +80,7 @@ Tokens complémentaires dans `tokens.css` :
 
 | Groupe | Tokens |
 |---|---|
-| Typographie | `--font-sans`, `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
+| Typographie | `--font-sans`, `--font-display` (titres h1 / h2), `--font-mono`, `--text-12` … `--text-64`, `--text-body` (17px), `--leading-body` (1.6), `--leading-tight` (1.15), `--measure` (70ch) |
 | Espacement / gabarit | `--space-unit`, `--section-y`, `--hero-y`, `--gutter`, `--container`, `--header-h`, `--fab-offset`, `--fab-clearance`, `--dot-gap` (pas de la trame DotPattern) |
 | Mouvement | `--duration-fast` (150ms), `--duration-base` (200ms), `--duration-slow` (300ms), `--ease-out` — les durées passent à 0 sous `prefers-reduced-motion` |
 | Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
@@ -116,7 +116,7 @@ Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes ava
   (ex. icône soleil / lune).
 
 ## Typographie
-Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
+Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (« Sous le capot » seulement, voir plus bas).
 Échelle : 12 14 16 18 21 28 36 48 64. Corps 17px, line-height 1.6.
 - Fichiers : `public/fonts/inter-var.woff2` et `jetbrains-mono-var.woff2`, polices **variables**, sous-ensemble
   **latin** de Fontsource (couvre é, à, œ, €, guillemets et tirets typographiques). Licences OFL à côté.
@@ -127,6 +127,21 @@ Inter (titres, corps) / JetBrains Mono (labels, chiffres, terminal).
   texte (pas de saut, pas de second LCP). **Remplacer le fichier Inter = remesurer ces valeurs.**
 - Pas d'italique chargée. En ajouter une = nouveau fichier + `@font-face`, pas de faux italique.
 - Titres `h1`–`h4` : `line-height: var(--leading-tight)`, `letter-spacing: -0.02em`, `text-wrap: balance`.
+- **Titres `h1` et `h2` en serif** (2026-10-08, plan « site moins geek », étape 2) : token `--font-display`
+  (`Georgia, "Times New Roman", serif`, utilitaire `font-display`), posé par **une règle de base** dans
+  `global.css` (`h1, h2 { font-family; font-weight: 400 }`) — la solution la plus simple : tout `h1` / `h2`, y
+  compris ceux de `prose-site` et de l'îlot `Questionnaire`, est en serif sans classe à ajouter. Les `h3` restent
+  en Inter semi-gras.
+  - **Graisse normale (400), pas de `font-semibold`** : Georgia n'a que deux graisses ; `font-semibold` y devient
+    du gras (700), qui à 36–64 px sonne titre de journal et alourdit la page. La V7 (référence du plan) met ses
+    titres serif en 400 ; la hiérarchie vient de la famille et de la taille. **Ne pas remettre `font-semibold` sur
+    un `h1` / `h2`** : une classe utilitaire bat la règle de base. `prose-site h2` passe aussi en 400.
+  - **`letter-spacing` : -0,02em conservé, `tracking-tight` retiré** des `h1` / `h2`. Georgia est une serif large :
+    un léger resserrement la tient aux grandes tailles ; le -0,055em de la V7 colle les lettres de
+    « Times New Roman » / Liberation Serif, les replis réels sur Linux et Android, où Georgia n'existe pas.
+  - **Aucun impact LCP / CLS** : police système, rien à télécharger ni à échanger. Le `h1` (élément LCP probable)
+    ne dépend plus du chargement d'Inter. Revers : le rendu varie selon le système (Georgia sur macOS / Windows /
+    iOS, Liberation Serif ou Noto Serif sous Linux, Noto Serif sous Android) — accepté, la pile reste serif.
 - Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : mono, 12px, capitales, `--ink-muted`).
 
 ## Espacement

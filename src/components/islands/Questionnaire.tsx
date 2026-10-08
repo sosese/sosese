@@ -203,7 +203,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
         <p className="eyebrow">
           Étape {etape + 1} sur {SECTIONS.length}
         </p>
-        <h2 ref={titreRef} tabIndex={-1} className="text-28 font-semibold tracking-tight focus:outline-none">
+        <h2 ref={titreRef} tabIndex={-1} className="text-28 focus:outline-none">
           {section.titre}
         </h2>
         <p className="text-16 text-ink-muted">{section.chapeau}</p>

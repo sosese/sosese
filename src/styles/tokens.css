@@ -28,6 +28,8 @@
 
   /* Typographie */
   --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Titres h1 / h2 : serif système, rien à télécharger (le h1 ne dépend d'aucune webfont pour le LCP). */
+  --font-display: Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --text-12: 0.75rem;
