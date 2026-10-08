@@ -4,24 +4,25 @@ import SectionHeading from "../ui/SectionHeading.astro";
 // À VALIDER : durées, livrables et temps demandé au client (§5 ligne 4, contenu non fourni par le §9).
 const etapes = [
   // Titres : des noms courts, pas des phrases. Le visiteur survole ces trois mots ; la phrase d'action
-  // ouvre la description, en « je » (2026-10-08). Durées et temps demandé au client inchangés.
+  // ouvre la description, en « je » (2026-10-08). Une phrase courte par étape (correction 1 de l'étape 5 bis) :
+  // durées, temps demandé au client et ce qu'il reçoit inchangés.
   {
     titre: "Atelier",
-    texte: "Je regarde avec vous, sur le terrain, comment se passent vos journées. Je repère les tâches qui prennent du temps, et celles qu'un assistant peut préparer pour vous.",
+    texte: "Je regarde avec vous, sur le terrain, ce qui vous prend du temps.",
     duree: "2 jours",
     livrable: "le déroulé de vos tâches, et où ça coince",
     tempsClient: "une demi-journée, avec vous ou votre équipe",
   },
   {
     titre: "Feuille de route",
-    texte: "Je vous dis ce qui mérite d'être fait. Pour chaque tâche : le temps gagné, le coût, et si c'est faisable. Vous choisissez par quoi commencer.",
+    texte: "Je chiffre chaque tâche : temps gagné, coût, faisabilité. Vous choisissez par quoi commencer.",
     duree: "1 semaine",
     livrable: "liste chiffrée, dans l'ordre où je la ferais",
     tempsClient: "1 heure pour en parler",
   },
   {
     titre: "Construction",
-    texte: "Je construis ce que vous avez choisi, dans vos logiciels actuels, puis je vous le mets entre les mains. Vous voyez avancer chaque semaine.",
+    texte: "Je construis ce que vous avez choisi, dans vos logiciels actuels. Vous voyez avancer chaque semaine.",
     duree: "4 semaines",
     livrable: "assistant en service, avec mode d'emploi",
     tempsClient: "1 heure de point par semaine",
@@ -35,11 +36,15 @@ const etapes = [
       Rien ne se construit avant que vous ayez vu, en face, ce que ça coûte et ce que ça rapporte.
     </SectionHeading>
 
+    {/* Dès `md`, chaque étape occupe trois rangées de la grille (pastille, texte, cadre) en sous-grille : les
+        cadres partent de la même ligne et prennent la même hauteur, quelle que soit la longueur des textes.
+        Le conteneur du texte et du cadre passe en `display: contents` pour que les deux deviennent des cases
+        de la sous-grille ; sous `md`, il reste la colonne à droite du trait vertical. */}
     <ol data-methode class="grid gap-8 md:grid-cols-3 md:gap-6">
       {
         etapes.map((etape, i) => (
-          <li class="relative flex gap-4 md:flex-col md:gap-6">
-            <div class="flex flex-col items-center md:flex-row">
+          <li class="relative flex gap-4 md:row-span-3 md:grid md:grid-rows-subgrid md:gap-4">
+            <div class="flex flex-col items-center md:mb-2 md:flex-row">
               <span data-revele class="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border border-accent bg-surface text-14 text-accent tabular-nums">
                 {i + 1}
               </span>
@@ -48,13 +53,13 @@ const etapes = [
               )}
             </div>
 
-            <div class="flex flex-1 flex-col gap-4 pb-2 md:pr-4">
-              <div data-revele class="flex flex-col gap-2">
+            <div class="flex flex-1 flex-col gap-4 pb-2 md:contents">
+              <div data-revele class="flex flex-col gap-2 md:mr-4">
                 <h3 class="text-21 font-semibold">{etape.titre}</h3>
                 <p class="text-16 text-ink-muted">{etape.texte}</p>
               </div>
               {/* Sans filets entre les lignes (étape 5) : l'espace sépare, la carte regroupe. */}
-              <dl data-revele class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 text-14 shadow-sm">
+              <dl data-revele class="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 text-14 shadow-sm md:mr-4 md:mb-2">
                 <div class="flex flex-col gap-1">
                   <dt class="eyebrow">Votre temps</dt>
                   <dd class="text-ink">{etape.tempsClient}</dd>

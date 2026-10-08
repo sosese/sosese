@@ -640,6 +640,16 @@ du texte qu'elle supprime.
   ne s'est pas jouée chez l'humain (Firefox ne la gère pas) et ne sait pas enchaîner les trois colonnes dans le
   temps. Les classes ne sont posées que par le script : sans JS ou sous mouvement réduit, tout est visible.
   **Le cadre `dl` porte `data-revele`, pas sa première ligne** : sinon il apparaît vide avant son contenu.
+  **Cadres alignés dès `md`** (2026-10-08, étape 5 bis, correction 1, demande de l'humain) : chaque `li` est une
+  **sous-grille** de trois rangées (`md:row-span-3 md:grid md:grid-rows-subgrid`) — pastille, texte, cadre — et le
+  conteneur du texte et du cadre passe en `md:contents` pour que ses deux enfants deviennent des cases de la
+  sous-grille. Les trois cadres partent ainsi de la même ligne et prennent la hauteur du plus haut, quelle que soit
+  la longueur des textes au-dessus. Jamais de hauteur fixe. Écarts conservés : `md:gap-4` entre les rangées,
+  `md:mb-2` sous la pastille (24 px pastille → titre, comme avant), `md:mr-4` (l'ancien `md:pr-4` du conteneur,
+  perdu avec `display: contents`). Sous `md`, rien ne change : pastille et trait à gauche, colonne à droite. L'ordre
+  du DOM, donc la révélation, est inchangé. **Piège** : un `display: contents` ignore padding, bordure et fond —
+  ne rien poser dessus. Seuls les cadres sont alignés, pas leurs lignes internes (une valeur sur deux lignes décale
+  les suivantes).
 - **Animation** : `.bar-grow` dans `global.css`, `transform: scaleX()` piloté par `animation-timeline: view()`,
   sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
   état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
@@ -1233,8 +1243,10 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   toute carte ajoutée en remplace une autre ou fusionne avec elle.
 - **Porte de validation (Confiance)** : **« votre oui »** seul, dans une pastille, entre « Il avance seul » et « Il
   s'arrête net ». Deux mots tiennent en `nowrap` sans manger la largeur des panneaux.
-- **Méthode : des noms courts en titre** (Atelier / Feuille de route / Construction), la phrase d'action en
-  première ligne de description, en « je » (« Je regarde avec vous, sur le terrain… »). Trois titres commençant
+- **Méthode : des noms courts en titre** (Atelier / Feuille de route / Construction), puis **une phrase courte par
+  étape**, en « je » (« Je regarde avec vous, sur le terrain, ce qui vous prend du temps. » ; raccourcies de 77 à
+  42 mots le 2026-10-08, correction 1 de l'étape 5 bis : le cadre dit déjà le temps demandé, la durée et ce que
+  vous recevez, la description ne le redit pas). Trois titres commençant
   par « Je » feraient de moi le sujet de ma propre méthode, et ne se survolent pas.
 - **Cas client** : pas de « réel » ni de « vrai » dans l'eyebrow — on ne précise « vrai » que là où le doute
   existe. L'eyebrow est `Clients`, la parole du client prouve. « IA » n'y apparaît pas hors de ses mots.
