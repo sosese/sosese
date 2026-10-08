@@ -1,70 +1,105 @@
 ---
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import Badge from "../ui/Badge.astro";
 import SectionHeading from "../ui/SectionHeading.astro";
+import Temoignage from "../ui/Temoignage.astro";
 import EnchainementClient from "../ui/diagrams/EnchainementClient.astro";
 import { casClient } from "../../config/site";
 
-// Le logo du client est un fichier fourni par lui, déposé dans `public/` — exception assumée à la règle
-// « schémas SVG, pas d'images » : l'identité d'un tiers ne se redessine pas (DESIGN.md, « Cas client »).
-// Tant que le fichier n'est pas là, la section n'affiche que le nom : pas d'image cassée, jamais de
-// logo reconstitué.
-// `process.cwd()` et non `import.meta.url` : au build, ce module est un chunk, son URL ne pointe
-// plus sur les sources. Astro se lance toujours depuis la racine du projet.
-const fichierLogo = casClient.logo ? join(process.cwd(), "public", casClient.logo) : null;
-const logo = fichierLogo && existsSync(fichierLogo) ? casClient.logo : null;
+// Tout ce qui suit vient du formulaire de satisfaction rempli par le client (DESIGN.md, « Le cas ») :
+// ses phrases, retouchées pour l'orthographe seulement et avec son accord, et ses deux chiffres.
+// Rien n'est lu dans un outil connecté, rien n'est estimé par sosese (piège 17). Ses retours privés
+// ne se publient pas. Ne rien ajouter ici sans le même accord.
+const citation =
+  "Joris a su comprendre nos besoins lors de son expertise et y apporter des réponses et des automatisations que j'utilise maintenant au quotidien.";
 
-// Hauteur de rendu fixée ; la largeur est déduite du `viewBox` du SVG pour réserver la place (CLS 0).
-const HAUTEUR_LOGO = 40;
-const viewBox = logo?.endsWith(".svg")
-  ? readFileSync(fichierLogo!, "utf8").match(/viewBox="[\d.\s-]*?([\d.]+)\s+([\d.]+)"/)
-  : null;
-const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / Number(viewBox[2])) : undefined;
+// Sa phrase « avant / après », coupée en deux pour se lire côte à côte, et ce que le temps gagné lui permet.
+const avantApres = [
+  { label: "Avant", texte: "Je créais tout dans mon logiciel." },
+  { label: "Aujourd'hui", texte: "L'assistant s'en charge et je ne fais plus que consulter. Un gain de temps énorme." },
+];
+const tempsGagne =
+  "Je travaille sur d'autres projets, je suis plus réactif pour envoyer les devis à mes clients, et ma direction a un meilleur suivi.";
+
+// Deux chiffres, pas un de plus : ceux qu'il a donnés. Pas les 2 h d'administratif d'avant (il faudrait
+// expliquer pourquoi il en gagne 4 : l'assistant fait aussi du suivi commercial), pas sa note.
+const chiffres = [
+  { label: "Pour un devis", avant: "25 min", apres: "3 min" },
+  { label: "Gagnées par semaine", environ: true, valeur: "4 h" },
+];
+
+const guillemets = (texte: string) => `« ${texte} »`;
 ---
 
 <section id="cas-client" aria-labelledby="cas-client-titre" class="py-(--section-y)">
   <div class="container-site flex flex-col gap-8">
-    <div>
-      <div class="flex flex-col gap-5">
-        <SectionHeading id="cas-client-titre" eyebrow="Clients" title="Ils nous ont fait confiance">
-          Connecteur IA sur mesure pour le logiciel commercial.
-        </SectionHeading>
+    <SectionHeading id="cas-client-titre" eyebrow="Clients" title={`Ce qu'en dit ${casClient.prenom}, chez ${casClient.nom}`}>
+      {casClient.nom} pose des sols entre Metz et le Luxembourg, avec une équipe de 4 à 9 personnes. Pour{" "}
+      {casClient.prenom}, j'ai construit un assistant relié à{" "}
+      {casClient.logiciel ? `${casClient.logiciel}, leur logiciel de gestion` : "leur logiciel de gestion"} : il dicte,
+      le devis se prépare dans le logiciel, il vérifie, c'est enregistré.
+    </SectionHeading>
 
-        {/* Nom, logo et lien publiés avec l'accord du client. Un seul lien pour les deux : le logo est
-            décoratif (`alt` vide), le nom porte la destination.
-            Le logo du client est un lettrage blanc sur fond transparent : il disparaîtrait sur le fond
-            clair. Il est posé sur une plaque `section-invert` — sombre dans les deux thèmes, comme le
-            terminal — plutôt que retouché. */}
-        <div class="flex flex-wrap items-center gap-4">
+    <Temoignage
+      citation={citation}
+      prenom={casClient.prenom}
+      nomFamille={casClient.nomFamille}
+      role={casClient.role}
+      entreprise={casClient.nom}
+      site={casClient.site}
+      logo={casClient.logo}
+    />
+
+    {/* Les chiffres d'abord dans le DOM : empilés sur mobile, ils se lisent juste sous la citation.
+        Sobres : pas de grille de compteurs, pas de couleur d'accent, la valeur et son libellé. */}
+    <div class="grid items-start gap-6 lg:grid-cols-[2fr_3fr]">
+      <div class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6">
+        <dl class="flex flex-col gap-6">
           {
-            logo && (
-              <span class="section-invert inline-flex items-center rounded-md px-4 py-3">
-                <img src={logo} alt="" height={HAUTEUR_LOGO} width={largeurLogo} loading="lazy" decoding="async" class="h-10 w-auto" />
-              </span>
-            )
+            chiffres.map((chiffre) => (
+              <div class="flex flex-col gap-1">
+                <dt class="text-14 text-ink-muted">{chiffre.label}</dt>
+                <dd class="font-display text-28 text-ink tabular-nums md:text-36">
+                  {"avant" in chiffre ? (
+                    <Fragment>
+                      {chiffre.avant} <span aria-hidden="true" class="font-sans text-ink-muted">→</span>
+                      <span class="sr-only">au lieu de </span>
+                      {chiffre.apres}
+                    </Fragment>
+                  ) : (
+                    <Fragment>
+                      <span aria-hidden="true">≈ </span>
+                      <span class="sr-only">environ </span>
+                      {chiffre.valeur}
+                    </Fragment>
+                  )}
+                </dd>
+              </div>
+            ))
           }
-          <Badge variant="accent" dot={!logo} href={casClient.site}>
-            {casClient.nom} — {casClient.metier} <span aria-hidden="true">↗</span>
-          </Badge>
-        </div>
-
-        {/* Le titre du cas descend en h3 : la section parle des clients, le devis sur le chantier n'en
-            est qu'un exemple. Hiérarchie : h2 de section, h3 du cas. */}
-        <h3 class="max-w-(--measure) text-21 font-semibold tracking-tight md:text-28">
-          Le devis part du chantier, pas du bureau
-        </h3>
-        <p class="max-w-(--measure) text-18 text-ink-muted">
-          Chez {casClient.nom}, {casClient.prenom}, commercial, chiffre maintenant sur place.{" "}
-          {casClient.logiciel && (
-            <Fragment>
-              La solution lit leur catalogue et leurs tarifs dans {casClient.logiciel}, et y crée devis,
-              rendez-vous et fiches clients — une fois qu'ils ont dit oui.
-            </Fragment>
-          )}
-        </p>
+        </dl>
+        <p class="text-14 text-ink-muted">Selon {casClient.prenom}.</p>
       </div>
 
+      <figure class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6">
+        <div class="grid gap-6 sm:grid-cols-2">
+          {
+            avantApres.map((temps) => (
+              <div class="flex flex-col gap-2">
+                <p class="eyebrow">{temps.label}</p>
+                <blockquote class="text-18 text-ink">
+                  <p>{guillemets(temps.texte)}</p>
+                </blockquote>
+              </div>
+            ))
+          }
+        </div>
+        <div class="flex flex-col gap-2 border-t border-border pt-6">
+          <p class="eyebrow">Le temps gagné</p>
+          <blockquote class="text-18 text-ink">
+            <p>{guillemets(tempsGagne)}</p>
+          </blockquote>
+        </div>
+        <figcaption class="text-14 text-ink-muted">{casClient.prenom}, dans ses mots.</figcaption>
+      </figure>
     </div>
 
     <EnchainementClient />

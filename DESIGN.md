@@ -243,7 +243,8 @@ Inter (corps, `h3`, libellés) / Georgia (titres `h1`, `h2`) / JetBrains Mono (�
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
 | ThemeToggle | `islands/ThemeToggle.tsx` | îlot React, `client:idle` |
 | MobileNav | `islands/MobileNav.tsx` | îlot React, `client:idle`, plein écran via `<dialog>` modal |
-| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client : fiche client dictée → devis → intervention, puis l'analyse. Voir « Cas client » |
+| EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il dicte → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
+| Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → marqueur « à compléter » en dev, rien en production), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. Voir « Clients » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
 
 Le **hero** porte `VracEnActions` (le passage) depuis le 2026-09-19. Chaque visuel remplacé descend d'un cran dans la
@@ -529,7 +530,7 @@ du texte qu'elle supprime.
   sous `@media (prefers-reduced-motion: no-preference)` **et** `@supports (animation-timeline: view())`. Donc :
   état final rendu côté serveur, zéro JS, zéro CLS, et rien ne bouge si le navigateur ne sait pas faire ou si le
   visiteur n'en veut pas. **Ne pas remplacer par un `IntersectionObserver`** : ce serait du React pour une décoration.
-- **`CompareBars reveal`** (2026-09-18, cas client) : révélation ligne par ligne au défilement, à la place de
+- **`CompareBars reveal`** (2026-09-18, cas client ; **non utilisé depuis le 2026-10-08**, conservé) : révélation ligne par ligne au défilement, à la place de
   `.bar-grow`. Libellé + valeur, puis la barre qui se déploie depuis la gauche, puis la note — pas de 260 ms,
   même rythme et même machinerie que la Méthode (`IntersectionObserver` au seuil 0,25, `data-revele`,
   `.revele-cache`). La comparaison se lit alors dans l'ordre de l'histoire : les 40 minutes d'abord, les 2 minutes
@@ -836,90 +837,83 @@ poids de ce qui est promis.
 - Curseur : `.terminal-cursor` déclaré hors de toute media query dans `global.css`.
 - Le terminal porte `.section-invert` : sombre dans les deux thèmes.
 
-### Clients (section « Ils nous ont fait confiance »)
-Titre de section et libellé de navigation changés le 2026-09-19 : eyebrow `Clients`, titre
-**« Ils nous ont fait confiance »**, entrée de menu **« Clients »**. Le composant s'appelle désormais
-`sections/Clients.astro`. **L'ancre reste `#cas-client`** : elle est publiée depuis la v1, la renommer
-casserait les liens existants. Le titre du cas (« Le devis part du chantier, pas du bureau ») est descendu
-en `h3` sous le h2 de section : la section parle des clients, ce cas n'en est qu'un.
+### Clients (section « Ce qu'en dit Jason, chez L'Atelier des Sols & Fils »)
+Refaite le 2026-10-08 (plan « site moins geek », étape 3, décision de l'humain) : **une parole de client à la
+place d'un tableau de bord**. Composant `sections/Clients.astro`, eyebrow `Clients`, entrée de menu « Clients ».
+**L'ancre reste `#cas-client`** (publiée depuis la v1). Place dans la page inchangée : juste sous le bandeau, `bg-bg`.
+Voix : la section parle au **« je »** (Joris) depuis le 2026-10-08 ; le reste du site reste au « nous » jusqu'à
+l'étape 4 du plan (incohérence temporaire acceptée).
 
-- **Compteurs de production** (`production`, 2026-09-19) : +50 devis créés, +30 rendez-vous posés,
-  +40 fiches clients créées, 3 rapports d'analyse annuels. Fournis par le client, **jamais lus dans un outil
-  connecté** (voir « Aucune donnée de tiers » ci-dessous) et jamais estimés. Le « + » fait partie de la valeur :
-  ce sont des planchers. Rendus dans **un seul cadre** (`Card` + `Figure`, 2 × 2), **à côté** de la comparaison
-  de temps et non au-dessus (2026-09-20, grille `lg:grid-cols-[2fr_3fr]`) : le « combien » et le « combien de
-  temps » se lisent ensemble, et la section ne double pas sa hauteur pour les séparer. Le rapport 2/3 n'est pas
-  décoratif — il amène les deux cartes à la même hauteur, sinon la comparaison gouverne et laisse un fond de
-  carte vide à gauche.
-- **L'intro et les compteurs partagent une rangée** (2026-09-20, `lg:grid-cols-[3fr_2fr]`) : le titre, le logo et
-  le paragraphe tiennent dans la colonne de mesure, ce qui laissait toute la moitié droite du haut de section
-  vide. La comparaison de temps passe **pleine largeur** en dessous — ses libellés et ses notes tiennent alors sur
-  une seule ligne au lieu de deux.
-- **Les deux cartes « 0 soirée » et « 100 % » ont été retirées** (2026-09-20, demande de réduction de la
-  section). Les deux affirmations restent sur la page, mais en prose et non plus en chiffre mesuré : la
-  ressaisie du soir est dite dans la note de la comparaison, la validation explicite est le sujet entier de la
-  section Confiance et la fin du paragraphe du cas (« une fois qu'ils ont dit oui »). **Si on veut remettre un
-  chiffre mesuré, c'est celui-là qu'il faut rechercher auprès du client, pas le réinventer.**
-- **Deux comparaisons de temps, côte à côte** (`lg:grid-cols-2`, 2026-09-20) : le devis (40 min → 2 min) et la
-  fiche client (5 min → 30 s). Chaque `CompareBars` cale ses longueurs sur **le maximum de son propre tableau** —
-  mises à la même échelle, les 5 min de la fiche client seraient invisibles à côté des 40 min du devis.
-  `items-start` sur la rangée : la fiche client n'a pas de note sous ses barres, sa carte est plus courte, et
-  l'étirer ne faisait que lui ajouter du blanc.
-- **Pas de note inventée sous les barres de la fiche client** : le client a donné les deux durées, rien de plus.
-  Sur un cas réel, on ne comble pas les trous — une carte plus courte est préférable à une phrase plausible.
-- **La légende des compteurs date la mesure** (2026-09-20) : « Statistiques mesurées au bout de 6 semaines
-  d'utilisation. » Fourni par le client. Si les compteurs sont mis à jour, **mettre à jour la durée avec eux** :
-  un nombre sans sa fenêtre de mesure n'est pas vérifiable.
-- **Le logiciel de gestion du client est nommé** (`casClient.logiciel` = Extrabat) : c'est le seul nom de
-  logiciel tiers du site, **exception assumée au piège 17**, qui interdit les marques dans les démonstrations
-  inventées. Ici, ce n'est pas une démonstration : c'est ce qui a été construit. Le **nom seul**, jamais le
-  logo, jamais de mention de partenariat ou de certification. `null` fait disparaître la phrase entière.
+Ordre de lecture, pensé pour 10 secondes :
+1. **Titre `h2` qui résume seul** : « Ce qu'en dit {prénom}, chez {entreprise} » (valeurs de `casClient`), puis un
+   chapeau en « je » : qui ils sont (pose de sols, Metz – Luxembourg, 4 à 9 personnes) et ce que j'ai construit, en
+   mots simples (« il dicte, le devis se prépare dans le logiciel, il vérifie, c'est enregistré »).
+2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
+   `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
+   gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, sans ombre.
+3. **Deux chiffres, pas un de plus** (`<dl>`) : « Pour un devis : 25 min → 3 min » et « Gagnées par semaine : ≈ 4 h »,
+   légende commune « Selon Jason. ». Sobres : serif `text-28`/`text-36` en `--ink`, **pas d'accent, pas de grille de
+   compteurs, pas de barres**. La flèche est en Inter (`font-sans`) : en Noto Serif, elle collait à « min ».
+   Lecteur d'écran : `→` et `≈` en `aria-hidden`, doublés de « au lieu de » et « environ » en `sr-only`. **Ne pas
+   afficher** les 2 h d'administratif d'avant (il faudrait expliquer qu'il en gagne 4 parce que l'assistant fait
+   aussi du suivi commercial) ni sa note de recommandation.
+4. **Avant / aujourd'hui côte à côte** (`sm:grid-cols-2`), puis « le temps gagné », trois `blockquote` de ses mots
+   dans une même `<figure>` (« Jason, dans ses mots. »). Du texte, pas de graphique.
+5. **La démonstration (`EnchainementClient`) vient après** : ses montants inventés ne doivent jamais concurrencer
+   les deux chiffres du client.
+
+Grille de la rangée 3-4 : `lg:grid-cols-[2fr_3fr]` + `items-start` ; chiffres **en premier dans le DOM** pour
+qu'empilés sur mobile ils suivent directement la citation. Un `h2` et aucun `h3` dans la section (les temps de la
+démonstration sont des paragraphes, pas des titres).
+
+- **Source unique des contenus : le formulaire de satisfaction rempli par le client** (2026-10-08). Phrases et
+  chiffres viennent de lui ; ils sont recopiés dans `Clients.astro` et `casClient`, le formulaire lui-même n'est
+  **jamais commité**. Citations **retouchées pour l'orthographe seulement, avec l'accord du client** (ses mots
+  « ma CRM » et « L'IA » deviennent « mon logiciel » et « l'assistant », sens inchangé). « automatisations » reste
+  dans la citation : ce sont ses mots, exception assumée à la liste noire du jargon.
+- **Les retours privés du formulaire ne se publient pas** — ni sur le site, ni dans un commentaire de code, ni ici.
+  Seules les réponses destinées au site (avis, avant / après, temps gagné, chiffres, identité) sont utilisables.
+- **Nom de famille non fourni** : `casClient.nomFamille = null`. Convention des pages vitrines : marqueur
+  `ACompleter` en dev, rien en production. Ne jamais l'inventer ni le déduire d'un outil connecté.
+- **Rôle** : `casClient.role` = « commercial et gestionnaire », mot du client (petite entreprise, plusieurs casquettes).
+- **Anciens chiffres retirés le 2026-10-08** : devis 40 min → 2 min, fiche client 5 min → 30 s, compteurs de
+  production (+50 devis, +30 rendez-vous, +40 fiches, 3 rapports d'analyse) et « mesuré au bout de 6 semaines ».
+  Remplacés par ceux du formulaire ; ne pas les remettre. `CompareBars` n'est plus utilisé (conservé).
+- **Le logiciel de gestion du client est nommé** (`casClient.logiciel` = Extrabat), dans le chapeau : seul nom de
+  logiciel tiers du site, **exception assumée au piège 17** — ce n'est pas une démonstration, c'est ce qui a été
+  construit. Le **nom seul**, jamais le logo, jamais de partenariat. `null` → « leur logiciel de gestion ».
 
 #### Le cas (L'Atelier des Sols & Fils)
-- Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5, voir
-  « Contenus éditables ») : section dédiée (`Clients.astro`, `#cas-client`), distincte de la collection
-  `exemples`, réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le
-  même accord pour chaque nouveau cas ; par défaut, un nouveau cas client reste dans `exemples` (illustratif).
-- Placée après Exemples, avant SousLeCapot ; `border-t border-border bg-bg-subtle` (alternance de fond),
-  pas de `border-b` : le bord bas est fourni par le `border-y` de SousLeCapot. Offre, juste au-dessus, n'a pas
-  non plus de `border-t` : celui-ci lui vient du `border-y` de la Méthode.
-- Les chiffres d'impact (2 min pour un devis, et les compteurs de production) sont les résultats mesurés du cas
-  réel. La démonstration (`EnchainementClient`) illustre le *mécanisme* : client, commune, montants et créneaux
-  sont inventés, jamais issus d'une pièce commerciale réelle. **La règle d'invention reste entière** ; seule sa
-  mention visible (« Scénario type : … pas une pièce réelle ») a été retirée le 2026-09-19, sur demande
-  explicite. Ne pas la remettre sans le redemander.
-- **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce) :
-  seul le nom de l'entreprise cliente de sosese apparaît, avec son accord. Voir piège 17.
-- **Identité du client** (2026-09-18) : nom, métier, prénom du dirigeant (**Jason**), lien vers son site et logo
-  vivent dans `casClient`, `src/config/site.ts` — publiés **avec son accord explicite**, comme le reste de la
-  section. Rien ne s'ajoute là sans le même accord : un prénom est une donnée personnelle, pas un détail de mise
-  en page.
-- **Logo** : fichier fourni par le client, déposé dans `public/clients/` (`casClient.logo` = son chemin). Le
-  composant vérifie sa présence au build (`existsSync`, `process.cwd()` — pas `import.meta.url`, qui pointe sur
-  un chunk après compilation) : **fichier absent, pas d'image** — jamais de vignette cassée, jamais de logo
-  reconstitué. La largeur est déduite du `viewBox` du SVG pour réserver la place (CLS 0).
-- **Le logo est posé sur une plaque `.section-invert`** : le lettrage du client est blanc sur fond transparent,
-  il disparaîtrait sur le fond clair. Une plaque sombre dans les deux thèmes (même procédé que le terminal) plutôt
-  qu'un logo retouché — on ne modifie pas l'identité d'un tiers. Tout nouveau logo de client se juge d'abord sur
-  les deux fonds.
-- **Un seul lien vers le site du client** : porté par le nom (`Badge href`, avec `↗` en `aria-hidden`). Le logo,
-  juste à côté, est décoratif (`alt=""`) — deux liens vers la même destination alourdissent la navigation au
-  clavier et au lecteur d'écran sans rien apporter.
-- Le temps d'un devis est révélé ligne par ligne au défilement (`CompareBars reveal`, voir « Schémas »).
-- Pas de jargon technique (MCP, API, JSON…) dans la section, y compris dans les micro-labels (mono jusqu'au 2026-10-08) : eyebrow
-  labels en français neutre (« Aperçu du principe », « sur place, à la voix », « et ensuite, vos chiffres »).
-- **`EnchainementClient`** (2026-09-17, remplace l'îlot React `DicteeChiffrageDemo`, supprimé) : montre un
-  **enchaînement de fonctions** sur un même client — 01 fiche client dictée sur place, 02 devis rattaché à cette
-  fiche, 03 intervention posée —, puis **04 l'analyse** : l'IA consulte les données déjà présentes et propose des
-  axes d'analyse, **en lecture seule** (asymétrie volontaire, comme dans le hero). Chaque écriture porte le « oui ».
-- Joué **en boucle** (~25 s) : l'étape en cours prend `border-accent`, ses éléments `data-cc-pas` apparaissent un à
-  un, tenue finale 3,8 s, fondu, reprise. Même contrat que le mockup du hero : état final rendu par le serveur,
-  contenu toujours dans le DOM (`opacity` seule, CLS 0 mesuré), rien sous mouvement réduit, **bouton pause toujours
-  rendu** (WCAG 2.2.2 — en pause, l'état complet est réaffiché), arrêt hors écran. Pas d'`aria-hidden` : tout le
-  contenu est du vrai texte.
-- **Le cadre d'une liste porte `data-cc-pas`, pas sa première ligne** : sinon il apparaît vide avant son contenu
-  (même règle que la Méthode).
-- JS natif et non React : un îlot de moins sur l'accueil.
+- Première exception à la règle « les exemples sont illustratifs, jamais un résultat client » (§5) : section
+  réservée à un **cas réel, nommé avec l'accord explicite du client**. Ne pas généraliser sans le même accord pour
+  chaque nouveau cas.
+- **Aucune donnée de tiers** (client final de L'Atelier des Sols & Fils, montant d'un devis réel, numéro de pièce),
+  **aucune donnée lue dans un outil connecté** (CRM, messagerie) : voir piège 17.
+- **Identité du client** : nom, métier, prénom (**Jason**), rôle, nom de famille (`null`), lien vers son site et
+  logo vivent dans `casClient`, `src/config/site.ts` — publiés **avec son accord explicite**. Rien ne s'ajoute là
+  sans le même accord : un prénom est une donnée personnelle, pas un détail de mise en page.
+- **Logo** : fichier fourni par le client, déposé dans `public/clients/` (`casClient.logo`). `Temoignage` vérifie sa
+  présence au build (`existsSync`, `process.cwd()` — piège 24) : **fichier absent, pas d'image**. Hauteur `h-10`
+  (40 px), largeur déduite du `viewBox` (CLS 0). **Posé sur une plaque `.section-invert`** : lettrage blanc sur fond
+  transparent, il disparaîtrait sur le fond clair. Plaque sombre dans les deux thèmes plutôt qu'un logo retouché.
+- **Un seul lien vers le site du client** : le nom de l'entreprise dans la signature (`↗` en `aria-hidden`). Le
+  logo est décoratif (`alt=""`). (Avant le 2026-10-08 : un `Badge href` à côté du logo.)
+- **`EnchainementClient`, allégé le 2026-10-08** (il montrait fiche client → devis → intervention → analyse,
+  avec « L'IA » dans le texte) : **trois temps sur un seul devis** — 1 « Il dicte » (la bulle), 2 « Le devis se
+  prépare » (quatre lignes, montants en `text-12`, total en `--ink` semi-gras, **jamais en accent**), 3 « Il
+  vérifie, c'est enregistré » (sa réponse, la pastille « oui », « devis enregistré dans le logiciel »).
+  Eyebrow « Un devis, en trois temps ». La racine est une `<figure>`.
+- **Légende visible remise** : « Exemple illustratif : client et montants inventés. » (`figcaption`). Elle avait été
+  retirée le 2026-09-19 sur demande ; le plan « site moins geek », validé par l'humain, la redemande. **La règle
+  d'invention reste entière** : client, commune et montants ne viennent d'aucune pièce réelle.
+- Joué **en boucle** (~14 s) : l'étape en cours prend `border-accent`, ses éléments `data-cc-pas` apparaissent un à
+  un, tenue finale 3,8 s, fondu, reprise. Contrat inchangé : état final rendu par le serveur, contenu toujours dans
+  le DOM (`opacity` seule, CLS 0 mesuré sur un cycle), rien sous mouvement réduit, **bouton pause toujours rendu**
+  hors mouvement réduit (WCAG 2.2.2 — en pause, l'état complet est réaffiché), arrêt hors écran. Script inchangé.
+  Pas d'`aria-hidden` : tout le contenu est du vrai texte.
+- **Le cadre d'une liste porte `data-cc-pas`, pas sa première ligne** : sinon il apparaît vide avant son contenu.
+- Pas de jargon technique dans la section, y compris dans les petits libellés.
+- JS natif et non React : un îlot de moins sur l'accueil. `Temoignage` n'a aucun script.
 
 Non réalisés (prévus au cahier des charges, jamais nécessaires) : BorderBeam, Tabs.
 Toujours réutiliser avant de créer.
@@ -984,8 +978,8 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
   chapeau de l'offre (« une solution qui connaît vos prix… **Elle** prépare le travail »). Partout **au-dessus**
   de ce chapeau — hero, bandeau, cas client — le pronom est interdit : un lecteur qui arrive par le haut n'a pas
   encore de sujet. En dessous (offre, confiance, FAQ), « elle » partout. Le cas client, remonté au-dessus le
-  2026-10-07, dit « la solution » ; seul le « Elle lit » de sa démonstration est permis, rattaché à « L'IA » juste avant, plus jamais
-  « l'automatisation » comme sujet.
+  2026-10-07, ne dit pas « elle » : depuis le 2026-10-08, il dit « un assistant » / « l'assistant » (le mot du client),
+  et « il » y désigne Jason, jamais la machine.
 - **Règles ≠ données.** « Elle retient vos corrections » (offre) et « rien n'est mémorisé par défaut » (bandeau,
   confiance) se contredisent si les deux objets ne sont pas nommés séparément. Formulation canonique : *elle
   garde vos règles, pas vos données*. **Ne jamais écrire que la solution « apprend de vos documents ».**
@@ -1010,8 +1004,8 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
   première ligne de description. Trois titres commençant par « On » font de sosese le sujet de sa propre
   méthode, et ne se survolent pas.
 - **Cas client** : pas de « réel » ni de « vrai » dans l'eyebrow — on ne précise « vrai » que là où le doute
-  existe. L'eyebrow est `Cas client`, les chiffres prouvent. La note de `CompareBars` dit « avant la fin du
-  rendez-vous » : l'image du camion appartient au chapeau, elle n'est pas répétée.
+  existe. L'eyebrow est `Clients`, la parole du client prouve. Depuis le 2026-10-08, la section parle au « je »
+  (Joris) et cite le client ; « IA » n'y apparaît pas hors de ses mots.
 
 ## Décisions et écarts par rapport au cahier des charges
 - **`.section-invert` complétée** avec `--border-strong`, `--accent-hover`, `--accent-bright`, `--accent-soft`
@@ -1110,7 +1104,7 @@ Aucun chiffre du cas client, aucune durée de la méthode n'a été touché.
 
 ## Exceptions connues aux valeurs en dur
 Tolérées, à ne pas étendre sans raison :
-- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, `h3` du cas client, messages de succès des formulaires, liens du menu mobile — plus sur les `h1` / `h2` serif).
+- `letter-spacing` : `-0.02em` (titres), `0.08em` (eyebrow), `tracking-tight` (wordmark, messages de succès des formulaires, liens du menu mobile — plus sur les `h1` / `h2` serif).
 - Anneau de focus : `2px` d'épaisseur et de décalage.
 - `grid-cols-[2fr_1fr_1fr_1fr]` dans le footer (proportions de grille, pas un espacement).
 - `max-w-xs` sur l'accroche du footer (échelle de largeurs Tailwind conservée).
@@ -1134,10 +1128,10 @@ Tolérées, à ne pas étendre sans raison :
 - Délai d'impulsion du FlowDiagram calculé en ligne (`--flow-delay`, pas de 600 ms).
 - Schémas : largeur de barre calculée en ligne (`max(<pct>%, calc(var(--space-unit) * 2))`) et proportions en
   `flex-grow` — des proportions, pas des espacements.
-- `Clients` : grille `lg:grid-cols-[3fr_2fr]` (schéma large, appoint étroit).
+- `Clients` : grille `lg:grid-cols-[2fr_3fr]` (chiffres à gauche, avant / aujourd'hui à droite).
 - `Methode` : pas de révélation de 260 ms (420 ms pour un trait) dans le script, décalage `translateY(calc(var(--space-unit) * 3))` de `.revele-cache`.
 - `CompareBars reveal` : même pas de 260 ms, seuil `IntersectionObserver` à 0,25.
-- `Clients` : logo rendu en `h-12` (48 px), largeur calculée depuis le `viewBox` du SVG.
+- `Temoignage` : logo rendu en `h-10` (40 px), largeur calculée depuis le `viewBox` du SVG.
 - `Offre` : pastilles d'icônes en `size-9`, tracé en `size-5` (échelle Tailwind, comme les cartes de Confiance).
 - `ConvergenceDonnees` : `viewBox` 100 × 100 en `preserveAspectRatio="none"` et `viewBox` 16 × 24 de la flèche
   (proportions, pas des espacements), `stroke-width` 2 en `non-scaling-stroke`, et les coordonnées des tracés —
