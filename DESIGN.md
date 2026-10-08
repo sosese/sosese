@@ -937,7 +937,12 @@ supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole
 
 ### Bandeau d'engagements
 - Rangée fluide (`flex-wrap`, libellés en `whitespace-nowrap` à partir de `sm`), pas de grille à colonnes fixes :
-  les libellés mono de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
+  les libellés de longueurs inégales débordaient des colonnes et faisaient défiler toute la page (piège 12).
+- **Inter 14 et coches douces** (2026-10-08, étape 2 du plan « site moins geek ») : libellés en Inter (mono avant),
+  chaque « ✓ » dans une pastille ronde `size-5 bg-accent-soft text-accent text-12`, alignée sur la ligne de base
+  du libellé (`items-baseline` + `inline-flex`). Coche en `aria-hidden` : exemptée de la règle « pas de texte
+  accent sur accent-soft », comme les autres coches décoratives. Comportement de la rangée inchangé ; mesuré sans
+  débordement à 360 / 640 / 1024 / 1280 px (1 colonne sous `sm`, 3 lignes à 640, 2 lignes à partir de 1024).
 - Sous `sm`, une colonne, libellés autorisés à passer à la ligne. Libellé le plus long : ≈ 32 caractères.
 - Contenu et registre du bandeau : voir « Copy (ligne éditoriale) » — pas de « elle » ici, le pronom n'a pas
   encore d'antécédent à cette hauteur de page.
