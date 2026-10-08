@@ -428,7 +428,7 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 | `POST /api/contact` | JSON uniquement · zod · 5 requêtes / 10 min / IP · `200 {ok:true}` · `400 {erreur:"validation", champs}` · `429` · `502` échec SMTP · `503` SMTP non configuré |
 | `POST /api/questionnaire` | `server/questionnaire.mjs` · JSON, `bodyLimit` 64 ko (sept champs de 3 000 caractères) · objet `reponses` strict (clé inconnue = 400) · 5 requêtes / 10 min / IP · `200 {ok:true, accuse}` · mêmes codes d'erreur que le contact · anti-spam : remplissage < 8 s |
 | Email du questionnaire | texte brut question par question + **pièce jointe JSON** (`{ recu, reponses }`) pour regrouper les réponses dans un tableur ; `Reply-To` = l'email du prospect s'il est donné ; sujet « Questionnaire — {prénom} — {entreprise} » |
-| Accusé de réception | envoyé si un email est donné, **texte fixe** (`accuse` du JSON) : rien de saisi n'y est recopié, l'adresse n'étant pas vérifiée (sinon le formulaire servirait à envoyer un contenu choisi par un tiers depuis le domaine). Son échec est journalisé sans faire échouer la réponse (`accuse: false`) |
+| Accusé de réception | envoyé si un email est donné, **texte fixe** (`accuse` du JSON) : rien de saisi n'y est recopié, l'adresse n'étant pas vérifiée (sinon le formulaire servirait à envoyer un contenu choisi par un tiers depuis le domaine). **Envoyé après la réponse au visiteur** (2026-10-09) : le visiteur attendait sinon deux envois SMTP de suite, 4 à 5 s en production. Toujours après le succès de l'email des réponses, jamais s'il a échoué. `accuse: true` = un email a été donné et l'accusé est parti en arrière-plan, pas encore accepté par le SMTP ; son échec n'est plus visible que dans le journal. Un arrêt du serveur (SIGTERM) attend les accusés en cours avant de fermer |
 | Anti-spam | champ piège rempli ou remplissage < 3 s → `200 {ok:true}` **sans envoi** (le robot n'apprend rien) |
 | Sécurité | helmet ; CSP `script-src 'self'` (scripts des composants en fichiers `/_astro`) + empreintes sha256 des scripts restés inline (anti-flash du thème), calculées au démarrage depuis `dist/` ; HSTS et `upgrade-insecure-requests` en production seulement ; retours à la ligne refusés dans les champs d'une ligne (injection d'en-têtes) |
 | Journaux | aucune ligne par requête (ni IP ni URL) ; seulement démarrage, envoi / ignoré / échec SMTP, sans données du formulaire |
@@ -440,6 +440,12 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - SMTP : port 465 → TLS implicite ; 587 → STARTTLS obligatoire ; autre port (ex. Mailpit 1025) → sans TLS.
 - SMTP : délais de 10 s (connexion, accueil) et 20 s (inactivité). Ceux de nodemailer par défaut (2 min, 10 min)
   laissaient le visiteur bloqué sur « Envoi en cours… » si le SMTP se figeait (piège 30).
+- SMTP : **connexion gardée ouverte** (`pool: true`, `maxConnections: 1`, 2026-10-09). Sans pool, chaque email payait
+  connexion, TLS et authentification (~2 s chez l'hébergeur). Une connexion qui dort est fermée par le SMTP ou par le
+  délai d'inactivité de 20 s ; le pool en rouvre une au prochain envoi, sans erreur. Revers d'une connexion unique :
+  deux envois simultanés passent l'un après l'autre (mesuré : un second questionnaire envoyé dans la seconde attend
+  l'accusé du premier, ~0,5 s de plus) — sans importance au trafic du site. Mesures locales (SMTP ralenti de 250 ms
+  par réponse) : questionnaire avec email 3,1 s → 1,05 s (1,6 s après inactivité), contact 1,05 s.
 
 ### Docker
 - `Dockerfile` multi-stage (§7.3) : Astro, React et Tailwind sont en `devDependencies`, l'image finale n'installe

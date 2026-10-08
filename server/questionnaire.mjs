@@ -58,7 +58,7 @@ function corpsTexte(reponses) {
   return lignes.join("\n");
 }
 
-export function routeQuestionnaire(app, { transport, env }) {
+export function routeQuestionnaire(app, { transport, env, enArrierePlan }) {
   app.post(
     regles.endpoint,
     // Un questionnaire complet dépasse la limite de 16 ko du formulaire de contact (sept champs de 3 000 caractères).
@@ -109,15 +109,17 @@ export function routeQuestionnaire(app, { transport, env }) {
 
       // Accusé de réception : texte fixe, rien de saisi n'y est recopié (l'adresse n'est pas vérifiée, le
       // formulaire ne doit pas pouvoir servir à envoyer un contenu choisi par un tiers). Son échec n'annule rien.
-      let accuse = false;
-      if (r.email) {
-        try {
-          await transport.sendMail({ from: env.MAIL_FROM, to: r.email, subject: regles.accuse.sujet, text: regles.accuse.texte.join("\n") });
-          accuse = true;
-          req.log.info("questionnaire : accusé de réception accepté par le serveur SMTP");
-        } catch (err) {
-          req.log.error({ code: err.code, reponse: err.responseCode }, "questionnaire : échec de l'accusé de réception");
-        }
+      // Envoyé après la réponse au visiteur : il attendait sinon deux envois SMTP de suite (4 à 5 s en
+      // production, 2026-10-09). Toujours après l'email des réponses, jamais si celui-ci a échoué ; son échec
+      // ne se voit plus que dans le journal.
+      const accuse = Boolean(r.email);
+      if (accuse) {
+        enArrierePlan(
+          transport.sendMail({ from: env.MAIL_FROM, to: r.email, subject: regles.accuse.sujet, text: regles.accuse.texte.join("\n") }).then(
+            () => req.log.info("questionnaire : accusé de réception accepté par le serveur SMTP"),
+            (err) => req.log.error({ code: err.code, reponse: err.responseCode }, "questionnaire : échec de l'accusé de réception"),
+          ),
+        );
       }
       return { ok: true, accuse };
     },

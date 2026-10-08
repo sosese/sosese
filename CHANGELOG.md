@@ -9,6 +9,7 @@ Le détail des décisions est dans `DESIGN.md`, les procédures dans `RUNBOOK.md
 
 | Date | En ligne | Précédente | Remarque |
 |---|---|---|---|
+| 2026-10-09 | `v0.10` | `v0.9` | déployé par l'humain ; questionnaire vérifié en production (emails reçus, envoi jugé lent → `fix/envoi-plus-rapide`) |
 | 2026-10-07 | `v0.9` | `v0.9-v2-preview.1` | premier déploiement par `deploy.sh` ; build du tag identique à la production (`/_astro`, `/`, `/contact`, `/questionnaire`) ; fin de la préversion v2 |
 | 2026-09-21 ou après | `v0.9-v2-preview.1` | `v0.8` | préversion déployée à la main hors de `main`, non consignée à l'époque (constatée le 2026-10-07) |
 | 2026-09-15 | `v0.2` | — | première mise en production |
@@ -17,11 +18,22 @@ Déploiements entre `v0.2` et `v0.8` : non consignés.
 
 ## Non publié
 
+- `fix/envoi-plus-rapide` — **envois plus rapides** (questionnaire et contact). L'accusé de réception du
+  questionnaire part après la réponse au visiteur, qui attendait deux envois SMTP de suite (4 à 5 s en production
+  après la v0.10) ; la connexion SMTP reste ouverte entre deux envois (`pool`, une connexion). Mesuré en local avec
+  un SMTP ralenti de 250 ms par réponse : questionnaire avec email 3,1 s → 1,05 s (1,6 s après une longue
+  inactivité), contact 1,05 s. L'accusé n'est toujours envoyé qu'après le succès de l'email des réponses ; un
+  arrêt du conteneur attend les accusés en cours.
+
+## v0.10 — 2026-10-08
+
+« Amélioration générale du site => moins geek ». PR #17, #18, #19.
+
 - `fix/deploy-tag-preversion` : `deploy.sh` accepte les tags de préversion (`vX.Y-suffixe`), en version en ligne
-  comme en cible de rollback. La copie du VPS est déjà à jour ; la branche reste à merger.
+  comme en cible de rollback. La copie du VPS est déjà à jour.
 - Documentation : `RUNBOOK.md` réorganisé autour des scripts (§2 publier, §3 déployer, §4 rollback, §5 préversion),
   ce journal, contrôle de `www` en GET (Traefik répond 308 en HEAD).
-- `feat/site-moins-geek` (version proposée : 0.10) — **un site plus humain, moins geek** :
+- **Un site plus humain, moins geek** (`feat/site-moins-geek`) :
   - **Voix** : tout le site parle à la première personne (« je »), pour les artisans, indépendants et petites
     entreprises ; « l'assistant » est le seul nom de ce que je construis ; plus de jargon hors « Sous le capot »
     (« IA » seulement dans la FAQ et la carte Confiance).
