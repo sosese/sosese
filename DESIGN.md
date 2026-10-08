@@ -651,6 +651,14 @@ l'assistant… ») en `text-ink`** — c'est elle qui porte le message. Tailles 
 Le chapeau ne redit plus « je construis un assistant » : « Je repère avec vous les tâches qui remplissent vos
 journées, et je relie votre assistant aux logiciels que vous utilisez déjà. »
 
+**Hero sur téléphone (2026-10-08, étape 5, mesuré)** : `h1` en `text-36` sous `sm` **conservé**. Il tient sur
+5 lignes à 390 et 360 px (4 à 640 px en `text-48`), mais le bouton « Parlons-en » reste au-dessus de la ligne de
+flottaison : haut / bas du bouton à **547 / 595 px** sur 390 × 844, **595 / 643 px** sur 360 × 740 (`npm start`,
+Chromium, Inter chargée). Marge suffisante même avec les barres du navigateur (Safari iOS laisse ~660 px visibles sur
+un 390 × 844). Descendre à `text-28` aurait gagné une ligne au prix d'un titre moins affirmé que les `h2`
+(`md:text-36`). À remesurer si le chapeau ou l'eyebrow s'allongent. Le bouton flottant `MobileCta` reste de toute
+façon visible en permanence sous `md`.
+
 ### L'agent en action (AgentEnAction) — non utilisé, conservé
 Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
 **Vos tâches sont prises en charge par l'agent avec les données de vos outils actuels ; vous validez, il exécute.**
