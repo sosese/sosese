@@ -731,19 +731,23 @@ const coche = "m3 8.4 3.4 3.4L13 5";
      C'est la traversée d'un panneau qui le transforme, donc la transformation se voit au moment
      où elle a lieu, et non après coup. */
   .objet {
+    /* Déplacé par `translate`, jamais par left / top : un déplacement en propriétés de mise en page
+       compte comme un décalage de mise en page (CLS ~0,03 par tour, mesuré le 2026-10-08). */
     position: absolute;
-    left: var(--ox, 18cqw);
-    top: var(--oy, 25.5cqw);
+    left: 0;
+    top: 0;
     z-index: 3;
     display: grid;
     justify-items: center;
     gap: 0.5cqw;
     width: 8cqw;
-    translate: -50% -50%;
+    /* La place du nom (écart 0,5 + corps 1,15), qui est posé hors du flux : même hauteur, donc
+       même centrage qu'avec le nom dans la grille. */
+    padding-bottom: 1.65cqw;
+    translate: calc(var(--ox, 18cqw) - 50%) calc(var(--oy, 25.5cqw) - 50%);
     opacity: 0;
     transition:
-      left 620ms var(--ease-out),
-      top 620ms var(--ease-out),
+      translate 620ms var(--ease-out),
       opacity var(--duration-base) var(--ease-out);
   }
   .flux:not([data-etape="0"], [data-etape="7"], [data-etape="14"]) .objet {
@@ -800,7 +804,14 @@ const coche = "m3 8.4 3.4 3.4L13 5";
     height: 1.8cqw;
   }
   /* Le nom est posé sous l'objet, dans la gouttière : c'est la seule place qui ne recouvre rien. */
+  /* Hors du flux et descendu par `translate` quand l'objet change de hauteur : dans la grille, il
+     se décalait à chaque changement de forme (décalage de mise en page). */
   .nom {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% calc(var(--frh, 2.6cqw) + 0.5cqw);
+    transition: translate var(--duration-base) var(--ease-out);
     display: inline-grid;
     font-family: var(--font-mono);
     font-size: 1.15cqw;
@@ -867,12 +878,12 @@ const coche = "m3 8.4 3.4 3.4L13 5";
   /* — L'éclat : autant de morceaux que de routes — */
   .eclat {
     position: absolute;
-    left: 74.5cqw;
-    top: var(--ry);
+    left: 0;
+    top: 0;
     z-index: 3;
     width: 2.4cqw;
     height: 2.4cqw;
-    translate: -50% -50%;
+    translate: calc(74.5cqw - 50%) calc(var(--ry) - 50%);
     border: 1.5px solid var(--accent);
     border-radius: var(--rayon-fin);
     background: var(--surface);
@@ -1070,50 +1081,50 @@ const coche = "m3 8.4 3.4 3.4L13 5";
   }
 
   @keyframes proto-sortie {
-    0% { left: 18cqw; top: 65.5cqw; }
-    28% { left: 18cqw; top: 73.2cqw; }
-    62% { left: 39cqw; top: 73.2cqw; }
-    100% { left: 39cqw; top: 45cqw; }
+    0% { translate: calc(18cqw - 50%) calc(65.5cqw - 50%); }
+    28% { translate: calc(18cqw - 50%) calc(73.2cqw - 50%); }
+    62% { translate: calc(39cqw - 50%) calc(73.2cqw - 50%); }
+    100% { translate: calc(39cqw - 50%) calc(45cqw - 50%); }
   }
   @keyframes proto-entree {
-    0% { left: 39cqw; top: 45cqw; }
-    42% { left: 39cqw; top: 14.5cqw; }
-    78% { left: 57.5cqw; top: 14.5cqw; }
-    100% { left: 57.5cqw; top: 24cqw; }
+    0% { translate: calc(39cqw - 50%) calc(45cqw - 50%); }
+    42% { translate: calc(39cqw - 50%) calc(14.5cqw - 50%); }
+    78% { translate: calc(57.5cqw - 50%) calc(14.5cqw - 50%); }
+    100% { translate: calc(57.5cqw - 50%) calc(24cqw - 50%); }
   }
   @keyframes proto-eclat-aller {
-    0% { left: 71.4cqw; top: 53.5cqw; opacity: 0; }
+    0% { translate: calc(71.4cqw - 50%) calc(53.5cqw - 50%); opacity: 0; }
     12% { opacity: 1; }
-    45% { left: 74.5cqw; top: 53.5cqw; }
-    70% { left: 74.5cqw; top: var(--ry); }
-    100% { left: 80cqw; top: var(--ry); opacity: 1; }
+    45% { translate: calc(74.5cqw - 50%) calc(53.5cqw - 50%); }
+    70% { translate: calc(74.5cqw - 50%) calc(var(--ry) - 50%); }
+    100% { translate: calc(80cqw - 50%) calc(var(--ry) - 50%); opacity: 1; }
   }
   @keyframes proto-eclat-retour {
-    0% { left: 80cqw; top: var(--ry); opacity: 1; }
-    40% { left: 77cqw; top: calc(var(--ry) + 0.8cqw); }
-    88% { left: 77cqw; top: 72.7cqw; opacity: 1; }
-    100% { left: 76cqw; top: 66cqw; opacity: 0; }
+    0% { translate: calc(80cqw - 50%) calc(var(--ry) - 50%); opacity: 1; }
+    40% { translate: calc(77cqw - 50%) calc(calc(var(--ry) + 0.8cqw) - 50%); }
+    88% { translate: calc(77cqw - 50%) calc(72.7cqw - 50%); opacity: 1; }
+    100% { translate: calc(76cqw - 50%) calc(66cqw - 50%); opacity: 0; }
   }
   @keyframes proto-rentre {
-    0% { left: 39cqw; top: 72.7cqw; }
-    58% { left: 18cqw; top: 72.7cqw; }
-    100% { left: 18cqw; top: 65.5cqw; }
+    0% { translate: calc(39cqw - 50%) calc(72.7cqw - 50%); }
+    58% { translate: calc(18cqw - 50%) calc(72.7cqw - 50%); }
+    100% { translate: calc(18cqw - 50%) calc(65.5cqw - 50%); }
   }
   /* Le second objectif : le circuit entier rejoué, sans commentaire. C'est la démonstration que
      « complexe » ne veut pas dire « plus gros », mais « plusieurs fois ». */
   @keyframes proto-boucle {
-    0% { left: 18cqw; top: 65.5cqw; }
-    8% { left: 18cqw; top: 73.2cqw; }
-    16% { left: 39cqw; top: 73.2cqw; }
-    30% { left: 39cqw; top: 14.5cqw; }
-    38% { left: 57.5cqw; top: 14.5cqw; }
-    50% { left: 57.5cqw; top: 43cqw; }
-    58% { left: 76cqw; top: 43cqw; }
-    68% { left: 76cqw; top: 56cqw; }
-    78% { left: 76cqw; top: 72.7cqw; }
-    88% { left: 39cqw; top: 72.7cqw; }
-    96% { left: 18cqw; top: 72.7cqw; }
-    100% { left: 18cqw; top: 65.5cqw; }
+    0% { translate: calc(18cqw - 50%) calc(65.5cqw - 50%); }
+    8% { translate: calc(18cqw - 50%) calc(73.2cqw - 50%); }
+    16% { translate: calc(39cqw - 50%) calc(73.2cqw - 50%); }
+    30% { translate: calc(39cqw - 50%) calc(14.5cqw - 50%); }
+    38% { translate: calc(57.5cqw - 50%) calc(14.5cqw - 50%); }
+    50% { translate: calc(57.5cqw - 50%) calc(43cqw - 50%); }
+    58% { translate: calc(76cqw - 50%) calc(43cqw - 50%); }
+    68% { translate: calc(76cqw - 50%) calc(56cqw - 50%); }
+    78% { translate: calc(76cqw - 50%) calc(72.7cqw - 50%); }
+    88% { translate: calc(39cqw - 50%) calc(72.7cqw - 50%); }
+    96% { translate: calc(18cqw - 50%) calc(72.7cqw - 50%); }
+    100% { translate: calc(18cqw - 50%) calc(65.5cqw - 50%); }
   }
 </style>
 
