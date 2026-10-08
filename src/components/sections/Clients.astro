@@ -54,7 +54,7 @@ const guillemets = (texte: string) => `« ${texte} »`;
     {/* Les chiffres d'abord dans le DOM : empilés sur mobile, ils se lisent juste sous la citation.
         Sobres : pas de grille de compteurs, pas de couleur d'accent, la valeur et son libellé. */}
     <div class="grid items-start gap-6 lg:grid-cols-[2fr_3fr]">
-      <div class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6">
+      <div class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 shadow-sm">
         <dl class="flex flex-col gap-6">
           {
             chiffres.map((chiffre) => (
@@ -84,7 +84,7 @@ const guillemets = (texte: string) => `« ${texte} »`;
         <p class="text-14 text-ink-muted">Selon {casClient.prenom}.</p>
       </div>
 
-      <figure class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6">
+      <figure class="flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 shadow-sm">
         <div class="grid gap-6 sm:grid-cols-2">
           {
             avantApres.map((temps) => (

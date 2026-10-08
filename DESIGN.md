@@ -176,9 +176,18 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
     rendu varie selon le système (Georgia ou Noto Serif, largeurs proches mais pas identiques) — accepté.
 - Capitales réservées aux eyebrow labels (utilitaire `eyebrow` : **Inter semi-gras (600)**, 12px, capitales
   espacées de 0,08em, `--ink-muted`). Mono jusqu'au 2026-10-08. Le semi-gras est celui de la V7 : en Inter
-  normal, des capitales de 12 px paraissent grêles. Contraste inchangé (`ink-muted` ≥ 5,35:1 sur tous les fonds).
-  Le plan demandait la couleur accent : **non appliqué**, `accent` sur `bg-subtle` est à 4,49:1 (voir contrastes),
-  et plusieurs eyebrows vivent sur ce fond (Méthode, FAQ, pied de page). Question remontée au chef de projet.
+  normal, des capitales de 12 px paraissent grêles.
+- **Deux couleurs d'eyebrow** (2026-10-08, étape 5 — choix du codeur, à confirmer à l'œil par l'humain) :
+  - **eyebrow de section en `--accent`** (`eyebrow text-accent`) : `SectionHeading`, `PageHeader`, hero, CTA final,
+    404. Il ouvre chaque section d'une touche chaude et marque la hiérarchie. Possible depuis `--accent` #AC4F08 :
+    ≥ 4,82:1 sur `bg`, `bg-subtle` et `surface` en clair, ≥ 8,28:1 en sombre et en invert (voir contrastes).
+  - **libellés internes en `--ink-muted`** (utilitaire seul) : `dt` de la Méthode, « Avant / Aujourd'hui » de
+    Clients, libellés de `Figure`, eyebrow de la maquette de l'offre, `EnchainementClient`, pied de page, `/contact`,
+    `/a-propos`, libellés de « Sous le capot ». En accent, les neuf `dt` de la Méthode faisaient une colonne
+    orange : trop d'ambre pour des étiquettes qui ne sont pas des titres.
+  - `text-accent` passe après `eyebrow` dans le CSS construit (Tailwind 4 ordonne les utilitaires par propriété :
+    `color` après `font-family`) : vérifié dans `dist/` et à l'écran. Si un jour l'eyebrow reste gris malgré
+    `text-accent`, c'est cet ordre qui a changé (piège 3).
 
 ## Espacement
 - Unité : `--space-unit` = 0.25rem (4px). Tailwind est rebranché dessus (`--spacing`) : `p-4` = 16px, `gap-2` = 8px.
@@ -234,10 +243,10 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
 ## Composants disponibles
 | Composant | Fichier | Type / API |
 |---|---|---|
-| Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">` |
-| Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>` |
-| Badge | `ui/Badge.astro` | statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `href` → rendu en `<a>` avec `rel="noopener"` et soulignement au survol (cas client), `w-fit` (ne s'étire pas dans un flex en colonne) |
-| SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow`, `title` (h2), slot = chapeau |
+| Button | `ui/Button.astro` | statique — `variant` primary/secondary/ghost, `size` sm/md/lg, `href` → `<a>`, sinon `<button type="button">`. **Pilule** (`rounded-full`) depuis le 2026-10-08 (étape 5, `rounded-md` avant) : forme plus douce, la même que le bouton flottant et les puces des formulaires. Les boutons écrits à la main des îlots (envoi du contact, Suivant / Précédent / Envoyer du questionnaire, appel du menu mobile) suivent |
+| Card | `ui/Card.astro` | statique — `interactive` (implicite si `href`), `padding` md/lg, `href` → `<a>`. `rounded-lg border border-border bg-surface` **+ `shadow-sm`** depuis le 2026-10-08 (voir « Cartes ») |
+| Badge | `ui/Badge.astro` | **non rendu sur une page publique** (revu à l'étape 5, inchangé : un changement invisible ne se vérifie pas) — statique — `variant` neutral/accent, `dot` (pastille `--accent-bright`), `href` → rendu en `<a>` avec `rel="noopener"` et soulignement au survol (cas client), `w-fit` (ne s'étire pas dans un flex en colonne) |
+| SectionHeading | `ui/SectionHeading.astro` | statique — `id` (pour `aria-labelledby` de la section), `eyebrow` (en `--accent` depuis l'étape 5), `title` (h2), slot = chapeau |
 | FlowDiagram | `ui/FlowDiagram.astro` | statique — `steps`, `label` ; vertical < xl, horizontal ≥ xl (à 1024px, les 4 étapes débordaient de la carte) ; impulsion CSS sur les liaisons, masquée sous mouvement réduit. **Non utilisé depuis le 2026-09-17** (retiré de l'offre, doublon avec `DicteeMobile` placé juste à côté) ; conservé |
 | TerminalDemo | `islands/TerminalDemo.tsx` | îlot React, `client:idle` — voir « Terminal » |
 | PageHeader | `ui/PageHeader.astro` | statique — en-tête des pages internes : `eyebrow`, `title` (**h1**), slot = chapeau, slot nommé `actions` (rangée de boutons sous le chapeau) |
@@ -262,6 +271,23 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | statique + script natif — démonstration en boucle du cas client, **allégée le 2026-10-08** : un devis en trois temps (il demande le devis → le devis se prépare → il vérifie, c'est enregistré), légendée « Exemple illustratif ». Voir « Le cas » |
 | Temoignage | `ui/Temoignage.astro` | statique, **aucun script** — parole d'un client réel : `citation` (sans guillemets, ajoutés avec U+202F), `prenom`, `nomFamille` (`null` → prénom seul, sans marqueur), `role`, `entreprise`, `site?` (seul lien du bloc, sur le nom de l'entreprise), `logo?` (chemin dans `public/`, vérifié au build, sur plaque `section-invert`). `<figure>` + `<blockquote>` + `<figcaption>`. Voir « Clients » |
 | Base | `layouts/Base.astro` | props `title`, `description`, `noindex` ; script anti-flash, préchargement polices, canonical |
+
+### Cartes (2026-10-08, plan « site moins geek », étape 5)
+Une seule apparence de carte sur le site : **`rounded-lg border border-border bg-surface shadow-sm`** — celle de
+`Card`. Référence : les cartes du mini-CRM (fond blanc, bordure légère, ombre à peine visible). La bordure seule
+faisait « grille de tableau de bord » ; l'ombre seule disparaît en thème sombre — les deux ensemble.
+- **Écrites à la main, mêmes classes recopiées** (parce que l'élément n'est pas un `div` ou qu'une prop de `Card` ne
+  suffirait pas sans piège 3) : `Temoignage` (`<figure>`, `md:p-10`), les deux blocs de `Clients` (chiffres :
+  `div` ; avant / aujourd'hui : `<figure>`), `EnchainementClient` (`<figure data-cc>`), les deux panneaux de
+  Confiance (le second garde `border-accent` : c'est la moitié qui s'arrête), le cadre `dl` de la Méthode
+  (`rounded-md` → `rounded-lg`).
+- **Restent différentes, volontairement** :
+  - les trois temps d'`EnchainementClient` (`rounded-md border bg-bg`, sans ombre) : ce sont des cases **dans** une
+    carte, et leur bordure passe en `--accent` à l'étape en cours (script inchangé) ;
+  - les blocs de « Sous le capot » (`border-border-strong`, sans ombre) : la section reste telle quelle ;
+  - le terminal et les maquettes (`RotationEcrans`) : décors d'écran, pas des cartes de page ;
+  - les champs de formulaire (`rounded-md border-border-strong`) : contrôles, pas cartes.
+- Pas d'ombre sur les accordéons de la FAQ, les sections ni les listes : l'ombre est le signe d'une carte.
 
 Le **hero** porte `VracEnActions` (le passage) depuis le 2026-09-19. Chaque visuel remplacé descend d'un cran dans la
 page plutôt que d'être supprimé : `RotationEcrans` (quatre décors, hero le 2026-09-19) est descendu dans « L'offre »,
@@ -921,7 +947,7 @@ Ordre de lecture, pensé pour 10 secondes :
    un « il » se rattachait à la machine (corrigé le 2026-10-08).
 2. **`Temoignage`, la pièce maîtresse** : logo sur sa plaque, citation principale en serif (`font-display`,
    `text-21` → `text-28` dès `md` → `text-36` dès `lg`, `--leading-tight`), signature « Jason, commercial et
-   gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, sans ombre.
+   gestionnaire — L'Atelier des Sols & Fils ↗ ». Carte `bg-surface` bordée, `shadow-sm` (comme `Card`, depuis l'étape 5).
 3. **Deux chiffres, pas un de plus** (`<dl>`) : « Pour un devis : 25 min → 3 min » et « Gagnées par semaine : ≈ 4 h »,
    légende commune « Selon Jason. ». Sobres : serif `text-28`/`text-36` en `--ink`, **pas d'accent, pas de grille de
    compteurs, pas de barres**. La flèche est en Inter (`font-sans`) : en Noto Serif, elle collait à « min ».

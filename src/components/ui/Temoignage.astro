@@ -39,7 +39,7 @@ const viewBox = logo?.endsWith(".svg")
 const largeurLogo = viewBox ? Math.round((HAUTEUR_LOGO * Number(viewBox[1])) / Number(viewBox[2])) : undefined;
 ---
 
-<figure class:list={["flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 md:p-10", className]}>
+<figure class:list={["flex flex-col gap-6 rounded-lg border border-border bg-surface p-6 shadow-sm md:p-10", className]}>
   {/* Le lettrage du client est blanc sur fond transparent : il disparaîtrait sur le fond clair. Il est
       posé sur une plaque `section-invert`, sombre dans les deux thèmes, plutôt que retouché. Décoratif
       (`alt` vide) : le nom de l'entreprise est écrit dans la signature, qui porte le lien. */}

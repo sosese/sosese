@@ -80,7 +80,7 @@ export default function MobileNav({ links, cta }: Props) {
           <a
             href={cta.href}
             onClick={close}
-            className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-accent px-6 text-16 font-medium text-on-accent transition-colors duration-(--duration-fast) ease-out hover:bg-accent-hover"
+            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-accent px-6 text-16 font-medium text-on-accent transition-colors duration-(--duration-fast) ease-out hover:bg-accent-hover"
           >
             {cta.label}
           </a>

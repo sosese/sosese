@@ -77,7 +77,7 @@ function valider(questions: Question[], reponses: Reponses): Errors {
 const inputClass =
   "h-12 w-full rounded-md border border-border-strong bg-surface px-4 text-16 text-ink transition-colors duration-(--duration-fast) ease-out hover:border-ink-muted aria-invalid:border-accent";
 const boutonBase =
-  "inline-flex h-12 items-center justify-center gap-2 rounded-md px-6 text-16 font-medium transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-out motion-safe:active:translate-y-px";
+  "inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-16 font-medium transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-out motion-safe:active:translate-y-px";
 const boutonPrimaire = `${boutonBase} bg-accent text-on-accent hover:bg-accent-hover disabled:cursor-wait disabled:opacity-70`;
 const boutonSecondaire = `${boutonBase} border border-border-strong bg-surface text-ink hover:border-accent hover:text-accent`;
 

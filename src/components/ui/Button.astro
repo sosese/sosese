@@ -33,7 +33,8 @@ const sizes = {
 };
 
 const classes = [
-  "group/button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium",
+  // Pilule (2026-10-08, étape 5) : forme plus douce, la même que le bouton flottant et les puces des formulaires.
+  "group/button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium",
   "transition-[background-color,border-color,color,transform] duration-(--duration-fast) ease-out",
   "motion-safe:active:translate-y-px disabled:pointer-events-none disabled:opacity-50",
   variants[variant],

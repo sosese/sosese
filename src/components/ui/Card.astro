@@ -10,8 +10,10 @@ type Props = {
 
 const { href, interactive = Boolean(href), padding = "md", class: className, ...rest } = Astro.props;
 
+// Bordure + ombre douce (DESIGN.md, règles) : l'ombre donne le relief en clair, la bordure le tient en sombre.
+// Les cartes écrites à la main (Temoignage, Clients, Confiance, EnchainementClient) recopient ces classes.
 const classes = [
-  "group/card block rounded-lg border border-border bg-surface",
+  "group/card block rounded-lg border border-border bg-surface shadow-sm",
   padding === "lg" ? "p-8" : "p-6",
   interactive &&
     "transition-[border-color,transform] duration-(--duration-base) ease-out hover:border-border-strong motion-safe:hover:-translate-y-0.5",

@@ -250,7 +250,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
 
       <div className="flex flex-wrap items-center gap-4">
         <button type="submit" disabled={status === "sending"}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-accent px-6 text-16 font-medium text-on-accent transition-[background-color,transform] duration-(--duration-fast) ease-out hover:bg-accent-hover disabled:cursor-wait disabled:opacity-70 motion-safe:active:translate-y-px">
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-16 font-medium text-on-accent transition-[background-color,transform] duration-(--duration-fast) ease-out hover:bg-accent-hover disabled:cursor-wait disabled:opacity-70 motion-safe:active:translate-y-px">
           {status === "sending" ? "Envoi en cours…" : "Envoyer ma demande"}
         </button>
         <p role="status" aria-live="polite" className="text-14 text-ink-muted">
