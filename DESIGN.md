@@ -4,7 +4,11 @@
 - Aucune couleur, rayon ou espacement en dur. Toujours un token.
 - Une seule couleur d'accent. Jamais deux accents dans un même écran.
 - --accent-bright n'est jamais une couleur de texte sur fond clair.
-- Bordures 1px sur --border. Ombres réservées aux éléments flottants.
+- Bordures 1px sur --border. **Cartes : bordure 1px `--border` + `--shadow-sm`** (relief doux, depuis le 2026-10-08,
+  plan « site moins geek », étape 5 — l'ombre seule ne se voit pas en thème sombre, la bordure seule faisait
+  « grille de tableau de bord »). `--shadow-md` reste réservée aux éléments flottants (bouton flottant, lien
+  d'évitement, éléments posés dans les maquettes). Pas d'ombre sur ce qui n'est pas une carte : sections, listes,
+  accordéons, filets.
 - Tout doit être vérifié dans les deux thèmes avant d'être considéré comme fini.
 - Toute animation respecte prefers-reduced-motion. **Seule exception : le terminal** (aujourd'hui dans « Sous le capot », voir « Décisions »).
 - Aucun texte technique hors de la section "Sous le capot".
@@ -23,7 +27,7 @@ ne produit rien (et sans erreur, voir « Pièges »).
 :root {
   /* Base — thème clair */
   --bg:            #FCFBF9;
-  --bg-subtle:     #F5F2ED;
+  --bg-subtle:     #F6F1E9; /* #F5F2ED jusqu'au 2026-10-08 */
   --surface:       #FFFFFF;
   --ink:           #14110E;
   --ink-muted:     #6B6259;
@@ -31,7 +35,7 @@ ne produit rien (et sans erreur, voir « Pièges »).
   --border-strong: rgba(20,17,14,0.18);
 
   /* Accent ambre */
-  --accent:        #B45309; /* texte, bordures, fond de bouton (blanc dessus = 5:1) */
+  --accent:        #AC4F08; /* texte, bordures, fond de bouton (blanc dessus = 5,4:1) ; #B45309 jusqu'au 2026-10-08 */
   --accent-hover:  #92400E;
   --accent-bright: #F59E0B; /* décoratif uniquement : traits, glows, icônes */
   --accent-soft:   rgba(217,119,6,0.12);
@@ -40,8 +44,8 @@ ne produit rien (et sans erreur, voir « Pièges »).
   /* Rayons */
   --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-full: 999px;
 
-  /* Ombres — usage rare, éléments flottants uniquement */
-  --shadow-sm: 0 1px 2px rgba(20,17,14,0.06);
+  /* Ombres — sm : cartes (avec leur bordure) ; md : éléments flottants uniquement */
+  --shadow-sm: 0 1px 2px rgba(20,17,14,0.04), 0 4px 12px rgba(20,17,14,0.05);
   --shadow-md: 0 8px 24px rgba(20,17,14,0.10);
 }
 
@@ -60,7 +64,7 @@ ne produit rien (et sans erreur, voir « Pièges »).
   --accent-soft:   rgba(245,158,11,0.14);
   --on-accent:     #14110E;
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.25);
   --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
 }
 
@@ -86,25 +90,33 @@ Tokens complémentaires dans `tokens.css` :
 | Boucles décoratives | `--duration-blink` (curseur du terminal), `--duration-loop` (impulsions du FlowDiagram) — jamais ramenées à 0 : les animations sont déclarées dans `@media (prefers-reduced-motion: no-preference)` |
 
 ### Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1)
+Recalculés le 2026-10-08 (étape 5, formule WCAG 2.x, fonds translucides composés sur le fond réel) après le passage
+de `--accent` à #AC4F08 et de `--bg-subtle` à #F6F1E9. Le thème sombre et les sections invert n'ont pas changé.
 | Couple | Clair | Sombre / invert |
 |---|---|---|
 | ink / bg | 18.19 | 17.25 |
 | ink-muted / bg | 5.77 | 6.74 |
-| ink-muted / bg-subtle | 5.35 | 6.42 |
+| ink-muted / bg-subtle | 5.31 (5.35 avant) | 6.42 |
 | ink-muted / surface | 5.97 | 6.18 |
-| accent / bg (texte accent) | 4.86 | 9.03 |
-| accent / surface | 5.02 | — |
-| on-accent / accent (bouton) | 5.02 | 8.76 |
+| accent / bg (texte accent, eyebrows) | 5.24 (4.86 avant) | 9.03 |
+| accent / surface | 5.42 (5.02 avant) | 8.28 |
+| accent / bg-subtle | **4.82** (4.49 ✗ avant) | 8.60 |
+| accent / accent-soft (sur bg) | **4.62** (4.28 ✗ avant) | 7.28 |
+| accent / accent-soft (sur surface) | 4.77 | 6.43 |
+| ink / accent-soft | 16.04 | 13.90 |
+| on-accent / accent (bouton) | 5.42 (5.02 avant) | 8.76 |
 | on-accent / accent-hover | 7.09 | 11.27 |
-| **accent / accent-soft** | **4.28 ✗** | 7.28 |
-| **accent / bg-subtle** | **4.49 ✗** (axe) | 6.42 |
-| accent-hover / bg-subtle | 6.35 | — |
+| accent-hover / bg-subtle | 6.31 (6.35 avant) | 11.07 |
+
+(La valeur sombre « accent / bg-subtle 6.42 » de l'ancien tableau était celle d'`ink-muted` : recalculée, 8.60.)
 
 Conséquences :
-- sur un fond `--accent-soft`, le texte est `--ink`, jamais `--accent` (cas du Badge accent) ;
-- sur un fond `--bg-subtle`, pas de texte `--accent` : fond `--bg` ou `--surface` à la place (numéros du FlowDiagram),
-  ou `--accent-hover` pour un état de survol (questions de la FAQ). Exemptés : le point du wordmark (logotype) et les
-  « ✓ » décoratifs en `aria-hidden`.
+- **Depuis le 2026-10-08, plus aucun couple sous AA** : `--accent` passe en texte sur `bg`, `surface`, `bg-subtle`
+  et `accent-soft`, dans les deux thèmes. C'est ce qui permet les eyebrows de section en accent (voir
+  « Typographie »).
+- On garde pourtant les choix faits quand ces couples échouaient — ils restent justes, et la marge est mince
+  (4,62 et 4,82) : Badge accent et actif de `RotationEcrans` en `--ink` sur `--accent-soft`, survol des questions de
+  FAQ en `--accent-hover`. Une nouvelle teinte d'accent plus claire les ferait repasser sous AA.
 Tout nouveau couple texte / fond doit être recalculé dans les deux thèmes avant usage.
 
 ## Thème

@@ -5,7 +5,7 @@
 
   /* Base — thème clair */
   --bg:            #FCFBF9;
-  --bg-subtle:     #F5F2ED;
+  --bg-subtle:     #F6F1E9; /* un cran plus chaud que #F5F2ED (2026-10-08, étape 5) : l'alternance des sections */
   --surface:       #FFFFFF;
   --ink:           #14110E;
   --ink-muted:     #6B6259;
@@ -13,7 +13,8 @@
   --border-strong: rgba(20,17,14,0.18);
 
   /* Accent ambre */
-  --accent:        #B45309; /* texte, bordures, fond de bouton (blanc dessus = 5:1) */
+  --accent:        #AC4F08; /* texte, bordures, fond de bouton (blanc dessus = 5,4:1). #B45309 jusqu'au 2026-10-08 :
+                               assombri d'un cran pour passer AA sur bg-subtle et accent-soft (DESIGN.md) */
   --accent-hover:  #92400E;
   --accent-bright: #F59E0B; /* décoratif uniquement : traits, glows, icônes */
   --accent-soft:   rgba(217,119,6,0.12);
@@ -22,8 +23,8 @@
   /* Rayons */
   --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-full: 999px;
 
-  /* Ombres — usage rare, éléments flottants uniquement */
-  --shadow-sm: 0 1px 2px rgba(20,17,14,0.06);
+  /* Ombres — sm : relief doux des cartes (avec leur bordure) ; md : éléments flottants uniquement */
+  --shadow-sm: 0 1px 2px rgba(20,17,14,0.04), 0 4px 12px rgba(20,17,14,0.05);
   --shadow-md: 0 8px 24px rgba(20,17,14,0.10);
 
   /* Typographie */
@@ -93,7 +94,7 @@
   --accent-soft:   rgba(245,158,11,0.14);
   --on-accent:     #14110E;
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.25);
   --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
 }
 
