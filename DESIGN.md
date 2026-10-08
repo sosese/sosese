@@ -262,7 +262,7 @@ Inter (corps, titres `h1` à `h4`, libellés) / Georgia (citation de Jason et se
 | Calculateur | `ui/Calculateur.astro` | statique + script `is:inline` — deux curseurs, une estimation d'heures par mois, lien pré-rempli vers `/contact`. **Non utilisé depuis le 2026-09-17** (constat revenu au format de `main`) ; conservé, ainsi que la reprise de `?heures=` dans `ContactForm`, pour pouvoir le remettre. S'il revient : retirer `is:inline` (voir « Décisions », scripts externes) |
 | Figure | `ui/diagrams/Figure.astro` | statique — conteneur de schéma : `label` (eyebrow), `caption` (`<figcaption>` Inter 12, mono jusqu'au 2026-10-08), slot = le schéma |
 | CompareBars | `ui/diagrams/CompareBars.astro` | statique (+ script natif si `reveal`) — comparaison de grandeurs : `bars` (`label`, `value`, `display`, `note?`, `tone` muted/accent), `max?`, `reveal?` (révélation ligne par ligne au défilement, à la place de `.bar-grow`). Voir « Schémas ». **Non utilisé depuis le 2026-10-08** (retiré de la section Clients avec les anciens chiffres, étape 3 du plan « site moins geek ») ; conservé, ainsi que ses règles `.revele-cache` / `data-revele="barre"` de `global.css` |
-| DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative` |
+| DotPattern | `ui/DotPattern.astro` | statique — trame de points masquée en radial ; **sections invert uniquement**, parent `relative overflow-hidden`, contenu en `relative`. **Seulement dans « Sous le capot » depuis le 2026-10-08** (retiré du CTA final, étape 5 : décor technique hors de la section geek) |
 | Header | `layout/Header.astro` | statique — sticky, fond plein (pas de `backdrop-filter`), nav + CTA ≥ md, menu < md |
 | Footer | `layout/Footer.astro` | statique — navigation, légal, contact (LinkedIn affiché seulement si `site.linkedin` est renseigné) |
 | MobileCta | `layout/MobileCta.astro` | statique — bouton flottant « Parlons-en » en bas à droite, < md uniquement, toujours visible, masqué sur `/contact` |
@@ -301,7 +301,11 @@ Methode (`#methode`), Offre (`#offre`), SousLeCapot (invert), Confiance (`#confi
 (invert). Le 2026-10-07 (demande explicite) : la preuve d'abord — Clients monte juste sous le bandeau, sur fond
 `bg-bg` (entre le bandeau et la Méthode, tous deux `bg-bg-subtle`) ; la section Probleme (« Le constat ») est
 supprimée, ses trois scènes reprises dans les arguments de l'offre. Le menu suit l'ordre de la page. Chaque section : `<section aria-labelledby>` + `py-(--section-y)` (hero : `py-(--hero-y)`) + `container-site` ;
-un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle` bordé `border-y`.
+un h2 via SectionHeading, des h3 au plus. Alternance de fond : `bg-bg` / `bg-bg-subtle`, **sans filet** depuis le
+2026-10-08 (étape 5, « moins de bordures ») : le changement de fond sépare seul — `bg-subtle` plus chaud y aide.
+Retirés : `border-b` du hero et du bandeau, `border-y` de la Méthode, de la FAQ et de la section « posture » de
+`/a-propos`. Restent : la bordure basse de l'en-tête collant, celle de `PageHeader` (deux fonds identiques de part
+et d'autre), le haut du pied de page.
 - **Sections invert** : `.section-invert` + `border-y border-border`. Sans bordure, elles se confondent avec le
   fond de page en thème sombre et le rythme vertical disparaît.
 
@@ -576,6 +580,21 @@ inventés.
 Le **`FlowDiagram` « Exemple : une demande de devis »** a été retiré de la carte en même temps : `DicteeMobile`
 arrive juste à côté et montre le même circuit en mieux. Un schéma remplace du texte, il ne redouble pas un autre
 schéma.
+
+### Décor allégé (2026-10-08, plan « site moins geek », étape 5)
+Référence : une page qui ressemble à un outil du quotidien bien tenu, pas à une console. Revue section par section :
+- **CTA final** : `DotPattern` retiré (section invert et `border-y` conservées). Le motif ne vit plus que dans
+  « Sous le capot », qui ne change pas (terminal, mono, points) : c'est la touche geek assumée.
+- **Filets de section** retirés sur les fonds `bg-subtle` (voir « Sections de l'accueil »).
+- **Méthode** : le cadre « Votre temps / Durée / Vous recevez » perd ses filets internes (`divide-y`) : l'espace
+  (`gap-4`, `p-4`) sépare les lignes, la carte les regroupe. Script de révélation inchangé (`data-revele` aux mêmes
+  places). Le trait entre les pastilles reste : c'est le fil de lecture.
+- **Clients** : `gap-8` → `gap-12` entre l'en-tête, le témoignage, les chiffres et la démonstration (l'écart des
+  autres sections) : plus d'air autour de la parole du client.
+- **Schémas affichés sur l'accueil** passés en revue : `EnchainementClient` (un devis, trois temps), `RotationEcrans`
+  (messagerie, mail, téléphone, application — que des messages et des cartes à valider, aucun graphique), « Qui
+  décide quoi » de Confiance. Aucun n'évoque un tableau de bord ni un terminal : **conservés tels quels**, cartes
+  alignées sur `Card`. Le seul terminal est dans « Sous le capot ».
 
 ### Schémas
 Registres autorisés (décision du 2026-09-16, voir « Décisions ») : **R1 schéma de flux**, **R2 mockup stylisé**,
