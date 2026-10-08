@@ -37,7 +37,7 @@ function validate(data: FormData): Errors {
 
   if (get("message").length > LIMITES.message) errors.message = `${LIMITES.message} caractères maximum.`;
 
-  if (data.get("consentement") !== "on") errors.consentement = "Votre accord est nécessaire pour que l'on puisse vous répondre.";
+  if (data.get("consentement") !== "on") errors.consentement = "Votre accord est nécessaire pour que je puisse vous répondre.";
 
   return errors;
 }
@@ -128,7 +128,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
         <p className="eyebrow">Message envoyé</p>
         <p className="text-28 font-semibold tracking-tight">Merci, votre demande est bien partie.</p>
         <p className="text-16 text-ink-muted">
-          Nous revenons vers vous par email. Si c'est urgent, écrivez directement à{" "}
+          Je reviens vers vous par email. Si c'est urgent, écrivez-moi directement à{" "}
           <a href={`mailto:${fallbackEmail}`} className="text-accent underline underline-offset-4 hover:text-accent-hover">
             {fallbackEmail}
           </a>
@@ -238,7 +238,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
           <div className="mb-6 flex flex-col gap-1 rounded-md border border-accent bg-accent-soft p-4 text-14 text-ink">
             <p className="font-medium">L'envoi n'a pas abouti.</p>
             <p>
-              Vos informations sont conservées ci-dessus : réessayez dans un instant, ou écrivez-nous directement à{" "}
+              Vos informations sont conservées ci-dessus : réessayez dans un instant, ou écrivez-moi directement à{" "}
               <a href={`mailto:${fallbackEmail}`} className="font-medium underline underline-offset-4">
                 {fallbackEmail}
               </a>

@@ -290,6 +290,11 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
 - États : `idle` / `sending` (bouton désactivé, `role="status"`) / `success` (panneau qui reçoit le focus) /
   `error` (`role="alert"` toujours présent dans le DOM, champs conservés, **email de repli affiché**).
 - Puces : cases à cocher `sr-only` dans des `<label>` stylés par `has-checked:` et `has-focus-visible:` — zéro état React.
+- Textes (2026-10-08) : en « je » (« pour que je puisse vous répondre », « Je reviens vers vous par email »,
+  « écrivez-moi »). Puce « Reporting » renommée **« Tableaux de bord »** (anglicisme technique) : le libellé est
+  aussi la valeur envoyée et validée par le serveur, et il est repris par le questionnaire (`optionsDe`) ; les
+  réponses reçues avant cette date portent l'ancien libellé. Un libellé de puce ne contient jamais « , » (le
+  serveur découpe la liste sur « , »).
 - **Erreurs en `--accent`** (bordure et texte) : pas de rouge, une seule couleur d'accent. Texte d'erreur : `text-accent`
   sur `surface` = 5.02:1 en clair. Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
 - `action="/api/contact" method="post"` sur le `<form>` : sans JS, les données partent dans le corps (jamais dans

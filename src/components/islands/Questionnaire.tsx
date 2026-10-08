@@ -139,7 +139,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
     const form = event.currentTarget;
 
     const found = valider(section.questions, reponses);
-    if (derniere && !consentement) found.consentement = "Votre accord est nécessaire pour que l'on puisse lire vos réponses.";
+    if (derniere && !consentement) found.consentement = "Votre accord est nécessaire pour que je puisse lire vos réponses.";
     setErrors(found);
     const premier = [...section.questions.map((q) => q.id), "consentement"].find((id) => found[id]);
     if (premier) {
@@ -181,7 +181,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
           {accuse
             ? "Vos réponses sont bien arrivées. Un accusé de réception vient de partir vers votre boîte email."
             : "Vos réponses sont bien arrivées."}{" "}
-          Pour toute question, écrivez à{" "}
+          Pour toute question, écrivez-moi à{" "}
           <a href={`mailto:${fallbackEmail}`} className="text-accent underline underline-offset-4 hover:text-accent-hover">
             {fallbackEmail}
           </a>
@@ -251,7 +251,7 @@ export default function Questionnaire({ fallbackEmail }: { fallbackEmail: string
             <div className="mb-6 flex flex-col gap-1 rounded-md border border-accent bg-accent-soft p-4 text-14 text-ink">
               <p className="font-medium">L'envoi n'a pas abouti.</p>
               <p>
-                Vos réponses sont conservées : réessayez dans un instant, ou écrivez directement à{" "}
+                Vos réponses sont conservées : réessayez dans un instant, ou écrivez-moi directement à{" "}
                 <a href={`mailto:${fallbackEmail}`} className="font-medium underline underline-offset-4">
                   {fallbackEmail}
                 </a>
