@@ -103,6 +103,7 @@ de `--accent` à #AC4F08 et de `--bg-subtle` à #F6F1E9. Le thème sombre et les
 | accent / bg-subtle | **4.82** (4.49 ✗ avant) | 8.60 |
 | accent / accent-soft (sur bg) | **4.62** (4.28 ✗ avant) | 7.28 |
 | accent / accent-soft (sur surface) | 4.77 | 6.43 |
+| accent / accent-soft (sur bg-subtle) | **4.28 ✗** | 6.76 |
 | ink / accent-soft | 16.04 | 13.90 |
 | on-accent / accent (bouton) | 5.42 (5.02 avant) | 8.76 |
 | on-accent / accent-hover | 7.09 | 11.27 |
@@ -129,9 +130,14 @@ La barre « Avant » est volontairement pâle (c'est l'état d'avant) ; elle n'a
 décoratives, le texte est à côté ; elles passent quand même 3:1.
 
 Conséquences :
-- **Depuis le 2026-10-08, plus aucun couple sous AA** : `--accent` passe en texte sur `bg`, `surface`, `bg-subtle`
-  et `accent-soft`, dans les deux thèmes. C'est ce qui permet les eyebrows de section en accent (voir
-  « Typographie »).
+- **Depuis le 2026-10-08, `--accent` passe AA en texte sur `bg`, `surface` et `bg-subtle`**, et sur `accent-soft`
+  posé sur `bg` ou `surface`, dans les deux thèmes. C'est ce qui permet les eyebrows de section en accent (voir
+  « Typographie »). **Une exception : `accent-soft` posé sur `bg-subtle`, en clair (4,28:1, ✗)** — ligne ajoutée le
+  2026-10-08 (plan « site moins geek », étape 6). Aucun texte n'y est concerné : vérifié à l'exécution sur les
+  7 pages × 2 thèmes (tout texte `--accent` visible, pile de fonds remontée jusqu'au premier opaque : 0 sur
+  `accent-soft`). Dans une section `bg-subtle`, `accent-soft` ne porte que des éléments décoratifs en `aria-hidden`
+  (coches du bandeau Engagements, pastilles d'icône). Un badge ou un texte accent sur pastille douce dans une
+  section `bg-subtle` passerait sous AA : mettre le texte en `--ink` (14,87:1).
 - On garde pourtant les choix faits quand ces couples échouaient — ils restent justes, et la marge est mince
   (4,62 et 4,82) : Badge accent et actif de `RotationEcrans` en `--ink` sur `--accent-soft`, survol des questions de
   FAQ en `--accent-hover`. Une nouvelle teinte d'accent plus claire les ferait repasser sous AA.
@@ -532,6 +538,27 @@ masqué, pas de lecture automatique, boutons pause masqués, précédent / suiva
 atteint au clavier sur les quatre nouveaux boutons. Aucune erreur console, aucune requête en erreur, aucune requête
 tierce. Test de démarrage de l'image Docker : laissé à GitHub Actions (non rejoué en local).
 
+**Avant la v0.10** (plan « site moins geek », étape 6, 2026-10-08, branche `feat/site-moins-geek` au commit `be32db8`,
+`npm start` local, Lighthouse 12.8.2 mobile simulé, axe-core 4.11, Chrome 153 headless) :
+
+| Page | Perf | A11y | Bonnes pratiques | SEO | LCP | CLS | JS |
+|---|---|---|---|---|---|---|---|
+| `/` (3 passages) | 98–99 | 100 | 100 | 100 | 1,8–1,9 s (1,9 s sur `main`, même machine, 3 passages) | 0 | 86 ko |
+| `/contact` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 80 ko |
+| `/a-propos` | 100 | 100 | 100 | 100 | 1,5 s | 0 | 74 ko |
+| `/questionnaire` | 100 | 100 | 100 | 63 (`noindex`, voulu) | 1,5 s | 0 | 83 ko |
+| `/mentions-legales` | 100 | 100 | 100 | 100 | 1,4 s | 0 | 74 ko |
+
+Même jour, **production v0.9** (requêtes publiques) : `/` 98–100 / 96–100 / 100 / 100, LCP 1,4–1,5 s ; `/contact` et
+`/a-propos` 100 / 100 / 100 / 100. Les « JS » locaux sont plus lourds que ceux de la production (86 contre 72 ko sur
+`/`) : en local, HTTP/1.1 renvoie ~1,3 ko d'en-têtes non compressés avec chaque fichier (CSP comprise), la production
+est en HTTP/2 ; ne pas comparer ces colonnes entre elles.
+axe (WCAG 2.0 / 2.1 A et AA + bonnes pratiques) : **0 violation WCAG** sur 7 pages × 2 thèmes × 390 / 1280 px (volets
+ouverts) et sur le menu mobile ouvert. Seule remarque : `region` (bonne pratique, pas WCAG) sur le bouton flottant
+`MobileCta` à 390 px, hors de tout repère — **identique en production**, préexistante ; les audits précédents ne
+lançaient que les règles WCAG. Clavier : contour 2 px `--accent` dès le focus (sans attendre la transition) sur chaque
+arrêt de Tab, 7 pages × 2 thèmes × 2 largeurs. CLS d'animation et de chargement : voir pièges 31 et 33.
+
 Procédures de publication, déploiement et vérification : **`RUNBOOK.md`**.
 
 ### Contenus éditables (Content Collections)
@@ -889,7 +916,15 @@ arrive, l'assistant consulte les logiciels de l'entreprise un par un en montrant
   l'écran arrive directement dans son état final.
 - **L'état rendu par le serveur est l'état final du premier écran** (`data-etape="4"`, `data-actif`) : lisible sans
   JS, aucun flash à l'arrivée du script. Les quatre écrans sont empilés dans la même cellule de grille et toujours
-  présents : hauteur constante, CLS 0 au changement.
+  présents : hauteur constante, CLS 0 au changement **d'écran**. **Pas dans le déroulé d'un écran** (mesuré le
+  2026-10-08, étape 6) : dans la conversation, la bulle reçue remonte quand la réponse s'ajoute sous elle
+  (`.fil` en `justify-content: flex-end`) ; dans la boîte mail, le panneau `.statut` passe en `display: block` et
+  pousse les trois lignes pâles de ~130 px, puis les rend. Ce sont de vrais décalages de mise en page (piège 32) :
+  plus grande fenêtre de session 0,037 à 390 px et 0,011 à 1280 px (somme sur un tour de ~100 s : 0,21 et 0,06),
+  sous le seuil « bon » de 0,1. Lighthouse ne les voit pas (la maquette est sous la ligne de flottaison et ne joue
+  pas hors écran) ; un visiteur réel qui la regarde, si. Les annuler change le mouvement lui-même (panneau en
+  surimpression au lieu de pousser la liste, ou déplacements en `translate` mesurés par le script) : non fait,
+  décision laissée à l'humain.
 - **Le fondu est séquentiel, pas croisé** : le sortant s'efface entièrement (`--rot-sortie`) avant que l'entrant
   n'arrive (`--rot-entree` après `--rot-attente`). Deux chromes superposés à mi-fondu — les coins arrondis du
   téléphone sur le carré blanc de la messagerie — donnaient une bouillie. Passer par le fond de page une fraction
@@ -1624,6 +1659,18 @@ Tolérées, à ne pas étendre sans raison :
     voisin change de hauteur. → Déplacer avec `translate` (`left: 0; top: 0; translate: calc(X - 50%) calc(Y - 50%)`,
     les `%` restent relatifs à l'élément), sortir du flux ce qui suit un élément qui change de taille, et mesurer :
     `PerformanceObserver` sur `layout-shift` avec `entry.sources` donne les nœuds fautifs.
+
+33. **La police de secours a les bonnes métriques verticales, pas les bonnes largeurs de mots.** `"Inter Fallback"`
+    règle hauteur et taille (piège évité : pas de second LCP), mais un paragraphe au bord d'un retour à la ligne peut
+    en gagner une à l'arrivée d'Inter, et une largeur en `ch` (`--measure` = 70ch) change avec la police. Mesuré le
+    2026-10-08 sur `/questionnaire` **en réseau bridé seulement** (150 ms, 1,6 Mb/s ; 0 en libre) : à 390 px, le
+    chapeau passe de 8 à 9 lignes (+29 px, tout le formulaire descend : CLS 0,012) ; à 1280 px, la colonne centrée
+    `mx-auto max-w-(--measure)` change de largeur, donc de position horizontale (CLS 0,005). Les pages internes
+    alignées à gauche n'y sont pas sensibles (une `max-width` en `ch` qui change ne déplace rien), l'accueil non plus
+    (CLS 0 bridé, 5 largeurs). → Pour juger, bloquer les `.woff2` et comparer les hauteurs (`route('**/*.woff2',
+    r => r.abort())`). Un bloc **centré** ne prend pas de largeur en `ch` s'il doit rester immobile. Mesure faite
+    sous Linux (Liberation Sans en secours) : sur un autre système, la police de secours diffère, donc le retour à la
+    ligne aussi (non vérifié sur téléphone). Non corrigé, décision laissée à l'humain.
 
 ## Anti-patterns
 - Dégradés multicolores

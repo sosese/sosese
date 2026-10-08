@@ -21,6 +21,28 @@ Déploiements entre `v0.2` et `v0.8` : non consignés.
   comme en cible de rollback. La copie du VPS est déjà à jour ; la branche reste à merger.
 - Documentation : `RUNBOOK.md` réorganisé autour des scripts (§2 publier, §3 déployer, §4 rollback, §5 préversion),
   ce journal, contrôle de `www` en GET (Traefik répond 308 en HEAD).
+- `feat/site-moins-geek` (version proposée : 0.10) — **un site plus humain, moins geek** :
+  - **Voix** : tout le site parle à la première personne (« je »), pour les artisans, indépendants et petites
+    entreprises ; « l'assistant » est le seul nom de ce que je construis ; plus de jargon hors « Sous le capot »
+    (« IA » seulement dans la FAQ et la carte Confiance).
+  - **Hero** : « Vous me parlez de votre métier. Je construis l'assistant qui s'occupe du reste. », titre SEO aligné,
+    titre par défaut de `site.ts` repris ; sur téléphone, plus de « Parlons-en » dans le hero (le bouton flottant
+    en tient lieu).
+  - **Offre** en trois assistants (commercial, chiffres, saisie) ; **Méthode** raccourcie, cadres alignés.
+  - **Clients** : le témoignage de Jason (L'Atelier des Sols & Fils) au centre — citation, devis 25 min → 3 min en
+    barres, ≈ 4 h gagnées par semaine, avant → aujourd'hui ; compteurs retirés ; démonstration ramenée à un devis
+    en trois temps.
+  - **Visuel** : titres en Inter semi-gras, serif réservée au témoignage, mono limitée à « Sous le capot » ; accent
+    `#AC4F08`, fond doux plus chaud, cartes bordure + ombre légère, boutons en pilule, eyebrows de section en accent ;
+    décor allégé.
+  - **Sous le capot** : planche animée « Le protocole, de bout en bout » dans le volet « La pile technique en
+    détail », affichée à partir de `lg` (une phrase renvoie au grand écran en dessous) ; pause, arrêt hors écran,
+    état final sous mouvement réduit.
+  - **Questionnaire** : sans l'encart « Avant de commencer », colonne centrée, mention de confidentialité ; le
+    changement d'étape garde la carte à l'écran.
+  - **`/contact`** : zone d'intervention renseignée (Metz, France et Europe).
+  - Audits avant publication (`DESIGN.md` § « Audits locaux ») : Lighthouse `/` 98–99 / 100 / 100 / 100, CLS 0 ;
+    axe 0 violation WCAG.
 
 ## v0.9 — 2026-10-07
 
