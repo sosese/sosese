@@ -342,7 +342,7 @@ Textes longs (pages légales) : utilitaire **`prose-site`** sur un conteneur, HT
   réponses reçues avant cette date portent l'ancien libellé. Un libellé de puce ne contient jamais « , » (le
   serveur découpe la liste sur « , »).
 - **Erreurs en `--accent`** (bordure et texte) : pas de rouge, une seule couleur d'accent. Texte d'erreur : `text-accent`
-  sur `surface` = 5.02:1 en clair. Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
+  sur `surface` = 5.42:1 en clair (5.02 avant l'accent #AC4F08). Le message reste compréhensible sans la couleur (préfixe « ! » et texte explicite).
 - `action="/api/contact" method="post"` sur le `<form>` : sans JS, les données partent dans le corps (jamais dans
   l'URL) et le serveur répond 415 — le serveur n'accepte que du JSON, choix assumé en V1.
 - En dev, Vite relaie `/api` vers `http://127.0.0.1:3000` : lancer `npm run build && npm start` à côté de
@@ -655,8 +655,8 @@ journées, et je relie votre assistant aux logiciels que vous utilisez déjà. �
 5 lignes à 390 et 360 px (4 à 640 px en `text-48`), mais le bouton « Parlons-en » reste au-dessus de la ligne de
 flottaison : haut / bas du bouton à **547 / 595 px** sur 390 × 844, **595 / 643 px** sur 360 × 740 (`npm start`,
 Chromium, Inter chargée). Marge suffisante même avec les barres du navigateur (Safari iOS laisse ~660 px visibles sur
-un 390 × 844). Descendre à `text-28` aurait gagné une ligne au prix d'un titre moins affirmé que les `h2`
-(`md:text-36`). À remesurer si le chapeau ou l'eyebrow s'allongent. Le bouton flottant `MobileCta` reste de toute
+un 390 × 844). Descendre à `text-28` aurait gagné une ligne, mais le `h1` aurait eu la taille des `h2` sur téléphone (`text-28`
+sous `md`) : la hiérarchie se perdait. À remesurer si le chapeau ou l'eyebrow s'allongent. Le bouton flottant `MobileCta` reste de toute
 façon visible en permanence sous `md`.
 
 ### L'agent en action (AgentEnAction) — non utilisé, conservé
@@ -836,8 +836,8 @@ arrive, l'assistant consulte les logiciels de l'entreprise un par un en montrant
   étroite où la maquette ait tourné —, et jusqu'à 360 px. Mesuré le 2026-10-08 : 223 px de libellés en Inter
   contre 259 px en mono ; à 360 px, la rangée passait à deux lignes en mono, elle tient sur une en Inter. Un libellé plus long (« Application ») les fait
   passer à deux lignes et laisse le bouton pause seul en bas. Le `title` porte la phrase entière.
-- **Actif = souligné en `--accent` sur texte `--ink`**, pas de pastille pleine : `accent` sur `accent-soft` est à
-  4,28:1 en clair (voir contrastes), donc inutilisable pour du texte 12.
+- **Actif = souligné en `--accent` sur texte `--ink`**, pas de pastille pleine : `accent` sur `accent-soft` était à
+  4,28:1 en clair (4,62 depuis l'accent #AC4F08, marge trop mince pour du texte 12 : choix conservé).
 - **Bouton pause obligatoire** : la rotation boucle et dure bien plus de 5 s (WCAG 2.2.2). Rendu hors mouvement
   réduit (`motion-reduce:hidden`), mis en pause aussi hors viewport (`IntersectionObserver`). **Ne jamais le retirer.**
 - **La pause est une vraie pause** (2026-09-19). Deux choses s'ajoutent à l'arrêt du minuteur :
@@ -929,7 +929,7 @@ poids de ce qui est promis.
   il faut qu'on les lise avant les listes.
 - **Chaque geste porte son signe** : une coche à gauche, un glyphe de pause à droite, tous deux en `--accent`,
   alignés sur la première ligne (`mt-1`). C'est ce qui donne le rythme que les listes nues n'avaient pas.
-- **La porte est le seul aplat de couleur de la section** : pastille `bg-accent` / `text-on-accent` (5,02:1,
+- **La porte est le seul aplat de couleur de la section** : pastille `bg-accent` / `text-on-accent` (5,42:1,
   voir contrastes). Les engagements en dessous n'ont que des fonds `accent-soft`, donc rien ne lui dispute
   l'attention.
 - **Le trait qui la traverse est un filet, pas une flèche** : `h-5 w-px` empilé avant lg, `lg:h-px lg:w-5` en
@@ -1068,7 +1068,7 @@ supplémentaires / dépendances ». C'est ce que retient un visiteur qui survole
   manquées » (18) aussi une fois passé en `text-14` (300 px pour 302) ; « occasions perdues » (17)
   passe. Toute étiquette plus longue impose de revenir à `text-12`.
 - **Apparence d'un `Badge variant="accent" dot`, en plus compact** : même fond `--accent-soft`, même
-  pastille `--accent-bright`, même texte `--ink` (`accent` sur `accent-soft` = 4,28:1 en clair, donc
+  pastille `--accent-bright`, même texte `--ink` (`accent` sur `accent-soft` = 4,28:1 en clair à l'époque, donc
   jamais de texte accent sur ce fond). Pas le composant lui-même : ses `h-6`, `px-2`, `gap-2` et sa
   police mono (Inter depuis le 2026-10-08) demandaient 277 px pour la paire la plus courte, 320 px pour la plus longue — davantage que
   ce que la grille offre à n'importe quelle largeur. D'où la reprise en local : police sans, `px-1.5`,
@@ -1485,4 +1485,4 @@ Tolérées, à ne pas étendre sans raison :
 - WebGL, backdrop-filter sur mobile
 - Faux témoignages, faux logos clients, chiffres inventés
 - `transition-all`, animation sans `motion-safe:` ou sans token de durée
-- Texte `--accent` sur fond `--accent-soft`
+- Texte `--accent` sur fond `--accent-soft` (AA de justesse depuis le 2026-10-08, 4,62:1 : la règle reste)
