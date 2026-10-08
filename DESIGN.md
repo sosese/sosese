@@ -561,6 +561,15 @@ lignes), chapeau à la mesure, deux boutons. La démonstration du service commen
 Effet de bord : plus aucun script ni animation au-dessus de la ligne de flottaison. **Remettre un visuel = revenir à
 la grille `lg:grid-cols-[1fr_1fr]` et au `text-48`**, sinon le titre écrase la colonne de droite.
 
+**Titre (2026-10-08, décision de l'humain, étape 4 ter)** : « Vous me parlez de votre métier. Je construis
+l'assistant qui s'occupe du reste. » — il remplace « Moins de temps à recopier. Plus de temps pour votre métier. »,
+jugé pas assez fort, qui reste l'accroche du pied de page. Il pose la **relation** (vous parlez, je construis) au
+lieu d'un bénéfice abstrait, et présente « l'assistant » dès le titre. Sans « IA ». Même modèle de couleur que le
+précédent : première phrase en `text-ink`, seconde en `text-ink-muted` — le visiteur et son métier ouvrent, la
+réponse suit. Tailles inchangées (`text-36` / `sm:text-48` / `lg:text-64`, `max-w-4xl`).
+Le chapeau ne redit plus « je construis un assistant » : « Je repère avec vous les tâches qui remplissent vos
+journées, et je relie votre assistant aux logiciels que vous utilisez déjà. »
+
 ### L'agent en action (AgentEnAction) — non utilisé, conservé
 Depuis le 2026-10-07, à la place de `VracEnActions` (demande explicite : une seule idée, lisible d'un coup d'œil).
 **Vos tâches sont prises en charge par l'agent avec les données de vos outils actuels ; vous validez, il exécute.**
@@ -1026,8 +1035,9 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   - « Sous le capot » garde tout son jargon : c'est la touche geek assumée. Il passe au « je » comme le reste.
   - Pages légales : seulement le passage au « je » là où sosese parle, **jamais un changement de sens juridique**.
 - **Un seul nom pour ce que je construis : « l'assistant »** (le mot du client dans son témoignage). Plus de « la
-  solution », plus de « elle ». Il est présenté dans le hero (« je construis un assistant qui s'en occupe ») et dans
-  le chapeau de l'offre (« un assistant qui connaît vos prix… Il prépare le travail »).
+  solution », plus de « elle ». Il est présenté dans le titre du hero (« Je construis l'assistant qui s'occupe du
+  reste », 2026-10-08) et décliné dans l'offre en trois assistants (commercial, chiffres, saisie — voir « Offre :
+  trois assistants »).
 - **« il » a besoin d'un antécédent.** Il désigne l'assistant seulement dans un texte où « l'assistant » vient
   d'être nommé (hero, offre, chapeau de Confiance, FAQ) ; une section éloignée le renomme avant d'employer le
   pronom (chapeau de Confiance : « L'assistant lit ce qu'il faut. Il n'en garde rien. »). Dans le cas client, « il »
@@ -1049,8 +1059,10 @@ mécanisme réel. Aucun chiffre, aucune durée, aucun prix n'a été ajouté à 
   (« les accès de l'IA sont maîtrisés » jusqu'au 2026-10-08 ; avant, « rien n'est mémorisé par défaut ».)
   Le chapeau du hero décrit le déroulé (« il prépare le travail, vous vérifiez, puis c'est enregistré ») sans
   argumenter la porte : c'est Confiance qui la promet et la détaille.
-- **Titres et descriptions des pages (SEO)** suivent les mêmes règles : titre de l'accueil = le `h1` (« Moins de
-  temps à recopier, plus de temps pour votre métier | sosese »), descriptions en « je » (Joris nommé sur l'accueil
+- **Titres et descriptions des pages (SEO)** suivent les mêmes règles : titre de l'accueil = ce que je fais et pour
+  qui (« Un assistant sur mesure pour artisans, indépendants et petites entreprises | sosese », 2026-10-08 — le
+  `h1` « Vous me parlez de votre métier… » ne dit rien seul dans un onglet ou un résultat de recherche ; jusque-là
+  le titre reprenait l'ancien `h1`), descriptions en « je » (Joris nommé sur l'accueil
   et `/a-propos`), sans « IA » ni « PME ». Titre et description par défaut dans `site.ts` (`site.title`,
   `site.description`). Les pages légales gardent leur description descriptive à la troisième personne.
 - **Mêmes libellés de bouton partout** : l'appel principal vient de `cta.label` (`site.ts`, « Parlons-en ») pour
