@@ -8,6 +8,7 @@ Une ligne par `deploy.sh` ou rollback (RUNBOOK §3.2, §4).
 
 | Date | En ligne | Précédente | Remarque |
 |---|---|---|---|
+| 2026-10-09 | `v0.11` | `v0.10` | envois plus rapides |
 | 2026-10-09 | `v0.10` | `v0.9` | questionnaire vérifié en production |
 | 2026-10-07 | `v0.9` | `v0.9-v2-preview.1` | premier déploiement par `deploy.sh` ; build du tag identique à la production |
 | 2026-09-21 env. | `v0.9-v2-preview.1` | `v0.8` | préversion hors de `main`, non consignée à l'époque |
