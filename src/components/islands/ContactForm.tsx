@@ -46,7 +46,6 @@ const inputClass =
   "h-12 w-full rounded-md border border-border-strong bg-surface px-4 text-16 text-ink transition-colors duration-(--duration-fast) ease-out hover:border-ink-muted aria-invalid:border-accent";
 
 export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
-  const formRef = useRef<HTMLFormElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   const startedAt = useRef(0);
   const [status, setStatus] = useState<Status>("idle");
@@ -59,17 +58,6 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
   useEffect(() => {
     if (status === "success") successRef.current?.focus();
   }, [status]);
-
-  // Reprise de l'estimation du calculateur de l'accueil (/contact?heures=12) : le visiteur ne la retape pas.
-  // Paramètre validé (chiffres seuls) avant d'être réinjecté dans un texte.
-  useEffect(() => {
-    const heures = new URLSearchParams(window.location.search).get("heures");
-    if (!heures || !/^\d{1,4}$/.test(heures)) return;
-    const champ = formRef.current?.elements.namedItem("message");
-    if (champ instanceof HTMLTextAreaElement && !champ.value) {
-      champ.value = `D'après l'estimation faite sur votre site, une tâche qui revient nous prend environ ${heures} h par mois.`;
-    }
-  }, []);
 
   const clearError = (name: FieldName) =>
     setErrors((current) => {
@@ -142,7 +130,7 @@ export default function ContactForm({ fallbackEmail }: { fallbackEmail: string }
     [hint, errors[name] ? `${name}-erreur` : undefined].filter(Boolean).join(" ") || undefined;
 
   return (
-    <form ref={formRef} action={CONTACT_ENDPOINT} method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
+    <form action={CONTACT_ENDPOINT} method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
       <p className="text-14 text-ink-muted">Tous les champs sont obligatoires, sauf mention contraire.</p>
 
       <div className="grid gap-6 sm:grid-cols-2">

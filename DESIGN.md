@@ -104,7 +104,7 @@ défaut de Tailwind sont désactivés : `bg-red-500` ou `text-sm` ne produisent 
 | Temoignage | `ui/Temoignage.astro` | parole d'un client réel, sans script : `citation`, `prenom`, `nomFamille` (`null` → prénom seul), `role`, `entreprise`, `site?`, `logo?` (vérifié au build, piège 16) |
 | DotPattern | `ui/DotPattern.astro` | trame de points, sections invert seulement (« Sous le capot ») |
 | Figure | `ui/diagrams/Figure.astro` | conteneur de schéma : `label`, `caption`, slot |
-| CompareBars | `ui/diagrams/CompareBars.astro` | barres de comparaison : `bars`, `max?`, `reveal?` (révélation au défilement) |
+| CompareBars | `ui/diagrams/CompareBars.astro` | barres de comparaison : `bars`, `max?` ; lignes révélées une à une au défilement (script natif) |
 | EnchainementClient | `ui/diagrams/EnchainementClient.astro` | démonstration en boucle d'un devis en trois temps (voir « Cas client ») |
 | RotationEcrans | `ui/diagrams/RotationEcrans.astro` | maquette de l'Offre (voir « Rotation d'écrans ») |
 | ProtocoleBoutEnBout | `ui/diagrams/ProtocoleBoutEnBout.astro` | planche de « Sous le capot » (voir « Le protocole, de bout en bout ») |
@@ -154,7 +154,7 @@ Section `Clients.astro` : la parole de Jason, commercial et gestionnaire chez L'
   l'orthographe seulement (accord du client). Ses retours privés ne se publient nulle part.
 - Ordre : titre « Ce qu'en dit {prénom}, chez {entreprise} » ; `Temoignage` (logo sur plaque `section-invert`, car
   lettrage blanc ; filet et guillemets en accent) ; usage et **deux chiffres, pas plus** (devis 25 → 3 min en
-  `CompareBars reveal`, « ≈ 4 h » par semaine) ; avant → aujourd'hui (ses phrases mot pour mot) ; puis la démonstration.
+  `CompareBars`, « ≈ 4 h » par semaine) ; avant → aujourd'hui (ses phrases mot pour mot) ; puis la démonstration.
 - Ne pas afficher : les 2 h d'administratif d'avant, sa note de recommandation, la taille de l'équipe en chiffre.
 - Le logiciel du client (Extrabat) est nommé une fois, le nom seul : c'est ce qui a été construit. Aucune autre
   marque tierce sur le site.
@@ -219,7 +219,6 @@ qui suspend aussi les transitions via `getAnimations`).
   quel). Un schéma **remplace** du texte, il ne s'y ajoute pas.
 - La valeur est toujours écrite ; barres et liaisons en `aria-hidden`. Couleur jamais seule porteuse de sens.
 - Barres : plancher `max(<pct>%, calc(var(--space-unit) * 2))`, proportions en `flex-grow`, libellés hors du segment.
-- `.bar-grow` (scroll-driven, CSS seule) et `CompareBars reveal` (script) s'excluent.
 - Libellés en HTML, SVG pour la géométrie seulement (piège 14).
 
 ## Formulaires

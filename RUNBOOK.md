@@ -200,6 +200,5 @@ Les pages HTML ne diffèrent que par les `uid` des îlots : comparer après `sed
 | Quand | Quoi |
 |---|---|
 | Avant la `v1.0` | compléter les mentions légales (`src/config/site.ts`) |
-| Prochaine version | monter les actions GitHub signalées « Node.js 20 deprecated », sur un tag de test |
 | Tous les 1 à 3 mois | `npm outdated`, `npm audit`, en branche `chore/` |
 | Si Traefik change | figer sa version (`traefik:latest` aujourd'hui), revérifier les noms de routeurs |

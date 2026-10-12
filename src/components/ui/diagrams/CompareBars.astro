@@ -1,6 +1,8 @@
 ---
 // Comparaison de grandeurs (registre R3 de DESIGN.md) : deux ou trois valeurs de même unité,
 // en longueurs proportionnelles. La valeur est toujours écrite — les barres sont décoratives.
+// Lignes révélées une à une au défilement (libellé, puis barre, puis note). Sans JS, sous mouvement
+// réduit, ou sans le script : tout est là, à sa longueur finale.
 type Bar = {
   label: string;
   value: number;
@@ -12,24 +14,20 @@ type Bar = {
 type Props = {
   bars: Bar[];
   max?: number;
-  // Révèle les lignes une à une au défilement (libellé, puis barre, puis note), au lieu de la
-  // croissance pilotée par `animation-timeline` de `.bar-grow` : les deux feraient double emploi.
-  // Sans JS, sous mouvement réduit, ou sans le script : tout est là, à sa longueur finale.
-  reveal?: boolean;
   class?: string;
 };
 
-const { bars, max, reveal = false, class: className } = Astro.props;
+const { bars, max, class: className } = Astro.props;
 const echelle = max ?? Math.max(...bars.map((b) => b.value));
 ---
 
-<ul class:list={["flex flex-col gap-4", className]} data-bars-revele={reveal ? "" : undefined}>
+<ul class:list={["flex flex-col gap-4", className]} data-bars-revele>
   {
     bars.map((bar) => (
       <li class="flex flex-col gap-2">
         <div
           class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"
-          data-revele={reveal ? "ligne" : undefined}
+          data-revele="ligne"
         >
           <span class="text-16 text-ink">{bar.label}</span>
           <span class:list={["text-21 tabular-nums", bar.tone === "accent" ? "text-accent" : "text-ink"]}>
@@ -40,15 +38,14 @@ const echelle = max ?? Math.max(...bars.map((b) => b.value));
           <span
             class:list={[
               "block h-full rounded-full",
-              reveal ? null : "bar-grow",
               bar.tone === "accent" ? "bg-accent" : "bg-border-strong",
             ]}
-            data-revele={reveal ? "barre" : undefined}
+            data-revele="barre"
             style={`width: max(${((bar.value / echelle) * 100).toFixed(2)}%, calc(var(--space-unit) * 2))`}
           />
         </div>
         {bar.note && (
-          <p class="text-14 text-ink-muted" data-revele={reveal ? "ligne" : undefined}>
+          <p class="text-14 text-ink-muted" data-revele="ligne">
             {bar.note}
           </p>
         )}

@@ -16,6 +16,7 @@ Une ligne par `deploy.sh` ou rollback (RUNBOOK §3.2, §4).
 ## Non publié
 
 - Documentation resserrée (`CLAUDE.md`, `DESIGN.md`, `RUNBOOK.md`), composants et CSS non utilisés supprimés.
+- Logo client optimisé (69 → 42 ko), actions GitHub à jour (Node 24).
 
 ## Versions
 

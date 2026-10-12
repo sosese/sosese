@@ -145,25 +145,7 @@
   animation: blink var(--duration-blink) steps(1) infinite;
 }
 
-@keyframes bar-grow {
-  from { transform: scaleX(0); }
-}
-
-/* Schémas (DESIGN.md, « Schémas ») : l'état final est rendu côté serveur, l'animation n'est qu'un
-   enrichissement piloté par le défilement. Sans prise en charge de animation-timeline, ou sous
-   mouvement réduit, la barre est simplement là, à sa longueur finale. Aucun JS, aucun CLS. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .bar-grow {
-      transform-origin: left center;
-      animation: bar-grow linear both;
-      animation-timeline: view();
-      animation-range: entry 30% entry 90%;
-    }
-  }
-}
-
-/* Méthode (DESIGN.md, « Méthode ») : les classes de masquage ne sont posées que par le script de la
+/* Méthode et CompareBars (DESIGN.md, « Méthode ») : les classes de masquage ne sont posées que par le script de la
    section, et seulement hors mouvement réduit. Sans JS, tout est visible. */
 [data-revele] {
   transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
@@ -178,7 +160,7 @@
   transform-origin: center top;
 }
 
-/* Comparaison de grandeurs révélée ligne à ligne (`CompareBars` avec `reveal`) : la barre ne glisse
+/* Comparaison de grandeurs révélée ligne à ligne (`CompareBars`) : la barre ne glisse
    pas, elle se déploie depuis la gauche — elle mesure une durée, l'allonger la raconte. */
 [data-revele="barre"] {
   transform-origin: left center;

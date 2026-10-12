@@ -27,8 +27,6 @@ derrière Traefik. Aucune base de données.
 | Serveur, API | `server/index.mjs`, `server/questionnaire.mjs` |
 | Publication, déploiement | `scripts/release.sh`, `scripts/deploy-vps.sh`, `compose.yml`, `.github/workflows/deploy.yml` |
 
-`src/labo/` et `src/pages/labo/` : bac à sable local, hors git, jamais publié.
-
 ## Contraintes de travail
 - Développement **local uniquement**. Aucun accès au VPS : pas de `ssh`, `scp`, `rsync`, ni de docker distant.
   Production vérifiable seulement par requêtes HTTP publiques (curl, Lighthouse, axe).
