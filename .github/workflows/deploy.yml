@@ -1,4 +1,4 @@
-# Build et publication de l'image sur GHCR à chaque tag v*. Ne touche jamais au VPS (§7.3) :
+# Build et publication de l'image sur GHCR à chaque tag v*. Ne touche jamais au VPS :
 # aucun secret de déploiement ici, la mise en production reste manuelle.
 name: Image Docker
 
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Requis pour le cache type=gha (absent du §7.3).
+      # Requis pour le cache type=gha.
       - uses: docker/setup-buildx-action@v3
 
       - name: Build pour test

@@ -17,7 +17,7 @@
 //
 // Contrat (DESIGN.md, « Le protocole, de bout en bout ») : l'état rendu par le serveur est l'état
 // final (temps 13) ; scène en aria-hidden, transcription en sr-only ; aucun libellé dans un SVG
-// (piège 20) ; couleurs et rayons en tokens, tailles en cqw ; un seul aplat (« Valider »), au
+// (piège 14) ; couleurs et rayons en tokens, tailles en cqw ; un seul aplat (« Valider »), au
 // dernier temps ; aucune marque, aucun domaine, aucun chiffre inventé.
 // Sous lg, la planche est masquée (étape 6, décision de l'humain : tout en cqw, son plus petit
 // texte tombe à ~3 px à 360 px) et une phrase renvoie au grand écran. La transcription reste
@@ -553,7 +553,7 @@ const coche = "m3 8.4 3.4 3.4L13 5";
     font-size: 1.1cqw;
     color: var(--ink-muted);
   }
-  /* Le compteur d'objectifs : deux états empilés dans une grille d'une seule case (piège 28). */
+  /* Le compteur d'objectifs : deux états empilés dans une grille d'une seule case (piège 19). */
   .compteur {
     display: inline-grid;
     margin-left: auto;
@@ -661,7 +661,7 @@ const coche = "m3 8.4 3.4 3.4L13 5";
 
   /* — Le circuit — */
   /* Des filets orthogonaux, jamais de diagonale : dans une zone étirée, une diagonale se lit
-     comme un raccourci et non comme un chemin (piège 21). Chaque filet a sa progression vive. */
+     comme un raccourci et non comme un chemin (piège 15). Chaque filet a sa progression vive. */
   .fil {
     position: absolute;
     left: var(--x);

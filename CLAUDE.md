@@ -1,41 +1,47 @@
 # sosese — site vitrine
 
-## État du projet
-- V1 en production sur https://sosese.tech. Image `ghcr.io/sosese/sosese`, version déployée = tag de `image:` dans `compose.yml`.
-- Lots 0 à 5 du cahier des charges terminés. Le travail se fait désormais par évolutions : branche → PR → version → déploiement humain.
+Site de Joris (sosese) : assistants sur mesure pour artisans, indépendants et petites entreprises.
+En production sur https://sosese.tech. Version déployée = tag de `image:` dans `compose.yml`.
 
-## Contraintes de travail
-- Développement **local uniquement**. Aucun accès au VPS, jamais.
-  Pas de `ssh`, `scp`, `rsync`, ni de commande docker visant une machine distante.
-- Le déploiement est fait à la main par l'humain. Tu ne déploies pas.
-- Production vérifiable uniquement par requêtes HTTP publiques (curl, Lighthouse, axe).
-- Ne jamais lire, créer ni modifier `.env`. Seul `.env.example` existe dans le repo.
-- Pousser, ouvrir ou merger une PR, créer ou pousser un tag : uniquement avec l'accord explicite de l'humain dans la session.
-- Référence complète : §7.0 du cahier des charges.
+## Documentation (rien d'autre à lire)
+- `DESIGN.md` : front — règles, tokens, composants, sections, copy, décisions, pièges. **À lire avant toute modification.**
+- `RUNBOOK.md` : architecture (serveur, image, CI), VPS et services voisins, publication, déploiement, diagnostic.
+- `CHANGELOG.md` : versions et journal des déploiements.
 
-## Documentation
-- `DESIGN.md` : tokens, composants, conventions, décisions, pièges connus. **À lire avant toute modification.**
-- `RUNBOOK.md` : modifier, publier, déployer, rollback, diagnostic, vérification de synchro.
-- `CHANGELOG.md` : versions publiées et journal des déploiements (une ligne par déploiement ou rollback).
-- `cahier-des-charges-sosese-v1.2.md` : référence initiale. Quand `DESIGN.md` documente un écart, `DESIGN.md` prime.
+## Stack
+Astro 5 statique + Tailwind 4 + îlots React 19 → `dist/`, servi par Fastify 5 (`server/`) qui envoie aussi les
+formulaires par SMTP. Image Docker publiée sur GHCR par GitHub Actions à chaque tag, déployée à la main sur un VPS
+derrière Traefik. Aucune base de données.
 
 ## Où modifier quoi
-- Textes des sections : `src/components/sections/*.astro` ; pages : `src/pages/`.
-- FAQ et exemples : un fichier Markdown dans `src/content/faq/` ou `src/content/exemples/`.
-- Navigation, email, mentions légales, personne : `src/config/site.ts` (`null` = « à compléter », jamais de valeur inventée).
-- Règles du formulaire (client et serveur) : `shared/contact.json`.
-- Questions, options et accusé de réception du questionnaire prospects (`/questionnaire`) : `shared/questionnaire.json`.
-- Scénarios métier du mockup du hero : `src/config/demo-hero.ts` (inventés, règles génériques — voir `DESIGN.md`).
-- Démonstration du cas client (fiche → devis → intervention → analyse) : `src/components/ui/diagrams/EnchainementClient.astro` (données inventées).
-- Étapes de la méthode : `src/components/sections/Methode.astro` ; arguments de l'offre sur-mesure : `src/components/sections/BentoOffre.astro`.
-- Couleurs, rayons, espacements, typo : `src/styles/tokens.css`.
+| Quoi | Où |
+|---|---|
+| Sections de l'accueil | `src/components/sections/*.astro` (ordre dans `src/pages/index.astro`) |
+| Pages | `src/pages/` |
+| Composants | `src/components/ui/` (statiques), `ui/diagrams/` (schémas), `islands/` (React), `layout/` |
+| FAQ | un fichier Markdown par question dans `src/content/faq/` |
+| Navigation, CTA, email, mentions légales, cas client | `src/config/site.ts` (`null` = « à compléter », jamais de valeur inventée) |
+| Règles du formulaire de contact (client et serveur) | `shared/contact.json` |
+| Questions du questionnaire `/questionnaire` | `shared/questionnaire.json` |
+| Couleurs, rayons, espacements, typo | `src/styles/tokens.css` ; utilitaires dans `src/styles/global.css` |
+| Serveur, API | `server/index.mjs`, `server/questionnaire.mjs` |
+| Publication, déploiement | `scripts/release.sh`, `scripts/deploy-vps.sh`, `compose.yml`, `.github/workflows/deploy.yml` |
+
+`src/labo/` et `src/pages/labo/` : bac à sable local, hors git, jamais publié.
+
+## Contraintes de travail
+- Développement **local uniquement**. Aucun accès au VPS : pas de `ssh`, `scp`, `rsync`, ni de docker distant.
+  Production vérifiable seulement par requêtes HTTP publiques (curl, Lighthouse, axe).
+- Le déploiement, les pushs, PR, merges et tags : uniquement par l'humain ou avec son accord explicite dans la session.
+- Ne jamais lire, créer ni modifier `.env` (seul `.env.example` est versionné).
+- Une évolution à la fois ; commit avant chaque changement structurel.
 
 ## Règles de code
-- Aucune couleur, rayon ou espacement en dur : toujours un token de `tokens.css`.
-- Tout est statique sauf les îlots React explicitement listés dans `DESIGN.md` (en `client:idle`, voir pourquoi)
-  et les scripts natifs des composants listés (jamais en `is:inline` : ils grossiraient le HTML et le LCP).
-- Vérifier systématiquement le rendu dans les deux thèmes.
-- Tout composant, décision ou piège nouveau est ajouté à `DESIGN.md` dans le même tour.
+- Aucune couleur, rayon ou espacement en dur : toujours un token.
+- Tout est statique sauf les îlots listés dans `DESIGN.md` (`client:idle`) et les scripts natifs des composants
+  listés (jamais `is:inline`).
+- Tout composant, décision ou piège nouveau est ajouté à `DESIGN.md` dans le même tour, en une règle et sa raison,
+  sans historique. Ce qui est retiré du code est retiré de la doc.
 
 ## Contrat de fin de tâche
 - `npm run build` passe
@@ -45,12 +51,8 @@
 - animations sous `prefers-reduced-motion`
 - aucun jargon technique hors « Sous le capot »
 
-## Méthode
-- Une évolution à la fois. Ne pas démarrer la suivante sans validation explicite.
-- Commit avant chaque changement structurel.
-
 ## Commandes
 - `npm run dev` : http://localhost:4321
-- `npm run build && npm start` : serveur Fastify de production sur http://localhost:3000 (requis pour tester le formulaire, y compris depuis `npm run dev`)
+- `npm run build && npm start` : serveur de production sur http://localhost:3000 (requis pour tester les formulaires)
 - `docker compose -f compose.dev.yml up --build` : image locale + Mailpit (http://localhost:8025)
-- `npm run release -- X.Y` (local) puis `/srv/sosese/deploy.sh vX.Y` (VPS) : publication et déploiement, **lancés par l'humain uniquement** (voir `RUNBOOK.md` §2 et §3)
+- `npm run release -- X.Y` puis `/srv/sosese/deploy.sh vX.Y` : **lancés par l'humain uniquement** (`RUNBOOK.md` §2, §3)

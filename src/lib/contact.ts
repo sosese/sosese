@@ -15,7 +15,7 @@ export type ContactPayload = {
   email: string;
   telephone: string;
   secteur: string;
-  // Puces multi-sélection concaténées par « , » (§5.2).
+  // Puces multi-sélection concaténées par « , ».
   irritants: string;
   message: string;
   consentement: true;

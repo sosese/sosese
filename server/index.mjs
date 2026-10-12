@@ -61,7 +61,7 @@ await app.register(helmet, {
   strictTransportSecurity: PROD ? { maxAge: 31536000, includeSubDomains: true } : false,
 });
 
-// Compression faite ici : ne pas l'activer aussi dans Traefik (§7.8).
+// Compression faite ici : ne pas l'activer aussi dans Traefik.
 await app.register(compress, { encodings: ["br", "gzip"], brotliOptions: { params: { [zlib.BROTLI_PARAM_QUALITY]: 5 } } });
 
 await app.register(rateLimit, {

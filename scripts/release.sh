@@ -45,7 +45,7 @@ tag_prec=$(sed -nE "s#^ *image: $IMAGE:(v[0-9]+\.[0-9]+) *\$#\1#p" compose.yml)
 [[ -n $tag_prec ]] || arreter "Ligne image: introuvable dans compose.yml."
 ok "main à jour, $actuel ($tag_prec) → $version ($tag)"
 
-# --- Numéro de version (RUNBOOK §2.4, piège 19 : jamais npm install) -------------------------------------
+# --- Numéro de version (RUNBOOK §2.4, piège 13 : jamais npm install) -------------------------------------
 
 etape "Numéro de version sur la branche $branche"
 git checkout --quiet -b "$branche"
@@ -65,7 +65,7 @@ autres=$(git diff -U0 package.json package-lock.json | grep -E '^[-+] ' | grep -
 if [[ $fichiers != "compose.yml package-lock.json package.json " || $lignes != "4/4" || $autres != 0 ]]; then
   git diff --stat
   annuler_branche
-  arreter "Le diff de version touche autre chose que les numéros de version (piège 19) : rien n'a été commité."
+  arreter "Le diff de version touche autre chose que les numéros de version (piège 13) : rien n'a été commité."
 fi
 git diff --stat
 ok "3 fichiers, 4 lignes, uniquement des numéros de version"
