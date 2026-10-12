@@ -1,4 +1,4 @@
-/* Source unique des tokens — voir DESIGN.md. Couleurs, rayons et ombres : §3.3 du cahier des charges. */
+/* Source unique des tokens — voir DESIGN.md. */
 
 :root {
   color-scheme: light;
@@ -65,7 +65,6 @@
   --duration-base: 200ms;
   --duration-slow: 300ms;
   --duration-blink: 1100ms;  /* boucles décoratives : jamais ramenées à 0, coupées via media query */
-  --duration-loop: 2400ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -99,7 +98,7 @@
 }
 
 /* Sections invert : sombres dans les deux thèmes.
-   Complété par rapport au §3.3 (border-strong, accent-hover/bright/soft) :
+   Tous les tokens redéfinis (border-strong, accent-hover/bright/soft compris) :
    sans ça, en thème clair, les survols héritaient de #92400E sur fond sombre. */
 .section-invert {
   color-scheme: dark;

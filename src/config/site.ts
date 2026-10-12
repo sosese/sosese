@@ -5,12 +5,12 @@ export const site = {
   title: "Un assistant sur mesure pour artisans, indépendants et petites entreprises | sosese",
   description:
     "Je suis Joris : je relie un assistant aux logiciels que vous avez déjà. Il prépare le travail, vous validez. Pour artisans, indépendants et petites entreprises.",
-  // À confirmer (§9) : adresse de contact et URL LinkedIn réelles.
+  // À confirmer : adresse de contact et URL LinkedIn réelles.
   email: "contact@sosese.tech",
   linkedin: null as string | null,
 };
 
-// Contenus bloquants du §9 : null = non fourni. Rendu en marqueur « à compléter », jamais inventé.
+// Contenus non fournis : null = non fourni. Rendu en marqueur « à compléter », jamais inventé.
 type Texte = string | null;
 
 export const legal = {

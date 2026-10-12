@@ -1,4 +1,4 @@
-# Build et publication de l'image sur GHCR à chaque tag v*. Ne touche jamais au VPS (§7.3) :
+# Build et publication de l'image sur GHCR à chaque tag v*. Ne touche jamais au VPS :
 # aucun secret de déploiement ici, la mise en production reste manuelle.
 name: Image Docker
 
@@ -21,13 +21,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      # Requis pour le cache type=gha (absent du §7.3).
-      - uses: docker/setup-buildx-action@v3
+      # Requis pour le cache type=gha.
+      - uses: docker/setup-buildx-action@v4
 
       - name: Build pour test
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64
@@ -62,14 +62,14 @@ jobs:
         if: always()
         run: docker logs sosese-test || true
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publication
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64
