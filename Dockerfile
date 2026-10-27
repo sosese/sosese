@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Étape 1 — build du site statique (dépendances de dev comprises)
-FROM node:22-alpine AS build
+FROM node:22.23.4-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -9,7 +9,7 @@ COPY . .
 RUN npm run build
 
 # Étape 2 — exécution : dépendances serveur uniquement
-FROM node:22-alpine
+FROM node:22.23.4-alpine
 ENV NODE_ENV=production \
     PORT=3000 \
     HOST=0.0.0.0
