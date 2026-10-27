@@ -8,6 +8,7 @@ Une ligne par `deploy.sh` ou rollback (RUNBOOK §3.2, §4).
 
 | Date | En ligne | Précédente | Remarque |
 |---|---|---|---|
+| 2026-10-27 | `v0.12` | `v0.11` | correctif de sécurité Node.js 22.23.3 → 22.23.4 ; vérifications de `deploy.sh` OK, formulaire de contact vérifié en production |
 | 2026-10-09 | `v0.11` | `v0.10` | envois plus rapides |
 | 2026-10-09 | `v0.10` | `v0.9` | questionnaire vérifié en production |
 | 2026-10-07 | `v0.9` | `v0.9-v2-preview.1` | premier déploiement par `deploy.sh` ; build du tag identique à la production |
@@ -16,15 +17,13 @@ Une ligne par `deploy.sh` ou rollback (RUNBOOK §3.2, §4).
 
 ## Non publié
 
-- **Sécurité** : image de base épinglée sur `node:22.23.4-alpine` (failles Node.js du 21/10/2026, dont CVE-2026-111497,
-  RCE dans le décodeur Brotli, probablement atteignable par les corps de requête compressés en `br`). La production est en 22.23.3.
-- Documentation resserrée (`CLAUDE.md`, `DESIGN.md`, `RUNBOOK.md`), composants et CSS non utilisés supprimés.
-- Logo client optimisé (69 → 42 ko), actions GitHub à jour (Node 24).
+Rien.
 
 ## Versions
 
 | Tag | Date | Contenu |
 |---|---|---|
+| `v0.12` | 2026-10-27 | **sécurité** : image de base épinglée sur `node:22.23.4-alpine` (failles Node.js du 21/10/2026, dont CVE-2026-111497, RCE dans le décodeur Brotli, probablement atteignable par les corps de requête compressés en `br`) ; documentation resserrée, composants et CSS non utilisés supprimés ; logo client optimisé (69 → 42 ko) ; actions GitHub à jour (Node 24) |
 | `v0.11` | 2026-10-09 | envois plus rapides : accusé de réception après la réponse, connexion SMTP gardée ouverte |
 | `v0.10` | 2026-10-08 | site « moins geek » : voix en « je », offre en trois assistants, témoignage de Jason, sobriété visuelle, planche du protocole ; `deploy.sh` accepte les préversions |
 | `v0.9` | 2026-10-07 | questionnaire prospects, hero en texte seul, scripts `release.sh` / `deploy-vps.sh` |
