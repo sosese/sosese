@@ -17,7 +17,7 @@ Une ligne par `deploy.sh` ou rollback (RUNBOOK §3.2, §4).
 ## Non publié
 
 - **Sécurité** : image de base épinglée sur `node:22.23.4-alpine` (failles Node.js du 21/10/2026, dont CVE-2026-111497,
-  RCE dans le décodeur Brotli, atteignable par les corps de requête compressés en `br`). La production est en 22.23.3.
+  RCE dans le décodeur Brotli, probablement atteignable par les corps de requête compressés en `br`). La production est en 22.23.3.
 - Documentation resserrée (`CLAUDE.md`, `DESIGN.md`, `RUNBOOK.md`), composants et CSS non utilisés supprimés.
 - Logo client optimisé (69 → 42 ko), actions GitHub à jour (Node 24).
 
